@@ -204,12 +204,18 @@ def screen_candidate_ats(
     """
     threshold = min_ats_threshold if min_ats_threshold is not None else (getattr(job, "min_ats_score", 60.0) or 60.0)
 
-    # 1. Skill Extraction & Matching
-    cand_skill_map = {
-        cs.skill.skill_name.strip().lower(): cs.skill.skill_name.strip()
-        for cs in candidate.candidate_skills
-        if cs and cs.skill
-    }
+    # 1. Skill Extraction & Matching (using bidirectional skill variant sets)
+    from app.nlp.skills_data import get_all_skill_variants
+
+    cand_skill_variants: set[str] = set()
+    for cs in candidate.candidate_skills:
+        if cs and cs.skill:
+            cand_skill_variants.update(get_all_skill_variants(cs.skill.skill_name))
+
+    resume_text = f"{candidate.resume_text or ''} {candidate.summary or ''} {candidate.work_experience or ''}"
+    if resume_text.strip():
+        for s in extract_skills(resume_text):
+            cand_skill_variants.update(get_all_skill_variants(s))
 
     required_skills = [js.skill.skill_name for js in job.job_skills if js.required]
     preferred_skills = [js.skill.skill_name for js in job.job_skills if not js.required]
@@ -222,7 +228,10 @@ def screen_candidate_ats(
     matched_required = []
     missing_required = []
     for s in required_skills:
-        if s.strip().lower() in cand_skill_map:
+        req_vars = get_all_skill_variants(s)
+        if req_vars.intersection(cand_skill_variants):
+            matched_required.append(s)
+        elif resume_text and any(re.search(r"(?<![\w+#])" + re.escape(v) + r"(?![\w+#])", resume_text, re.IGNORECASE) for v in req_vars):
             matched_required.append(s)
         else:
             missing_required.append(s)
@@ -230,7 +239,10 @@ def screen_candidate_ats(
     matched_preferred = []
     missing_preferred = []
     for s in preferred_skills:
-        if s.strip().lower() in cand_skill_map:
+        pref_vars = get_all_skill_variants(s)
+        if pref_vars.intersection(cand_skill_variants):
+            matched_preferred.append(s)
+        elif resume_text and any(re.search(r"(?<![\w+#])" + re.escape(v) + r"(?![\w+#])", resume_text, re.IGNORECASE) for v in pref_vars):
             matched_preferred.append(s)
         else:
             missing_preferred.append(s)

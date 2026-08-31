@@ -230,16 +230,9 @@ def calculate_job_specific_ats(candidate: CandidateProfile, job: Job) -> Dict[st
         if req_variants.intersection(cand_skill_variants):
             is_matched = True
         else:
-            # Check raw resume text for any variant
+            # Check raw resume text for any variant using boundary regex
             for v in req_variants:
-                if (
-                    f" {v} " in resume_lower_search
-                    or f" {v}," in resume_lower_search
-                    or f" {v}." in resume_lower_search
-                    or f"({v})" in resume_lower_search
-                    or f"/{v}" in resume_lower_search
-                    or f"{v}/" in resume_lower_search
-                ):
+                if re.search(r"(?<![\w+#])" + re.escape(v) + r"(?![\w+#])", resume_full_text, re.IGNORECASE):
                     is_matched = True
                     break
 
@@ -256,7 +249,7 @@ def calculate_job_specific_ats(candidate: CandidateProfile, job: Job) -> Dict[st
         is_p_matched = bool(pref_variants.intersection(cand_skill_variants))
         if not is_p_matched:
             for v in pref_variants:
-                if f" {v} " in resume_lower_search or f" {v}," in resume_lower_search or f" {v}." in resume_lower_search:
+                if re.search(r"(?<![\w+#])" + re.escape(v) + r"(?![\w+#])", resume_full_text, re.IGNORECASE):
                     is_p_matched = True
                     break
         if is_p_matched and p_norm not in matched_skills:

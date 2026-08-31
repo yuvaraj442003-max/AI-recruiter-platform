@@ -28,7 +28,7 @@ def test_frontend_developer_skill_extraction():
     assert "HTML" in extracted
     assert "CSS" in extracted
     assert "JavaScript" in extracted
-    assert "React" in extracted
+    assert "React.js" in extracted or "React" in extracted
     assert "TypeScript" in extracted
     assert "Git" in extracted
 
