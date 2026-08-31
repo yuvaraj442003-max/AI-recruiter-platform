@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel — AI Recruiter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-required-role="admin">
+
+  <div class="d-flex">
+    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 220px;">
+      <a href="admin.html" class="text-primary-custom fw-bold fs-5 mb-4 text-decoration-none">AI Recruiter</a>
+      <div class="badge text-bg-dark mb-3 align-self-start">Admin</div>
+      <div class="mt-auto">
+        <button id="logout-btn" class="btn btn-outline-secondary w-100">Log out</button>
+      </div>
+    </nav>
+
+    <main class="flex-grow-1">
+      <header class="bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+        <h1 class="h5 mb-0">Admin Panel</h1>
+        <div class="d-flex align-items-center gap-3">
+          <span id="user-greeting" class="text-muted-custom skeleton" style="width: 140px; height: 1rem; display: inline-block;"></span>
+          <button id="logout-btn-mobile" class="btn btn-sm btn-outline-secondary d-md-none">Log out</button>
+        </div>
+      </header>
+
+      <div class="container-fluid p-4">
+        <div id="admin-alert" class="alert d-none py-2" role="alert"></div>
+
+        <!-- System stats -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-lg-2">
+            <div class="card stat-card p-3">
+              <div class="text-muted-custom small">Total Users</div>
+              <div class="stat-value" id="stat-total-users">—</div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-2">
+            <div class="card stat-card p-3">
+              <div class="text-muted-custom small">Recruiters</div>
+              <div class="stat-value" id="stat-recruiters">—</div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-2">
+            <div class="card stat-card p-3">
+              <div class="text-muted-custom small">Candidates</div>
+              <div class="stat-value" id="stat-candidates">—</div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-2">
+            <div class="card stat-card p-3">
+              <div class="text-muted-custom small">Jobs</div>
+              <div class="stat-value" id="stat-jobs">—</div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-2">
+            <div class="card stat-card p-3">
+              <div class="text-muted-custom small">Applications</div>
+              <div class="stat-value" id="stat-applications">—</div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-2">
+            <div class="card stat-card p-3">
+              <div class="text-muted-custom small">Interview Completion</div>
+              <div class="stat-value" id="stat-interview-completion" style="font-size:1.4rem;">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-3">
+          <li class="nav-item"><button class="nav-link active" data-tab="users">Users &amp; Accounts</button></li>
+          <li class="nav-item"><button class="nav-link text-primary fw-semibold" data-tab="recruiter-approvals">🛡️ Recruiter Approvals</button></li>
+          <li class="nav-item"><button class="nav-link" data-tab="companies">🏢 Company Verification</button></li>
+          <li class="nav-item"><button class="nav-link text-danger" data-tab="fraud">🚨 Suspicious Jobs (Fraud Alerts)</button></li>
+          <li class="nav-item"><button class="nav-link" data-tab="skills">Skills</button></li>
+          <li class="nav-item"><button class="nav-link" data-tab="jobs">All Jobs</button></li>
+          <li class="nav-item"><button class="nav-link" data-tab="audit">Audit Log</button></li>
+        </ul>
+
+        <!-- Users tab -->
+        <div id="tab-users" class="tab-pane">
+          <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="fw-semibold mb-0">Platform Users</h6>
+              <select id="user-role-filter" class="form-select form-select-sm" style="width: auto;">
+                <option value="">All roles</option>
+                <option value="candidate">Candidates</option>
+                <option value="recruiter">Recruiters</option>
+                <option value="admin">Admins</option>
+              </select>
+            </div>
+            <div id="users-table"><div class="text-muted-custom small">Loading…</div></div>
+          </div>
+        </div>
+
+        <!-- Recruiter Approvals tab -->
+        <div id="tab-recruiter-approvals" class="tab-pane d-none">
+          <div class="card p-3">
+            <h6 class="fw-semibold text-primary mb-3">🛡️ Recruiter Security Verification &amp; Account Approvals</h6>
+            <div id="recruiter-approvals-table"><div class="text-muted-custom small">Loading pending recruiter applications…</div></div>
+          </div>
+        </div>
+
+        <!-- Companies Verification tab -->
+        <div id="tab-companies" class="tab-pane d-none">
+          <div class="card p-3">
+            <h6 class="fw-semibold mb-3">Registered Companies &amp; Verification Requests</h6>
+            <div id="companies-table"><div class="text-muted-custom small">Loading companies…</div></div>
+          </div>
+        </div>
+
+
+        <!-- Fraud Alerts / Suspicious Jobs tab -->
+        <div id="tab-fraud" class="tab-pane d-none">
+          <div class="card p-3">
+            <h6 class="fw-semibold text-danger mb-3">🚨 AI Flagged Suspicious Job Postings</h6>
+            <p class="text-muted small mb-3">Jobs flagged with high scam risk score or held for manual review.</p>
+            <div id="fraud-table"><div class="text-muted-custom small">Loading suspicious jobs…</div></div>
+          </div>
+        </div>
+
+
+        <!-- Skills tab -->
+        <div id="tab-skills" class="tab-pane d-none">
+          <div class="card p-3 mb-3">
+            <h6 class="fw-semibold mb-3">Add a skill</h6>
+            <form id="skill-form" class="row g-2">
+              <div class="col-sm-5">
+                <input type="text" id="skill-name-input" class="form-control form-control-sm" placeholder="Skill name" required />
+              </div>
+              <div class="col-sm-4">
+                <input type="text" id="skill-category-input" class="form-control form-control-sm" placeholder="Category (optional)" />
+              </div>
+              <div class="col-sm-3">
+                <button type="submit" class="btn btn-sm btn-primary w-100">Add Skill</button>
+              </div>
+            </form>
+          </div>
+          <div class="card p-3">
+            <h6 class="fw-semibold mb-3">All Skills</h6>
+            <div id="skills-table"><div class="text-muted-custom small">Loading…</div></div>
+          </div>
+        </div>
+
+        <!-- Jobs tab -->
+        <div id="tab-jobs" class="tab-pane d-none">
+          <div class="card p-3">
+            <h6 class="fw-semibold mb-3">All Jobs</h6>
+            <div id="jobs-table"><div class="text-muted-custom small">Loading…</div></div>
+          </div>
+        </div>
+
+        <!-- Audit log tab -->
+        <div id="tab-audit" class="tab-pane d-none">
+          <div class="card p-3">
+            <h6 class="fw-semibold mb-3">Recent Audit Log</h6>
+            <div id="audit-table"><div class="text-muted-custom small">Loading…</div></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

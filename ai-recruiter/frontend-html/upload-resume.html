@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload Resume — AI Recruiter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-required-role="candidate">
+
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 240px;">
+      <a href="candidate-portal.html" class="text-primary-custom fw-bold fs-5 mb-4 text-decoration-none d-flex align-items-center gap-2">
+        <span>👨‍💻</span> Candidate Portal
+      </a>
+      <ul class="nav nav-pills flex-column gap-1">
+        <li class="nav-item"><a href="candidate-portal.html" class="nav-link text-body">🏠 Home</a></li>
+        <li class="nav-item"><a href="candidate-dashboard.html" class="nav-link text-body">📊 Dashboard</a></li>
+        <li class="nav-item"><a href="upload-resume.html" class="nav-link active">📄 Resume &amp; ATS Score</a></li>
+        <li class="nav-item"><a href="jobs.html" class="nav-link text-body">🔍 Find Jobs</a></li>
+        <li class="nav-item"><a href="my-applications.html" class="nav-link text-body">📑 Applications</a></li>
+      </ul>
+
+      <div class="mt-auto">
+        <button id="logout-btn" class="btn btn-outline-secondary w-100">Log out</button>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="flex-grow-1">
+      <header class="bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+        <h1 class="h5 mb-0">Resume</h1>
+        <div class="d-flex align-items-center gap-3">
+          <span id="user-greeting" class="text-muted-custom skeleton" style="width: 140px; height: 1rem; display: inline-block;"></span>
+          <button id="logout-btn-mobile" class="btn btn-sm btn-outline-secondary d-md-none">Log out</button>
+        </div>
+      </header>
+
+      <div class="container-fluid p-4" style="max-width: 900px;">
+
+        <!-- Upload card -->
+        <div class="card p-4 mb-4">
+          <h5 class="fw-semibold mb-1">Upload your resume</h5>
+          <p class="text-muted-custom mb-3">
+            PDF or DOCX, up to 10MB. We'll automatically extract your skills, experience,
+            and education — you can review everything before it's used for job matching.
+          </p>
+
+          <div id="upload-alert" class="alert d-none py-2" role="alert"></div>
+
+          <label
+            for="resume-file-input"
+            id="dropzone"
+            class="dropzone-area rounded-4 d-flex flex-column align-items-center justify-content-center text-center p-5 mb-3 cursor-pointer"
+          >
+            <div class="fs-1 mb-2 p-3 bg-primary-subtle rounded-circle text-primary" style="width: 70px; height: 70px; display: inline-flex; align-items: center; justify-content: center;">📄</div>
+            <div class="fw-bold fs-5 text-dark" id="dropzone-title">Click to choose a file, or drag it here</div>
+            <div class="text-muted-custom small mt-1">PDF or DOCX files supported (max 10MB)</div>
+            <input type="file" id="resume-file-input" accept=".pdf,.docx" class="d-none" />
+          </label>
+
+          <button id="upload-btn" class="btn btn-primary" disabled>
+            <span id="upload-btn-text">Upload &amp; Analyze</span>
+            <span id="upload-spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <!-- Top 3 Best Job Matches Section -->
+        <div id="other-roles-card" class="card p-4 mb-4 shadow-sm d-none" style="background: #ffffff;">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="fs-4">🏆</span>
+                <h5 class="fw-bold mb-0">Top 3 Best Job Matches Based on Your Resume</h5>
+              </div>
+              <p class="text-muted-custom small mb-0">Dynamically calculated from your extracted skills, experience, education, projects, and keywords. Click <strong>'Check ATS Score &rarr;'</strong> on any role to view its strict ATS evaluation.</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <label for="domain-select" class="small fw-semibold text-muted text-nowrap">Target Role:</label>
+              <select id="domain-select" class="form-select form-select-sm fw-medium border-primary-subtle" style="min-width: 220px;">
+                <!-- Dynamically populated -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Top 3 Job Matches Cards Grid (3 Cards Only) -->
+          <div id="other-roles-grid" class="row g-3 mb-1">
+            <!-- Dynamically populated Top 3 role cards -->
+          </div>
+        </div>
+
+        <!-- 3. Target Job Role ATS Evaluation & Improvement Guide -->
+        <div id="domain-card" class="card p-4 mb-4 shadow-sm d-none">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2 border-bottom pb-3">
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="fs-4">💡</span>
+                <h5 class="fw-bold mb-0">ATS Score Improvement Plan for <span id="target-role-name" class="text-primary">Target Role</span></h5>
+              </div>
+              <p class="text-muted-custom small mb-0">Detailed breakdown of skills, keywords, experience metrics, certifications, and formatting improvements needed to maximize your ATS score.</p>
+            </div>
+            <div class="text-end d-flex align-items-center gap-3">
+              <button id="btn-improve-resume-upload" class="btn btn-sm btn-primary fw-bold px-3 py-2 shadow-sm d-inline-flex align-items-center gap-1">✨ Improve My Resume</button>
+              <div>
+                <div id="domain-score-display" class="display-6 fw-bold text-primary">—</div>
+                <span id="domain-score-status" class="badge text-bg-light border mt-1">Select target role</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Categorized Navigation Tabs -->
+          <ul class="nav nav-tabs nav-fill mb-3" id="ats-guide-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active fw-semibold small" id="tab-skills-btn" data-bs-toggle="tab" data-bs-target="#tab-skills" type="button" role="tab">
+                🛠️ Skills &amp; Keywords
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link fw-semibold small" id="tab-experience-btn" data-bs-toggle="tab" data-bs-target="#tab-experience" type="button" role="tab">
+                💼 Experience &amp; Impact
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link fw-semibold small" id="tab-certs-btn" data-bs-toggle="tab" data-bs-target="#tab-certs" type="button" role="tab">
+                📜 Certifications
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link fw-semibold small" id="tab-formatting-btn" data-bs-toggle="tab" data-bs-target="#tab-formatting" type="button" role="tab">
+                📄 ATS Formatting &amp; Structure
+              </button>
+            </li>
+          </ul>
+
+          <div class="tab-content" id="ats-guide-tab-content">
+
+            <!-- Tab 1: Skills & Keywords -->
+            <div class="tab-pane fade show active p-3 bg-light rounded-3 border" id="tab-skills" role="tabpanel">
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <div class="text-success small fw-bold mb-2">✅ Matched Domain Skills (<span id="matched-skills-count">0</span>)</div>
+                  <div id="domain-matched-skills" class="d-flex flex-wrap gap-1">
+                    <span class="text-muted small">Loading...</span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="text-danger small fw-bold mb-2">⚠️ Missing Domain Required Skills (<span id="missing-skills-count">0</span>)</div>
+                  <div id="domain-missing-skills" class="d-flex flex-wrap gap-1">
+                    <span class="text-muted small">Loading...</span>
+                  </div>
+                </div>
+              </div>
+              <div class="pt-2 border-top">
+                <div class="fw-semibold small text-dark mb-1">🔑 Keyword Recommendations:</div>
+                <ul id="recs-skills-list" class="mb-0 small ps-3 text-secondary">
+                  <li>Loading recommendations...</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Tab 2: Experience & Impact -->
+            <div class="tab-pane fade p-3 bg-light rounded-3 border" id="tab-experience" role="tabpanel">
+              <div class="fw-bold small text-dark mb-2">💼 How to Enhance Work Experience for this Target Role:</div>
+              <ul id="recs-experience-list" class="mb-0 small ps-3 text-secondary">
+                <li>Loading experience recommendations...</li>
+              </ul>
+            </div>
+
+            <!-- Tab 3: Certifications -->
+            <div class="tab-pane fade p-3 bg-light rounded-3 border" id="tab-certs" role="tabpanel">
+              <div class="fw-bold small text-dark mb-2">📜 Recommended Industry Certifications &amp; Training:</div>
+              <ul id="recs-certs-list" class="mb-0 small ps-3 text-secondary">
+                <li>Loading certification recommendations...</li>
+              </ul>
+            </div>
+
+            <!-- Tab 4: ATS Formatting & Structure -->
+            <div class="tab-pane fade p-3 bg-light rounded-3 border" id="tab-formatting" role="tabpanel">
+              <div class="fw-bold small text-dark mb-2">📄 ATS Structural &amp; Formatting Checklist:</div>
+              <ul id="recs-formatting-list" class="mb-0 small ps-3 text-secondary">
+                <li>Loading formatting recommendations...</li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Parsed profile (hidden until we have data) -->
+        <div id="profile-card" class="card p-4 d-none">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <h5 class="fw-semibold mb-0">Parsed profile</h5>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-success-subtle text-success border border-success-subtle fs-6 px-3 py-2" id="profile-score-badge">General ATS Score: —</span>
+              <button id="edit-profile-btn" class="btn btn-sm btn-outline-primary fw-medium" title="Edit Profile">✏️ Edit Profile</button>
+              <button id="delete-profile-btn" class="btn btn-sm btn-outline-danger fw-medium" title="Delete Resume">🗑️ Delete</button>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <div class="text-muted-custom small">Phone</div>
+              <div id="profile-phone" class="fw-medium">—</div>
+            </div>
+            <div class="col-md-4">
+              <div class="text-muted-custom small">District / Location</div>
+              <div id="profile-location" class="fw-medium text-primary fw-bold">—</div>
+            </div>
+            <div class="col-md-4">
+              <div class="text-muted-custom small">Experience</div>
+              <div id="profile-experience" class="fw-medium">—</div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <div class="text-muted-custom small">Summary</div>
+            </div>
+            <p id="profile-summary" class="mb-0">—</p>
+          </div>
+
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <div class="text-muted-custom small">AI professional summary</div>
+              <button id="generate-summary-btn" class="btn btn-sm btn-outline-primary">
+                <span id="generate-summary-text">Generate with AI</span>
+                <span id="generate-summary-spinner" class="spinner-border spinner-border-sm ms-1 d-none" role="status" aria-hidden="true"></span>
+              </button>
+            </div>
+            <p id="profile-ai-summary" class="mb-0 fst-italic text-muted-custom">Not generated yet.</p>
+          </div>
+
+          <div class="mb-3">
+            <div class="text-muted-custom small mb-1">Full Address</div>
+            <p id="profile-address" class="mb-0" style="white-space: pre-line;">—</p>
+          </div>
+
+          <div class="mb-3">
+            <div class="text-muted-custom small mb-1">Work Experience &amp; Companies</div>
+            <p id="profile-work-experience" class="mb-0" style="white-space: pre-line;">—</p>
+          </div>
+
+          <div class="mb-3">
+            <div class="text-muted-custom small mb-1">Education</div>
+            <p id="profile-education" class="mb-0" style="white-space: pre-line;">—</p>
+          </div>
+
+          <div>
+            <div class="text-muted-custom small mb-2">Extracted skills</div>
+            <div id="profile-skills" class="d-flex flex-wrap gap-2"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div class="modal fade" id="edit-profile-modal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-semibold" id="editProfileModalLabel">✏️ Edit Candidate Profile</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="edit-profile-form">
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="edit-phone" class="form-label small fw-medium">Phone</label>
+                <input type="text" id="edit-phone" class="form-control" placeholder="+1 555-123-4567" />
+              </div>
+              <div class="col-md-6">
+                <label for="edit-location" class="form-label small fw-medium">District / Location</label>
+                <input type="text" id="edit-location" class="form-control" placeholder="Salem / Bangalore" />
+              </div>
+              <div class="col-md-6">
+                <label for="edit-experience" class="form-label small fw-medium">Experience Years</label>
+                <input type="number" step="0.5" id="edit-experience" class="form-control" placeholder="3.0" />
+              </div>
+              <div class="col-md-6">
+                <label for="edit-skills" class="form-label small fw-medium">Extracted Skills (comma-separated)</label>
+                <input type="text" id="edit-skills" class="form-control" placeholder="Python, Django, SQL" />
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="edit-summary" class="form-label small fw-medium">Summary</label>
+              <textarea id="edit-summary" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="edit-address" class="form-label small fw-medium">Full Address</label>
+              <textarea id="edit-address" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="edit-work-experience" class="form-label small fw-medium">Work Experience &amp; Companies</label>
+              <textarea id="edit-work-experience" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="edit-education" class="form-label small fw-medium">Education</label>
+              <textarea id="edit-education" class="form-control" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" id="save-profile-btn" class="btn btn-primary">
+            <span id="save-profile-text">Save Changes</span>
+            <span id="save-profile-spinner" class="spinner-border spinner-border-sm ms-1 d-none" role="status"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Resume Improvement Report Modal -->
+  <div class="modal fade" id="aiResumeImprovementModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+        <div class="modal-header border-bottom bg-primary text-white p-3">
+          <div class="d-flex align-items-center gap-2">
+            <span class="fs-4">✨</span>
+            <div>
+              <h5 class="modal-title fw-bold mb-0" id="resume-improve-modal-title">AI Resume Improvement &amp; Resume Coach Report</h5>
+              <span class="small opacity-75" id="resume-improve-modal-subtitle">Job-specific AI analysis, weak sentence rewriting &amp; metric suggestions</span>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4" id="resume-improve-modal-body">
+          <div class="text-center py-5 text-muted">
+            <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
+            <h5 class="fw-bold text-dark">Analyzing Resume against Target Job...</h5>
+            <p class="small text-secondary mb-0">Detecting weak sentences, missing keywords, achievement metric opportunities, and grammar fixes.</p>
+          </div>
+        </div>
+        <div class="modal-footer border-top bg-light p-3">
+          <button type="button" class="btn btn-secondary px-4 fw-semibold" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/upload-resume.js"></script>
+</body>
+</html>

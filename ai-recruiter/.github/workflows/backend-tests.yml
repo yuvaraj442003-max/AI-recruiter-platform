@@ -1,0 +1,44 @@
+name: Backend Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          pip install --no-cache-dir -r requirements.txt
+          pip install --no-cache-dir \
+            https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl \
+            https://github.com/explosion/spacy-models/releases/download/en_core_web_md-3.8.0/en_core_web_md-3.8.0-py3-none-any.whl
+          python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab'); nltk.download('stopwords')"
+
+      - name: Run tests
+        working-directory: backend
+        env:
+          JWT_SECRET: ci-test-secret-not-for-production
+        run: |
+          cp .env.example .env
+          pytest tests/ -v
+
+      - name: Syntax-check frontend JS
+        run: |
+          for f in frontend-html/js/*.js; do
+            node --check "$f"
+          done

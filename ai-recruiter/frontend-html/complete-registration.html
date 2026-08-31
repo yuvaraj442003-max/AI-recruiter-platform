@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complete Candidate Registration — AI Recruiter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .reg-header-gradient {
+      background: linear-gradient(135deg, #2f5fff 0%, #6f8bff 100%);
+      color: #fff;
+      border-radius: 16px 16px 0 0;
+    }
+  </style>
+</head>
+<body class="bg-light" data-required-role="candidate">
+
+  <div class="container py-5" style="max-width: 760px;">
+    <!-- Brand logo & top step header -->
+    <div class="text-center mb-4">
+      <a href="index.html" class="text-decoration-none">
+        <h2 class="fw-bold text-primary mb-1">AI Recruiter</h2>
+      </a>
+      <p class="text-muted small">Candidate Account Setup &amp; Professional Profile</p>
+    </div>
+
+    <div class="card border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+      <div class="reg-header-gradient p-4 text-center">
+        <div class="badge bg-white text-primary px-3 py-2 fw-bold mb-2 shadow-sm">📋 STEP 2 OF 2</div>
+        <h3 class="fw-bold mb-1">Complete Your Details</h3>
+        <p class="mb-0 opacity-90 small">Please submit your complete profile details to unlock your Candidate Dashboard &amp; job matches.</p>
+      </div>
+
+      <div class="card-body p-4 p-md-5">
+        <div id="complete-alert" class="alert d-none py-2 mb-4" role="alert"></div>
+
+        <form id="complete-reg-form" novalidate>
+          <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">👤 Basic Personal &amp; Contact Information</h6>
+          
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label for="cand-name" class="form-label fw-semibold small">Full Name *</label>
+              <input type="text" class="form-control" id="cand-name" required />
+            </div>
+            <div class="col-md-6">
+              <label for="cand-phone" class="form-label fw-semibold small">Phone Number *</label>
+              <input type="tel" class="form-control" id="cand-phone" placeholder="+1 (555) 000-0000" required />
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label for="cand-location" class="form-label fw-semibold small">Preferred Location / City *</label>
+              <input type="text" class="form-control" id="cand-location" placeholder="San Francisco, CA / Remote" required />
+            </div>
+            <div class="col-md-6">
+              <label for="cand-exp" class="form-label fw-semibold small">Years of Work Experience *</label>
+              <input type="number" step="0.5" min="0" max="40" class="form-control" id="cand-exp" placeholder="e.g. 3.5" required />
+            </div>
+          </div>
+
+          <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">💼 Professional Role &amp; Skills Summary</h6>
+
+          <div class="mb-3">
+            <label for="cand-headline" class="form-label fw-semibold small">Target Role / Professional Headline *</label>
+            <input type="text" class="form-control" id="cand-headline" placeholder="e.g. Full Stack Engineer | Python, React & Node.js" required />
+          </div>
+
+          <div class="mb-3">
+            <label for="cand-summary" class="form-label fw-semibold small">Professional Summary / Bio *</label>
+            <textarea class="form-control" id="cand-summary" rows="3" placeholder="Brief 2-3 sentence overview of your technical experience, domain expertise, and career aspirations..." required></textarea>
+          </div>
+
+          <div class="mb-4">
+            <label for="cand-skills" class="form-label fw-semibold small">Key Skills (comma-separated) *</label>
+            <input type="text" class="form-control" id="cand-skills" placeholder="Python, FastAPI, JavaScript, React, SQL, Git, Docker" required />
+            <div class="form-text">Separate skills with commas so our AI matching engine can pair you with job opportunities.</div>
+          </div>
+
+          <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">📄 Resume Upload (Optional)</h6>
+          
+          <div class="mb-4">
+            <label for="cand-resume-file" class="form-label fw-semibold small">Upload Resume (PDF or DOCX)</label>
+            <input type="file" class="form-control" id="cand-resume-file" accept=".pdf,.docx" />
+            <div class="form-text">If uploaded, our AI will automatically parse additional work experience &amp; education into your profile.</div>
+          </div>
+
+          <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">🌐 Online Profiles &amp; Portfolio (Optional)</h6>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <label for="cand-linkedin" class="form-label small">LinkedIn URL</label>
+              <input type="url" class="form-control form-control-sm" id="cand-linkedin" placeholder="https://linkedin.com/in/username" />
+            </div>
+            <div class="col-md-4">
+              <label for="cand-github" class="form-label small">GitHub URL</label>
+              <input type="url" class="form-control form-control-sm" id="cand-github" placeholder="https://github.com/username" />
+            </div>
+            <div class="col-md-4">
+              <label for="cand-portfolio" class="form-label small">Portfolio Website</label>
+              <input type="url" class="form-control form-control-sm" id="cand-portfolio" placeholder="https://myportfolio.com" />
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm" id="complete-submit-btn">
+            <span id="complete-submit-text">Submit Details &amp; Access Candidate Dashboard &rarr;</span>
+            <span id="complete-spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/complete-registration.js"></script>
+</body>
+</html>

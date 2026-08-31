@@ -1,0 +1,25 @@
+# --- Python / backend ---
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/*.db
+backend/data/
+backend/.env
+
+# --- Frontend (plain HTML/CSS/JS — nothing to ignore, kept for future tooling) ---
+frontend-html/.env
+
+# --- OS / editor ---
+.DS_Store
+.idea/
+.vscode/
+
+# --- Docker ---
+*.log

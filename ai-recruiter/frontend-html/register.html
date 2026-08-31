@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account — AI Recruiter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="bg-light" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311b92 100%);">
+
+  <div class="d-flex align-items-center justify-content-center min-vh-100 px-3 py-5">
+    <div class="card glass-card border-0 shadow-lg" style="width: 100%; max-width: 480px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-radius: 20px;">
+      <div class="card-body p-4 p-md-5">
+        <div class="text-center mb-4">
+          <a href="index.html" class="text-decoration-none">
+            <div class="navbar-brand fw-bold fs-3 mb-1">🤖 AI Recruiter</div>
+          </a>
+          <h1 class="h4 mb-1 fw-bold text-dark">Create your account</h1>
+          <p class="text-muted-custom small mb-0">Join as a candidate or recruiter to get started</p>
+        </div>
+
+        <div id="register-alert" class="alert alert-danger py-2 d-none" role="alert"></div>
+
+        <form id="register-form" novalidate>
+          <div class="mb-3">
+            <label for="name" class="form-label fw-semibold text-dark small">Full name</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="John Doe" required minlength="2" autocomplete="name" />
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label fw-semibold text-dark small">Email address</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="name@company.com" required autocomplete="email" />
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label fw-semibold text-dark small">Password</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required minlength="8" autocomplete="new-password" />
+            <div class="form-text small">At least 8 characters long.</div>
+          </div>
+          <div class="mb-3">
+            <label for="confirm-password" class="form-label fw-semibold text-dark small">Confirm password</label>
+            <input type="password" class="form-control" id="confirm-password" name="confirmPassword" placeholder="••••••••" required minlength="8" autocomplete="new-password" />
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label d-block fw-semibold text-dark small">Registering as</label>
+            <div class="btn-group w-100 p-1 bg-light rounded-3" role="group" aria-label="Role selection">
+              <input type="radio" class="btn-check" name="role" id="role-candidate" value="candidate" checked />
+              <label class="btn btn-outline-primary border-0 rounded-2 fw-semibold py-2" for="role-candidate">👨‍💻 Candidate</label>
+
+              <input type="radio" class="btn-check" name="role" id="role-recruiter" value="recruiter" />
+              <label class="btn btn-outline-primary border-0 rounded-2 fw-semibold py-2" for="role-recruiter">💼 Recruiter</label>
+            </div>
+          </div>
+
+          <!-- Recruiter & Company Security Verification Section -->
+          <div id="recruiter-fields-container" class="d-none border-top pt-3 mt-3">
+            <div class="alert alert-success py-2 small mb-3 rounded-3">
+              ⚡ <strong>Instant Recruiter Access:</strong> Fill in your company details below (optional). Your account receives instant activation.
+            </div>
+
+            <h6 class="fw-bold text-dark mb-2">🧑‍💼 Recruiter Professional Profile</h6>
+            <div class="row g-2 mb-2">
+              <div class="col-md-6">
+                <label for="job-title" class="form-label small mb-1">Job Role / Designation</label>
+                <input type="text" class="form-control form-control-sm" id="job-title" placeholder="Talent Acquisition Lead" />
+              </div>
+              <div class="col-md-6">
+                <label for="phone" class="form-label small mb-1">Phone Number</label>
+                <input type="tel" class="form-control form-control-sm" id="phone" placeholder="+1 (555) 000-0000" />
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="recruiter-linkedin-url" class="form-label small mb-1">Recruiter LinkedIn Profile URL</label>
+              <input type="url" class="form-control form-control-sm" id="recruiter-linkedin-url" placeholder="https://linkedin.com/in/yourname" />
+            </div>
+
+            <h6 class="fw-bold text-dark mb-2">🏢 Company Details (Optional)</h6>
+            <div class="row g-2 mb-2">
+              <div class="col-md-6">
+                <label for="company-name" class="form-label small mb-1">Company Name</label>
+                <input type="text" class="form-control form-control-sm" id="company-name" placeholder="Acme Tech Solutions" />
+              </div>
+              <div class="col-md-6">
+                <label for="company-website" class="form-label small mb-1">Company Website</label>
+                <input type="url" class="form-control form-control-sm" id="company-website" placeholder="https://acme.com" />
+              </div>
+            </div>
+
+            <div class="row g-2 mb-2">
+              <div class="col-md-6">
+                <label for="company-location" class="form-label small mb-1">Company Location</label>
+                <input type="text" class="form-control form-control-sm" id="company-location" placeholder="San Francisco, CA / Remote" />
+              </div>
+              <div class="col-md-6">
+                <label for="industry" class="form-label small mb-1">Industry</label>
+                <input type="text" class="form-control form-control-sm" id="industry" placeholder="Software & AI" />
+              </div>
+            </div>
+
+            <div class="row g-2 mb-2">
+              <div class="col-md-6">
+                <label for="company-size" class="form-label small mb-1">Company Size</label>
+                <select id="company-size" class="form-select form-select-sm">
+                  <option value="">Select size...</option>
+                  <option value="1-10 employees">1-10 employees</option>
+                  <option value="11-50 employees">11-50 employees</option>
+                  <option value="51-200 employees">51-200 employees</option>
+                  <option value="201-500 employees">201-500 employees</option>
+                  <option value="500+ employees">500+ employees</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="company-linkedin-url" class="form-label small mb-1">Company LinkedIn URL</label>
+                <input type="url" class="form-control form-control-sm" id="company-linkedin-url" placeholder="https://linkedin.com/company/acme" />
+              </div>
+            </div>
+
+            <div class="mb-2">
+              <label for="company-description" class="form-label small mb-1">Company Description</label>
+              <textarea id="company-description" class="form-control form-control-sm" rows="2" placeholder="Brief description of company culture..."></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="company-logo" class="form-label small mb-1">Company Logo URL (Optional)</label>
+              <input type="url" class="form-control form-control-sm" id="company-logo" placeholder="https://example.com/logo.png" />
+            </div>
+          </div>
+
+
+          <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow-sm" id="register-submit">
+            <span id="register-submit-text">Create Account &rarr;</span>
+            <span id="register-spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+          </button>
+        </form>
+
+        <div class="d-flex align-items-center my-4">
+          <hr class="flex-grow-1 border-secondary-subtle my-0" />
+          <span class="px-3 text-muted small fw-semibold">OR</span>
+          <hr class="flex-grow-1 border-secondary-subtle my-0" />
+        </div>
+
+        <div id="google-button-div" class="d-flex justify-content-center w-100 mb-2"></div>
+
+        <button type="button" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2 py-2 fw-semibold shadow-sm bg-white" id="google-register-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+
+        <p class="text-center text-muted-custom mt-4 mb-0 small">
+          Already have an account? <a href="login.html" class="fw-bold text-primary text-decoration-none">Sign in</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="js/api.js"></script>
+  <script src="js/register.js"></script>
+</body>
+</html>
+
+

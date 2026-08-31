@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Candidate Dashboard — AI Recruiter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-required-role="candidate">
+
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 250px;">
+      <a href="candidate-portal.html" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mb-4 px-2">
+        <span class="fs-4">👨‍💻</span> Candidate Portal
+      </a>
+      <ul class="nav nav-pills flex-column gap-2">
+        <li class="nav-item"><a href="candidate-portal.html" class="nav-link text-body d-flex align-items-center gap-2"><span>🏠</span> Home</a></li>
+        <li class="nav-item"><a href="candidate-dashboard.html" class="nav-link active d-flex align-items-center gap-2"><span>📊</span> Dashboard</a></li>
+        <li class="nav-item"><a href="upload-resume.html" class="nav-link text-body d-flex align-items-center gap-2"><span>📄</span> Resume &amp; ATS Score</a></li>
+        <li class="nav-item"><a href="jobs.html" class="nav-link text-body d-flex align-items-center gap-2"><span>🔍</span> Find Jobs</a></li>
+        <li class="nav-item"><a href="my-applications.html" class="nav-link text-body d-flex align-items-center gap-2"><span>📑</span> Applications</a></li>
+        <li class="nav-item"><a href="messages.html" class="nav-link text-body d-flex align-items-center gap-2"><span>💬</span> Messages</a></li>
+      </ul>
+
+      <div class="mt-auto pt-3 border-top">
+        <button id="logout-btn" class="btn btn-outline-secondary w-100 fw-semibold">Log out</button>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="flex-grow-1">
+      <header class="bg-white border-bottom p-3 d-flex justify-content-between align-items-center sticky-top" style="z-index: 10;">
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-1 rounded-pill">Candidate</span>
+          <h1 class="h5 mb-0 fw-bold">Candidate Dashboard</h1>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <span id="user-greeting" class="text-muted-custom skeleton" style="width: 140px; height: 1rem; display: inline-block;"></span>
+          <button id="logout-btn-mobile" class="btn btn-sm btn-outline-secondary d-md-none">Log out</button>
+        </div>
+      </header>
+
+      <div class="container-fluid p-4">
+        <div id="dashboard-alert" class="alert d-none py-2" role="alert"></div>
+
+        <!-- LinkedIn-Style Candidate Profile Card -->
+        <div class="card border-0 shadow-sm mb-4 overflow-hidden" style="border-radius: 20px; background: #ffffff;">
+          <div style="height: 140px; background: linear-gradient(135deg, #4f46e5 0%, #8b5cf6 50%, #06b6d4 100%);"></div>
+          <div class="card-body p-4 pt-0 position-relative">
+            <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3">
+              <div class="d-flex align-items-end gap-3">
+                <img id="cand-profile-photo" src="https://ui-avatars.com/api/?name=Candidate&background=4f46e5&color=fff&size=128" alt="Candidate Avatar" class="rounded-circle" style="width: 104px; height: 104px; margin-top: -52px; border: 4px solid #ffffff; box-shadow: 0 8px 20px rgba(0,0,0,0.15); object-fit: cover;" />
+                <div class="mt-2">
+                  <h3 id="cand-name-display" class="fw-bold text-dark mb-0">Candidate Name</h3>
+                  <p id="cand-headline-display" class="text-secondary fw-medium mb-1">Software Engineer | Full Stack Developer</p>
+                  <div class="d-flex align-items-center gap-2 text-muted small">
+                    <span id="cand-location-display">📍 Location</span>
+                    <span>•</span>
+                    <span id="cand-experience-display">💼 0 Years Exp</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <a href="upload-resume.html" class="btn btn-outline-primary fw-semibold px-3 py-2 me-1 hover-lift">📄 Manage Resume</a>
+                <button class="btn btn-primary fw-semibold px-3 py-2 hover-lift" data-bs-toggle="modal" data-bs-target="#editCandProfileModal">✏️ Edit Profile</button>
+              </div>
+            </div>
+
+            <!-- Social Links & Clickable Buttons (LinkedIn | GitHub | Portfolio) -->
+            <div class="d-flex flex-wrap gap-2 pt-3 border-top">
+              <a id="cand-btn-linkedin" href="#" target="_blank" class="btn btn-sm btn-primary fw-semibold d-none" style="background: #0a66c2; border: none; border-radius: 50rem;">
+                <span class="me-1">in</span> LinkedIn
+              </a>
+              <a id="cand-btn-github" href="#" target="_blank" class="btn btn-sm btn-dark fw-semibold d-none" style="background: #24292e; border: none; border-radius: 50rem;">
+                <span class="me-1">💻</span> GitHub
+              </a>
+              <a id="cand-btn-portfolio" href="#" target="_blank" class="btn btn-sm btn-success fw-semibold d-none" style="background: #11998e; border: none; border-radius: 50rem;">
+                <span class="me-1">🌐</span> Portfolio
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-lg-3">
+            <div class="card stat-card p-3">
+              <div class="text-muted-custom small">Profile Completion</div>
+              <div class="stat-value" id="stat-profile-completion">—</div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="card stat-card p-3">
+              <div class="text-muted-custom small">Resume Status</div>
+              <div class="stat-value" id="stat-resume-status" style="font-size: 1.2rem;">—</div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="card stat-card p-3">
+              <div class="text-muted-custom small">Applications</div>
+              <div class="stat-value" id="stat-applications">—</div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="card stat-card p-3">
+              <div class="text-muted-custom small">Interview Status</div>
+              <div class="stat-value" id="stat-interview-status" style="font-size: 1.2rem;">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-lg-4">
+            <div class="card p-3 h-100">
+              <h6 class="fw-semibold mb-3">Profile Completion</h6>
+              <canvas id="chart-profile-completion" height="200"></canvas>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card p-3 h-100">
+              <h6 class="fw-semibold mb-3">Applications by Status</h6>
+              <canvas id="chart-applications-status" height="200"></canvas>
+              <div id="chart-applications-status-empty" class="text-muted-custom small d-none">No applications yet.</div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card p-3 h-100 d-flex flex-column">
+              <h6 class="fw-semibold mb-3">Latest Interview Score</h6>
+              <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                <div class="text-center">
+                  <div class="display-4 fw-bold text-primary-custom" id="interview-score-display">—</div>
+                  <div class="text-muted-custom small" id="interview-score-caption">No completed interviews yet.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Best Suited Job Position Card -->
+        <div id="dash-best-role-card" class="card p-4 mb-4 border-primary border-2 shadow-sm d-none" style="background: linear-gradient(135deg, #f4f7ff 0%, #ffffff 100%); border-radius: 12px;">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="fs-1 text-primary bg-white p-3 rounded-circle border shadow-sm">🌟</div>
+              <div>
+                <span class="badge bg-primary text-white mb-1">Best Suited Job Position</span>
+                <h4 class="fw-bold mb-1 text-dark" id="dash-best-role-title">Loading best match...</h4>
+                <p class="text-muted-custom small mb-0" id="dash-best-role-explanation">Evaluating your resume skills against open positions...</p>
+              </div>
+            </div>
+            <div class="text-end">
+              <div class="display-6 fw-bold text-primary" id="dash-best-role-score">—</div>
+              <span class="badge bg-success text-white px-3 py-1">Top Match</span>
+              <div class="mt-2">
+                <a href="jobs.html" class="btn btn-sm btn-primary fw-semibold shadow-sm">Find Matching Jobs &rarr;</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Job-Specific ATS Score Analysis Card -->
+        <div id="dash-ats-analysis-card" class="card p-4 mb-4 border-0 shadow-sm" style="border-radius: 12px; background: #ffffff;">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+              <h5 class="fw-bold mb-1">🎯 Advanced Job-Specific ATS Score Analysis</h5>
+              <p class="text-muted-custom small mb-0">Detailed 6-part weighted match breakdown based on your profile &amp; target job.</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <button id="btn-improve-resume" class="btn btn-sm btn-primary fw-bold px-3 py-1 shadow-sm d-inline-flex align-items-center gap-1">✨ Improve My Resume</button>
+              <button id="btn-refresh-ats" class="btn btn-sm btn-outline-primary fw-semibold">🔄 Refresh Analysis</button>
+            </div>
+          </div>
+
+          <div class="row g-4">
+            <!-- Overall ATS Gauge & Breakdown -->
+            <div class="col-lg-5 border-end">
+              <div class="text-center p-3 bg-light rounded-3 mb-3">
+                <span class="text-muted small fw-semibold uppercase tracking-wider">Overall ATS Match Score</span>
+                <div class="display-4 fw-bold my-1" id="ats-overall-score-display" style="color: #2f5fff;">—%</div>
+                <span id="ats-score-badge" class="badge bg-primary fs-6 px-3 py-1">Loading...</span>
+              </div>
+
+              <!-- 6 Weighted Progress Bars -->
+              <div class="mb-2">
+                <div class="d-flex justify-content-between small fw-semibold mb-1">
+                  <span>Skills Match (30%)</span>
+                  <span id="ats-val-skills">0%</span>
+                </div>
+                <div class="progress mb-2" style="height: 8px;">
+                  <div id="ats-bar-skills" class="progress-bar bg-primary" role="progressbar" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <div class="mb-2">
+                <div class="d-flex justify-content-between small fw-semibold mb-1">
+                  <span>Experience Match (20%)</span>
+                  <span id="ats-val-experience">0%</span>
+                </div>
+                <div class="progress mb-2" style="height: 8px;">
+                  <div id="ats-bar-experience" class="progress-bar bg-info" role="progressbar" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <div class="mb-2">
+                <div class="d-flex justify-content-between small fw-semibold mb-1">
+                  <span>Keywords Match (15%)</span>
+                  <span id="ats-val-keywords">0%</span>
+                </div>
+                <div class="progress mb-2" style="height: 8px;">
+                  <div id="ats-bar-keywords" class="progress-bar bg-success" role="progressbar" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <div class="mb-2">
+                <div class="d-flex justify-content-between small fw-semibold mb-1">
+                  <span>Responsibilities Match (15%)</span>
+                  <span id="ats-val-responsibilities">0%</span>
+                </div>
+                <div class="progress mb-2" style="height: 8px;">
+                  <div id="ats-bar-responsibilities" class="progress-bar bg-warning" role="progressbar" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <div class="mb-2">
+                <div class="d-flex justify-content-between small fw-semibold mb-1">
+                  <span>Education Match (10%)</span>
+                  <span id="ats-val-education">0%</span>
+                </div>
+                <div class="progress mb-2" style="height: 8px;">
+                  <div id="ats-bar-education" class="progress-bar bg-secondary" role="progressbar" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <div class="mb-2">
+                <div class="d-flex justify-content-between small fw-semibold mb-1">
+                  <span>Location Match (10%)</span>
+                  <span id="ats-val-location">0%</span>
+                </div>
+                <div class="progress mb-2" style="height: 8px;">
+                  <div id="ats-bar-location" class="progress-bar bg-dark" role="progressbar" style="width: 0%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Skills, Keywords & AI Resume Suggestions -->
+            <div class="col-lg-7">
+              <div class="mb-3">
+                <h6 class="fw-bold mb-2">Matched Skills (✓)</h6>
+                <div id="ats-matched-skills-tags" class="d-flex flex-wrap gap-1">
+                  <span class="text-muted small">None matched yet.</span>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <h6 class="fw-bold mb-2 text-danger">Missing Skills (•)</h6>
+                <div id="ats-missing-skills-tags" class="d-flex flex-wrap gap-1">
+                  <span class="text-muted small">None missing.</span>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <h6 class="fw-bold mb-2">Matched vs Missing Keywords</h6>
+                <div class="p-2 bg-light rounded small">
+                  <div class="mb-1"><strong>Matched:</strong> <span id="ats-matched-keywords-text" class="text-success">—</span></div>
+                  <div><strong>Missing:</strong> <span id="ats-missing-keywords-text" class="text-danger">—</span></div>
+                </div>
+              </div>
+
+              <div>
+                <h6 class="fw-bold mb-2 text-primary">💡 Job-Specific AI Resume Improvement Suggestions</h6>
+                <ul id="ats-ai-suggestions-list" class="list-group list-group-flush small border rounded">
+                  <li class="list-group-item text-muted">Upload resume or select a target job to generate AI suggestions.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Target Role Job Explorer inside Candidate Dashboard -->
+        <div class="card p-4 mb-4 border-0 shadow-sm" style="border-radius: 12px; background: #ffffff;">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+              <h5 class="fw-bold mb-1">🔍 Search &amp; Explore Jobs by Target Role</h5>
+              <p class="text-muted-custom small mb-0">Search all open job positions related to your primary or target role.</p>
+            </div>
+            <a href="jobs.html" class="btn btn-sm btn-outline-primary fw-semibold">View All Jobs &rarr;</a>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-md-5">
+              <label for="dash-target-role" class="form-label small text-muted fw-semibold mb-1">Target Job Role</label>
+              <select id="dash-target-role" class="form-select">
+                <option value="">-- All Target Roles --</option>
+                <option value="Software Developer">Software Developer</option>
+                <option value="Backend Developer">Backend Developer</option>
+                <option value="Frontend Developer">Frontend Developer</option>
+                <option value="Full Stack Developer">Full Stack Developer</option>
+                <option value="Data Analyst">Data Analyst</option>
+                <option value="Data Scientist / AI Engineer">Data Scientist / AI Engineer</option>
+                <option value="DevOps / Cloud Engineer">DevOps / Cloud Engineer</option>
+                <option value="QA / Automation Test Engineer">QA / Automation Test Engineer</option>
+                <option value="UI/UX Designer">UI/UX Designer</option>
+                <option value="Human Resources (HR) / Recruiter">Human Resources (HR) / Recruiter</option>
+                <option value="Accountant / Financial Analyst">Accountant / Financial Analyst</option>
+                <option value="Digital Marketing Specialist">Digital Marketing Specialist</option>
+                <option value="Sales & Business Development">Sales & Business Development</option>
+                <option value="Project / Product Manager">Project / Product Manager</option>
+                <option value="Business Operations Manager">Business Operations Manager</option>
+                <option value="Customer Success / Support Specialist">Customer Success / Support Specialist</option>
+                <option value="Cyber Security Specialist">Cyber Security Specialist</option>
+              </select>
+            </div>
+            <div class="col-md-5">
+              <label for="dash-search-keyword" class="form-label small text-muted fw-semibold mb-1">Job Title Keyword</label>
+              <input type="text" id="dash-search-keyword" class="form-control" placeholder="Search keyword (e.g. Python, Developer)" />
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+              <button id="dash-search-btn" class="btn btn-primary w-100 fw-semibold">Search</button>
+            </div>
+          </div>
+
+          <div id="dash-job-explorer-list" class="row g-3 mt-1">
+            <div class="col-12 text-muted-custom small">Loading matching jobs...</div>
+          </div>
+        </div>
+
+        <div class="card p-4 mb-4">
+          <h5 class="fw-semibold">Welcome, <span id="user-name">candidate</span> 👋</h5>
+          <p class="text-muted-custom mb-2" id="recommended-jobs-line">Loading job recommendations…</p>
+          <div class="d-flex gap-2 flex-wrap">
+            <a href="upload-resume.html" class="btn btn-primary">Upload Resume</a>
+            <a href="jobs.html" class="btn btn-outline-primary">Find Jobs</a>
+            <a href="my-applications.html" class="btn btn-outline-primary">My Interviews</a>
+          </div>
+        </div>
+
+
+        <div class="card p-3">
+          <h6 class="fw-semibold mb-2">My Skills</h6>
+          <div id="skills-list" class="d-flex flex-wrap gap-2">
+            <span class="text-muted-custom small">Loading…</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Edit Candidate Profile Modal -->
+  <div class="modal fade" id="editCandProfileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content border-0 shadow" style="border-radius: 16px;">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">Edit Candidate Profile</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form id="edit-cand-profile-form">
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="edit-cand-headline" class="form-label">Professional Headline</label>
+                <input type="text" id="edit-cand-headline" class="form-control" placeholder="Senior Full Stack Engineer | Python, React, AI" />
+              </div>
+              <div class="col-md-6">
+                <label for="edit-cand-role" class="form-label">Current / Desired Job Role</label>
+                <input type="text" id="edit-cand-role" class="form-control" placeholder="Python AI Developer" />
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="edit-cand-photo" class="form-label">Profile Photo URL</label>
+                <input type="url" id="edit-cand-photo" class="form-control" placeholder="https://example.com/my-photo.jpg" />
+              </div>
+              <div class="col-md-6">
+                <label for="edit-cand-location" class="form-label">Location</label>
+                <input type="text" id="edit-cand-location" class="form-control" placeholder="San Francisco, CA / Remote" />
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="edit-cand-summary" class="form-label">About / Professional Summary</label>
+              <textarea id="edit-cand-summary" class="form-control" rows="3" placeholder="Brief summary of your background, technical expertise, and career goals..."></textarea>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="edit-cand-phone" class="form-label">Phone</label>
+                <input type="text" id="edit-cand-phone" class="form-control" placeholder="+1 (555) 000-0000" />
+              </div>
+              <div class="col-md-6">
+                <label for="edit-cand-exp" class="form-label">Years of Experience</label>
+                <input type="number" step="0.5" id="edit-cand-exp" class="form-control" placeholder="4.5" />
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="edit-cand-certifications" class="form-label">Certifications</label>
+              <input type="text" id="edit-cand-certifications" class="form-control" placeholder="AWS Certified Developer, TensorFlow Developer" />
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <label for="edit-cand-linkedin" class="form-label">LinkedIn Profile URL</label>
+                <input type="url" id="edit-cand-linkedin" class="form-control" placeholder="https://linkedin.com/in/username" />
+              </div>
+              <div class="col-md-4">
+                <label for="edit-cand-github" class="form-label">GitHub Profile URL</label>
+                <input type="url" id="edit-cand-github" class="form-control" placeholder="https://github.com/username" />
+              </div>
+              <div class="col-md-4">
+                <label for="edit-cand-portfolio" class="form-label">Portfolio Website URL</label>
+                <input type="url" id="edit-cand-portfolio" class="form-control" placeholder="https://myportfolio.com" />
+              </div>
+            </div>
+
+            <div class="text-end border-top pt-3 mt-3">
+              <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-primary px-4" id="save-cand-profile-btn">Save Profile</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Resume Improvement Report Modal -->
+  <div class="modal fade" id="aiResumeImprovementModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+        <div class="modal-header border-bottom bg-primary text-white p-3">
+          <div class="d-flex align-items-center gap-2">
+            <span class="fs-4">✨</span>
+            <div>
+              <h5 class="modal-title fw-bold mb-0" id="resume-improve-modal-title">AI Resume Improvement &amp; Resume Coach Report</h5>
+              <span class="small opacity-75" id="resume-improve-modal-subtitle">Job-specific AI analysis, weak sentence rewriting &amp; metric suggestions</span>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4" id="resume-improve-modal-body">
+          <div class="text-center py-5 text-muted">
+            <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
+            <h5 class="fw-bold text-dark">Analyzing Resume against Target Job...</h5>
+            <p class="small text-secondary mb-0">Detecting weak sentences, missing keywords, achievement metric opportunities, and grammar fixes.</p>
+          </div>
+        </div>
+        <div class="modal-footer border-top bg-light p-3">
+          <button type="button" class="btn btn-secondary px-4 fw-semibold" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/candidate-dashboard.js"></script>
+  <script src="js/chat.js"></script>
+</body>
+</html>

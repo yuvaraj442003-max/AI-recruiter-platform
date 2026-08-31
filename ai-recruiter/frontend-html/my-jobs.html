@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Jobs — AI Recruiter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body data-required-role="recruiter" class="bg-light">
+
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 260px;">
+      <a href="recruiter-portal.html" class="text-success fw-bold fs-4 mb-4 text-decoration-none d-flex align-items-center gap-2">
+        <span>💼</span> Recruiter Portal
+      </a>
+      <ul class="nav nav-pills flex-column gap-1">
+        <li class="nav-item"><a href="recruiter-portal.html" class="nav-link text-body">🏠 Portal Home</a></li>
+        <li class="nav-item"><a href="recruiter-dashboard.html" class="nav-link text-body">📊 Recruiter Dashboard</a></li>
+        <li class="nav-item"><a href="my-jobs.html" class="nav-link active bg-success text-white">💼 Manage Jobs</a></li>
+        <li class="nav-item"><a href="post-job.html" class="nav-link text-body">➕ Post a Job</a></li>
+        <li class="nav-item"><a href="#" onclick="if(window.openChatWithUser) window.openChatWithUser(); return false;" class="nav-link text-body">💬 Messages &amp; Candidate Chat</a></li>
+      </ul>
+
+      <div class="mt-auto">
+        <button id="logout-btn" class="btn btn-outline-secondary w-100">Log out</button>
+      </div>
+    </nav>
+
+    <main class="flex-grow-1">
+      <header class="bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-success text-white">Recruiter Portal</span>
+          <h1 class="h5 mb-0 fw-bold">Manage Posted Jobs</h1>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <a href="post-job.html" class="btn btn-sm btn-success text-white fw-semibold">➕ Post a Job</a>
+          <span id="user-greeting" class="text-muted-custom skeleton"
+            style="width: 140px; height: 1rem; display: inline-block;"></span>
+          <button id="logout-btn-mobile" class="btn btn-sm btn-outline-secondary d-md-none">Log out</button>
+        </div>
+      </header>
+
+      <div class="container-fluid p-4">
+        <!-- Hero Welcome Banner -->
+        <div class="card border-0 mb-4 shadow-sm" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: #ffffff; border-radius: 12px;">
+          <div class="card-body p-4 p-md-5">
+            <span class="badge bg-white-20 text-white px-3 py-1 rounded-pill mb-2 border border-light border-opacity-25">Requisitions Workspace</span>
+            <h2 class="fw-bold mb-2">Manage Posted Jobs & Requisitions</h2>
+            <p class="opacity-90 mb-4" style="max-width: 700px; font-size: 1.05rem;">
+              Inspect active job listings, monitor applicant engagement, review semantic NLP candidate rankings, and update job visibility.
+            </p>
+            <div class="d-flex flex-wrap gap-3">
+              <a href="post-job.html" class="btn btn-light fw-bold px-4 py-2 text-success shadow-sm">
+                ➕ Post New Job Opening &rarr;
+              </a>
+              <a href="recruiter-dashboard.html" class="btn btn-outline-light fw-semibold px-4 py-2">
+                📊 Open Analytics Dashboard &rarr;
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Job Metric Summary Cards -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-md-4">
+            <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px; background: #ffffff;">
+              <div class="d-flex align-items-center gap-3">
+                <div class="p-3 bg-success-subtle rounded-3 text-success fs-3">💼</div>
+                <div>
+                  <div class="text-secondary small fw-medium">Total Job Openings</div>
+                  <div class="fs-3 fw-bold text-dark" id="stat-job-count">0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-4">
+            <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px; background: #ffffff;">
+              <div class="d-flex align-items-center gap-3">
+                <div class="p-3 bg-primary-subtle rounded-3 text-primary fs-3">🟢</div>
+                <div>
+                  <div class="text-secondary small fw-medium">Active (Published)</div>
+                  <div class="fs-3 fw-bold text-dark" id="stat-published-count">0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px; background: #ffffff;">
+              <div class="d-flex align-items-center gap-3">
+                <div class="p-3 bg-warning-subtle rounded-3 text-warning fs-3">⏸️</div>
+                <div>
+                  <div class="text-secondary small fw-medium">Paused / Drafts</div>
+                  <div class="fs-3 fw-bold text-dark" id="stat-paused-count">0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search and Filter Bar -->
+        <div class="card border-0 shadow-sm p-3 mb-4" style="border-radius: 12px;">
+          <div class="row g-2 align-items-center">
+            <div class="col-md-7">
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 text-muted">🔍</span>
+                <input type="text" id="job-search-input" class="form-control border-start-0 ps-0" placeholder="Search by job title or location..." />
+              </div>
+            </div>
+            <div class="col-md-5 d-flex gap-2">
+              <select id="job-status-filter" class="form-select">
+                <option value="all">All Statuses</option>
+                <option value="published">Published Only</option>
+                <option value="paused">Paused Only</option>
+              </select>
+              <a href="post-job.html" class="btn btn-success text-white fw-semibold text-nowrap">➕ Post Job</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Jobs Table Container -->
+        <div id="jobs-table-wrapper">
+          <div class="text-muted-custom p-4 bg-white rounded-3 shadow-sm text-center">Loading your jobs…</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/my-jobs.js"></script>
+  <script src="js/chat.js"></script>
+</body>
+
+</html>

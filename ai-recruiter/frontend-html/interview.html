@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Interview — AI Recruiter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-required-role="candidate">
+
+  <div class="d-flex">
+    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 240px;">
+      <a href="index.html" class="text-primary-custom fw-bold fs-5 mb-4 text-decoration-none">AI Recruiter</a>
+      <ul class="nav nav-pills flex-column gap-1">
+        <li class="nav-item"><a href="candidate-dashboard.html" class="nav-link text-body">Dashboard</a></li>
+        <li class="nav-item"><a href="#" class="nav-link text-body disabled">My Profile</a></li>
+        <li class="nav-item"><a href="upload-resume.html" class="nav-link text-body">Resume</a></li>
+        <li class="nav-item"><a href="jobs.html" class="nav-link text-body">Find Jobs</a></li>
+        <li class="nav-item"><a href="my-applications.html" class="nav-link text-body">Applications</a></li>
+        <li class="nav-item"><a href="#" class="nav-link active">Interviews</a></li>
+      </ul>
+      <div class="mt-auto">
+        <button id="logout-btn" class="btn btn-outline-secondary w-100">Log out</button>
+      </div>
+    </nav>
+
+    <main class="flex-grow-1">
+      <header class="bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="h5 mb-0">AI Interview</h1>
+          <div id="interview-subtitle" class="text-muted-custom small">Loading…</div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <span id="user-greeting" class="text-muted-custom skeleton" style="width: 140px; height: 1rem; display: inline-block;"></span>
+          <button id="logout-btn-mobile" class="btn btn-sm btn-outline-secondary d-md-none">Log out</button>
+        </div>
+      </header>
+
+      <div class="container p-4" style="max-width: 760px;">
+        <div id="interview-alert" class="alert d-none py-2" role="alert"></div>
+
+        <div id="progress-wrapper" class="mb-3 d-none">
+          <div class="d-flex justify-content-between small text-muted-custom mb-1">
+            <span id="progress-label">Question 1 of N</span>
+          </div>
+          <div class="progress" style="height: 6px;">
+            <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div id="question-card" class="card p-4 d-none shadow-sm rounded-4">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <div>
+              <span id="question-type-badge" class="badge text-bg-light border me-1"></span>
+              <span id="question-difficulty-badge" class="badge"></span>
+            </div>
+            <button id="tts-btn" class="btn btn-sm btn-outline-primary fw-semibold d-flex align-items-center gap-1" title="Read Question Aloud">
+              <span>🔊</span> <span id="tts-btn-text">Read Question Aloud</span>
+            </button>
+          </div>
+          <h5 id="question-text" class="fw-semibold mb-4 text-body"></h5>
+
+          <div class="mb-3">
+            <label for="answer-text" class="form-label">Your answer</label>
+            <textarea id="answer-text" class="form-control" rows="6" placeholder="Type your answer here..."></textarea>
+          </div>
+
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <button id="record-btn" class="btn btn-outline-secondary btn-sm">🎤 Start Recording</button>
+            <span id="recording-status" class="text-muted-custom small"></span>
+          </div>
+
+          <button id="submit-answer-btn" class="btn btn-primary">
+            <span id="submit-answer-text">Submit Answer</span>
+            <span id="submit-answer-spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <div id="completed-card" class="card p-4 text-center d-none">
+          <h5 class="fw-semibold mb-2">Interview complete 🎉</h5>
+          <p class="text-muted-custom mb-3">Your answers have been submitted and evaluated.</p>
+          <a id="view-report-link" href="#" class="btn btn-primary">View My Report</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/interview.js"></script>
+</body>
+</html>
