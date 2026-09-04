@@ -11,20 +11,45 @@
 
   <div class="d-flex">
     <!-- Sidebar -->
-    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 260px;">
-      <a href="recruiter-portal.html" class="text-success fw-bold fs-4 mb-4 text-decoration-none d-flex align-items-center gap-2">
-        <span>💼</span> Recruiter Portal
+    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 260px; min-width: 260px;">
+      <a href="recruiter-portal.html" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mb-4 px-2">
+        <span class="fs-4">💼</span>
+        <span class="fw-bold text-dark fs-5">Recruiter Portal</span>
       </a>
-      <ul class="nav nav-pills flex-column gap-1">
-        <li class="nav-item"><a href="recruiter-portal.html" class="nav-link text-body">🏠 Portal Home</a></li>
-        <li class="nav-item"><a href="recruiter-dashboard.html" class="nav-link text-body">📊 Recruiter Dashboard</a></li>
-        <li class="nav-item"><a href="my-jobs.html" class="nav-link text-body">💼 Manage Jobs</a></li>
-        <li class="nav-item"><a href="post-job.html" class="nav-link active bg-success text-white">➕ Post a Job</a></li>
-        <li class="nav-item"><a href="#" onclick="if(window.openChatWithUser) window.openChatWithUser(); return false;" class="nav-link text-body">💬 Messages &amp; Candidate Chat</a></li>
+      <ul class="nav nav-pills flex-column gap-2">
+        <li class="nav-item">
+          <a href="recruiter-portal.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>🏠</span> Portal Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="recruiter-dashboard.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>📊</span> Recruiter Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="my-jobs.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>💼</span> Manage Jobs
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="post-job.html" class="nav-link active d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff;">
+            <span>➕</span> Post a Job
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="smart-search.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>🔍</span> Smart Search
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="messages.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>💬</span> Messages &amp; Chat
+          </a>
+        </li>
       </ul>
-
-      <div class="mt-auto">
-        <button id="logout-btn" class="btn btn-outline-secondary w-100">Log out</button>
+      <div class="mt-auto pt-3 border-top">
+        <button id="logout-btn" class="btn btn-outline-secondary w-100 fw-semibold">Log out</button>
       </div>
     </nav>
 
@@ -94,12 +119,33 @@
             </div>
 
             <div class="mb-3">
-              <label for="required-skills" class="form-label">Required skills <span class="text-muted-custom">(comma-separated, explicitly required)</span></label>
+              <label for="required-skills" class="form-label">Required skills <span class="text-muted-custom">(comma-separated, technical skills)</span></label>
               <input type="text" id="required-skills" class="form-control" placeholder="Python, FastAPI, PostgreSQL" />
             </div>
             <div class="mb-3">
               <label for="preferred-skills" class="form-label">Preferred skills <span class="text-muted-custom">(comma-separated, optional)</span></label>
               <input type="text" id="preferred-skills" class="form-control" placeholder="Docker, AWS" />
+            </div>
+
+            <!-- Extended Experience & Skill Requirements Section -->
+            <div class="border-top pt-4 mt-4 mb-4">
+              <h5 class="fw-bold text-dark mb-2">📋 Extended Experience &amp; Skill Requirements</h5>
+              <p class="text-secondary small mb-3">Provide specific role, domain, and company experience expectations to present clearly to candidates.</p>
+
+              <div class="mb-3">
+                <label for="non-technical-skills" class="form-label">Non-Technical &amp; Soft Skills <span class="text-muted-custom">(comma-separated)</span></label>
+                <input type="text" id="non-technical-skills" class="form-control" placeholder="Problem Solving, Communication, Team Leadership, Agile/Scrum" />
+              </div>
+
+              <div class="mb-3">
+                <label for="relevant-work-experience" class="form-label">Relevant Work Experience &amp; Domain Details</label>
+                <textarea id="relevant-work-experience" class="form-control" rows="2" placeholder="Describe the specific type of role experience, industry domains, or projects required..."></textarea>
+              </div>
+
+              <div class="mb-3">
+                <label for="company-experience-requirements" class="form-label">Company &amp; Organization Experience Requirements</label>
+                <input type="text" id="company-experience-requirements" class="form-control" placeholder="e.g. High-growth product startups, Tier-1 Tech Enterprises, FAANG, or FinTech scale-ups" />
+              </div>
             </div>
 
             <!-- Candidate Screening Settings Section -->
@@ -223,6 +269,21 @@
               <span id="post-job-spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
             </button>
           </form>
+        </div>
+
+        <!-- Recent Posted Jobs & Quick Delete Section -->
+        <div class="card p-4 mt-4 shadow-sm border-0" style="border-radius: 12px; background: #ffffff;">
+          <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <div>
+              <h5 class="fw-bold text-dark mb-1">💼 Your Posted Jobs Requisitions</h5>
+              <p class="text-secondary small mb-0">Manage or delete extra job posts directly from here.</p>
+            </div>
+            <button id="refresh-posted-jobs-btn" class="btn btn-sm btn-outline-secondary">🔄 Refresh List</button>
+          </div>
+          <div id="posted-jobs-alert" class="alert d-none py-2" role="alert"></div>
+          <div id="posted-jobs-container">
+            <div class="text-muted text-center py-3">Loading your posted jobs…</div>
+          </div>
         </div>
       </div>
     </main>

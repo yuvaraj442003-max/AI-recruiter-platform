@@ -342,11 +342,28 @@
     });
   }
 
+  async function getRecruiterMyJobs() {
+    try {
+      const BASE_URL = window.API_BASE_URL || "http://localhost:8000/api/v1";
+      const token = localStorage.getItem("ar_access_token") || "";
+      let res = await fetch(`${BASE_URL}/jobs/recruiter/my-jobs`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) {
+        return (await jobsAPI.list()).data || [];
+      }
+      const data = await res.json();
+      return data.data || [];
+    } catch (e) {
+      const fallback = await jobsAPI.list();
+      return fallback.data || [];
+    }
+  }
+
   async function populateJobFilterDropdown() {
     if (!jobFilterSelect) return;
     try {
-      const res = await jobsAPI.list();
-      const jobs = res.data || [];
+      const jobs = await getRecruiterMyJobs();
       jobFilterSelect.innerHTML = `<option value="all">All Posted Jobs (${jobs.length})</option>` +
         jobs.map(j => `<option value="${j.id}">${j.title} (${j.status})</option>`).join("");
     } catch (e) {
@@ -356,8 +373,7 @@
 
   async function renderScreeningStatsAndTopCandidates() {
     try {
-      const jobsRes = await jobsAPI.list();
-      const myJobs = jobsRes.data || [];
+      const myJobs = await getRecruiterMyJobs();
       if (!myJobs.length) {
         setStat("ats-stat-total", 0);
         setStat("ats-stat-eligible", 0);

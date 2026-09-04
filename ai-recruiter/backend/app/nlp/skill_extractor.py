@@ -46,21 +46,72 @@ def extract_phone(text: str) -> str | None:
     return None
 
 
+_INVALID_NAME_TERMS = {
+    "resume", "curriculum", "vitae", "cv", "summary", "profile", "contact",
+    "personal", "experience", "education", "skills", "projects", "page",
+    "nadu", "state", "india", "district", "street", "road", "nagar", "tamil",
+    "coimbatore", "chennai", "bangalore", "mumbai", "delhi", "hyderabad",
+}
+
 def extract_name(text: str, entities: dict[str, list[str]]) -> str | None:
-    # Prefer a PERSON entity found near the top of the document (resumes
-    # almost always open with the candidate's name).
-    head = text[:300]
-    for person in entities.get("PERSON", []):
-        if person in head:
-            return person
-    # Fallback: first non-empty line that looks like a plain name (no digits/@).
-    for line in text.splitlines():
-        line = line.strip()
-        if not line:
+    """Extract candidate name from resume header / first lines."""
+    lines = [l.strip() for l in text.splitlines() if l.strip()]
+    if not lines:
+        return None
+
+    gpe_terms = {g.lower() for g in entities.get("GPE", [])}
+    for gpe in list(gpe_terms):
+        for part in gpe.split():
+            gpe_terms.add(part)
+
+    # 1. Primary Strategy: Check the top 3 non-empty lines for the candidate full name.
+    # Resumes standardly start with candidate's full name on line 1.
+    for line in lines[:3]:
+        clean_line = re.sub(r"^[^\w]+", "", line).strip()
+        words = clean_line.split()
+        words_lower = [w.lower() for w in words]
+
+        # Ignore lines with phone numbers, emails, URLs, or special dividers
+        if re.search(r"[\d@|/:\\]|http|www\.|github|linkedin", clean_line, re.IGNORECASE):
             continue
-        if len(line.split()) <= 4 and not re.search(r"[\d@]", line):
-            return line
-        break
+
+        # Ignore section headings or lines containing known location words or invalid header terms
+        if SECTION_HEADING_RE.match(clean_line):
+            continue
+
+        if any(w in _INVALID_NAME_TERMS or w in _KNOWN_DISTRICTS or w in gpe_terms for w in words_lower):
+            continue
+
+        if 1 <= len(words) <= 5:
+            return clean_line
+
+    # 2. Secondary Strategy: Check PERSON entities extracted by spaCy, filtering out locations & invalid words
+    head = text[:400]
+    for person in entities.get("PERSON", []):
+        person_clean = person.strip()
+        p_words = [w.lower() for w in person_clean.split()]
+        if not p_words or len(p_words) > 5:
+            continue
+        if (
+            person_clean in head
+            and not any(w in _KNOWN_DISTRICTS or w in _INVALID_NAME_TERMS or w in gpe_terms for w in p_words)
+            and not re.search(r"[\d@|/:\\]|http|www\.|github|linkedin", person_clean, re.IGNORECASE)
+        ):
+            return person_clean
+
+    # 3. Fallback Strategy: First line under 5 words without digits/email
+    for line in lines[:5]:
+        clean_line = re.sub(r"^[^\w]+", "", line).strip()
+        words = clean_line.split()
+        words_lower = [w.lower() for w in words]
+        if (
+            1 <= len(words) <= 5
+            and not re.search(r"[\d@]", clean_line)
+            and not SECTION_HEADING_RE.match(clean_line)
+            and not any(w in _INVALID_NAME_TERMS or w in _KNOWN_DISTRICTS for w in words_lower)
+        ):
+            return clean_line
+
     return None
 
 
@@ -74,6 +125,7 @@ _KNOWN_DISTRICTS = {
     "tiruchirappalli", "erode", "tiruppur", "thanjavur", "vellore", "thoothukudi",
     "tiruvarur", "kanyakumari", "dindigul", "karur", "krishnagiri", "dharmapuri",
     "theni", "ramanathapuram", "tirunelveli", "kanchipuram", "tiruvallur", "cuddalore",
+    "tamil nadu", "karnataka", "kerala", "andhra pradesh", "telangana", "maharashtra",
     "bangalore", "bengaluru", "hyderabad", "secunderabad", "pune", "mumbai", "delhi", "noida", "gurgaon", "gurugram",
     "kolkata", "ahmedabad", "jaipur", "kochi", "trivandrum", "thiruvananthapuram", "chandigarh", "indore", "bhopal",
     "nagpur", "visakhapatnam", "vizag", "mysore", "mysuru", "san francisco", "sf", "seattle", "new york", "nyc",
@@ -150,10 +202,44 @@ _YEAR_RANGE_RE = re.compile(
     re.IGNORECASE,
 )
 
+_WORK_HEADING_RE = re.compile(
+    r"^\s*(internship experience|work experience|experience|employment history|work history|professional experience|employment)\s*:?\s*$",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+_FRESHER_STUDENT_RE = re.compile(
+    r"\b(fresher|student|final[- ]year|entry[- ]level|graduating in 20\d\d)\b",
+    re.IGNORECASE,
+)
+
+
+def _extract_work_section_text(text: str) -> str:
+    """Isolates lines under work / internship experience headings, stopping at education or projects."""
+    heading_match = _WORK_HEADING_RE.search(text)
+    if not heading_match:
+        return ""
+    after_heading = text[heading_match.end():]
+    work_lines: list[str] = []
+    for line in after_heading.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if _NEXT_SECTION_RE.match(stripped) and not _WORK_HEADING_RE.match(stripped):
+            break
+        work_lines.append(stripped)
+    return "\n".join(work_lines)
+
 
 def extract_experience_years(text: str) -> float | None:
-    """First tries explicit 'X years of experience' phrases.
-    Falls back to calculating span from work history year ranges or date pairs."""
+    """
+    Extracts professional work experience in years.
+    Prioritizes explicit 'X years of experience' phrases and work/internship sections.
+    Excludes education degree year ranges (e.g. SSLC, HSC, B.Sc degree years).
+    """
+    if not text:
+        return 0.0
+
+    # 1. First check explicit 'X years of experience' phrases
     matches = EXPERIENCE_RE.findall(text)
     if matches:
         return max(float(m) for m in matches)
@@ -161,50 +247,74 @@ def extract_experience_years(text: str) -> float | None:
     from datetime import date
     today_year = date.today().year
 
-    # Check for year ranges like "2020 - 2024" or "2019 - Present"
-    year_ranges = _YEAR_RANGE_RE.findall(text)
-    if year_ranges:
-        spans = []
-        for start_str, end_str in year_ranges:
-            try:
-                start_yr = int(start_str)
-                if end_str.lower() in ("present", "current", "now"):
-                    end_yr = today_year
-                else:
-                    end_yr = int(end_str)
-                if 1990 <= start_yr <= today_year and end_yr >= start_yr:
-                    spans.append(end_yr - start_yr)
-            except ValueError:
-                continue
-        if spans:
-            total_years = float(sum(spans))
-            if total_years > 0:
-                return round(total_years, 1)
+    work_text = _extract_work_section_text(text)
+    is_fresher_or_student = bool(_FRESHER_STUDENT_RE.search(text.lower()))
 
-    # Fallback: find the earliest month-year in the document and compute
-    # approximate years from then until today.
     month_map = {
         "jan": 1, "feb": 2, "mar": 3, "apr": 4, "may": 5, "jun": 6,
         "jul": 7, "aug": 8, "sep": 9, "oct": 10, "nov": 11, "dec": 12,
     }
-    dates_found: list[date] = []
-    for m in _WORK_DATE_RE.finditer(text):
-        parts = m.group(0).split()
-        try:
-            month = month_map[parts[0][:3].lower()]
-            year = int(parts[1])
-            if 1990 <= year <= date.today().year:
-                dates_found.append(date(year, month, 1))
-        except (IndexError, ValueError, KeyError):
-            continue
 
-    if not dates_found:
-        return None
-    earliest = min(dates_found)
-    today = date.today()
-    years = (today - earliest).days / 365.25
-    # Only return if it's a meaningful positive value (don't count future dates)
-    return round(max(0.0, years), 1) if years >= 0.25 else None
+    # 2. If student / fresher with internship experience: calculate internship months or return 0.0
+    if is_fresher_or_student or (work_text and "intern" in work_text.lower() and not re.search(r"\b(senior|lead|manager)\b", text, re.IGNORECASE)):
+        target_for_dates = work_text if work_text.strip() else text
+        dates_found: list[date] = []
+        for m in _WORK_DATE_RE.finditer(target_for_dates):
+            parts = m.group(0).split()
+            try:
+                month = month_map[parts[0][:3].lower()]
+                year = int(parts[1])
+                if 1990 <= year <= today_year:
+                    dates_found.append(date(year, month, 1))
+            except (IndexError, ValueError, KeyError):
+                continue
+
+        if len(dates_found) >= 2:
+            earliest = min(dates_found)
+            latest = max(dates_found)
+            days = (latest - earliest).days
+            years = round(days / 365.25, 1)
+            if years > 0.5 and is_fresher_or_student:
+                return 0.0
+            return max(0.0, years)
+        return 0.0
+
+    # 3. Check year ranges (e.g. "2020 - 2024") ONLY within the WORK / INTERNSHIP section
+    if work_text.strip():
+        year_ranges = _YEAR_RANGE_RE.findall(work_text)
+        if year_ranges:
+            spans = []
+            for start_str, end_str in year_ranges:
+                try:
+                    start_yr = int(start_str)
+                    end_yr = today_year if end_str.lower() in ("present", "current", "now") else int(end_str)
+                    if 1990 <= start_yr <= today_year and end_yr >= start_yr:
+                        spans.append(end_yr - start_yr)
+                except ValueError:
+                    continue
+            if spans:
+                total_years = float(sum(spans))
+                if total_years > 0:
+                    return round(total_years, 1)
+
+    # 4. Fallback for work section date scan
+    if work_text.strip():
+        dates_found = []
+        for m in _WORK_DATE_RE.finditer(work_text):
+            parts = m.group(0).split()
+            try:
+                month = month_map[parts[0][:3].lower()]
+                year = int(parts[1])
+                if 1990 <= year <= today_year:
+                    dates_found.append(date(year, month, 1))
+            except (IndexError, ValueError, KeyError):
+                continue
+        if dates_found:
+            earliest = min(dates_found)
+            years = (date.today() - earliest).days / 365.25
+            return round(max(0.0, years), 1) if years >= 0.25 else 0.0
+
+    return 0.0 if is_fresher_or_student else None
 
 
 def extract_education(text: str) -> str | None:
@@ -245,10 +355,22 @@ def extract_skills(text: str) -> list[str]:
     lower_text = f" {text.lower()} "
     found: set[str] = set()
 
+    _FRAMEWORK_JS_PATTERN = re.compile(
+        r"\b(react|node|vue|express|next|nest|nuxt|chart|three|vite|angular|ember|backbone|knockout)\s*[\./(-]?\s*js\b",
+        re.IGNORECASE,
+    )
+
     # 1. Alias & Knowledge Base Pattern Match
     for alias, pattern in _SKILL_PATTERNS:
         if pattern.search(lower_text):
-            found.add(ALIAS_INDEX[alias])
+            canonical = ALIAS_INDEX[alias]
+            # Prevent 'js' alias from falsely adding 'JavaScript' when 'js' only appears as part of a framework name (e.g. React JS, Node JS)
+            if canonical == "JavaScript" and alias.lower() == "js":
+                js_total = len(re.findall(r"\bjs\b", lower_text))
+                js_in_frameworks = len(_FRAMEWORK_JS_PATTERN.findall(lower_text))
+                if js_total <= js_in_frameworks:
+                    continue
+            found.add(canonical)
 
     # 2. Section Extraction (parsing lines under SKILLS / TECHNICAL SKILLS header)
     heading_match = _SKILLS_HEADING_RE.search(text)

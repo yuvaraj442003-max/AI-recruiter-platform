@@ -78,13 +78,8 @@ def _auto_migrate_db():
         ("candidate_profiles", "linkedin_url", "VARCHAR(255)"),
         ("candidate_profiles", "github_url", "VARCHAR(255)"),
         ("candidate_profiles", "other_links", "TEXT"),
-
-        # ATS Screening fields for jobs
-        ("jobs", "min_ats_score", "FLOAT DEFAULT 60.0"),
-        ("jobs", "min_job_match_score", "FLOAT DEFAULT 60.0"),
-        ("jobs", "min_experience", "FLOAT DEFAULT 0.0"),
-        ("jobs", "auto_screening", "BOOLEAN DEFAULT TRUE"),
-        ("jobs", "auto_shortlist", "BOOLEAN DEFAULT TRUE"),
+        ("candidate_profiles", "created_by_recruiter_id", "VARCHAR(36)"),
+        ("candidate_profiles", "source", "VARCHAR(100) DEFAULT 'direct_candidate'"),
 
         # ATS Screening fields for applications
         ("applications", "ats_score", "FLOAT"),
@@ -107,6 +102,8 @@ def _auto_migrate_db():
         ("applications", "screening_version", "VARCHAR(50) DEFAULT 'v1.0'"),
         ("applications", "recruiter_override", "BOOLEAN DEFAULT FALSE"),
         ("applications", "override_reason", "TEXT"),
+        ("applications", "uploaded_by_recruiter_id", "VARCHAR(36)"),
+        ("applications", "source", "VARCHAR(100) DEFAULT 'direct_candidate'"),
     ]
 
     with engine.begin() as conn:
@@ -125,7 +122,6 @@ def _auto_migrate_db():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
 
-
     # Startup: ensure database schema is up-to-date and seed skills.
     try:
         _auto_migrate_db()
@@ -135,8 +131,12 @@ async def lifespan(app: FastAPI):
     db = SessionLocal()
     try:
         seed_skills(db)
+        if db.query(user.User).count() == 0:
+            logging.info("Empty database detected on startup. Auto-seeding initial demo accounts and data...")
+            from scripts.seed_demo_data import seed_demo
+            seed_demo()
     except Exception:
-        logging.getLogger("ai_recruiter").exception("Skill seeding failed at startup")
+        logging.getLogger("ai_recruiter").exception("Startup initialization failed")
     finally:
         db.close()
 
@@ -154,8 +154,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_origin_regex=".*",
+    allow_origin_regex=r".*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

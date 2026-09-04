@@ -50,6 +50,11 @@ class Job(Base, TimestampMixin):
         Enum(JobStatus, name="job_status"), default=JobStatus.published, nullable=False
     )
 
+    # Experience, Skills & Company Requirements Breakdown
+    relevant_work_experience: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    non_technical_skills: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    company_experience_requirements: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
     # Fraud Detection & Risk Scoring
     fraud_risk_score: Mapped[Optional[float]] = mapped_column(Float, default=0.0, nullable=True)
     fraud_risk_level: Mapped[Optional[str]] = mapped_column(String(20), default="LOW", nullable=True) # LOW, MEDIUM, HIGH
@@ -75,6 +80,7 @@ class Job(Base, TimestampMixin):
     auto_shortlist: Mapped[Optional[bool]] = mapped_column(Boolean, default=True, nullable=True)
 
     job_skills: Mapped[list["JobSkill"]] = relationship(back_populates="job", cascade="all, delete-orphan")
+    applications: Mapped[list["Application"]] = relationship(back_populates="job", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"<Job {self.title}>"

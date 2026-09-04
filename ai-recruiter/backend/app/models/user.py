@@ -7,7 +7,8 @@ import enum
 import uuid
 from typing import Optional
 
-from sqlalchemy import Boolean, Enum, String, Text
+from datetime import datetime
+from sqlalchemy import Boolean, DateTime, Enum, String, Text
 from app.core.db_types import GUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -34,6 +35,12 @@ class User(Base, TimestampMixin):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     verification_status: Mapped[str] = mapped_column(String(50), default="approved", nullable=False) # approved, pending_admin_review, rejected
     verification_reasons: Mapped[Optional[str]] = mapped_column(Text, nullable=True) # JSON list or string
+
+    is_email_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    verification_token: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    verification_token_expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    reset_token: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    reset_token_expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
     def __repr__(self) -> str:
         return f"<User {self.email} ({self.role}) status={self.verification_status}>"

@@ -73,6 +73,9 @@ class ApplicationResponse(BaseModel):
     recruiter_override: Optional[bool] = False
     override_reason: Optional[str] = None
 
+    source: Optional[str] = "direct_candidate"
+    uploaded_by_recruiter_id: Optional[str] = None
+
     # Denormalized display fields
     candidate_name: Optional[str] = None
     candidate_email: Optional[str] = None

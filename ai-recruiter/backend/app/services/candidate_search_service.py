@@ -69,10 +69,12 @@ def search_and_rank_candidates(
 
     # Retrieve selected job if job_id provided
     target_job = None
+    explicit_job_id = None
     if job_id:
         try:
             j_uuid = uuid.UUID(job_id)
             target_job = db.query(Job).options(joinedload(Job.job_skills)).filter(Job.id == j_uuid).first()
+            explicit_job_id = j_uuid
         except ValueError:
             target_job = None
 
@@ -80,11 +82,23 @@ def search_and_rank_candidates(
     if not target_job and min_ats is not None:
         target_job = db.query(Job).order_by(Job.created_at.desc()).first()
 
-    # 2. Query Candidate Profiles
+    # 2. Query Candidate Profiles (Only candidates who have actually applied for jobs)
     query_db = db.query(CandidateProfile).options(
         joinedload(CandidateProfile.candidate_skills).joinedload(CandidateSkill.skill),
         joinedload(CandidateProfile.user),
     )
+
+    if explicit_job_id:
+        # Target job specified: return ONLY candidates who applied for this specific job
+        applied_cand_ids = db.query(Application.candidate_id).filter(Application.job_id == explicit_job_id)
+        query_db = query_db.filter(CandidateProfile.id.in_(applied_cand_ids))
+    elif job_id:
+        # job_id was provided but invalid format/not found -> return no candidates
+        applied_cand_ids = db.query(Application.candidate_id).filter(Application.job_id == uuid.uuid4())
+        query_db = query_db.filter(CandidateProfile.id.in_(applied_cand_ids))
+    else:
+        # All Jobs: return all candidates saved in the system database
+        pass
 
     all_candidates = query_db.all()
 

@@ -68,10 +68,30 @@
     const confirmPassword = document.getElementById("confirm-password").value;
     const role = document.querySelector('input[name="role"]:checked')?.value || "candidate";
 
+    const PUBLIC_EMAIL_DOMAINS = new Set([
+      "gmail.com", "yahoo.com", "ymail.com", "hotmail.com", "outlook.com",
+      "live.com", "icloud.com", "aol.com", "protonmail.com", "zoho.com",
+      "mail.com", "gmx.com", "rediffmail.com"
+    ]);
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,10}$/;
     if (!name || !email || !password) {
       showError("Please fill out all required basic fields.");
       return;
     }
+    if (!emailRegex.test(email) || email.includes("..") || email.endsWith(".test") || email.endsWith(".localhost")) {
+      showError(`Invalid email address format: '${email}'. Please enter a valid email address (e.g. user@example.com).`);
+      return;
+    }
+
+    if (role === "recruiter") {
+      const domain = email.split("@")[1]?.toLowerCase();
+      if (domain && PUBLIC_EMAIL_DOMAINS.has(domain)) {
+        showError(`Recruiters must use a company email address (e.g. name@companyname.com). Public email domains like @${domain} are not permitted for Recruiter accounts.`);
+        return;
+      }
+    }
+
     if (password !== confirmPassword) {
       showError("Passwords do not match.");
       return;
@@ -104,12 +124,22 @@
 
     setLoading(true);
     try {
+      // 1. Pre-check email duplication
+      const checkRes = await authAPI.checkEmail(email).catch(() => null);
+      if (checkRes && checkRes.data && checkRes.data.exists) {
+        showError("This email address is already registered.");
+        setLoading(false);
+        return;
+      }
+
       const res = await authAPI.register(payload);
       Session.save(res.data);
-      window.location.href = dashboardUrlForRole(role);
+
+      alertBox.className = "alert alert-success py-3 mb-4";
+      alertBox.textContent = "Registration successful. A verification email has been sent to your email address.";
+      alertBox.classList.remove("d-none");
     } catch (err) {
-      showError(err.message);
-    } finally {
+      showError(err.message || "Registration failed. Please try again.");
       setLoading(false);
     }
   });

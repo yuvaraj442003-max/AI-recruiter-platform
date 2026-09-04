@@ -41,13 +41,26 @@
             <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required autocomplete="email" />
           </div>
           <div class="mb-4">
-            <label for="password" class="form-label fw-semibold text-dark small">Password</label>
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <label for="password" class="form-label fw-semibold text-dark small mb-0">Password</label>
+              <a href="forgot-password.html" class="small text-decoration-none text-primary">Forgot password?</a>
+            </div>
             <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required autocomplete="current-password" />
           </div>
-          <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow-sm" id="login-submit">
+          <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow-sm mb-3" id="login-submit">
             <span id="login-submit-text">Sign In &rarr;</span>
             <span id="login-spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
           </button>
+
+          <!-- Quick Demo Login Helpers -->
+          <div class="d-flex gap-2 mb-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm flex-grow-1" id="demo-candidate-btn">
+              ⚡ Demo Candidate
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-sm flex-grow-1" id="demo-recruiter-btn">
+              ⚡ Demo Recruiter
+            </button>
+          </div>
         </form>
 
         <div class="d-flex align-items-center my-4">

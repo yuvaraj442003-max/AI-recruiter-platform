@@ -21,6 +21,11 @@ class JobCreate(BaseModel):
     required_skills: Optional[list[str]] = None
     preferred_skills: Optional[list[str]] = None
 
+    # Extended Requirements Breakdown
+    relevant_work_experience: Optional[str] = None
+    non_technical_skills: Optional[list[str]] = None
+    company_experience_requirements: Optional[str] = None
+
     # Candidate Screening Settings
     min_ats_score: Optional[float] = 60.0
     min_job_match_score: Optional[float] = 60.0
@@ -51,6 +56,11 @@ class JobUpdate(BaseModel):
     status: Optional[JobStatus] = None
     required_skills: Optional[list[str]] = None
     preferred_skills: Optional[list[str]] = None
+
+    # Extended Requirements Breakdown
+    relevant_work_experience: Optional[str] = None
+    non_technical_skills: Optional[list[str]] = None
+    company_experience_requirements: Optional[str] = None
 
     # Candidate Screening Settings
     min_ats_score: Optional[float] = None
@@ -85,6 +95,11 @@ class JobResponse(BaseModel):
     required_skills: list[str] = []
     preferred_skills: list[str] = []
 
+    # Extended Requirements Breakdown
+    relevant_work_experience: Optional[str] = None
+    non_technical_skills: list[str] = []
+    company_experience_requirements: Optional[str] = None
+
     # Screening Settings
     min_ats_score: Optional[float] = 60.0
     min_job_match_score: Optional[float] = 60.0
@@ -111,11 +126,28 @@ class JobResponse(BaseModel):
 
     created_at: datetime
     updated_at: datetime
+    applications_count: int = 0
 
     model_config = ConfigDict(from_attributes=True)
 
     @classmethod
     def from_job(cls, job) -> "JobResponse":
+        raw_non_tech = getattr(job, "non_technical_skills", None)
+        non_tech_list = []
+        if isinstance(raw_non_tech, list):
+            non_tech_list = raw_non_tech
+        elif isinstance(raw_non_tech, str) and raw_non_tech.strip():
+            non_tech_list = [s.strip() for s in raw_non_tech.split(",") if s.strip()]
+
+        app_count = 0
+        if hasattr(job, "applications") and job.applications is not None:
+            try:
+                app_count = len(job.applications)
+            except Exception:
+                app_count = getattr(job, "applications_count", 0) or 0
+        else:
+            app_count = getattr(job, "applications_count", 0) or 0
+
         return cls(
             id=job.id,
             recruiter_id=job.recruiter_id,
@@ -128,6 +160,10 @@ class JobResponse(BaseModel):
             status=job.status,
             required_skills=sorted(js.skill.skill_name for js in job.job_skills if js.required),
             preferred_skills=sorted(js.skill.skill_name for js in job.job_skills if not js.required),
+            relevant_work_experience=getattr(job, "relevant_work_experience", None),
+            non_technical_skills=non_tech_list,
+            company_experience_requirements=getattr(job, "company_experience_requirements", None),
+            applications_count=app_count,
             min_ats_score=getattr(job, "min_ats_score", 60.0) or 60.0,
             min_job_match_score=getattr(job, "min_job_match_score", 60.0) or 60.0,
             min_experience=getattr(job, "min_experience", 0.0) or 0.0,

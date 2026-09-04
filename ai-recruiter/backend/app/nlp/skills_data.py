@@ -22,8 +22,7 @@ SKILLS_KB: dict[str, dict] = {
     "PHP": {"category": "Programming", "aliases": []},
     "SQL": {"category": "Database", "aliases": ["structured query language"]},
 
-    "React": {"category": "Frontend", "aliases": ["react", "react.js", "react-js", "reactjs", "react js", "react 18", "react 17"]},
-    "React.js": {"category": "Frontend", "aliases": ["react.js", "react-js", "reactjs", "react js", "react"]},
+    "React.js": {"category": "Frontend", "aliases": ["react", "react.js", "react-js", "reactjs", "react js", "react 18", "react 17", "react framework"]},
     "Next.js": {"category": "Frontend", "aliases": ["next.js", "nextjs", "next js", "next"]},
     "Redux": {"category": "Frontend", "aliases": ["redux toolkit", "redux-toolkit", "react-redux"]},
     "React Native": {"category": "Mobile", "aliases": ["react-native", "reactnative"]},
@@ -44,9 +43,9 @@ SKILLS_KB: dict[str, dict] = {
     "FastAPI": {"category": "Backend", "aliases": ["fast api"]},
     "Flask": {"category": "Backend", "aliases": []},
     "Node.js": {"category": "Backend", "aliases": ["nodejs", "node js", "node"]},
-    "Express.js": {"category": "Backend", "aliases": ["express", "expressjs", "express js"]},
+    "Express.js": {"category": "Backend", "aliases": ["expressjs", "express js"]},
     "Spring Boot": {"category": "Backend", "aliases": ["springboot", "spring"]},
-    "REST API": {"category": "Backend", "aliases": ["rest apis", "restful api", "restful apis", "rest", "api integration", "api integrations"]},
+    "REST API": {"category": "Backend", "aliases": ["rest apis", "restful api", "restful apis", "api integration", "api integrations"]},
     "GraphQL": {"category": "Backend", "aliases": []},
     "Firebase": {"category": "Backend", "aliases": ["firebase realtime", "cloud firestore", "firestore"]},
 
@@ -172,7 +171,7 @@ SKILLS_KB: dict[str, dict] = {
 
     # Accounting & Finance
     "Financial Accounting": {"category": "Finance", "aliases": ["accounting", "general ledger"]},
-    "Auditing": {"category": "Finance", "aliases": ["internal audit", "financial audit", "audit"]},
+    "Auditing": {"category": "Finance", "aliases": ["internal audit", "financial audit"]},
     "Taxation": {"category": "Finance", "aliases": ["tax compliance", "income tax", "gst", "vat"]},
     "Bookkeeping": {"category": "Finance", "aliases": ["journal entries", "bank reconciliation"]},
     "Financial Analysis": {"category": "Finance", "aliases": ["financial modeling", "fp&a", "variance analysis"]},
@@ -220,13 +219,23 @@ SKILLS_KB: dict[str, dict] = {
 }
 
 
+# Generic English words that should never be standalone skill aliases
+GENERIC_STOP_WORDS = {
+    "go", "rest", "next", "express", "lead", "audit", "management",
+    "system", "systems", "service", "services", "team", "work", "developer",
+    "engineer", "project", "data", "web", "cloud", "code", "app", "application"
+}
+
+
 def build_alias_index() -> dict[str, str]:
     """Flatten SKILLS_KB into {lowercased alias/name -> canonical name}."""
     index: dict[str, str] = {}
     for canonical, meta in SKILLS_KB.items():
-        index[canonical.lower()] = canonical
+        if canonical.lower() not in GENERIC_STOP_WORDS:
+            index[canonical.lower()] = canonical
         for alias in meta.get("aliases", []):
-            index[alias.lower()] = canonical
+            if alias.lower() not in GENERIC_STOP_WORDS:
+                index[alias.lower()] = canonical
     return index
 
 

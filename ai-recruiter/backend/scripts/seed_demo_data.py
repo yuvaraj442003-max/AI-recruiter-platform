@@ -65,6 +65,7 @@ def seed_demo():
                     name=rdata["name"],
                     role=rdata["role"],
                     is_active=True,
+                    is_email_verified=True,
                 )
                 db.add(u)
                 db.commit()
@@ -151,6 +152,7 @@ def seed_demo():
                     name=cdata["name"],
                     role=UserRole.candidate,
                     is_active=True,
+                    is_email_verified=True,
                 )
                 db.add(u)
                 db.commit()
@@ -195,7 +197,10 @@ def seed_demo():
                 "desc": "We are seeking a talented Senior Software Engineer to build robust FastAPI microservices and modern React user interfaces. Experience with PostgreSQL and Docker required.",
                 "location": "San Francisco, CA (Remote)",
                 "skills": ["Python", "FastAPI", "React", "PostgreSQL"],
-                "exp_min": 3.0,
+                "exp_min": 3.5,
+                "relevant_exp": "3+ years of hands-on experience building REST APIs, microservices architectures, and full-stack web applications in Cloud or SaaS software environments.",
+                "non_tech_skills": "Problem Solving, System Architecture, Code Review, Team Leadership, Agile/Scrum",
+                "company_exp": "Experience working in High-Growth Tech Startups, Tier-1 Product Companies, or Scaled Engineering Enterprises.",
             },
             {
                 "title": "Data Scientist",
@@ -203,7 +208,10 @@ def seed_demo():
                 "desc": "Join our AI research team to develop state-of-the-art NLP and machine learning models for predictive candidate matching.",
                 "location": "New York, NY (Hybrid)",
                 "skills": ["Python", "PyTorch", "TensorFlow", "Scikit-Learn"],
-                "exp_min": 2.0,
+                "exp_min": 2.5,
+                "relevant_exp": "2+ years of experience training predictive machine learning models, NLP transformers, and feature engineering for production data pipelines.",
+                "non_tech_skills": "Statistical Analysis, Critical Thinking, AI Ethics, Cross-functional Collaboration",
+                "company_exp": "Experience in AI Research Labs, FinTech Analytics, or Data-driven SaaS organizations.",
             },
             {
                 "title": "DevOps Engineer",
@@ -212,6 +220,9 @@ def seed_demo():
                 "location": "Austin, TX (Remote)",
                 "skills": ["Docker", "Kubernetes", "AWS", "Terraform"],
                 "exp_min": 4.0,
+                "relevant_exp": "4+ years maintaining high-availability AWS cloud infrastructure, Docker containers, Kubernetes orchestrations, and GitOps CI/CD pipelines.",
+                "non_tech_skills": "Incident Management, Infrastructure Reliability, Security Compliance, Technical Documentation",
+                "company_exp": "Experience in Enterprise Cloud Providers, Managed DevOps Providers, or FinTech scale-ups.",
             },
             {
                 "title": "UI/UX Designer",
@@ -220,6 +231,9 @@ def seed_demo():
                 "location": "Remote",
                 "skills": ["Figma", "UI/UX", "User Research", "Prototyping"],
                 "exp_min": 2.0,
+                "relevant_exp": "2+ years designing SaaS web products, complex user workflows, design systems, and conducting user interviews.",
+                "non_tech_skills": "User Empathy, Visual Storytelling, Design Thinking, Stakeholder Communication",
+                "company_exp": "Experience in B2B SaaS Product Design, Digital Agencies, or Consumer Web Startups.",
             },
             {
                 "title": "HR Recruiter",
@@ -228,6 +242,9 @@ def seed_demo():
                 "location": "San Francisco, CA",
                 "skills": ["Technical Recruiting", "Sourcing", "Interviews"],
                 "exp_min": 3.0,
+                "relevant_exp": "3+ years of technical recruiting experience sourcing software engineers, data scientists, and cloud architects.",
+                "non_tech_skills": "Candidate Negotiation, Active Listening, Talent Pipeline Management, Employer Branding",
+                "company_exp": "Experience in Tech Recruitment Agencies, In-house Talent Acquisition for Venture-backed Tech companies.",
             }
         ]
 
@@ -242,10 +259,21 @@ def seed_demo():
                     location=jdata["location"],
                     employment_type="full_time",
                     experience_required=jdata["exp_min"],
+                    relevant_work_experience=jdata["relevant_exp"],
+                    non_technical_skills=jdata["non_tech_skills"],
+                    company_experience_requirements=jdata["company_exp"],
                     company_name=jdata["recruiter"].name + "'s Team",
                     status="published",
                 )
                 db.add(j)
+                db.commit()
+                db.refresh(j)
+                print(f"  [+] Created Job: {j.title}")
+            else:
+                j.experience_required = jdata["exp_min"]
+                j.relevant_work_experience = jdata["relevant_exp"]
+                j.non_technical_skills = jdata["non_tech_skills"]
+                j.company_experience_requirements = jdata["company_exp"]
                 db.commit()
                 db.refresh(j)
                 print(f"  [+] Created Job: {j.title}")
@@ -257,7 +285,9 @@ def seed_demo():
                         db.add(sk_row)
                         db.commit()
                         db.refresh(sk_row)
-                    db.add(JobSkill(job_id=j.id, skill_id=sk_row.id, required=True))
+                    js_row = db.query(JobSkill).filter(JobSkill.job_id == j.id, JobSkill.skill_id == sk_row.id).first()
+                    if not js_row:
+                        db.add(JobSkill(job_id=j.id, skill_id=sk_row.id, required=True))
                 db.commit()
 
             jobs_list.append(j)

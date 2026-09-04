@@ -54,6 +54,8 @@
           statusToggleBtn = `<button class="btn btn-sm btn-outline-success resume-job-btn me-1 fw-medium" data-job-id="${job.id}">▶️ Resume</button>`;
         }
 
+        const appCount = job.applications_count != null ? job.applications_count : (job.applicant_count || 0);
+
         return `
           <tr>
             <td class="ps-4">
@@ -65,8 +67,13 @@
             </td>
             <td>${statusBadge(job.status)}</td>
             <td class="text-secondary small fw-medium">${new Date(job.created_at).toLocaleDateString()}</td>
+            <td>
+              <span class="badge bg-primary-subtle text-primary border border-primary border-opacity-25 px-3 py-1 rounded-pill fw-bold fs-6">
+                👥 ${appCount} Applicant${appCount !== 1 ? 's' : ''}
+              </span>
+            </td>
             <td class="text-end pe-4">
-              <a href="job-applicants.html?job_id=${job.id}" class="btn btn-sm btn-primary fw-semibold me-1 px-3">
+              <a href="job-applicants.html?job_id=${job.id}" class="btn btn-sm btn-primary fw-semibold me-1 px-3 shadow-sm">
                 👥 View Applicants
               </a>
               ${statusToggleBtn}
@@ -87,6 +94,7 @@
                 <th class="py-3">Location</th>
                 <th class="py-3">Status</th>
                 <th class="py-3">Date Posted</th>
+                <th class="py-3">Applicants</th>
                 <th class="text-end pe-4 py-3">Actions</th>
               </tr>
             </thead>

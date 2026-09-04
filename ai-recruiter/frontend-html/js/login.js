@@ -59,6 +59,20 @@
       return;
     }
 
+    const PUBLIC_EMAIL_DOMAINS = new Set([
+      "gmail.com", "yahoo.com", "ymail.com", "hotmail.com", "outlook.com",
+      "live.com", "icloud.com", "aol.com", "protonmail.com", "zoho.com",
+      "mail.com", "gmx.com", "rediffmail.com"
+    ]);
+
+    if (expectedRole === "recruiter") {
+      const domain = email.split("@")[1]?.toLowerCase();
+      if (domain && PUBLIC_EMAIL_DOMAINS.has(domain)) {
+        showError(`Access Denied: Recruiters must use a company email address (e.g. name@companyname.com). Public email domains like @${domain} are not permitted for Recruiter accounts.`);
+        return;
+      }
+    }
+
     setLoading(true);
     try {
       const res = await authAPI.login({ email, password, expected_role: expectedRole });
@@ -66,11 +80,53 @@
       const role = res.data.user.role;
       window.location.href = dashboardUrlForRole(role);
     } catch (err) {
-      showError(err.message);
+      if (err.errorCode === "EMAIL_NOT_VERIFIED" || (err.message && err.message.toLowerCase().includes("verify your email"))) {
+        alertBox.className = "alert alert-warning py-3 mb-4";
+        alertBox.innerHTML = `
+          <div><strong>Email Not Verified:</strong> Please check your inbox for the verification link.</div>
+          <button type="button" class="btn btn-sm btn-outline-dark mt-2 fw-semibold" id="resend-unverified-btn">
+            📩 Resend Verification Email
+          </button>
+        `;
+        alertBox.classList.remove("d-none");
+        document.getElementById("resend-unverified-btn")?.addEventListener("click", async () => {
+          try {
+            const resendRes = await authAPI.resendVerification(email);
+            alert(resendRes.message || "Verification link sent!");
+          } catch (resendErr) {
+            alert(resendErr.message || "Failed to resend verification email.");
+          }
+        });
+      } else {
+        showError(err.message);
+      }
     } finally {
       setLoading(false);
     }
   });
+
+  // Quick Demo Login Buttons
+  const demoCandBtn = document.getElementById("demo-candidate-btn");
+  if (demoCandBtn) {
+    demoCandBtn.addEventListener("click", () => {
+      document.getElementById("email").value = "alice@example.com";
+      document.getElementById("password").value = "Password123!";
+      const cRadio = document.getElementById("login-role-candidate");
+      if (cRadio) cRadio.checked = true;
+      form.dispatchEvent(new Event("submit"));
+    });
+  }
+
+  const demoRecBtn = document.getElementById("demo-recruiter-btn");
+  if (demoRecBtn) {
+    demoRecBtn.addEventListener("click", () => {
+      document.getElementById("email").value = "recruiter1@techcorp.com";
+      document.getElementById("password").value = "Password123!";
+      const rRadio = document.getElementById("login-role-recruiter");
+      if (rRadio) rRadio.checked = true;
+      form.dispatchEvent(new Event("submit"));
+    });
+  }
 
 
 
@@ -78,8 +134,9 @@
   async function processGoogleAuth(credential) {
     hideError();
     setLoading(true);
+    const expectedRole = document.querySelector('input[name="login-role"]:checked')?.value || "candidate";
     try {
-      const res = await authAPI.google(credential, "candidate");
+      const res = await authAPI.google(credential, expectedRole);
       Session.save(res.data);
       const role = res.data.user.role;
       window.location.href = dashboardUrlForRole(role);

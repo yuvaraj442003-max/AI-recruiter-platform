@@ -37,6 +37,12 @@ class UserRegister(BaseModel):
     company_description: Optional[str] = None
     company_logo: Optional[str] = None
 
+    @field_validator("email", mode="before")
+    @classmethod
+    def sanitize_and_validate_email(cls, v: str) -> str:
+        from app.utils.email_validation import validate_strict_email
+        return validate_strict_email(v)
+
     @field_validator("role")
     @classmethod
     def restrict_public_registration_role(cls, value: UserRole) -> UserRole:
@@ -73,6 +79,7 @@ class UserResponse(BaseModel):
     email: EmailStr
     role: UserRole
     verification_status: Optional[str] = "approved"
+    is_email_verified: Optional[bool] = False
     is_profile_complete: Optional[bool] = True
     created_at: datetime
 
@@ -102,4 +109,35 @@ class GoogleLoginRequest(BaseModel):
         if value not in PUBLIC_REGISTRATION_ROLES:
             raise ValueError("role must be 'candidate' or 'recruiter'")
         return value
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def sanitize_email(cls, v: str) -> str:
+        if isinstance(v, str):
+            return v.strip().lower()
+        return v
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str = Field(min_length=1)
+    new_password: str = Field(min_length=8, max_length=128)
+
+
+class VerifyEmailRequest(BaseModel):
+    token: str = Field(min_length=1)
+
+
+class ResendVerificationRequest(BaseModel):
+    email: EmailStr
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def sanitize_email(cls, v: str) -> str:
+        if isinstance(v, str):
+            return v.strip().lower()
+        return v
 

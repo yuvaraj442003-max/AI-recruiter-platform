@@ -65,7 +65,7 @@ def extract_keywords_from_text(text: str, max_keywords: int = 20) -> List[str]:
     """Extracts non-stopword domain and technical keywords from job description."""
     if not text:
         return []
-    words = re.findall(r"[A-Za-z0-9+#.#-]{2,}", text)
+    words = re.findall(r"[A-Za-z0-9+#._\-]{2,}", text)
     cleaned = []
     seen = set()
     for w in words:

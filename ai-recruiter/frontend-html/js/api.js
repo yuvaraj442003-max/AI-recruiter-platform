@@ -155,9 +155,14 @@ const api = {
 let _authConfigPromise = null;
 
 const authAPI = {
+  checkEmail: (email) => api.get(`/auth/check-email?email=${encodeURIComponent(email)}`, { auth: false }),
   register: (payload) => api.post("/auth/register", payload, { auth: false }),
   login: (payload) => api.post("/auth/login", payload, { auth: false }),
   google: (credential, role = "candidate") => api.post("/auth/google", { credential, role }, { auth: false }),
+  forgotPassword: (email) => api.post("/auth/forgot-password", { email }, { auth: false }),
+  resetPassword: (payload) => api.post("/auth/reset-password", payload, { auth: false }),
+  verifyEmail: (token) => api.get(`/auth/verify-email?token=${encodeURIComponent(token)}`, { auth: false }),
+  resendVerification: (email) => api.post("/auth/resend-verification", { email }, { auth: false }),
   getConfig() {
     if (!_authConfigPromise) {
       _authConfigPromise = api.get("/auth/config", { auth: false });
@@ -480,15 +485,18 @@ function dashboardUrlForRole(role) {
         window.location.href = "complete-registration.html?onboarding=required";
       }
     } else if (reqRole === "candidate" && userRole !== "candidate") {
+      alert("Access Denied: This area is restricted to Candidate accounts. Redirecting to your Recruiter Portal...");
       window.location.href = dashboardUrlForRole(userRole);
     } else if (reqRole === "recruiter" && (userRole === "recruiter" || userRole === "company_admin")) {
       const currentFile = window.location.pathname.split("/").pop();
       if (user?.is_profile_complete === false && currentFile !== "recruiter-profile.html") {
         window.location.href = "recruiter-profile.html?onboarding=required";
       }
-    } else if (reqRole === "recruiter" && userRole !== "recruiter") {
+    } else if (reqRole === "recruiter" && userRole !== "recruiter" && userRole !== "company_admin") {
+      alert("Access Denied: This area is restricted to Recruiter accounts. Redirecting to your Candidate Portal...");
       window.location.href = dashboardUrlForRole(userRole);
-    } else if (reqRole === "admin" && userRole !== "admin") {
+    } else if (reqRole === "admin" && userRole !== "admin" && userRole !== "superadmin") {
+      alert("Access Denied: This area is restricted to Administrators only. Redirecting to your Portal...");
       window.location.href = dashboardUrlForRole(userRole);
     }
   }
@@ -548,6 +556,7 @@ const ThemeManager = {
 ThemeManager.init();
 
 // Attach all API objects to global window object
+window.API_BASE_URL = API_BASE_URL;
 window.Session = Session;
 window.ThemeManager = ThemeManager;
 window.api = typeof api !== "undefined" ? api : undefined;

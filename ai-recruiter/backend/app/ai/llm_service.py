@@ -28,7 +28,7 @@ from app.core.config import settings
 
 logger = logging.getLogger("ai_recruiter.llm")
 
-_REQUEST_TIMEOUT_SECONDS = 60.0
+_REQUEST_TIMEOUT_SECONDS = 10.0
 
 
 def get_active_provider() -> Optional[str]:
@@ -52,47 +52,60 @@ def is_configured() -> bool:
 
 def _call_gemini(system_prompt: str, user_prompt: str, max_tokens: int) -> Optional[str]:
     api_key = settings.GEMINI_API_KEY or settings.LLM_API_KEY
-    model = settings.GEMINI_MODEL or settings.LLM_MODEL or "gemini-2.0-flash"
+    primary_model = settings.GEMINI_MODEL or settings.LLM_MODEL or "gemini-1.5-flash"
 
-    if not api_key:
-        logger.warning("Gemini API key missing, falling back to template output.")
+    if not api_key or not api_key.startswith("AIza"):
+        logger.debug("No valid Gemini API key configured (key must start with 'AIza'), using template summary output.")
         return None
 
-    try:
-        url = f"{settings.GEMINI_BASE_URL}/models/{model}:generateContent?key={api_key}"
-        payload = {
-            "contents": [
-                {
-                    "parts": [{"text": user_prompt}]
+    # Model candidates to try if 404 or model not found occurs
+    models_to_try = [primary_model]
+    for fallback in ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-exp"]:
+        if fallback not in models_to_try:
+            models_to_try.append(fallback)
+
+    for model in models_to_try:
+        try:
+            url = f"{settings.GEMINI_BASE_URL}/models/{model}:generateContent?key={api_key}"
+            payload = {
+                "contents": [
+                    {
+                        "parts": [{"text": user_prompt}]
+                    }
+                ],
+                "generationConfig": {
+                    "maxOutputTokens": max_tokens,
+                    "temperature": 0.3,
                 }
-            ],
-            "generationConfig": {
-                "maxOutputTokens": max_tokens,
-                "temperature": 0.3,
             }
-        }
-        if system_prompt:
-            payload["systemInstruction"] = {
-                "parts": [{"text": system_prompt}]
-            }
+            if system_prompt:
+                payload["systemInstruction"] = {
+                    "parts": [{"text": system_prompt}]
+                }
 
-        response = httpx.post(
-            url,
-            headers={"Content-Type": "application/json"},
-            json=payload,
-            timeout=_REQUEST_TIMEOUT_SECONDS,
-        )
-        response.raise_for_status()
-        data = response.json()
-        candidates = data.get("candidates", [])
-        if candidates:
-            parts = candidates[0].get("content", {}).get("parts", [])
-            if parts:
-                return parts[0].get("text", "").strip()
-        return None
-    except Exception as exc:
-        logger.warning("Gemini AI call failed, falling back to template output: %s", exc)
-        return None
+            response = httpx.post(
+                url,
+                headers={"Content-Type": "application/json"},
+                json=payload,
+                timeout=_REQUEST_TIMEOUT_SECONDS,
+            )
+            if response.status_code == 404:
+                logger.info("Gemini model '%s' returned 404, trying fallback...", model)
+                continue
+
+            response.raise_for_status()
+            data = response.json()
+            candidates = data.get("candidates", [])
+            if candidates:
+                parts = candidates[0].get("content", {}).get("parts", [])
+                if parts:
+                    return parts[0].get("text", "").strip()
+            return None
+        except Exception as exc:
+            logger.warning("Gemini AI call failed on model '%s': %s", model, exc)
+            if model == models_to_try[-1]:
+                return None
+    return None
 
 
 def _call_openai(system_prompt: str, user_prompt: str, max_tokens: int) -> Optional[str]:

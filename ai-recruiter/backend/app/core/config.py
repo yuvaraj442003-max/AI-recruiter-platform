@@ -30,14 +30,22 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str = ""
     GOOGLE_CLIENT_SECRET: str = ""
 
+    # --- SMTP / Email Delivery ---
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    EMAILS_FROM_EMAIL: str = "noreply@airecruiter.com"
+    EMAILS_FROM_NAME: str = "AI Recruiter Team"
+
 
     # --- LLM ---
     LLM_API_KEY: str = ""
-    LLM_MODEL: str = "gemini-3-pro-preview"
+    LLM_MODEL: str = "gemini-1.5-flash"
     LLM_PROVIDER: str = "gemini"
 
     GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-3.6-flash"
+    GEMINI_MODEL: str = "gemini-1.5-flash"
     GEMINI_BASE_URL: str = "https://generativelanguage.googleapis.com/v1beta"
 
     OPENAI_API_KEY: str = ""

@@ -138,45 +138,47 @@ def process_resume(db: Session, user_id, file_bytes: bytes, original_filename: s
     profile.resume_original_filename = original_filename
 
     profile.phone = new_phone or profile.phone
-
-    # Location: Update location. If candidate has a previous location that is different, combine them (e.g. Bangalore / Salem)
-    if new_location:
-        if profile.location and not is_new and profile.location.lower() != new_location.lower() and new_location.lower() not in profile.location.lower():
-            profile.location = f"{new_location} / {profile.location}"
-        else:
-            profile.location = new_location
-    elif not profile.location:
-        profile.location = None
-
-    if new_address:
-        profile.address = new_address
-
+    profile.location = new_location or profile.location
+    profile.address = new_address or profile.address
     profile.summary = new_summary or profile.summary
-
-    # Accumulate experience years (take max of new vs existing)
-    old_years = profile.experience_years or 0.0
-    parsed_years = new_exp_years or 0.0
-    profile.experience_years = max(parsed_years, old_years) if (parsed_years or old_years) else None
-
+    profile.experience_years = new_exp_years if new_exp_years is not None else profile.experience_years
     profile.education = new_education or profile.education
+    profile.work_experience = new_work_exp or profile.work_experience
 
-    # Work Experience & Companies: MERGE new and existing work experience so company names from BOTH resumes are displayed
-    if new_work_exp:
-        if profile.work_experience and not is_new and new_work_exp.strip().lower() not in profile.work_experience.lower():
-            profile.work_experience = f"{new_work_exp.strip()}\n\n{profile.work_experience.strip()}"
-        else:
-            profile.work_experience = new_work_exp.strip()
+    extracted_name = fields.get("name")
+    if extracted_name and isinstance(extracted_name, str) and len(extracted_name.strip()) >= 2:
+        from app.models.user import User
+        user_obj = profile.user or db.get(User, user_id)
+        if user_obj and (not user_obj.name or user_obj.name.strip() in ("", "Test User", "Candidate", "User")):
+            user_obj.name = extracted_name.strip()
+            db.add(user_obj)
 
-    profile.ai_summary = None
+    extracted_certs = fields.get("certifications")
+    if extracted_certs:
+        profile.certifications = ", ".join(extracted_certs) if isinstance(extracted_certs, list) else str(extracted_certs)
+
+    extracted_skills = fields.get("skills") or []
+    if extracted_skills:
+        top_skills = extracted_skills[:4]
+        profile.headline = f"{top_skills[0]} Specialist | {', '.join(top_skills)}"
+        profile.current_role = f"{top_skills[0]} Specialist"
+
+    fields["resume_text"] = raw_text
+    from app.ai.resume_summarizer import generate_resume_summary
+    try:
+        ai_res = generate_resume_summary(fields)
+        profile.ai_summary = ai_res.get("summary")
+    except Exception:
+        profile.ai_summary = None
+
     profile.profile_score = _compute_profile_score(fields)
 
     db.flush()  # ensure profile.id is populated before linking skills
 
     seed_skills(db)
-    # Merge existing skills with new skills so skills from all uploaded resumes accumulate
-    existing_skills = [cs.skill.skill_name for cs in profile.candidate_skills] if (profile.candidate_skills and not is_new) else []
-    merged_skills = sorted(list(set(existing_skills + (fields.get("skills") or []))))
-    _sync_candidate_skills(db, profile, merged_skills)
+    # Sync candidate skills directly with the freshly extracted skills from the uploaded resume
+    fresh_skills = sorted(list(set(extracted_skills)))
+    _sync_candidate_skills(db, profile, fresh_skills)
 
     db.commit()
     db.refresh(profile)

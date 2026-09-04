@@ -54,6 +54,20 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Sidebar Nav Link Standard Formatting */
+.nav-pills .nav-link {
+  white-space: nowrap !important;
+  font-weight: 500;
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.nav-pills .nav-link:hover:not(.active) {
+  background-color: rgba(0, 0, 0, 0.04);
+  color: var(--ar-text) !important;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 7px;

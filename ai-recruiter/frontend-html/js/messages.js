@@ -61,20 +61,25 @@
   function initNavigation() {
     if (userDisplayName) userDisplayName.textContent = currentUser.name || currentUser.email;
 
-    const role = currentUser.role || "candidate";
-    if (navDashLink) {
-      navDashLink.href = role === "candidate" ? "candidate-dashboard.html" : "recruiter-dashboard.html";
+    const role = (currentUser.role || "candidate").toLowerCase();
+    const isRecruiterRole = ["recruiter", "admin", "superadmin", "company_admin"].includes(role);
+
+    const portalHome = document.getElementById("nav-portal-home");
+    const portalDash = document.getElementById("nav-portal-dash");
+
+    if (portalHome) {
+      portalHome.href = isRecruiterRole ? "recruiter-portal.html" : "candidate-portal.html";
     }
-    if (navProfileLink) {
-      navProfileLink.href = role === "candidate" ? "upload-resume.html" : "recruiter-profile.html";
+    if (portalDash) {
+      portalDash.href = isRecruiterRole ? "recruiter-dashboard.html" : "candidate-dashboard.html";
     }
 
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", () => {
-        Session.clear();
-        window.location.href = "login.html";
-      });
-    }
+    const handleLogout = () => {
+      Session.clear();
+      window.location.href = "login.html";
+    };
+
+    if (logoutBtn) logoutBtn.addEventListener("click", handleLogout);
   }
 
   function showChatError(msg) {

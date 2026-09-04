@@ -1,9 +1,11 @@
 """
 Authentication endpoints: register, login, refresh, and "who am I".
 """
+import secrets
 import uuid
+from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, Request, status
+from fastapi import APIRouter, Depends, Query, Request, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -19,7 +21,18 @@ from app.core.security import (
 )
 from app.models.user import User, UserRole
 from app.schemas.common import APIResponse
-from app.schemas.user import GoogleLoginRequest, RefreshRequest, TokenResponse, UserLogin, UserRegister, UserResponse
+from app.schemas.user import (
+    ForgotPasswordRequest,
+    GoogleLoginRequest,
+    RefreshRequest,
+    ResendVerificationRequest,
+    ResetPasswordRequest,
+    TokenResponse,
+    UserLogin,
+    UserRegister,
+    UserResponse,
+    VerifyEmailRequest,
+)
 
 from app.utils.audit import log_action
 
@@ -61,14 +74,30 @@ from app.services.fraud_service import detect_job_fraud
 from app.services.notification_service import create_notification
 
 
+@router.get("/check-email", response_model=APIResponse[dict])
+def check_email(email: str = Query(..., min_length=3), db: Session = Depends(get_db)):
+    """Checks whether an email address is already registered in the database."""
+    clean_email = email.strip().lower()
+    existing = db.query(User).filter(User.email == clean_email).first()
+    return APIResponse(
+        success=True,
+        message="Email availability check completed.",
+        data={"exists": existing is not None, "email": clean_email}
+    )
+
+
 @router.post("/register", response_model=APIResponse[TokenResponse], status_code=status.HTTP_201_CREATED)
 def register(payload: UserRegister, request: Request, db: Session = Depends(get_db)):
     client_ip = request.client.host if request.client else "unknown"
     check_ip_rate_limit(f"register:{client_ip}")
 
+    from app.utils.email_validation import validate_role_email
+    role_str = payload.role.value if hasattr(payload.role, "value") else str(payload.role)
+    validate_role_email(payload.email, role_str)
+
     existing = db.query(User).filter(User.email == payload.email).first()
     if existing:
-        raise ConflictError("An account with this email already exists")
+        raise ConflictError("This email address is already registered.")
 
     v_status = "approved"
     v_reasons = []
@@ -80,12 +109,18 @@ def register(payload: UserRegister, request: Request, db: Session = Depends(get_
             ssl_ok, ssl_msg = verify_website_ssl(payload.company_website)
             v_reasons.append(f"SSL Security: {'Secure' if ssl_ok else 'Unverified/Failed'}")
 
+    v_token = secrets.token_urlsafe(32)
+    v_expires = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(hours=24)
+
     user = User(
         name=payload.name,
         email=payload.email,
         password_hash=hash_password(payload.password),
         role=payload.role,
         is_active=True,
+        is_email_verified=False,
+        verification_token=v_token,
+        verification_token_expires_at=v_expires,
         verification_status="approved",
         verification_reasons=json.dumps(v_reasons) if v_reasons else None,
     )
@@ -124,9 +159,16 @@ def register(payload: UserRegister, request: Request, db: Session = Depends(get_
     db.commit()
     db.refresh(user)
 
+    from app.services.email_service import send_verification_email
+    send_verification_email(user.email, user.name, v_token)
+
     log_action(db, "user.register", user_id=user.id, details={"role": user.role.value, "verification_status": "approved"}, ip_address=client_ip)
 
-    return APIResponse(success=True, message="Account created successfully", data=_issue_tokens(user, db))
+    return APIResponse(
+        success=True,
+        message="Registration successful. A verification email has been sent to your email address.",
+        data=_issue_tokens(user, db)
+    )
 
 
 @router.post("/login", response_model=APIResponse[TokenResponse])
@@ -140,12 +182,22 @@ def login(payload: UserLogin, request: Request, db: Session = Depends(get_db)):
         log_action(db, "user.login_failed", details={"email": payload.email}, ip_address=client_ip)
         raise AuthError("Invalid email or password")
 
+    # Enforce strict role isolation on login: selected role tab MUST match registered account role
     if payload.expected_role:
-        if payload.expected_role == UserRole.candidate and user.role != UserRole.candidate:
-            raise AuthError(f"Account role mismatch: '{payload.email}' is registered as a Recruiter. Please switch to Recruiter Login.")
-        if payload.expected_role == UserRole.recruiter and user.role not in [UserRole.recruiter, UserRole.company_admin]:
-            raise AuthError(f"Account role mismatch: '{payload.email}' is registered as a Candidate. Please switch to Candidate Login.")
+        expected = payload.expected_role.value if hasattr(payload.expected_role, "value") else str(payload.expected_role)
+        actual = user.role.value if hasattr(user.role, "value") else str(user.role)
 
+        is_recruiter_type = actual in ["recruiter", "company_admin"] and expected in ["recruiter", "company_admin"]
+        if actual != expected and not is_recruiter_type:
+            actual_title = "Candidate" if actual == "candidate" else ("Recruiter" if actual in ["recruiter", "company_admin"] else actual.capitalize())
+            raise AuthError(f"Access Denied: This account is registered as a {actual_title}. Please select the {actual_title} role to log in.")
+
+    # Enforce mandatory email verification before login
+    if not getattr(user, "is_email_verified", True):
+        raise AuthError(
+            "Access Denied: Please verify your email address before logging in. Check your inbox for the verification link.",
+            error_code="EMAIL_NOT_VERIFIED"
+        )
 
     if user.role in [UserRole.recruiter, UserRole.company_admin]:
         v_status = getattr(user, "verification_status", "approved")
@@ -267,6 +319,10 @@ def google_login(payload: GoogleLoginRequest, request: Request, db: Session = De
     client_ip = request.client.host if request.client else "unknown"
     email, name = _verify_google_token(payload.credential)
 
+    from app.utils.email_validation import validate_role_email
+    target_role = payload.role.value if hasattr(payload.role, "value") else str(payload.role)
+    validate_role_email(email, target_role)
+
     user = db.query(User).filter(User.email == email).first()
     if not user:
         user = User(
@@ -280,8 +336,168 @@ def google_login(payload: GoogleLoginRequest, request: Request, db: Session = De
         db.refresh(user)
         log_action(db, "user.google_register", user_id=user.id, details={"role": user.role.value}, ip_address=client_ip)
     else:
+        if payload.role:
+            expected = payload.role.value if hasattr(payload.role, "value") else str(payload.role)
+            actual = user.role.value if hasattr(user.role, "value") else str(user.role)
+            is_recruiter_type = actual in ["recruiter", "company_admin"] and expected in ["recruiter", "company_admin"]
+            if actual != expected and not is_recruiter_type:
+                actual_title = "Candidate" if actual == "candidate" else ("Recruiter" if actual in ["recruiter", "company_admin"] else actual.capitalize())
+                raise AuthError(f"Access Denied: This Google account is registered as a {actual_title}. Please sign in using the {actual_title} role option.")
         log_action(db, "user.google_login", user_id=user.id, ip_address=client_ip)
 
     return APIResponse(success=True, message="Google authentication successful", data=_issue_tokens(user))
+
+
+@router.post("/forgot-password", response_model=APIResponse[dict])
+def forgot_password(payload: ForgotPasswordRequest, request: Request, db: Session = Depends(get_db)):
+    """Generates a password reset token and dispatches a reset email."""
+    client_ip = request.client.host if request.client else "unknown"
+    check_ip_rate_limit(f"forgot_password:{client_ip}")
+
+    user = db.query(User).filter(User.email == payload.email).first()
+    if not user:
+        # Safe generic response: do not expose whether the email address exists in DB
+        return APIResponse(
+            success=True,
+            message="Password reset instructions have been sent to your email address if an account exists.",
+            data={}
+        )
+
+    token = secrets.token_urlsafe(32)
+    user.reset_token = token
+    user.reset_token_expires_at = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(minutes=30)
+    db.commit()
+
+    from app.services.email_service import send_reset_password_email
+    send_reset_password_email(user.email, user.name, token)
+
+    log_action(db, "user.forgot_password_requested", user_id=user.id, ip_address=client_ip)
+
+    return APIResponse(
+        success=True,
+        message="Password reset instructions have been sent to your email address.",
+        data={}
+    )
+
+
+@router.post("/reset-password", response_model=APIResponse[dict])
+def reset_password(payload: ResetPasswordRequest, request: Request, db: Session = Depends(get_db)):
+    """Validates the reset token and updates the user's password."""
+    client_ip = request.client.host if request.client else "unknown"
+    check_ip_rate_limit(f"reset_password:{client_ip}")
+
+    if not payload.token or not payload.token.strip():
+        raise AuthError("Invalid or expired password reset token.")
+
+    user = db.query(User).filter(User.reset_token == payload.token).first()
+    if not user:
+        raise AuthError("Invalid or expired password reset token.")
+
+    if user.reset_token_expires_at:
+        now_naive = datetime.now(timezone.utc).replace(tzinfo=None)
+        if user.reset_token_expires_at < now_naive:
+            raise AuthError("Password reset link has expired. Please request a new password reset.")
+
+    user.password_hash = hash_password(payload.new_password)
+    user.reset_token = None
+    user.reset_token_expires_at = None
+    db.commit()
+
+    log_action(db, "user.password_reset_success", user_id=user.id, ip_address=client_ip)
+    return APIResponse(
+        success=True,
+        message="Your password has been reset successfully. Please log in with your new password.",
+        data={}
+    )
+
+
+@router.post("/verify-email", response_model=APIResponse[dict])
+def verify_email_post(payload: VerifyEmailRequest, db: Session = Depends(get_db)):
+    """Verifies the user's email via token in request body."""
+    if not payload.token or not payload.token.strip():
+        raise AuthError("Invalid or expired email verification token.")
+
+    user = db.query(User).filter(User.verification_token == payload.token).first()
+    if not user:
+        raise AuthError("Invalid or expired email verification token.")
+
+    if user.verification_token_expires_at:
+        now_naive = datetime.now(timezone.utc).replace(tzinfo=None)
+        if user.verification_token_expires_at < now_naive:
+            raise AuthError("Email verification link has expired. Please request a new verification link.")
+
+    user.is_email_verified = True
+    user.verification_token = None
+    user.verification_token_expires_at = None
+    db.commit()
+
+    return APIResponse(
+        success=True,
+        message="Email verified successfully! You can now log in.",
+        data={"email": user.email, "role": user.role.value}
+    )
+
+
+@router.get("/verify-email", response_model=APIResponse[dict])
+def verify_email_get(token: str = Query(..., min_length=1), db: Session = Depends(get_db)):
+    """Verifies the user's email via query token in URL."""
+    if not token or not token.strip():
+        raise AuthError("Invalid or expired email verification token.")
+
+    user = db.query(User).filter(User.verification_token == token).first()
+    if not user:
+        raise AuthError("Invalid or expired email verification token.")
+
+    if user.verification_token_expires_at:
+        now_naive = datetime.now(timezone.utc).replace(tzinfo=None)
+        if user.verification_token_expires_at < now_naive:
+            raise AuthError("Email verification link has expired. Please request a new verification link.")
+
+    user.is_email_verified = True
+    user.verification_token = None
+    user.verification_token_expires_at = None
+    db.commit()
+
+    return APIResponse(
+        success=True,
+        message="Email verified successfully! You can now log in.",
+        data={"email": user.email, "role": user.role.value}
+    )
+
+
+@router.post("/resend-verification", response_model=APIResponse[dict])
+def resend_verification(payload: ResendVerificationRequest, request: Request, db: Session = Depends(get_db)):
+    """Generates and dispatches a fresh email verification link."""
+    client_ip = request.client.host if request.client else "unknown"
+    check_ip_rate_limit(f"resend_verification:{client_ip}")
+
+    user = db.query(User).filter(User.email == payload.email).first()
+    if not user:
+        return APIResponse(
+            success=True,
+            message="If an account exists with this email, a verification email has been sent.",
+            data={}
+        )
+
+    if user.is_email_verified:
+        return APIResponse(
+            success=True,
+            message="This email address is already verified.",
+            data={"is_email_verified": True}
+        )
+
+    token = secrets.token_urlsafe(32)
+    user.verification_token = token
+    user.verification_token_expires_at = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(hours=24)
+    db.commit()
+
+    from app.services.email_service import send_verification_email
+    send_verification_email(user.email, user.name, token)
+
+    return APIResponse(
+        success=True,
+        message="Verification email sent. Please check your inbox.",
+        data={}
+    )
 
 

@@ -6,8 +6,9 @@ import json
 import os
 import uuid
 import zipfile
+import hashlib
 from typing import Optional, List
-from fastapi import APIRouter, Depends, UploadFile, File, Query
+from fastapi import APIRouter, Depends, UploadFile, File, Query, Form
 from fastapi.responses import FileResponse, HTMLResponse, Response
 from sqlalchemy.orm import Session, joinedload
 
@@ -18,6 +19,7 @@ from app.core.exceptions import NotFoundError, AuthError, PermissionDeniedError,
 from app.core.security import decode_token
 from app.models.application import Application
 from app.models.candidate import CandidateProfile, CandidateSkill
+from app.models.job import Job
 from app.models.user import User, UserRole
 from app.nlp.resume_parser import extract_resume_text
 from app.nlp.skill_extractor import parse_resume_fields
@@ -26,8 +28,11 @@ from app.schemas.common import APIResponse
 from app.services.resume_service import (
     delete_candidate_profile,
     process_resume,
+    save_uploaded_file,
     update_candidate_profile,
     _compute_profile_score,
+    _sync_candidate_skills,
+    seed_skills,
 )
 from app.utils.file_validation import secure_filename
 from xhtml2pdf import pisa
@@ -58,17 +63,282 @@ async def upload_resume(
     )
 
 
+def _save_and_store_bulk_resume(
+    db: Session,
+    file_bytes: bytes,
+    filename: str,
+    job_id_str: Optional[str] = None,
+    custom_jd_data: Optional[dict] = None,
+    recruiter_id: Optional[uuid.UUID] = None,
+) -> dict:
+    """Saves bulk resume to disk, checks for duplicates, creates/updates candidate User & Profile in DB, and evaluates ATS scores."""
+    resume_hash = hashlib.sha256(file_bytes).hexdigest()
+    file_path, safe_name = save_uploaded_file(file_bytes, filename)
+    raw_text = extract_resume_text(file_bytes, filename)
+    fields = parse_resume_fields(raw_text)
+    score = _compute_profile_score(fields)
+    fields["completeness_score"] = score
+
+    cand_email = fields.get("email")
+    if not cand_email or not isinstance(cand_email, str) or "@" not in cand_email:
+        cand_email_clean = None
+    else:
+        cand_email_clean = cand_email.strip().lower()
+
+    cand_name = fields.get("name")
+    if not cand_name or not isinstance(cand_name, str) or len(cand_name.strip()) < 2:
+        base_name = os.path.splitext(os.path.basename(filename))[0]
+        cand_name = base_name.replace("_", " ").replace("-", " ").title()
+
+    cand_phone = fields.get("phone")
+    clean_phone = str(cand_phone).strip() if cand_phone and len(str(cand_phone).strip()) >= 7 else None
+
+    # Resume & Candidate Deduplication Check
+    is_duplicate = False
+    duplicate_reason = None
+    profile = None
+    user = None
+
+    # Check 1: Exact File Content Hash
+    existing_profile = db.query(CandidateProfile).filter(CandidateProfile.resume_hash == resume_hash).first()
+    if existing_profile:
+        is_duplicate = True
+        duplicate_reason = "Identical file hash match"
+        profile = existing_profile
+        user = db.query(User).filter(User.id == profile.user_id).first()
+
+    # Check 2: Email Match
+    if not is_duplicate and cand_email_clean:
+        existing_user = db.query(User).filter(User.email == cand_email_clean).first()
+        if existing_user:
+            is_duplicate = True
+            duplicate_reason = f"Matching candidate email ({cand_email_clean})"
+            user = existing_user
+            profile = db.query(CandidateProfile).filter(CandidateProfile.user_id == user.id).first()
+
+    # Check 3: Phone Match
+    if not is_duplicate and clean_phone:
+        existing_phone_profile = db.query(CandidateProfile).filter(CandidateProfile.phone == clean_phone).first()
+        if existing_phone_profile:
+            is_duplicate = True
+            duplicate_reason = f"Matching candidate phone ({clean_phone})"
+            profile = existing_phone_profile
+            user = db.query(User).filter(User.id == profile.user_id).first()
+
+    # Create new Candidate User if not a duplicate
+    if not user:
+        if not cand_email_clean:
+            cand_email_clean = f"bulk_cand_{uuid.uuid4().hex[:8]}@uploaded-resume.local"
+
+        from app.core.security import hash_password
+        user = User(
+            name=cand_name,
+            email=cand_email_clean,
+            password_hash=hash_password(uuid.uuid4().hex),
+            role=UserRole.candidate,
+            is_active=True,
+            verification_status="approved",
+            is_email_verified=True,
+        )
+        db.add(user)
+        db.flush()
+    else:
+        if cand_name and (not user.name or user.name.strip() in ("", "Candidate", "Test User", "User")):
+            user.name = cand_name
+            db.add(user)
+
+    if not profile:
+        profile = CandidateProfile(user_id=user.id)
+        db.add(profile)
+        db.flush()
+
+    # Update candidate profile fields and resume hash
+    profile.resume_path = file_path
+    profile.resume_text = raw_text
+    profile.resume_original_filename = filename
+    profile.resume_hash = resume_hash
+
+    if fields.get("phone"): profile.phone = fields.get("phone")
+    if fields.get("location"): profile.location = fields.get("location")
+    if fields.get("address"): profile.address = fields.get("address")
+    if fields.get("summary"): profile.summary = fields.get("summary")
+    if fields.get("experience_years") is not None: profile.experience_years = fields.get("experience_years")
+    if fields.get("education"): profile.education = fields.get("education")
+    if fields.get("work_experience"): profile.work_experience = fields.get("work_experience")
+    profile.profile_score = score
+
+    extracted_certs = fields.get("certifications")
+    if extracted_certs:
+        profile.certifications = ", ".join(extracted_certs) if isinstance(extracted_certs, list) else str(extracted_certs)
+
+    extracted_skills = fields.get("skills") or []
+    if extracted_skills:
+        top_skills = extracted_skills[:4]
+        profile.headline = f"{top_skills[0]} Specialist | {', '.join(top_skills)}"
+        profile.current_role = f"{top_skills[0]} Specialist"
+
+    fields["resume_text"] = raw_text
+    try:
+        ai_res = generate_resume_summary(fields)
+        profile.ai_summary = ai_res.get("summary")
+    except Exception:
+        pass
+
+    db.flush()
+
+    seed_skills(db)
+    fresh_skills = sorted(list(set(extracted_skills)))
+    _sync_candidate_skills(db, profile, fresh_skills)
+
+    # Job / Custom JD Association & ATS Scoring
+    ats_res = None
+    target_job = None
+    if job_id_str:
+        try:
+            j_uuid = uuid.UUID(job_id_str)
+            target_job = db.query(Job).filter(Job.id == j_uuid).first()
+        except Exception:
+            target_job = None
+
+    if not target_job and custom_jd_data and (custom_jd_data.get("title") or custom_jd_data.get("description") or custom_jd_data.get("skills")):
+        # Store persistent Job in DB for custom JD
+        jd_title = custom_jd_data.get("title") or "Custom Target Role"
+        if recruiter_id:
+            target_job = db.query(Job).filter(Job.recruiter_id == recruiter_id, Job.title == jd_title).first()
+            if not target_job:
+                from app.models.job import JobStatus
+                target_job = Job(
+                    id=uuid.uuid4(),
+                    recruiter_id=recruiter_id,
+                    title=jd_title,
+                    description=f"{custom_jd_data.get('description') or ''}\nRequired Skills: {custom_jd_data.get('skills') or ''}",
+                    experience_required=float(custom_jd_data.get("min_experience") or 0.0),
+                    status=JobStatus.published,
+                )
+                db.add(target_job)
+                db.flush()
+
+    if not target_job and recruiter_id:
+        # Fallback to General Candidate Talent Pool job requisition
+        target_job = db.query(Job).filter(Job.recruiter_id == recruiter_id, Job.title == "General Candidate Talent Pool").first()
+        if not target_job:
+            from app.models.job import JobStatus
+            target_job = Job(
+                id=uuid.uuid4(),
+                recruiter_id=recruiter_id,
+                title="General Candidate Talent Pool",
+                description="General candidate talent pool for bulk resume uploads",
+                status=JobStatus.published,
+            )
+            db.add(target_job)
+            db.flush()
+
+    if recruiter_id:
+        profile.created_by_recruiter_id = str(recruiter_id)
+        profile.source = "recruiter_bulk_upload"
+
+    if target_job:
+        try:
+            from app.services.ats_scoring_service import calculate_job_specific_ats
+            from app.models.application import Application, ApplicationStatus
+            ats_res = calculate_job_specific_ats(profile, target_job)
+
+            # Store/update Application record in DB
+            app_rec = db.query(Application).filter(
+                Application.candidate_id == profile.id, Application.job_id == target_job.id
+            ).first()
+
+            overall_score = ats_res.get("overall_ats_score", 0.0) if isinstance(ats_res, dict) else 0.0
+            score_bk = ats_res.get("score_breakdown", {}) if isinstance(ats_res, dict) else {}
+            matched_s = json.dumps(ats_res.get("matched_skills", [])) if isinstance(ats_res, dict) else "[]"
+            missing_s = json.dumps(ats_res.get("missing_skills", [])) if isinstance(ats_res, dict) else "[]"
+            bk_json = json.dumps(ats_res) if isinstance(ats_res, dict) else "{}"
+
+            if not app_rec:
+                app_rec = Application(
+                    candidate_id=profile.id,
+                    job_id=target_job.id,
+                    status=ApplicationStatus.applied,
+                    match_score=overall_score,
+                    ats_score=overall_score,
+                    skills_match_score=score_bk.get("skills", 0.0),
+                    experience_match_score=score_bk.get("experience", 0.0),
+                    education_match_score=score_bk.get("education", 0.0),
+                    location_match_score=score_bk.get("location", 0.0),
+                    keyword_match_score=score_bk.get("keywords", 0.0),
+                    matched_skills=matched_s,
+                    missing_skills=missing_s,
+                    match_breakdown=bk_json,
+                    uploaded_by_recruiter_id=str(recruiter_id) if recruiter_id else None,
+                    source="recruiter_bulk_upload",
+                )
+                db.add(app_rec)
+            else:
+                app_rec.match_score = overall_score
+                app_rec.ats_score = overall_score
+                app_rec.skills_match_score = score_bk.get("skills", 0.0)
+                app_rec.experience_match_score = score_bk.get("experience", 0.0)
+                app_rec.education_match_score = score_bk.get("education", 0.0)
+                app_rec.location_match_score = score_bk.get("location", 0.0)
+                app_rec.keyword_match_score = score_bk.get("keywords", 0.0)
+                app_rec.matched_skills = matched_s
+                app_rec.missing_skills = missing_s
+                app_rec.match_breakdown = bk_json
+                if recruiter_id:
+                    app_rec.uploaded_by_recruiter_id = str(recruiter_id)
+                    app_rec.source = "recruiter_bulk_upload"
+        except Exception as err:
+            print("Error during ATS score calculation:", err)
+
+    db.commit()
+    db.refresh(profile)
+
+    overall_score = 0.0
+    if ats_res and isinstance(ats_res, dict):
+        overall_score = ats_res.get("overall_ats_score", 0.0)
+    else:
+        overall_score = float(fields.get("completeness_score", 0))
+
+    return {
+        "filename": filename,
+        "status": "completed",
+        "is_duplicate": is_duplicate,
+        "duplicate_reason": duplicate_reason,
+        "candidate_id": str(profile.id),
+        "user_id": str(user.id),
+        "error": None,
+        "extracted_data": fields,
+        "ats_analysis": ats_res,
+        "overall_match_score": overall_score,
+    }
+
+
 @router.post("/bulk-upload")
 async def bulk_upload_resumes(
     files: List[UploadFile] = File(...),
+    job_id: Optional[str] = Form(None),
+    custom_jd_title: Optional[str] = Form(None),
+    custom_jd_description: Optional[str] = Form(None),
+    custom_jd_skills: Optional[str] = Form(None),
+    custom_jd_exp: Optional[float] = Form(None),
     current_user: User = Depends(require_role(UserRole.recruiter, UserRole.company_admin, UserRole.admin)),
     db: Session = Depends(get_db),
 ):
-    """Processes multiple PDF/DOCX resumes or ZIP archives for recruiters."""
+    """Processes multiple PDF/DOCX resumes or ZIP archives for recruiters and stores candidates in the system."""
     results = []
     total_files = 0
     success_count = 0
     failed_count = 0
+    duplicate_count = 0
+
+    custom_jd_data = None
+    if custom_jd_title or custom_jd_description or custom_jd_skills:
+        custom_jd_data = {
+            "title": custom_jd_title or "Custom Job Requisition",
+            "description": custom_jd_description or "",
+            "skills": custom_jd_skills or "",
+            "min_experience": custom_jd_exp or 0.0,
+        }
 
     for file in files:
         file_bytes = await file.read()
@@ -86,62 +356,85 @@ async def bulk_upload_resumes(
                             total_files += 1
                             item_bytes = zf.read(zip_info)
                             try:
-                                raw_text = extract_resume_text(item_bytes, zip_fname)
-                                fields = parse_resume_fields(raw_text)
-                                fields["completeness_score"] = _compute_profile_score(fields)
-                                results.append({
-                                    "filename": zip_fname,
-                                    "status": "completed",
-                                    "error": None,
-                                    "extracted_data": fields
-                                })
+                                item_res = _save_and_store_bulk_resume(
+                                    db, item_bytes, zip_fname, job_id, custom_jd_data, current_user.id
+                                )
+                                results.append(item_res)
                                 success_count += 1
+                                if item_res.get("is_duplicate"):
+                                    duplicate_count += 1
                             except Exception as exc:
+                                db.rollback()
                                 results.append({
                                     "filename": zip_fname,
                                     "status": "failed",
+                                    "is_duplicate": False,
                                     "error": str(exc),
-                                    "extracted_data": None
+                                    "extracted_data": None,
+                                    "overall_match_score": 0.0
                                 })
                                 failed_count += 1
             except Exception as zip_err:
+                db.rollback()
                 total_files += 1
                 results.append({
                     "filename": filename,
                     "status": "failed",
+                    "is_duplicate": False,
                     "error": f"Invalid zip archive: {str(zip_err)}",
-                    "extracted_data": None
+                    "extracted_data": None,
+                    "overall_match_score": 0.0
                 })
                 failed_count += 1
         else:
             total_files += 1
             try:
-                raw_text = extract_resume_text(file_bytes, filename)
-                fields = parse_resume_fields(raw_text)
-                fields["completeness_score"] = _compute_profile_score(fields)
-                results.append({
-                    "filename": filename,
-                    "status": "completed",
-                    "error": None,
-                    "extracted_data": fields
-                })
+                item_res = _save_and_store_bulk_resume(
+                    db, file_bytes, filename, job_id, custom_jd_data, current_user.id
+                )
+                results.append(item_res)
                 success_count += 1
+                if item_res.get("is_duplicate"):
+                    duplicate_count += 1
             except Exception as exc:
+                db.rollback()
                 results.append({
                     "filename": filename,
                     "status": "failed",
+                    "is_duplicate": False,
                     "error": str(exc),
-                    "extracted_data": None
+                    "extracted_data": None,
+                    "overall_match_score": 0.0
                 })
                 failed_count += 1
 
+    # Sort results by overall_match_score descending to rank Best Match
+    results.sort(key=lambda x: x.get("overall_match_score", 0.0), reverse=True)
+
+    # Assign rank and best match indicator
+    for idx, item in enumerate(results):
+        item["rank"] = idx + 1
+        item["is_best_match"] = (idx == 0 and item.get("status") == "completed" and item.get("overall_match_score", 0) > 0)
+
+    best_candidate_name = None
+    best_score = 0.0
+    if results and results[0].get("is_best_match"):
+        best_cand_data = results[0].get("extracted_data") or {}
+        best_candidate_name = best_cand_data.get("name") or results[0].get("filename")
+        best_score = results[0].get("overall_match_score", 0.0)
+
     return APIResponse(
         success=True,
-        message=f"Processed {total_files} resume(s): {success_count} succeeded, {failed_count} failed",
+        message=f"Processed and stored {total_files} resume(s): {success_count} stored ({duplicate_count} duplicate(s) linked), {failed_count} failed",
         data={
             "total": total_files,
             "successful": success_count,
             "failed": failed_count,
+            "duplicates": duplicate_count,
+            "best_match": {
+                "candidate_name": best_candidate_name,
+                "score": best_score,
+            } if best_candidate_name else None,
             "results": results,
         },
     )
@@ -394,6 +687,24 @@ async def complete_candidate_registration(
 
     if file and file.filename:
         file_bytes = await file.read()
+        raw_text = extract_resume_text(file_bytes, file.filename)
+        fields = parse_resume_fields(raw_text)
+        fields["resume_text"] = raw_text
+
+        form_data = {
+            "name": name or current_user.name,
+            "phone": phone,
+            "location": location,
+            "experience_years": parsed_exp_years,
+            "skills": [s.strip() for s in skills.split(",") if s.strip()] if skills else [],
+        }
+
+        from app.services.resume_verification_service import verify_resume_against_form
+        is_valid, mismatches = verify_resume_against_form(fields, form_data)
+        if not is_valid:
+            err_msg = "Candidate Registration Blocked due to Form vs Resume Mismatches:\n• " + "\n• ".join(mismatches)
+            raise AppError(err_msg, "RESUME_FORM_MISMATCH", 400)
+
         profile = process_resume(db, current_user.id, file_bytes, file.filename)
     elif not profile:
         profile = CandidateProfile(
@@ -414,27 +725,31 @@ async def complete_candidate_registration(
         db.flush()
 
     update_dict = {}
-    if phone is not None: update_dict["phone"] = phone
-    if location is not None: update_dict["location"] = location
-    if headline is not None: update_dict["headline"] = headline
-    if current_role is not None: update_dict["current_role"] = current_role
-    if parsed_exp_years is not None: update_dict["experience_years"] = parsed_exp_years
-    if summary is not None: update_dict["summary"] = summary
-    if education is not None: update_dict["education"] = education
-    if work_experience is not None: update_dict["work_experience"] = work_experience
-    if linkedin_url is not None: update_dict["linkedin_url"] = linkedin_url
-    if github_url is not None: update_dict["github_url"] = github_url
-    if portfolio_url is not None: update_dict["portfolio_url"] = portfolio_url
-    if skills is not None and skills.strip():
-        update_dict["skills"] = [s.strip() for s in skills.split(",") if s.strip()]
+    if linkedin_url: update_dict["linkedin_url"] = linkedin_url
+    if github_url: update_dict["github_url"] = github_url
+    if portfolio_url: update_dict["portfolio_url"] = portfolio_url
 
-    profile = update_candidate_profile(
-        db,
-        profile,
-        update_dict,
-        user_name=current_user.name,
-        user_email=current_user.email,
-    )
+    # If NO resume file was uploaded, use form inputs to populate profile
+    if not (file and file.filename):
+        if phone is not None: update_dict["phone"] = phone
+        if location is not None: update_dict["location"] = location
+        if headline is not None: update_dict["headline"] = headline
+        if current_role is not None: update_dict["current_role"] = current_role
+        if parsed_exp_years is not None: update_dict["experience_years"] = parsed_exp_years
+        if summary is not None: update_dict["summary"] = summary
+        if education is not None: update_dict["education"] = education
+        if work_experience is not None: update_dict["work_experience"] = work_experience
+        if skills is not None and skills.strip():
+            update_dict["skills"] = [s.strip() for s in skills.split(",") if s.strip()]
+
+    if update_dict:
+        profile = update_candidate_profile(
+            db,
+            profile,
+            update_dict,
+            user_name=current_user.name,
+            user_email=current_user.email,
+        )
 
     db.commit()
     db.refresh(current_user)
@@ -786,6 +1101,38 @@ def accept_improvement_endpoint(
 
     db.commit()
     return APIResponse(success=True, message="Improvement accepted and applied to candidate profile.", data={"candidate_id": str(candidate.id)})
+
+
+@router.get("/recruiter/my-candidates")
+def list_recruiter_uploaded_candidates(
+    current_user: User = Depends(require_role(UserRole.recruiter, UserRole.company_admin, UserRole.admin)),
+    db: Session = Depends(get_db),
+):
+    """Retrieves candidates specifically created or uploaded by the requesting recruiter."""
+    profiles = (
+        db.query(CandidateProfile)
+        .options(joinedload(CandidateProfile.user))
+        .filter(CandidateProfile.created_by_recruiter_id == str(current_user.id))
+        .all()
+    )
+    results = []
+    for p in profiles:
+        u = p.user
+        results.append({
+            "candidate_id": str(p.id),
+            "user_id": str(p.user_id),
+            "name": u.name if u else "Candidate",
+            "email": u.email if u else None,
+            "phone": p.phone,
+            "location": p.location,
+            "headline": p.headline,
+            "current_role": p.current_role,
+            "experience_years": p.experience_years,
+            "profile_score": p.profile_score,
+            "source": p.source or "recruiter_bulk_upload",
+            "created_at": p.created_at.isoformat() if p.created_at else None,
+        })
+    return APIResponse(success=True, message=f"Retrieved {len(results)} recruiter uploaded candidate(s)", data=results)
 
 
 # Singular alias route /api/v1/resume/improve

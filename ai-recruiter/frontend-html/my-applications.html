@@ -10,20 +10,45 @@
 <body data-required-role="candidate">
 
   <div class="d-flex">
-    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 240px;">
-      <a href="candidate-portal.html" class="text-primary-custom fw-bold fs-5 mb-4 text-decoration-none d-flex align-items-center gap-2">
-        <span>👨‍💻</span> Candidate Portal
+    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 260px; min-width: 260px;">
+      <a href="candidate-portal.html" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mb-4 px-2">
+        <span class="fs-4">👨‍💻</span>
+        <span class="fw-bold text-dark fs-5">Candidate Portal</span>
       </a>
-      <ul class="nav nav-pills flex-column gap-1">
-        <li class="nav-item"><a href="candidate-portal.html" class="nav-link text-body">🏠 Home</a></li>
-        <li class="nav-item"><a href="candidate-dashboard.html" class="nav-link text-body">📊 Dashboard</a></li>
-        <li class="nav-item"><a href="upload-resume.html" class="nav-link text-body">📄 Resume &amp; ATS Score</a></li>
-        <li class="nav-item"><a href="jobs.html" class="nav-link text-body">🔍 Find Jobs</a></li>
-        <li class="nav-item"><a href="my-applications.html" class="nav-link active">📑 Applications</a></li>
+      <ul class="nav nav-pills flex-column gap-2">
+        <li class="nav-item">
+          <a href="candidate-portal.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🏠</span> Portal Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="candidate-dashboard.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📊</span> Candidate Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="upload-resume.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📄</span> Resume &amp; ATS Score
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="jobs.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🔍</span> Find Jobs
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="my-applications.html" class="nav-link active text-nowrap d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color: #fff;">
+            <span>📑</span> My Applications
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="messages.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>💬</span> Messages &amp; Chat
+          </a>
+        </li>
       </ul>
-
-      <div class="mt-auto">
-        <button id="logout-btn" class="btn btn-outline-secondary w-100">Log out</button>
+      <div class="mt-auto pt-3 border-top">
+        <button id="logout-btn" class="btn btn-outline-secondary w-100 fw-semibold">Log out</button>
       </div>
     </nav>
 

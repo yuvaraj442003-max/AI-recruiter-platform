@@ -172,7 +172,7 @@
 
             return `
               <div class="col-md-4">
-                <div class="card h-100 p-3 ${cardStyle} role-selector-card" style="transition: transform 0.15s ease;" data-role-key="${item.key}">
+                <div class="card h-100 p-3 ${cardStyle} role-selector-card" style="transition: transform 0.15s ease;" data-role-key="${item.key}" data-role-title="${item.title}">
                   <div class="d-flex justify-content-between align-items-start mb-2">
                     <div>
                       ${roleTagBadge}
@@ -183,11 +183,16 @@
                   <p class="text-muted small mb-2 flex-grow-1" style="font-size: 0.82rem; line-height: 1.4;">
                     ${item.explanation || item.description || "Matching role based on skills & experience."}
                   </p>
-                  <div class="pt-2 border-top mt-auto d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <span class="badge text-bg-light border text-secondary" style="font-size: 0.75rem;">${item.matched_skills_count} Matched Skills</span>
-                    <button class="btn btn-sm ${isTarget ? 'btn-primary' : 'btn-outline-primary'} fw-semibold px-2 py-1 check-ats-btn" style="font-size: 0.78rem;" data-role-key="${item.key}">
-                      ${isTarget ? 'Active Target Role ✓' : 'Check ATS Score &rarr;'}
-                    </button>
+                  <div class="pt-2 border-top mt-auto d-flex flex-column gap-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="badge text-bg-light border text-secondary" style="font-size: 0.75rem;">${item.matched_skills_count} Matched Skills</span>
+                      <button class="btn btn-sm ${isTarget ? 'btn-primary' : 'btn-outline-primary'} fw-semibold px-2 py-1 check-ats-btn" style="font-size: 0.78rem;" data-role-key="${item.key}">
+                        ${isTarget ? 'Active Target Role ✓' : 'Check ATS Score &rarr;'}
+                      </button>
+                    </div>
+                    <a href="jobs.html?role=${encodeURIComponent(item.title)}" class="btn btn-sm btn-success text-white fw-bold w-100 view-job-posting-btn d-flex align-items-center justify-content-center gap-1 shadow-sm">
+                      💼 View Job Posting &amp; Apply &rarr;
+                    </a>
                   </div>
                 </div>
               </div>
@@ -195,12 +200,23 @@
           })
           .join("");
 
-        otherGrid.querySelectorAll(".role-selector-card").forEach((card) => {
-          card.addEventListener("click", (evt) => {
-            const roleKey = card.getAttribute("data-role-key");
+        otherGrid.querySelectorAll(".check-ats-btn").forEach((btn) => {
+          btn.addEventListener("click", (evt) => {
+            evt.stopPropagation();
+            const roleKey = btn.getAttribute("data-role-key");
             if (roleKey) {
               runDomainAnalysis(roleKey);
               document.getElementById("domain-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          });
+        });
+
+        otherGrid.querySelectorAll(".role-selector-card").forEach((card) => {
+          card.addEventListener("click", (evt) => {
+            if (evt.target.closest(".check-ats-btn") || evt.target.closest(".view-job-posting-btn")) return;
+            const roleTitle = card.getAttribute("data-role-title");
+            if (roleTitle) {
+              window.location.href = `jobs.html?role=${encodeURIComponent(roleTitle)}`;
             }
           });
         });
@@ -460,11 +476,13 @@
         if (!meRes || !meRes.data) throw new Error("Please upload a resume first.");
         const candId = meRes.data.id;
         const jobsRes = await jobsAPI.list();
-        const jobs = jobsRes.data;
+        const jobs = jobsRes.data || [];
         if (!jobs || !jobs.length) throw new Error("No open jobs available for comparison.");
-        const firstJob = jobs[0];
 
-        const res = await resumeImprovementAPI.improve(candId, firstJob.id);
+        const targetDomain = document.getElementById("target-role-name")?.textContent || "";
+        let targetJob = jobs.find(j => j.title && targetDomain && (j.title.toLowerCase().includes(targetDomain.toLowerCase()) || targetDomain.toLowerCase().includes(j.title.toLowerCase()))) || jobs[0];
+
+        const res = await resumeImprovementAPI.improve(candId, targetJob.id);
         renderResumeImprovementModalContent(res.data, candId);
       } catch (err) {
         modalBody.innerHTML = `<div class="alert alert-danger p-4"><strong>Analysis Error:</strong> ${err.message}</div>`;

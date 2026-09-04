@@ -19,17 +19,42 @@
 
   <div class="d-flex">
     <!-- Sidebar -->
-    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 250px;">
+    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 260px; min-width: 260px;">
       <a href="recruiter-portal.html" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mb-4 px-2">
-        <span class="fs-4">💼</span> Recruiter Portal
+        <span class="fs-4">💼</span>
+        <span class="fw-bold text-dark fs-5">Recruiter Portal</span>
       </a>
       <ul class="nav nav-pills flex-column gap-2">
-        <li class="nav-item"><a href="recruiter-portal.html" class="nav-link text-body d-flex align-items-center gap-2"><span>🏠</span> Portal Home</a></li>
-        <li class="nav-item"><a href="recruiter-dashboard.html" class="nav-link text-body d-flex align-items-center gap-2"><span>📊</span> Dashboard</a></li>
-        <li class="nav-item"><a href="my-jobs.html" class="nav-link text-body d-flex align-items-center gap-2"><span>💼</span> Manage Jobs</a></li>
-        <li class="nav-item"><a href="post-job.html" class="nav-link text-body d-flex align-items-center gap-2"><span>➕</span> Post a Job</a></li>
-        <li class="nav-item"><a href="smart-search.html" class="nav-link active d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);"><span>🔍</span> Smart Search</a></li>
-        <li class="nav-item"><a href="#" onclick="if(window.openChatWithUser) window.openChatWithUser(); return false;" class="nav-link text-body d-flex align-items-center gap-2"><span>💬</span> Messages &amp; Chat</a></li>
+        <li class="nav-item">
+          <a href="recruiter-portal.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>🏠</span> Portal Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="recruiter-dashboard.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>📊</span> Recruiter Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="my-jobs.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>💼</span> Manage Jobs
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="post-job.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>➕</span> Post a Job
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="smart-search.html" class="nav-link active d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff;">
+            <span>🔍</span> Smart Search
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="messages.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>💬</span> Messages &amp; Chat
+          </a>
+        </li>
       </ul>
       <div class="mt-auto pt-3 border-top">
         <button id="logout-btn" class="btn btn-outline-secondary w-100 fw-semibold">Log out</button>

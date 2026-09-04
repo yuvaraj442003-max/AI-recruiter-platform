@@ -63,15 +63,36 @@
     }
   })();
 
+  function handleExitRegistration(e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
+    if (confirm("Are you sure you want to exit without completing registration? You will be signed out.")) {
+      Session.clear();
+      window.location.href = "index.html";
+    }
+  }
+
   function showError(msg) {
-    alertBox.className = "alert alert-danger py-2 mb-4";
-    alertBox.textContent = msg;
+    alertBox.className = "alert alert-danger p-3 mb-4 shadow-sm fw-medium";
+    alertBox.innerHTML = `
+      <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
+        <div style="white-space: pre-line;">${msg}</div>
+        <button type="button" class="btn btn-sm btn-outline-danger text-nowrap exit-reg-btn mt-2 mt-sm-0 fw-semibold">
+          ✕ Exit &amp; Leave
+        </button>
+      </div>
+    `;
     alertBox.classList.remove("d-none");
+    const alertExitBtn = alertBox.querySelector(".exit-reg-btn");
+    if (alertExitBtn) alertExitBtn.addEventListener("click", handleExitRegistration);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function hideError() {
     alertBox.classList.add("d-none");
+    alertBox.innerHTML = "";
   }
 
   function setLoading(isLoading) {
@@ -139,23 +160,27 @@
 
       const updatedUser = Session.getUser() || {};
       updatedUser.is_profile_complete = true;
-      if (typeof safeStorage !== "undefined") {
-        safeStorage.setItem("ar_user", JSON.stringify(updatedUser));
-      } else {
-        try { localStorage.setItem("ar_user", JSON.stringify(updatedUser)); } catch (e) {}
-      }
+      Session.save({
+        access_token: Session.getAccessToken(),
+        refresh_token: safeStorage.getItem("ar_refresh_token"),
+        user: updatedUser,
+      });
 
       alertBox.className = "alert alert-success py-2 mb-4";
-      alertBox.textContent = "Registration details submitted successfully! Redirecting to Dashboard...";
+      alertBox.textContent = "🎉 Registration completed successfully! Redirecting to your Candidate Dashboard...";
       alertBox.classList.remove("d-none");
 
-      // Redirect immediately to Candidate Dashboard
-      window.location.replace("candidate-dashboard.html");
+      setTimeout(() => {
+        window.location.href = "candidate-dashboard.html";
+      }, 100);
     } catch (err) {
       showError(err.message || "Failed to submit registration details. Please try again.");
       setLoading(false);
     }
   }
+
+  const exitBtns = document.querySelectorAll(".exit-reg-btn");
+  exitBtns.forEach((btn) => btn.addEventListener("click", handleExitRegistration));
 
   if (submitBtn) {
     submitBtn.addEventListener("click", handleRegistrationSubmit);

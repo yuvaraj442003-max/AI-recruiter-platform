@@ -65,13 +65,19 @@ class Application(Base):
     recruiter_override: Mapped[Optional[bool]] = mapped_column(Boolean, default=False, nullable=True)
     override_reason: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
+    # Recruiter Upload & Source Tracking
+    uploaded_by_recruiter_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    source: Mapped[Optional[str]] = mapped_column(String(100), default="direct_candidate", nullable=True)
+
     applied_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[DateTime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
     candidate: Mapped["CandidateProfile"] = relationship()
-    job: Mapped["Job"] = relationship()
+    job: Mapped["Job"] = relationship(back_populates="applications")
 
     def __repr__(self) -> str:
         return f"<Application candidate={self.candidate_id} job={self.job_id} score={self.match_score}>"

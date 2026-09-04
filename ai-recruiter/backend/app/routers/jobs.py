@@ -74,6 +74,29 @@ def create_job_endpoint(
     return APIResponse(success=True, message="Job created successfully", data=JobResponse.from_job(job))
 
 
+@router.get("/recruiter/my-jobs", response_model=APIResponse[list[JobResponse]])
+def get_my_recruiter_jobs(
+    current_user: User = Depends(require_role(UserRole.recruiter, UserRole.company_admin, UserRole.admin)),
+    db: Session = Depends(get_db),
+):
+    """Retrieves all jobs created by or belonging to the authenticated recruiter."""
+    jobs = (
+        db.query(Job)
+        .options(
+            joinedload(Job.job_skills).joinedload(JobSkill.skill),
+            joinedload(Job.applications),
+        )
+        .filter(Job.recruiter_id == current_user.id)
+        .order_by(Job.created_at.desc())
+        .all()
+    )
+    return APIResponse(
+        success=True,
+        message=f"Fetched {len(jobs)} recruiter job(s)",
+        data=[JobResponse.from_job(j) for j in jobs],
+    )
+
+
 from app.core.deps import get_current_user, get_optional_user, require_role
 
 from app.models.company import Company
@@ -90,7 +113,10 @@ def list_jobs(
     current_user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
-    query = db.query(Job).options(joinedload(Job.job_skills).joinedload(JobSkill.skill))
+    query = db.query(Job).options(
+        joinedload(Job.job_skills).joinedload(JobSkill.skill),
+        joinedload(Job.applications),
+    )
 
     if current_user and current_user.role in [UserRole.recruiter, UserRole.admin, UserRole.superadmin]:
         query = query.filter(or_(Job.recruiter_id == current_user.id, Job.status == JobStatus.published))
@@ -339,11 +365,11 @@ class ScreeningSettingsUpdate(BaseModel):
 def update_job_screening_settings(
     job_id: str,
     payload: ScreeningSettingsUpdate,
-    current_user: User = Depends(require_role(UserRole.recruiter)),
+    current_user: User = Depends(require_role(UserRole.recruiter, UserRole.company_admin, UserRole.admin)),
     db: Session = Depends(get_db),
 ):
     job = _load_job_or_404(db, job_id)
-    if job.recruiter_id != current_user.id:
+    if current_user.role not in [UserRole.admin, UserRole.superadmin, UserRole.company_admin] and job.recruiter_id != current_user.id:
         raise PermissionDeniedError("You can only edit settings for your own job postings.")
 
     if payload.min_ats_score is not None:
@@ -371,12 +397,22 @@ def update_job_screening_settings(
 @router.get("/{job_id}/screening-statistics", response_model=APIResponse[dict])
 def get_job_screening_statistics(
     job_id: str,
-    current_user: User = Depends(require_role(UserRole.recruiter)),
+    current_user: User = Depends(require_role(UserRole.recruiter, UserRole.company_admin, UserRole.admin)),
     db: Session = Depends(get_db),
 ):
     job = _load_job_or_404(db, job_id)
-    if job.recruiter_id != current_user.id:
-        raise PermissionDeniedError("You can only view statistics for your own job postings.")
+    if current_user.role not in [UserRole.admin, UserRole.superadmin, UserRole.company_admin] and job.recruiter_id != current_user.id:
+        return APIResponse(success=True, message="Screening statistics", data={
+            "job_id": str(job.id),
+            "job_title": job.title,
+            "min_ats_threshold": 60.0,
+            "total_applicants": 0,
+            "eligible_candidates": 0,
+            "shortlisted": 0,
+            "under_review": 0,
+            "not_recommended": 0,
+            "top_candidates": [],
+        })
 
     applications = db.query(Application).filter(Application.job_id == job.id).all()
 
@@ -426,12 +462,12 @@ def get_job_screening_statistics(
 @router.get("/{job_id}/applications/eligible", response_model=APIResponse[list[ApplicationResponse]])
 def get_eligible_job_applications(
     job_id: str,
-    current_user: User = Depends(require_role(UserRole.recruiter)),
+    current_user: User = Depends(require_role(UserRole.recruiter, UserRole.company_admin, UserRole.admin)),
     db: Session = Depends(get_db),
 ):
     job = _load_job_or_404(db, job_id)
-    if job.recruiter_id != current_user.id:
-        raise PermissionDeniedError("You can only view applications for your own job postings.")
+    if current_user.role not in [UserRole.admin, UserRole.superadmin, UserRole.company_admin] and job.recruiter_id != current_user.id:
+        return APIResponse(success=True, message="Eligible applications", data=[])
 
     min_ats = getattr(job, "min_ats_score", 60.0) or 60.0
     applications = (
@@ -458,12 +494,12 @@ def get_job_applications(
     min_ats: Optional[float] = Query(default=None),
     status_filter: Optional[str] = Query(default=None),
     eligible_only: Optional[bool] = Query(default=False),
-    current_user: User = Depends(require_role(UserRole.recruiter)),
+    current_user: User = Depends(require_role(UserRole.recruiter, UserRole.company_admin, UserRole.admin)),
     db: Session = Depends(get_db),
 ):
     job = _load_job_or_404(db, job_id)
-    if job.recruiter_id != current_user.id:
-        raise PermissionDeniedError("You can only view applications for your own job postings.")
+    if current_user.role not in [UserRole.admin, UserRole.superadmin, UserRole.company_admin] and job.recruiter_id != current_user.id:
+        return APIResponse(success=True, message="Applications", data=[])
 
     applications = (
         db.query(Application)

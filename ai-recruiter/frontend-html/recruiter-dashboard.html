@@ -13,19 +13,43 @@
 
   <div class="d-flex">
     <!-- Sidebar -->
-    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 250px;">
+    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 260px; min-width: 260px;">
       <a href="recruiter-portal.html" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mb-4 px-2">
-        <span class="fs-4">💼</span> Recruiter Portal
+        <span class="fs-4">💼</span>
+        <span class="fw-bold text-dark fs-5">Recruiter Portal</span>
       </a>
       <ul class="nav nav-pills flex-column gap-2">
-        <li class="nav-item"><a href="recruiter-portal.html" class="nav-link text-body d-flex align-items-center gap-2"><span>🏠</span> Portal Home</a></li>
-        <li class="nav-item"><a href="recruiter-dashboard.html" class="nav-link active d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);"><span>📊</span> Dashboard</a></li>
-        <li class="nav-item"><a href="my-jobs.html" class="nav-link text-body d-flex align-items-center gap-2"><span>💼</span> Manage Jobs</a></li>
-        <li class="nav-item"><a href="post-job.html" class="nav-link text-body d-flex align-items-center gap-2"><span>➕</span> Post a Job</a></li>
-        <li class="nav-item"><a href="smart-search.html" class="nav-link text-body d-flex align-items-center gap-2"><span>🔍</span> Smart Search</a></li>
-        <li class="nav-item"><a href="messages.html" class="nav-link text-body d-flex align-items-center gap-2"><span>💬</span> Messages &amp; Chat</a></li>
+        <li class="nav-item">
+          <a href="recruiter-portal.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>🏠</span> Portal Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="recruiter-dashboard.html" class="nav-link active d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff;">
+            <span>📊</span> Recruiter Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="my-jobs.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>💼</span> Manage Jobs
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="post-job.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>➕</span> Post a Job
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="smart-search.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>🔍</span> Smart Search
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="messages.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>💬</span> Messages &amp; Chat
+          </a>
+        </li>
       </ul>
-
       <div class="mt-auto pt-3 border-top">
         <button id="logout-btn" class="btn btn-outline-secondary w-100 fw-semibold">Log out</button>
       </div>
@@ -49,10 +73,23 @@
       <div class="container-fluid p-4">
         <div id="dashboard-alert" class="alert d-none py-2" role="alert"></div>
 
+        <!-- Sticky Quick Jump Navigation Bar -->
+        <div class="card border-0 shadow-sm p-3 mb-4 sticky-top bg-white border" style="top: 70px; z-index: 9; border-radius: 14px;">
+          <div class="d-flex align-items-center gap-2 overflow-auto text-nowrap pb-1">
+            <span class="fw-bold small text-muted me-2">⚡ Quick Jump:</span>
+            <a href="#overview-section" class="btn btn-sm btn-outline-success rounded-pill fw-semibold">📊 Overview</a>
+            <a href="#quick-tools-section" class="btn btn-sm btn-outline-secondary rounded-pill fw-semibold">🛠️ Workspace Tools</a>
+            <a href="#ats-funnel-section" class="btn btn-sm btn-outline-secondary rounded-pill fw-semibold">🎯 ATS Screening Funnel</a>
+            <a href="#top-candidates-section" class="btn btn-sm btn-outline-secondary rounded-pill fw-semibold">🏆 Top Candidates</a>
+            <a href="#metrics-section" class="btn btn-sm btn-outline-secondary rounded-pill fw-semibold">📈 Hiring Analytics</a>
+            <a href="#job-performance-section" class="btn btn-sm btn-outline-secondary rounded-pill fw-semibold">💼 Job Requisitions</a>
+          </div>
+        </div>
+
         <!-- Hero Welcome Banner -->
-        <div class="card border-0 mb-4 shadow-lg overflow-hidden position-relative" style="background: linear-gradient(135deg, #059669 0%, #10b981 50%, #06b6d4 100%); color: #ffffff; border-radius: 20px;">
+        <div id="overview-section" class="card border-0 mb-4 shadow-lg overflow-hidden position-relative" style="background: linear-gradient(135deg, #059669 0%, #10b981 50%, #06b6d4 100%); color: #ffffff; border-radius: 20px;">
           <div class="card-body p-4 p-md-5 position-relative" style="z-index: 2;">
-            <span class="glow-badge text-white bg-white-10 border border-light border-opacity-25 px-3 py-1 rounded-pill mb-3 d-inline-block">Analytics & Insights</span>
+            <span class="glow-badge text-white bg-white-10 border border-light border-opacity-25 px-3 py-1 rounded-pill mb-3 d-inline-block">Analytics &amp; Insights</span>
             <h2 class="fw-bold mb-2 display-6" style="letter-spacing: -0.02em;">Recruiter Analytics Dashboard</h2>
             <p class="opacity-90 mb-4 text-light" style="max-width: 700px; font-size: 1.1rem; line-height: 1.6;">
               Track platform recruitment metrics, active hiring funnels, top applicant candidate skills, and AI interview evaluations in real-time.
@@ -112,73 +149,74 @@
         </div>
 
         <!-- Recruiter Workspace Quick Tools (The 4 Cards) -->
-        <h4 class="fw-bold mb-3">Recruiter Workspace Tools</h4>
-        <div class="row g-4 mb-4">
+        <div id="quick-tools-section">
+          <h4 class="fw-bold mb-3">Recruiter Workspace Tools</h4>
+          <div class="row g-4 mb-4">
+            <div class="col-md-6 col-lg-3">
+              <div class="card h-100 p-4 border-0 shadow-sm hover-shadow" style="border-radius: 12px; background: #ffffff;">
+                <div class="fs-1 text-success mb-3">📊</div>
+                <h5 class="fw-bold mb-2">Recruiter Dashboard</h5>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                  View platform recruitment metrics, active job funnels, and candidate match stats.
+                </p>
+                <a href="recruiter-dashboard.html" class="btn btn-success text-white btn-sm fw-semibold w-100">
+                  Open Dashboard &rarr;
+                </a>
+              </div>
+            </div>
 
-          <div class="col-md-6 col-lg-3">
-            <div class="card h-100 p-4 border-0 shadow-sm hover-shadow" style="border-radius: 12px; background: #ffffff;">
-              <div class="fs-1 text-success mb-3">📊</div>
-              <h5 class="fw-bold mb-2">Recruiter Dashboard</h5>
-              <p class="text-secondary small mb-3 flex-grow-1">
-                View platform recruitment metrics, active job funnels, and candidate match stats.
-              </p>
-              <a href="recruiter-dashboard.html" class="btn btn-success text-white btn-sm fw-semibold w-100">
-                Open Dashboard &rarr;
-              </a>
+            <div class="col-md-6 col-lg-3">
+              <div class="card h-100 p-4 border-0 shadow-sm hover-shadow" style="border-radius: 12px; background: #ffffff;">
+                <div class="fs-1 text-success mb-3">➕</div>
+                <h5 class="fw-bold mb-2">Post a New Job</h5>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                  Create new job requisitions with automatic NLP skill extraction and domain keyword matching.
+                </p>
+                <a href="post-job.html" class="btn btn-outline-success btn-sm fw-semibold w-100">
+                  Post Job &rarr;
+                </a>
+              </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+              <div class="card h-100 p-4 border-0 shadow-sm hover-shadow" style="border-radius: 12px; background: #ffffff;">
+                <div class="fs-1 text-success mb-3">💼</div>
+                <h5 class="fw-bold mb-2">Manage Posted Jobs</h5>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                  Inspect active and draft jobs, review candidate applicant counts, and manage listings.
+                </p>
+                <a href="my-jobs.html" class="btn btn-outline-success btn-sm fw-semibold w-100">
+                  Manage Jobs &rarr;
+                </a>
+              </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+              <div class="card h-100 p-4 border-0 shadow-sm hover-shadow" style="border-radius: 12px; background: #ffffff;">
+                <div class="fs-1 text-success mb-3">🎯</div>
+                <h5 class="fw-bold mb-2">Screen &amp; Rank Applicants</h5>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                  View ranked candidate lists with transparent TF-IDF match scores and AI interview reports.
+                </p>
+                <a href="my-jobs.html" class="btn btn-outline-success btn-sm fw-semibold w-100">
+                  View Applicants &rarr;
+                </a>
+              </div>
             </div>
           </div>
-
-          <div class="col-md-6 col-lg-3">
-            <div class="card h-100 p-4 border-0 shadow-sm hover-shadow" style="border-radius: 12px; background: #ffffff;">
-              <div class="fs-1 text-success mb-3">➕</div>
-              <h5 class="fw-bold mb-2">Post a New Job</h5>
-              <p class="text-secondary small mb-3 flex-grow-1">
-                Create new job requisitions with automatic NLP skill extraction and domain keyword matching.
-              </p>
-              <a href="post-job.html" class="btn btn-outline-success btn-sm fw-semibold w-100">
-                Post Job &rarr;
-              </a>
-            </div>
-          </div>
-
-          <div class="col-md-6 col-lg-3">
-            <div class="card h-100 p-4 border-0 shadow-sm hover-shadow" style="border-radius: 12px; background: #ffffff;">
-              <div class="fs-1 text-success mb-3">💼</div>
-              <h5 class="fw-bold mb-2">Manage Posted Jobs</h5>
-              <p class="text-secondary small mb-3 flex-grow-1">
-                Inspect active and draft jobs, review candidate applicant counts, and manage listings.
-              </p>
-              <a href="my-jobs.html" class="btn btn-outline-success btn-sm fw-semibold w-100">
-                Manage Jobs &rarr;
-              </a>
-            </div>
-          </div>
-
-          <div class="col-md-6 col-lg-3">
-            <div class="card h-100 p-4 border-0 shadow-sm hover-shadow" style="border-radius: 12px; background: #ffffff;">
-              <div class="fs-1 text-success mb-3">🎯</div>
-              <h5 class="fw-bold mb-2">Screen &amp; Rank Applicants</h5>
-              <p class="text-secondary small mb-3 flex-grow-1">
-                View ranked candidate lists with transparent TF-IDF match scores and AI interview reports.
-              </p>
-              <a href="my-jobs.html" class="btn btn-outline-success btn-sm fw-semibold w-100">
-                View Applicants &rarr;
-              </a>
-            </div>
-          </div>
-
         </div>
 
         <!-- Applicant Screening Summary (ATS System) -->
-        <div class="d-flex align-items-center justify-content-between mb-3 mt-4">
-          <h4 class="fw-bold mb-0">🎯 Applicant Screening &amp; ATS Funnel</h4>
-          <div class="d-flex align-items-center gap-2">
-            <span class="badge bg-primary-subtle text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill fw-semibold">
-              Default ATS Threshold: <span id="stat-ats-threshold">60%</span>
-            </span>
-            <a href="my-jobs.html" class="btn btn-sm btn-outline-success fw-semibold">View Eligible Candidates &rarr;</a>
+        <div id="ats-funnel-section">
+          <div class="d-flex align-items-center justify-content-between mb-3 mt-4">
+            <h4 class="fw-bold mb-0">🎯 Applicant Screening &amp; ATS Funnel</h4>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-primary-subtle text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill fw-semibold">
+                Default ATS Threshold: <span id="stat-ats-threshold">60%</span>
+              </span>
+              <a href="my-jobs.html" class="btn btn-sm btn-outline-success fw-semibold">View Eligible Candidates &rarr;</a>
+            </div>
           </div>
-        </div>
 
         <div class="row g-3 mb-4">
           <div class="col-6 col-md">
@@ -229,7 +267,7 @@
         </div>
 
         <!-- Top Candidates Widget -->
-        <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 12px; background: #ffffff;">
+        <div id="top-candidates-section" class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 12px; background: #ffffff;">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h6 class="fw-bold mb-0">🏆 Top Ranked Candidates across Jobs</h6>
             <a href="my-jobs.html" class="btn btn-sm btn-link text-success p-0 fw-semibold">View All Applicants &rarr;</a>
@@ -257,131 +295,133 @@
         </div>
 
         <!-- Platform Performance Metrics & Useful Analytics Summary -->
-        <h4 class="fw-bold mb-3">Platform Performance &amp; Recruitment Metrics</h4>
-        <div class="row g-3 mb-4">
-          <div class="col-6 col-lg-3">
-            <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <span class="fs-4">📄</span>
-                <span class="text-secondary fw-medium small">Total Applications</span>
+        <div id="metrics-section">
+          <h4 class="fw-bold mb-3">Platform Performance &amp; Recruitment Metrics</h4>
+          <div class="row g-3 mb-4">
+            <div class="col-6 col-lg-3">
+              <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="fs-4">📄</span>
+                  <span class="text-secondary fw-medium small">Total Applications</span>
+                </div>
+                <div class="stat-value text-primary fw-bold" id="stat-applications">0</div>
               </div>
-              <div class="stat-value text-primary fw-bold" id="stat-applications">0</div>
+            </div>
+            <div class="col-6 col-lg-3">
+              <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="fs-4">⭐</span>
+                  <span class="text-secondary fw-medium small">Total Shortlisted</span>
+                </div>
+                <div class="stat-value text-info fw-bold" id="stat-shortlisted">0</div>
+              </div>
+            </div>
+            <div class="col-6 col-lg-3">
+              <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="fs-4">🎙️</span>
+                  <span class="text-secondary fw-medium small">Total Interviews</span>
+                </div>
+                <div class="stat-value text-warning fw-bold" id="stat-interviews">0</div>
+              </div>
+            </div>
+            <div class="col-6 col-lg-3">
+              <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="fs-4">✅</span>
+                  <span class="text-secondary fw-medium small">Total Hired / Selected</span>
+                </div>
+                <div class="stat-value text-success fw-bold" id="stat-selected">0</div>
+              </div>
+            </div>
+            <div class="col-6 col-lg-4">
+              <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="fs-4">📈</span>
+                  <span class="text-secondary fw-medium small">Hiring Conversion Rate</span>
+                </div>
+                <div class="stat-value text-success fw-bold" id="stat-conversion-rate">0%</div>
+                <div class="text-muted small mt-1">(Hired / Applied &times; 100)</div>
+              </div>
+            </div>
+            <div class="col-6 col-lg-4">
+              <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="fs-4">🎯</span>
+                  <span class="text-secondary fw-medium small">Average Candidate Match Score</span>
+                </div>
+                <div class="stat-value text-primary fw-bold" id="stat-avg-match-score">—</div>
+              </div>
+            </div>
+            <div class="col-6 col-lg-4">
+              <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="fs-4">🏆</span>
+                  <span class="text-secondary fw-medium small">Average Interview Score</span>
+                </div>
+                <div class="stat-value text-warning fw-bold" id="stat-avg-interview-score">—</div>
+              </div>
             </div>
           </div>
-          <div class="col-6 col-lg-3">
-            <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <span class="fs-4">⭐</span>
-                <span class="text-secondary fw-medium small">Total Shortlisted</span>
-              </div>
-              <div class="stat-value text-info fw-bold" id="stat-shortlisted">0</div>
-            </div>
-          </div>
-          <div class="col-6 col-lg-3">
-            <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <span class="fs-4">🎙️</span>
-                <span class="text-secondary fw-medium small">Total Interviews</span>
-              </div>
-              <div class="stat-value text-warning fw-bold" id="stat-interviews">0</div>
-            </div>
-          </div>
-          <div class="col-6 col-lg-3">
-            <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <span class="fs-4">✅</span>
-                <span class="text-secondary fw-medium small">Total Hired / Selected</span>
-              </div>
-              <div class="stat-value text-success fw-bold" id="stat-selected">0</div>
-            </div>
-          </div>
-          <div class="col-6 col-lg-4">
-            <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <span class="fs-4">📈</span>
-                <span class="text-secondary fw-medium small">Hiring Conversion Rate</span>
-              </div>
-              <div class="stat-value text-success fw-bold" id="stat-conversion-rate">0%</div>
-              <div class="text-muted small mt-1">(Hired / Applied &times; 100)</div>
-            </div>
-          </div>
-          <div class="col-6 col-lg-4">
-            <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <span class="fs-4">🎯</span>
-                <span class="text-secondary fw-medium small">Average Candidate Match Score</span>
-              </div>
-              <div class="stat-value text-primary fw-bold" id="stat-avg-match-score">—</div>
-            </div>
-          </div>
-          <div class="col-6 col-lg-4">
-            <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <span class="fs-4">🏆</span>
-                <span class="text-secondary fw-medium small">Average Interview Score</span>
-              </div>
-              <div class="stat-value text-warning fw-bold" id="stat-avg-interview-score">—</div>
-            </div>
-          </div>
-        </div>
 
-        <!-- Interactive Analytics Charts Section -->
-        <div class="row g-3 mb-4">
-          <div class="col-lg-6">
-            <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 12px;">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="fw-bold mb-0">📊 Candidate Hiring Funnel</h6>
-                <span class="badge bg-success-subtle text-success border px-2 py-1 small">Applied &rarr; Shortlisted &rarr; Interviewed &rarr; Hired</span>
+          <!-- Interactive Analytics Charts Section -->
+          <div class="row g-3 mb-4">
+            <div class="col-lg-6">
+              <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 12px;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h6 class="fw-bold mb-0">📊 Candidate Hiring Funnel</h6>
+                  <span class="badge bg-success-subtle text-success border px-2 py-1 small">Applied &rarr; Shortlisted &rarr; Interviewed &rarr; Hired</span>
+                </div>
+                <canvas id="chart-hiring-funnel" height="220"></canvas>
+                <div id="chart-hiring-funnel-empty" class="text-muted-custom small d-none py-5 text-center">No funnel applications yet for selected filters.</div>
               </div>
-              <canvas id="chart-hiring-funnel" height="220"></canvas>
-              <div id="chart-hiring-funnel-empty" class="text-muted-custom small d-none py-5 text-center">No funnel applications yet for selected filters.</div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 12px;">
+                <h6 class="fw-bold mb-3">🎯 Match Score Distribution</h6>
+                <canvas id="chart-match-distribution" height="220"></canvas>
+                <div id="chart-match-distribution-empty" class="text-muted-custom small d-none py-5 text-center">No match scores available for selected filters.</div>
+              </div>
             </div>
           </div>
-          <div class="col-lg-6">
-            <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 12px;">
-              <h6 class="fw-bold mb-3">🎯 Match Score Distribution</h6>
-              <canvas id="chart-match-distribution" height="220"></canvas>
-              <div id="chart-match-distribution-empty" class="text-muted-custom small d-none py-5 text-center">No match scores available for selected filters.</div>
-            </div>
-          </div>
-        </div>
 
-        <div class="row g-3 mb-4">
-          <div class="col-lg-6">
-            <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 12px;">
-              <h6 class="fw-bold mb-3">⚠️ Top Missing Skills Analysis</h6>
-              <canvas id="chart-missing-skills" height="220"></canvas>
-              <div id="chart-missing-skills-empty" class="text-muted-custom small d-none py-5 text-center">No missing skills detected among applicant resumes 🎉</div>
+          <div class="row g-3 mb-4">
+            <div class="col-lg-6">
+              <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 12px;">
+                <h6 class="fw-bold mb-3">⚠️ Top Missing Skills Analysis</h6>
+                <canvas id="chart-missing-skills" height="220"></canvas>
+                <div id="chart-missing-skills-empty" class="text-muted-custom small d-none py-5 text-center">No missing skills detected among applicant resumes 🎉</div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 12px;">
+                <h6 class="fw-bold mb-3">💡 Top Candidate Skills</h6>
+                <canvas id="chart-top-skills" height="220"></canvas>
+                <div id="chart-top-skills-empty" class="text-muted-custom small d-none py-5 text-center">No applicants yet.</div>
+              </div>
             </div>
           </div>
-          <div class="col-lg-6">
-            <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 12px;">
-              <h6 class="fw-bold mb-3">💡 Top Candidate Skills</h6>
-              <canvas id="chart-top-skills" height="220"></canvas>
-              <div id="chart-top-skills-empty" class="text-muted-custom small d-none py-5 text-center">No applicants yet.</div>
-            </div>
-          </div>
-        </div>
 
-        <div class="row g-3 mb-4">
-          <div class="col-lg-6">
-            <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 12px;">
-              <h6 class="fw-bold mb-3">💼 Applications by Job Requisition</h6>
-              <canvas id="chart-applications-by-job" height="220"></canvas>
-              <div id="chart-applications-by-job-empty" class="text-muted-custom small d-none py-5 text-center">No applications yet.</div>
+          <div class="row g-3 mb-4">
+            <div class="col-lg-6">
+              <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 12px;">
+                <h6 class="fw-bold mb-3">💼 Applications by Job Requisition</h6>
+                <canvas id="chart-applications-by-job" height="220"></canvas>
+                <div id="chart-applications-by-job-empty" class="text-muted-custom small d-none py-5 text-center">No applications yet.</div>
+              </div>
             </div>
-          </div>
-          <div class="col-lg-6">
-            <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 12px;">
-              <h6 class="fw-bold mb-3">🎙️ Completed Interview Scores</h6>
-              <canvas id="chart-interview-scores" height="220"></canvas>
-              <div id="chart-interview-scores-empty" class="text-muted-custom small d-none py-5 text-center">No completed interviews yet.</div>
+            <div class="col-lg-6">
+              <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 12px;">
+                <h6 class="fw-bold mb-3">🎙️ Completed Interview Scores</h6>
+                <canvas id="chart-interview-scores" height="220"></canvas>
+                <div id="chart-interview-scores-empty" class="text-muted-custom small d-none py-5 text-center">No completed interviews yet.</div>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Job Performance Table -->
-        <div class="card border-0 shadow-sm p-4" style="border-radius: 12px;">
+        <div id="job-performance-section" class="card border-0 shadow-sm p-4" style="border-radius: 12px;">
           <h6 class="fw-bold mb-3">Job Performance</h6>
           <div id="job-performance-table">
             <div class="text-muted-custom small">Loading…</div>
@@ -392,48 +432,117 @@
   </div>
 
   <!-- Bulk Resume Upload Modal -->
+  <!-- Bulk Resume Upload & ATS Match Modal -->
   <div class="modal fade" id="bulkUploadModal" tabindex="-1" aria-labelledby="bulkUploadModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
         <div class="modal-header bg-success text-white p-3 border-0">
           <div class="d-flex align-items-center gap-2">
             <span class="fs-4">📦</span>
             <div>
-              <h5 class="modal-title fw-bold mb-0" id="bulkUploadModalLabel">Bulk Resume Upload &amp; Parsing</h5>
-              <span class="small opacity-75">Upload multiple PDF/DOCX resumes or a ZIP archive</span>
+              <h5 class="modal-title fw-bold mb-0" id="bulkUploadModalLabel">Bulk Resume Upload, ATS Analysis &amp; Deduplication</h5>
+              <span class="small opacity-75">Upload multiple PDF/DOCX resumes or ZIP archives, compare against JD, rank best matches &amp; store cleanly</span>
             </div>
           </div>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body p-4">
-          <div id="bulk-upload-dropzone" class="border border-2 border-dashed border-success rounded-3 p-4 text-center mb-3 bg-light cursor-pointer" style="border-color: #198754 !important;">
-            <input type="file" id="bulk-resume-file-input" multiple accept=".pdf,.docx,.zip" class="d-none" />
-            <div class="fs-1 text-success mb-2">📄 Archives or Multiple Files</div>
-            <h6 class="fw-bold mb-1">Click to select resumes or drag &amp; drop here</h6>
-            <p class="small text-muted mb-0">Supported formats: PDF, DOCX, ZIP (up to 50 MB total)</p>
+          
+          <!-- Job Description Collection Selection -->
+          <div class="card border-0 bg-light shadow-sm mb-4">
+            <div class="card-body p-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="form-label fw-bold text-dark mb-0 small">🎯 Target Job Description for ATS &amp; Match Analysis:</label>
+                <div class="btn-group btn-group-sm" role="group" id="jd-mode-toggle">
+                  <button type="button" class="btn btn-outline-success active" id="btn-mode-posted-job">Posted Job Requisition</button>
+                  <button type="button" class="btn btn-outline-success" id="btn-mode-custom-jd">✏️ Custom Job Description</button>
+                </div>
+              </div>
+
+              <!-- Option 1: Select Posted Job -->
+              <div id="section-posted-job" class="mt-2">
+                <select id="bulk-job-select" class="form-select form-select-sm">
+                  <option value="">General Candidate Talent Pool (No job linked)</option>
+                </select>
+              </div>
+
+              <!-- Option 2: Custom Job Description Fields -->
+              <div id="section-custom-jd" class="d-none mt-3 p-3 bg-white rounded border">
+                <div class="row g-2 mb-2">
+                  <div class="col-md-6">
+                    <label for="custom-jd-title" class="form-label small fw-bold mb-1">Target Job Title</label>
+                    <input type="text" id="custom-jd-title" class="form-control form-control-sm" placeholder="e.g. Senior Full Stack Engineer" />
+                  </div>
+                  <div class="col-md-3">
+                    <label for="custom-jd-exp" class="form-label small fw-bold mb-1">Required Experience (Years)</label>
+                    <input type="number" id="custom-jd-exp" class="form-control form-control-sm" min="0" max="30" step="0.5" placeholder="e.g. 3" />
+                  </div>
+                  <div class="col-md-3">
+                    <label for="custom-jd-skills" class="form-label small fw-bold mb-1">Key Required Skills</label>
+                    <input type="text" id="custom-jd-skills" class="form-control form-control-sm" placeholder="Python, FastAPI, React, SQL" />
+                  </div>
+                </div>
+                <div>
+                  <label for="custom-jd-desc" class="form-label small fw-bold mb-1">Job Description Text / Responsibilities</label>
+                  <textarea id="custom-jd-desc" class="form-control form-control-sm" rows="3" placeholder="Paste key responsibilities, requirements, and qualifications here..."></textarea>
+                </div>
+              </div>
+            </div>
           </div>
 
+          <!-- File Dropzone -->
+          <div id="bulk-upload-dropzone" class="border border-2 border-dashed border-success rounded-3 p-4 text-center mb-3 bg-light cursor-pointer" style="border-color: #198754 !important;">
+            <input type="file" id="bulk-resume-file-input" multiple accept=".pdf,.docx,.zip" class="d-none" />
+            <div class="fs-1 text-success mb-2">📁 Drag &amp; Drop Resumes or ZIP Archive</div>
+            <h6 class="fw-bold mb-1">Click to select PDF/DOCX resumes or drag &amp; drop here</h6>
+            <p class="small text-muted mb-0">Multiple files supported. Automatic deduplication check prevents duplicate records.</p>
+          </div>
+
+          <!-- Status & Progress -->
           <div id="bulk-status-container" class="d-none mb-3">
             <div class="d-flex justify-content-between small text-muted mb-1">
               <span id="bulk-status-label">Processing files...</span>
               <span id="bulk-status-count">0 / 0</span>
             </div>
-            <div class="progress" style="height: 8px;">
+            <div class="progress" style="height: 10px;">
               <div id="bulk-progress-bar" class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 0%;"></div>
             </div>
           </div>
 
+          <!-- Best Match Highlight Banner -->
+          <div id="bulk-best-match-banner" class="d-none alert alert-success border-success shadow-sm mb-3 rounded-3 p-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-3">
+                <span class="fs-1 text-warning">🏆</span>
+                <div>
+                  <span class="badge bg-warning text-dark fw-bold uppercase mb-1">#1 Best Match Candidate</span>
+                  <h5 class="fw-bold mb-0 text-success" id="best-candidate-name">Candidate Name</h5>
+                  <small class="text-muted" id="best-candidate-subtitle">Top match for target job</small>
+                </div>
+              </div>
+              <div class="text-end">
+                <span class="display-6 fw-bold text-success" id="best-candidate-score">95%</span>
+                <div class="small fw-semibold text-muted">ATS Match Score</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stored Candidates Results Table -->
           <div id="bulk-results-wrapper" class="d-none mt-3">
-            <h6 class="fw-bold mb-2">Parsed Candidates Summary</h6>
-            <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="fw-bold mb-0">Analysis &amp; Storage Results (Ranked by Best Match)</h6>
+              <span class="badge bg-success-subtle text-success border border-success" id="bulk-results-count-badge">0 Candidates</span>
+            </div>
+            <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
               <table class="table table-hover table-sm align-middle">
-                <thead class="table-light">
+                <thead class="table-light sticky-top">
                   <tr>
-                    <th>File</th>
-                    <th>Status</th>
-                    <th>Extracted Name</th>
-                    <th>Email</th>
-                    <th>Score</th>
+                    <th>Rank</th>
+                    <th>Candidate &amp; File</th>
+                    <th>Email &amp; Phone</th>
+                    <th>Deduplication Status</th>
+                    <th>ATS Match Score</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody id="bulk-results-table-body"></tbody>
@@ -443,7 +552,22 @@
         </div>
         <div class="modal-footer border-0 bg-light p-3">
           <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-          <button type="button" id="start-bulk-upload-btn" class="btn btn-success fw-semibold btn-sm px-4">Start Processing</button>
+          <button type="button" id="start-bulk-upload-btn" class="btn btn-success fw-semibold btn-sm px-4">Start Processing &amp; Matching</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed ATS Analysis Breakdown Modal -->
+  <div class="modal fade" id="atsBreakdownModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-dark text-white p-3 border-0">
+          <h5 class="modal-title fw-bold" id="ats-modal-title">Detailed ATS Match Breakdown</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4" id="ats-modal-body">
+          <!-- Dynamic Content Inserted by bulk-upload.js -->
         </div>
       </div>
     </div>

@@ -72,6 +72,10 @@ def create_job(db: Session, recruiter_id: uuid.UUID, payload) -> Job:
     if fraud_result["risk_level"] == "HIGH":
         initial_status = JobStatus.pending_review
 
+    non_tech_val = getattr(payload, "non_technical_skills", None)
+    if isinstance(non_tech_val, list):
+        non_tech_val = ", ".join(non_tech_val)
+
     job = Job(
         recruiter_id=recruiter_id,
         title=payload.title,
@@ -81,6 +85,9 @@ def create_job(db: Session, recruiter_id: uuid.UUID, payload) -> Job:
         experience_required=payload.experience_required,
         salary_range=payload.salary_range,
         status=initial_status,
+        relevant_work_experience=getattr(payload, "relevant_work_experience", None),
+        non_technical_skills=non_tech_val,
+        company_experience_requirements=getattr(payload, "company_experience_requirements", None),
         min_ats_score=getattr(payload, "min_ats_score", 60.0) or 60.0,
         min_job_match_score=getattr(payload, "min_job_match_score", 60.0) or 60.0,
         min_experience=getattr(payload, "min_experience", 0.0) or 0.0,

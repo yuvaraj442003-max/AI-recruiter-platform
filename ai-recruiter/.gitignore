@@ -9,6 +9,9 @@ env/
 .pytest_cache/
 backend/uploads/*
 !backend/uploads/.gitkeep
+uploads/*
+!uploads/.gitkeep
+*.docx
 backend/*.db
 backend/data/
 backend/.env

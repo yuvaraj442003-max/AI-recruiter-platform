@@ -18,11 +18,16 @@
 
   <div class="container py-5" style="max-width: 760px;">
     <!-- Brand logo & top step header -->
-    <div class="text-center mb-4">
-      <a href="index.html" class="text-decoration-none">
-        <h2 class="fw-bold text-primary mb-1">AI Recruiter</h2>
-      </a>
-      <p class="text-muted small">Candidate Account Setup &amp; Professional Profile</p>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <a href="index.html" class="text-decoration-none exit-reg-btn">
+          <h2 class="fw-bold text-primary mb-0">AI Recruiter</h2>
+        </a>
+        <p class="text-muted small mb-0">Candidate Account Setup &amp; Professional Profile</p>
+      </div>
+      <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 exit-reg-btn" id="header-exit-btn" title="Exit registration and leave page">
+        ✕ Exit &amp; Sign Out
+      </button>
     </div>
 
     <div class="card border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
@@ -103,10 +108,15 @@
             </div>
           </div>
 
-          <button type="button" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm" id="complete-submit-btn">
-            <span id="complete-submit-text">Submit Details &amp; Access Candidate Dashboard &rarr;</span>
-            <span id="complete-spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
-          </button>
+          <div class="d-flex flex-column flex-sm-row gap-3 mt-4">
+            <button type="button" class="btn btn-outline-secondary btn-lg w-100 fw-semibold exit-reg-btn" id="cancel-reg-btn">
+              ✕ Cancel &amp; Exit Registration
+            </button>
+            <button type="button" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm" id="complete-submit-btn">
+              <span id="complete-submit-text">Submit Details &amp; Access Candidate Dashboard &rarr;</span>
+              <span id="complete-spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+            </button>
+          </div>
         </form>
       </div>
     </div>

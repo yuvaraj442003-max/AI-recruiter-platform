@@ -33,6 +33,7 @@ class CandidateProfile(Base, TimestampMixin):
     resume_path: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     resume_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     resume_original_filename: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    resume_hash: Mapped[Optional[str]] = mapped_column(String(64), nullable=True, index=True)
     ai_summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     profile_score: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
@@ -47,10 +48,16 @@ class CandidateProfile(Base, TimestampMixin):
     github_url: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     other_links: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
+    # Recruiter Upload & Source Tracking
+    created_by_recruiter_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    source: Mapped[Optional[str]] = mapped_column(String(100), default="direct_candidate", nullable=True)
+
     candidate_skills: Mapped[list["CandidateSkill"]] = relationship(
         back_populates="candidate", cascade="all, delete-orphan"
     )
-    user: Mapped["User"] = relationship()
+    user: Mapped["User"] = relationship(foreign_keys=[user_id])
 
     def __repr__(self) -> str:
         return f"<CandidateProfile user_id={self.user_id}>"

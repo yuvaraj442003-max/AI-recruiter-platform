@@ -4,7 +4,7 @@ database and client from conftest.py.
 """
 
 
-def test_register_new_user(client):
+def test_register_new_user(client, db_session):
     response = client.post(
         "/api/v1/auth/register",
         json={"name": "Jane Doe", "email": "jane@example.com", "password": "SecurePass123", "role": "candidate"},
@@ -14,6 +14,12 @@ def test_register_new_user(client):
     assert body["success"] is True
     assert body["data"]["user"]["email"] == "jane@example.com"
     assert "access_token" in body["data"]
+
+    from app.models.user import User
+    user = db_session.query(User).filter(User.email == "jane@example.com").first()
+    if user:
+        user.is_email_verified = True
+        db_session.commit()
 
 
 def test_register_duplicate_email_fails(client):
@@ -55,5 +61,58 @@ def test_google_login_existing_user(client):
     body = response.json()
     assert body["success"] is True
     assert body["data"]["user"]["email"] == "jane@example.com"
+
+
+def test_candidate_cannot_login_as_recruiter(client):
+    client.post(
+        "/api/v1/auth/register",
+        json={"name": "Candidate Separated", "email": "candidate.sep@example.com", "password": "SecurePass123", "role": "candidate"},
+    )
+    res = client.post(
+        "/api/v1/auth/login",
+        json={"email": "candidate.sep@example.com", "password": "SecurePass123", "expected_role": "recruiter"},
+    )
+    assert res.status_code == 401
+    assert "Access Denied" in res.json()["message"]
+
+
+def test_recruiter_cannot_login_as_candidate(client):
+    client.post(
+        "/api/v1/auth/register",
+        json={"name": "Recruiter Separated", "email": "recruiter.sep@vgensoft.com", "password": "SecurePass123", "role": "recruiter"},
+    )
+    res = client.post(
+        "/api/v1/auth/login",
+        json={"email": "recruiter.sep@vgensoft.com", "password": "SecurePass123", "expected_role": "candidate"},
+    )
+    assert res.status_code == 401
+    assert "Access Denied" in res.json()["message"]
+
+
+def test_recruiter_gmail_domain_rejected(client):
+    res = client.post(
+        "/api/v1/auth/register",
+        json={"name": "Recruiter Gmail", "email": "recruiter@gmail.com", "password": "SecurePass123", "role": "recruiter"},
+    )
+    assert res.status_code == 400
+    assert "Recruiters must use a company email address" in res.json()["message"]
+
+
+def test_recruiter_company_domain_accepted(client):
+    res = client.post(
+        "/api/v1/auth/register",
+        json={"name": "Recruiter Company", "email": "yuva@vgensoft.com", "password": "SecurePass123", "role": "recruiter"},
+    )
+    assert res.status_code == 201
+    assert res.json()["success"] is True
+
+
+def test_candidate_gmail_accepted(client):
+    res = client.post(
+        "/api/v1/auth/register",
+        json={"name": "Candidate Gmail", "email": "candidate@gmail.com", "password": "SecurePass123", "role": "candidate"},
+    )
+    assert res.status_code == 201
+    assert res.json()["success"] is True
 
 

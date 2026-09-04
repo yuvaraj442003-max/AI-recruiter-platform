@@ -237,8 +237,10 @@ def get_contacts(
 ):
     """Retrieves eligible contacts for current candidate or recruiter."""
     contacts = []
+    seen_user_ids = set()
+
     if current_user.role == UserRole.candidate:
-        # Candidate contacts: Recruiters who posted jobs the candidate applied for + other active recruiters
+        # Candidate contacts: Recruiters who posted jobs candidate applied for + other active recruiters & candidates
         applied_recruiters = (
             db.query(User, Job.title, Application.id)
             .join(Job, Job.recruiter_id == User.id)
@@ -247,7 +249,6 @@ def get_contacts(
             .filter(CandidateProfile.user_id == current_user.id)
             .all()
         )
-        seen_user_ids = set()
         for rec_user, job_title, app_id in applied_recruiters:
             if rec_user.id not in seen_user_ids:
                 seen_user_ids.add(rec_user.id)
@@ -264,7 +265,6 @@ def get_contacts(
                     )
                 )
 
-        # Fallback: All active recruiters
         all_recruiters = db.query(User).filter(User.role.in_([UserRole.recruiter, UserRole.company_admin])).all()
         for rec_user in all_recruiters:
             if rec_user.id not in seen_user_ids and rec_user.id != current_user.id:
@@ -290,7 +290,6 @@ def get_contacts(
             .filter(Job.recruiter_id == current_user.id)
             .all()
         )
-        seen_user_ids = set()
         for cand_user, job_title, app_id in applicant_candidates:
             if cand_user.id not in seen_user_ids:
                 seen_user_ids.add(cand_user.id)
@@ -307,7 +306,6 @@ def get_contacts(
                     )
                 )
 
-        # Fallback: All candidate users
         all_candidates = db.query(User).filter(User.role == UserRole.candidate).all()
         for cand_user in all_candidates:
             if cand_user.id not in seen_user_ids and cand_user.id != current_user.id:
@@ -323,6 +321,22 @@ def get_contacts(
                     )
                 )
 
+    # General fallback: include all other users so messaging is completely open and unified
+    all_users = db.query(User).all()
+    for u in all_users:
+        if u.id not in seen_user_ids and u.id != current_user.id:
+            seen_user_ids.add(u.id)
+            hl_or_comp = _get_user_headline_or_company(db, u)
+            contacts.append(
+                ContactResponse(
+                    user_id=u.id,
+                    name=u.name,
+                    email=u.email,
+                    role=u.role.value,
+                    company_or_headline=hl_or_comp,
+                )
+            )
+
     return APIResponse(success=True, message="Contacts list", data=contacts)
 
 
@@ -331,7 +345,7 @@ def get_unread_count(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Returns total unread messages count for logged-in user."""
+    """Returns total unread messages count for logged-in user across all conversations."""
     unread = (
         db.query(func.count(ChatMessage.id))
         .filter(ChatMessage.receiver_id == current_user.id, ChatMessage.is_read == False)
