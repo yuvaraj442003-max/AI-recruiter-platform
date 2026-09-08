@@ -74,7 +74,7 @@ class ApplicationResponse(BaseModel):
     override_reason: Optional[str] = None
 
     source: Optional[str] = "direct_candidate"
-    uploaded_by_recruiter_id: Optional[str] = None
+    uploaded_by_recruiter_id: Optional[Union[uuid.UUID, str]] = None
 
     # Denormalized display fields
     candidate_name: Optional[str] = None

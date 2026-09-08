@@ -8,7 +8,7 @@ and who/when.
 import uuid
 from typing import Optional
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, func
+from sqlalchemy import DateTime, ForeignKey, JSON, String, Text, func
 from sqlalchemy.dialects.postgresql import JSONB
 from app.core.db_types import GUID
 from sqlalchemy.orm import Mapped, mapped_column
@@ -25,7 +25,7 @@ class AuditLog(Base):
     )
     action: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
     details: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string
-    meta_data: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
+    meta_data: Mapped[Optional[dict]] = mapped_column(JSON().with_variant(JSONB, "postgresql"), nullable=True)
     ip_address: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 

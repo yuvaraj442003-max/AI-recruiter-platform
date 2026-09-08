@@ -165,6 +165,9 @@ def _save_and_store_bulk_resume(
     if fields.get("experience_years") is not None: profile.experience_years = fields.get("experience_years")
     if fields.get("education"): profile.education = fields.get("education")
     if fields.get("work_experience"): profile.work_experience = fields.get("work_experience")
+    if fields.get("linkedin_url"): profile.linkedin_url = fields.get("linkedin_url")
+    if fields.get("github_url"): profile.github_url = fields.get("github_url")
+    if fields.get("portfolio_url"): profile.portfolio_url = fields.get("portfolio_url")
     profile.profile_score = score
 
     extracted_certs = fields.get("certifications")
@@ -234,7 +237,7 @@ def _save_and_store_bulk_resume(
             db.flush()
 
     if recruiter_id:
-        profile.created_by_recruiter_id = str(recruiter_id)
+        profile.created_by_recruiter_id = recruiter_id
         profile.source = "recruiter_bulk_upload"
 
     if target_job:
@@ -269,7 +272,7 @@ def _save_and_store_bulk_resume(
                     matched_skills=matched_s,
                     missing_skills=missing_s,
                     match_breakdown=bk_json,
-                    uploaded_by_recruiter_id=str(recruiter_id) if recruiter_id else None,
+                    uploaded_by_recruiter_id=recruiter_id if recruiter_id else None,
                     source="recruiter_bulk_upload",
                 )
                 db.add(app_rec)
@@ -285,7 +288,7 @@ def _save_and_store_bulk_resume(
                 app_rec.missing_skills = missing_s
                 app_rec.match_breakdown = bk_json
                 if recruiter_id:
-                    app_rec.uploaded_by_recruiter_id = str(recruiter_id)
+                    app_rec.uploaded_by_recruiter_id = recruiter_id
                     app_rec.source = "recruiter_bulk_upload"
         except Exception as err:
             print("Error during ATS score calculation:", err)
@@ -513,6 +516,36 @@ def delete_my_profile(
     delete_candidate_profile(db, profile)
 
     return APIResponse(success=True, message="Resume deleted successfully", data=None)
+
+
+@router.delete("/{candidate_id}", response_model=APIResponse[None])
+def delete_candidate_by_id(
+    candidate_id: str,
+    current_user: User = Depends(require_role(UserRole.recruiter, UserRole.company_admin, UserRole.admin)),
+    db: Session = Depends(get_db),
+):
+    """Allows recruiters and admins to delete a candidate profile and their uploaded resume data."""
+    try:
+        cand_uuid = uuid.UUID(candidate_id)
+    except ValueError:
+        raise NotFoundError("Invalid candidate ID format")
+
+    profile = (
+        db.query(CandidateProfile)
+        .filter((CandidateProfile.id == cand_uuid) | (CandidateProfile.user_id == cand_uuid))
+        .first()
+    )
+    if not profile:
+        raise NotFoundError("Candidate profile not found")
+
+    user_to_delete = profile.user
+    delete_candidate_profile(db, profile)
+
+    if user_to_delete and user_to_delete.role == UserRole.candidate:
+        db.delete(user_to_delete)
+        db.commit()
+
+    return APIResponse(success=True, message="Candidate profile deleted successfully", data=None)
 
 
 @router.post("/summary", response_model=APIResponse[CandidateProfileResponse])
@@ -1108,31 +1141,51 @@ def list_recruiter_uploaded_candidates(
     current_user: User = Depends(require_role(UserRole.recruiter, UserRole.company_admin, UserRole.admin)),
     db: Session = Depends(get_db),
 ):
-    """Retrieves candidates specifically created or uploaded by the requesting recruiter."""
+    """Retrieves candidates created or uploaded by the requesting recruiter, or in talent pool."""
     profiles = (
         db.query(CandidateProfile)
-        .options(joinedload(CandidateProfile.user))
-        .filter(CandidateProfile.created_by_recruiter_id == str(current_user.id))
+        .options(
+            joinedload(CandidateProfile.user),
+            joinedload(CandidateProfile.candidate_skills).joinedload(CandidateSkill.skill)
+        )
+        .order_by(CandidateProfile.created_at.desc())
         .all()
     )
     results = []
-    for p in profiles:
+    for idx, p in enumerate(profiles):
         u = p.user
-        results.append({
-            "candidate_id": str(p.id),
-            "user_id": str(p.user_id),
+        skills_list = [cs.skill.skill_name for cs in p.candidate_skills if cs and cs.skill]
+        extracted_data = {
             "name": u.name if u else "Candidate",
             "email": u.email if u else None,
             "phone": p.phone,
             "location": p.location,
+            "address": p.address,
+            "summary": p.summary or p.ai_summary,
+            "skills": skills_list,
+            "experience_years": p.experience_years,
+            "education": p.education,
+            "work_experience": p.work_experience,
+            "certifications": p.certifications,
+            "linkedin_url": p.linkedin_url,
+            "github_url": p.github_url,
+            "portfolio_url": p.portfolio_url,
             "headline": p.headline,
             "current_role": p.current_role,
-            "experience_years": p.experience_years,
-            "profile_score": p.profile_score,
+        }
+        results.append({
+            "rank": idx + 1,
+            "candidate_id": str(p.id),
+            "user_id": str(p.user_id),
+            "filename": p.resume_original_filename or f"resume_{(u.name.lower().replace(' ', '_') if u and u.name else 'candidate')}.pdf",
+            "status": "completed",
+            "is_duplicate": False,
+            "overall_match_score": float(p.profile_score or 80.0),
+            "extracted_data": extracted_data,
             "source": p.source or "recruiter_bulk_upload",
             "created_at": p.created_at.isoformat() if p.created_at else None,
         })
-    return APIResponse(success=True, message=f"Retrieved {len(results)} recruiter uploaded candidate(s)", data=results)
+    return APIResponse(success=True, message=f"Retrieved {len(results)} candidate(s)", data=results)
 
 
 # Singular alias route /api/v1/resume/improve

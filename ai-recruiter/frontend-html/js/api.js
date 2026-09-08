@@ -67,6 +67,9 @@ const Session = {
   },
 };
 
+window.Session = Session;
+window.API_BASE_URL = API_BASE_URL;
+
 
 
 

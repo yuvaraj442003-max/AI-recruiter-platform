@@ -91,3 +91,37 @@ def mark_all_read(
 ):
     count = notification_service.mark_all_notifications_read(db, current_user.id)
     return APIResponse(success=True, message="All notifications marked as read", data={"updated_count": count})
+
+
+from app.models.email_log import EmailLog
+from app.models.user import UserRole
+
+
+@router.get("/email-logs", response_model=APIResponse[list[dict]])
+def list_email_logs(
+    to_email: str = None,
+    limit: int = 50,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    query = db.query(EmailLog)
+    if to_email:
+        query = query.filter(EmailLog.to_email == to_email.strip().lower())
+    elif current_user.role not in [UserRole.admin, UserRole.superadmin]:
+        query = query.filter(EmailLog.to_email == current_user.email.strip().lower())
+    logs = query.order_by(EmailLog.created_at.desc()).limit(limit).all()
+    data = [
+        {
+            "id": str(l.id),
+            "to_email": l.to_email,
+            "subject": l.subject,
+            "email_type": l.email_type,
+            "status": l.status,
+            "error_message": l.error_message,
+            "created_at": l.created_at.isoformat() if l.created_at else None,
+            "sent_at": l.sent_at.isoformat() if l.sent_at else None,
+        }
+        for l in logs
+    ]
+    return APIResponse(success=True, message="Email logs fetched", data=data)
+

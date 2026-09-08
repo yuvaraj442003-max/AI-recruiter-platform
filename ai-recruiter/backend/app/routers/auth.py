@@ -160,7 +160,7 @@ def register(payload: UserRegister, request: Request, db: Session = Depends(get_
     db.refresh(user)
 
     from app.services.email_service import send_verification_email
-    send_verification_email(user.email, user.name, v_token)
+    send_verification_email(user.email, user.name, v_token, db=db)
 
     log_action(db, "user.register", user_id=user.id, details={"role": user.role.value, "verification_status": "approved"}, ip_address=client_ip)
 
@@ -369,7 +369,7 @@ def forgot_password(payload: ForgotPasswordRequest, request: Request, db: Sessio
     db.commit()
 
     from app.services.email_service import send_reset_password_email
-    send_reset_password_email(user.email, user.name, token)
+    send_reset_password_email(user.email, user.name, token, db=db)
 
     log_action(db, "user.forgot_password_requested", user_id=user.id, ip_address=client_ip)
 
@@ -492,7 +492,7 @@ def resend_verification(payload: ResendVerificationRequest, request: Request, db
     db.commit()
 
     from app.services.email_service import send_verification_email
-    send_verification_email(user.email, user.name, token)
+    send_verification_email(user.email, user.name, token, db=db)
 
     return APIResponse(
         success=True,

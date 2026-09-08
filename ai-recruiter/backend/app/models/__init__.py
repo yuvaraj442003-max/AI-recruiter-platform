@@ -9,6 +9,7 @@ from app.models.audit_log import AuditLog
 from app.models.notification import Notification
 from app.models.application_history import ApplicationStatusHistory
 from app.models.message import ChatMessage
+from app.models.email_log import EmailLog
 
 __all__ = [
     "User",
@@ -25,4 +26,5 @@ __all__ = [
     "Notification",
     "ApplicationStatusHistory",
     "ChatMessage",
+    "EmailLog",
 ]

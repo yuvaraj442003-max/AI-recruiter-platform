@@ -8,7 +8,7 @@ import enum
 import uuid
 from typing import Optional
 
-from sqlalchemy import DateTime, Enum, Float, ForeignKey, Integer, Text, func
+from sqlalchemy import DateTime, Enum, Float, ForeignKey, Integer, JSON, Text, func
 from sqlalchemy.dialects.postgresql import JSONB
 from app.core.db_types import GUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -117,7 +117,7 @@ class InterviewEvaluation(Base):
     strengths: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON list
     weaknesses: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON list
     recommendation: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    evaluation_json: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
+    evaluation_json: Mapped[Optional[dict]] = mapped_column(JSON().with_variant(JSONB, "postgresql"), nullable=True)
     source: Mapped[str] = mapped_column(Text, default="template", nullable=False)  # "llm" or "template"
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 

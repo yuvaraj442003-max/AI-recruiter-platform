@@ -26,3 +26,4 @@ frontend-html/.env
 
 # --- Docker ---
 *.log
+*.rdb

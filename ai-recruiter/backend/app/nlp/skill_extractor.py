@@ -8,6 +8,7 @@ to extend, which matters more than recall here since a human recruiter
 always reviews the result.
 """
 import re
+from typing import Optional
 
 from app.nlp.skills_data import ALIAS_INDEX
 from app.nlp.text_processor import clean_text, extract_entities, sentence_split
@@ -589,6 +590,33 @@ def check_ats_sections(text: str) -> dict[str, bool]:
     }
 
 
+_LINKEDIN_RE = re.compile(r"https?://(?:www\.)?linkedin\.com/in/[a-zA-Z0-9_%-]+/?", re.IGNORECASE)
+_GITHUB_RE = re.compile(r"https?://(?:www\.)?github\.com/[a-zA-Z0-9_%-]+/?", re.IGNORECASE)
+_PORTFOLIO_RE = re.compile(r"https?://[a-zA-Z0-9_-]+\.[a-zA-Z0-9._/-]+", re.IGNORECASE)
+
+
+def extract_linkedin(text: str) -> Optional[str]:
+    """Extract LinkedIn profile URL."""
+    match = _LINKEDIN_RE.search(text)
+    return match.group(0).strip() if match else None
+
+
+def extract_github(text: str) -> Optional[str]:
+    """Extract GitHub profile URL."""
+    match = _GITHUB_RE.search(text)
+    return match.group(0).strip() if match else None
+
+
+def extract_portfolio(text: str) -> Optional[str]:
+    """Extract personal portfolio URL or site."""
+    matches = _PORTFOLIO_RE.findall(text)
+    for m in matches:
+        m_lower = m.lower()
+        if not any(ignored in m_lower for ignored in ["linkedin.com", "github.com", "example.com", "w3.org", "schema.org", "adobe.com"]):
+            return m.strip()
+    return None
+
+
 def parse_resume_fields(raw_text: str) -> dict:
     """
     Full pipeline: clean -> NER -> structured field extraction.
@@ -621,5 +649,8 @@ def parse_resume_fields(raw_text: str) -> dict:
         "certifications": certs,
         "metrics_and_impact": metrics,
         "ats_sections": sections,
+        "linkedin_url": extract_linkedin(text),
+        "github_url": extract_github(text),
+        "portfolio_url": extract_portfolio(text),
     }
 

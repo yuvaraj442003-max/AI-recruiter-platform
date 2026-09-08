@@ -1,0 +1,12 @@
+# Root gitignore
+uploads/*
+!uploads/.gitkeep
+ai-recruiter/uploads/*
+!ai-recruiter/uploads/.gitkeep
+*.rdb
+*.db
+__pycache__/
+*.pyc
+.pytest_cache/
+.vscode/
+.idea/

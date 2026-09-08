@@ -65,7 +65,7 @@ def _to_response(app: Application, job_title: str | None = None) -> ApplicationR
         recruiter_override=app.recruiter_override if app.recruiter_override is not None else False,
         override_reason=app.override_reason,
         source=getattr(app, "source", "direct_candidate") or "direct_candidate",
-        uploaded_by_recruiter_id=getattr(app, "uploaded_by_recruiter_id", None),
+        uploaded_by_recruiter_id=str(app.uploaded_by_recruiter_id) if getattr(app, "uploaded_by_recruiter_id", None) else None,
         candidate_name=cand_user.name if cand_user else None,
         candidate_email=cand_user.email if cand_user else None,
         job_title=job_title,
@@ -361,6 +361,28 @@ def update_application_status(
             notification_type=type_map.get(new_status, "info"),
             link="/my-applications.html",
         )
+
+        # Send status update email to candidate
+        try:
+            from app.services.email_service import send_application_status_email
+            cand_user = application.candidate.user if application.candidate else None
+            if cand_user and cand_user.email:
+                comp_name = (
+                    application.job.company.name if (application.job and getattr(application.job, "company", None))
+                    else f"{current_user.name}'s Company"
+                )
+                job_title = application.job.title if application.job else "Position"
+                send_application_status_email(
+                    to_email=cand_user.email,
+                    candidate_name=cand_user.name,
+                    job_title=job_title,
+                    company_name=comp_name,
+                    new_status=new_status,
+                    notes=payload.notes if hasattr(payload, 'notes') and payload.notes else None,
+                    db=db,
+                )
+        except Exception as err:
+            print(f"Warning: Failed to dispatch status update email: {err}")
 
     db.commit()
     db.refresh(application)

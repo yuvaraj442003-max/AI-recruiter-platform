@@ -96,6 +96,36 @@ def start_interview(
         interview_type=payload.interview_type,
         num_questions=payload.num_questions,
     )
+    from datetime import datetime
+    try:
+        from app.services.email_service import send_interview_invitation_email
+        from app.core.config import settings
+
+        cand_user = interview.candidate.user if (interview.candidate and interview.candidate.user) else None
+        if cand_user and cand_user.email:
+            comp_name = (
+                interview.job.company.name if (interview.job and getattr(interview.job, "company", None))
+                else f"{current_user.name}'s Company"
+            )
+            job_title = interview.job.title if interview.job else "Position"
+            link = f"{settings.FRONTEND_URL.rstrip('/')}/interview.html?id={interview.id}"
+            sched_date = datetime.now().strftime("%B %d, %Y")
+            sched_time = "Flexible / Instant Online Session"
+
+            send_interview_invitation_email(
+                to_email=cand_user.email,
+                candidate_name=cand_user.name,
+                company_name=comp_name,
+                job_title=job_title,
+                interview_date=sched_date,
+                interview_time=sched_time,
+                location_or_link=link,
+                instructions="Log in to your candidate portal and complete the online AI technical & behavioral interview session.",
+                db=db,
+            )
+    except Exception as err:
+        print(f"Warning: Failed to dispatch interview invitation email: {err}")
+
     return APIResponse(
         success=True, message="Interview started and questions generated", data=_to_response(interview, include_answers=True)
     )

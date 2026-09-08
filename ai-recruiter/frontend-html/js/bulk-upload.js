@@ -17,6 +17,7 @@
   const resultsTableBody = document.getElementById("bulk-results-table-body");
   const resultsCountBadge = document.getElementById("bulk-results-count-badge");
   const bestMatchBanner = document.getElementById("bulk-best-match-banner");
+  const searchInput = document.getElementById("candidate-table-search");
 
   // JD Collection Toggle Elements
   const btnModePosted = document.getElementById("btn-mode-posted-job");
@@ -78,6 +79,27 @@
     loadJobsDropdown();
   }
 
+  // Load existing uploaded candidates on page load
+  async function loadExistingCandidates() {
+    if (!resultsTableBody) return;
+    try {
+      const token = getToken();
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      let response = await fetch(`${BASE_URL}/resumes/recruiter/my-candidates`, { headers });
+      if (response.ok) {
+        const res = await response.json();
+        if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+          currentResultsStore = res.data;
+          renderResults(currentResultsStore);
+        }
+      }
+    } catch (err) {
+      console.warn("Could not load existing uploaded candidates:", err);
+    }
+  }
+
+  loadExistingCandidates();
+
   dropzone.addEventListener("click", () => fileInput.click());
 
   dropzone.addEventListener("dragover", (e) => {
@@ -112,6 +134,35 @@
     }
   }
 
+  // Live Search Filter for Extracted Table
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.trim().toLowerCase();
+      if (!query) {
+        renderResults(currentResultsStore);
+        return;
+      }
+      const filtered = currentResultsStore.filter((item) => {
+        const d = item.extracted_data || {};
+        const name = (d.name || item.filename || "").toLowerCase();
+        const email = (d.email || "").toLowerCase();
+        const phone = (d.phone || "").toLowerCase();
+        const location = (d.location || "").toLowerCase();
+        const skills = (Array.isArray(d.skills) ? d.skills.join(" ") : d.skills || "").toLowerCase();
+        const exp = String(d.experience_years || "").toLowerCase();
+        return (
+          name.includes(query) ||
+          email.includes(query) ||
+          phone.includes(query) ||
+          location.includes(query) ||
+          skills.includes(query) ||
+          exp.includes(query)
+        );
+      });
+      renderResults(filtered, null, true);
+    });
+  }
+
   if (startBtn) {
     startBtn.addEventListener("click", async () => {
       if (selectedFiles.length === 0) {
@@ -120,10 +171,10 @@
       }
 
       startBtn.disabled = true;
-      statusContainer.classList.remove("d-none");
-      statusLabel.textContent = "Uploading & analyzing resumes via ATS engine...";
-      progressBar.style.width = "30%";
-      statusCount.textContent = `0 / ${selectedFiles.length}`;
+      if (statusContainer) statusContainer.classList.remove("d-none");
+      if (statusLabel) statusLabel.textContent = "Uploading & analyzing resumes via AI parser...";
+      if (progressBar) progressBar.style.width = "30%";
+      if (statusCount) statusCount.textContent = `0 / ${selectedFiles.length}`;
 
       const formData = new FormData();
       selectedFiles.forEach((file) => {
@@ -146,8 +197,8 @@
 
       try {
         const token = getToken();
-        progressBar.style.width = "60%";
-        
+        if (progressBar) progressBar.style.width = "60%";
+
         let response;
         try {
           response = await fetch(`${BASE_URL}/resumes/bulk-upload`, {
@@ -156,11 +207,10 @@
             body: formData,
           });
         } catch (fetchErr) {
-          // Fallback check between localhost and 127.0.0.1
-          const altBase = BASE_URL.includes("localhost") 
+          const altBase = BASE_URL.includes("localhost")
             ? BASE_URL.replace("localhost", "127.0.0.1")
             : BASE_URL.replace("127.0.0.1", "localhost");
-          
+
           try {
             response = await fetch(`${altBase}/resumes/bulk-upload`, {
               method: "POST",
@@ -168,7 +218,7 @@
               body: formData,
             });
           } catch (_) {
-            throw new Error("Unable to connect to the backend server (http://localhost:8000). Please check that FastAPI / Uvicorn is running.");
+            throw new Error("Unable to connect to backend server. Please verify FastAPI server is running.");
           }
         }
 
@@ -185,9 +235,9 @@
 
         const res = await response.json();
         if (res.success && res.data) {
-          progressBar.style.width = "100%";
-          statusLabel.textContent = "Processing, ATS matching & deduplication complete!";
-          statusCount.textContent = `${res.data.successful} stored (${res.data.duplicates || 0} duplicates linked), ${res.data.failed} failed`;
+          if (progressBar) progressBar.style.width = "100%";
+          if (statusLabel) statusLabel.textContent = "Processing, ATS matching & candidate parsing complete!";
+          if (statusCount) statusCount.textContent = `${res.data.successful} stored (${res.data.duplicates || 0} duplicates linked), ${res.data.failed} failed`;
           currentResultsStore = res.data.results || [];
           renderResults(currentResultsStore, res.data.best_match);
         } else {
@@ -202,28 +252,30 @@
     });
   }
 
-  function renderResults(results, bestMatch) {
+  function renderResults(results, bestMatch = null, isFiltered = false) {
     if (!resultsWrapper || !resultsTableBody) return;
     resultsWrapper.classList.remove("d-none");
 
     if (resultsCountBadge) {
-      resultsCountBadge.textContent = `${results.length} Candidates Analyzed`;
+      resultsCountBadge.textContent = `${results.length} Candidates`;
     }
 
-    if (bestMatch && bestMatch.candidate_name && bestMatchBanner) {
-      bestMatchBanner.classList.remove("d-none");
-      const nameEl = document.getElementById("best-candidate-name");
-      const scoreEl = document.getElementById("best-candidate-score");
-      const subEl = document.getElementById("best-candidate-subtitle");
-      if (nameEl) nameEl.textContent = bestMatch.candidate_name;
-      if (scoreEl) scoreEl.textContent = `${Math.round(bestMatch.score)}%`;
-      if (subEl) subEl.textContent = `Ranked #1 candidate with top skills and highest ATS match score`;
-    } else if (bestMatchBanner) {
-      bestMatchBanner.classList.add("d-none");
+    if (!isFiltered) {
+      if (bestMatch && bestMatch.candidate_name && bestMatchBanner) {
+        bestMatchBanner.classList.remove("d-none");
+        const nameEl = document.getElementById("best-candidate-name");
+        const scoreEl = document.getElementById("best-candidate-score");
+        const subEl = document.getElementById("best-candidate-subtitle");
+        if (nameEl) nameEl.textContent = bestMatch.candidate_name;
+        if (scoreEl) scoreEl.textContent = `${Math.round(bestMatch.score)}%`;
+        if (subEl) subEl.textContent = `Ranked #1 candidate with top matching skills and experience profile.`;
+      } else if (bestMatchBanner) {
+        bestMatchBanner.classList.add("d-none");
+      }
     }
 
     if (results.length === 0) {
-      resultsTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-3">No files processed.</td></tr>`;
+      resultsTableBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-4">No candidates found.</td></tr>`;
       return;
     }
 
@@ -235,16 +287,33 @@
 
       // Rank Badge
       let rankBadge = `<span class="badge bg-secondary">#${r.rank || index + 1}</span>`;
-      if (r.is_best_match || index === 0) {
-        rankBadge = `<span class="badge bg-warning text-dark fw-bold shadow-sm">🏆 #1 Top Match</span>`;
+      if (r.is_best_match || (!isFiltered && index === 0 && score > 0)) {
+        rankBadge = `<span class="badge bg-warning text-dark fw-bold shadow-sm">🏆 #1 Match</span>`;
       }
 
-      // Deduplication & Storage Status Badge
-      let dedupBadge = `<span class="badge bg-success-subtle text-success border border-success">✨ Stored New</span>`;
+      // Deduplication Badge
+      let dedupBadge = `<span class="badge bg-success-subtle text-success border border-success">✨ New</span>`;
       if (r.is_duplicate) {
-        dedupBadge = `<span class="badge bg-warning-subtle text-dark border border-warning" title="${escapeHtml(r.duplicate_reason || "Duplicate candidate detected")}">🔄 Duplicate Linked</span>`;
+        dedupBadge = `<span class="badge bg-warning-subtle text-dark border border-warning" title="${escapeHtml(r.duplicate_reason || "Duplicate candidate detected")}">🔄 Duplicate</span>`;
       } else if (r.status === "failed") {
         dedupBadge = `<span class="badge bg-danger-subtle text-danger border border-danger">Failed</span>`;
+      }
+
+      // Skills Badges (Top 3)
+      const skillsArr = Array.isArray(data.skills) ? data.skills : (data.skills ? String(data.skills).split(",") : []);
+      const topSkillsBadges = skillsArr.slice(0, 3).map(s => `<span class="badge bg-primary-subtle text-primary border border-primary-subtle me-1 mb-1">${escapeHtml(s.trim())}</span>`).join("");
+      const remainingSkillsCount = skillsArr.length > 3 ? `<span class="badge bg-light text-muted border">+${skillsArr.length - 3}</span>` : "";
+
+      // Social Links (LinkedIn, GitHub, Portfolio)
+      let linksHtml = [];
+      if (data.linkedin_url) {
+        linksHtml.push(`<a href="${escapeHtml(data.linkedin_url)}" target="_blank" class="badge bg-info-subtle text-info border border-info-subtle text-decoration-none me-1" title="LinkedIn Profile">LinkedIn 🔗</a>`);
+      }
+      if (data.github_url) {
+        linksHtml.push(`<a href="${escapeHtml(data.github_url)}" target="_blank" class="badge bg-dark-subtle text-dark border border-dark-subtle text-decoration-none me-1" title="GitHub Profile">GitHub 💻</a>`);
+      }
+      if (data.portfolio_url) {
+        linksHtml.push(`<a href="${escapeHtml(data.portfolio_url)}" target="_blank" class="badge bg-success-subtle text-success border border-success-subtle text-decoration-none me-1" title="Portfolio / Website">Portfolio 🌐</a>`);
       }
 
       // ATS Score Color
@@ -254,45 +323,223 @@
       else if (score < 85) scoreBadgeClass = "bg-info text-dark";
 
       const actionBtn = r.candidate_id
-        ? `<div class="btn-group btn-group-sm">
-             <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 fw-bold view-ats-btn" data-index="${index}" style="font-size: 0.75rem;">🔍 View ATS</button>
-             <a href="${BASE_URL}/resumes/${r.candidate_id}/export?format=pdf&token=${encodeURIComponent(token)}" target="_blank" class="btn btn-sm btn-outline-success py-0 px-2 fw-bold" style="font-size: 0.75rem;">📄 Dossier</a>
+        ? `<div class="d-flex flex-column gap-1">
+             <button type="button" class="btn btn-sm btn-success py-1 px-2 fw-bold view-cand-btn" data-index="${index}" style="font-size: 0.75rem;">👤 View Details</button>
+             <div class="d-flex gap-1">
+               <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold view-ats-btn" data-index="${index}" style="font-size: 0.72rem;">📊 ATS Match</button>
+               <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 fw-semibold delete-cand-btn" data-index="${index}" style="font-size: 0.72rem;">🗑️ Delete</button>
+             </div>
            </div>`
         : `<span class="text-muted small">—</span>`;
 
       return `
         <tr class="${r.is_best_match ? 'table-warning-subtle fw-semibold' : ''}">
-          <td>${rankBadge}</td>
+          <td>${rankBadge}<div class="mt-1">${dedupBadge}</div></td>
           <td>
-            <div class="fw-bold text-dark mb-0">${escapeHtml(data.name || r.filename)}</div>
-            <div class="small text-muted font-monospace" style="font-size: 0.75rem;">${escapeHtml(r.filename)}</div>
-          </td>
-          <td>
-            <div class="small">${escapeHtml(data.email || "—")}</div>
+            <div class="fw-bold text-dark mb-0 fs-6">${escapeHtml(data.name || r.filename)}</div>
+            <div class="small text-muted"><a href="mailto:${escapeHtml(data.email || '')}" class="text-decoration-none text-muted">${escapeHtml(data.email || "—")}</a></div>
             <div class="small text-muted">${escapeHtml(data.phone || "—")}</div>
           </td>
-          <td>${dedupBadge}</td>
+          <td>
+            <div class="mb-1">${topSkillsBadges} ${remainingSkillsCount}</div>
+            <div class="small text-muted">Exp: <strong>${data.experience_years ? data.experience_years + ' yrs' : 'Not specified'}</strong></div>
+          </td>
+          <td style="max-width: 220px;">
+            <div class="small fw-semibold text-dark text-truncate" title="${escapeHtml(data.education || 'No education listed')}">
+              🎓 ${escapeHtml(formatCompactEducation(data.education))}
+            </div>
+            <div class="small text-muted text-truncate" title="${escapeHtml(data.location || 'No location listed')}">
+              📍 ${escapeHtml(formatCompactLocation(data.location))}
+            </div>
+          </td>
+          <td>
+            <div class="mb-1">${linksHtml.length > 0 ? linksHtml.join("") : '<span class="text-muted small">No links detected</span>'}</div>
+            <div class="small font-monospace text-muted">📄 ${escapeHtml(r.filename)}</div>
+          </td>
           <td>
             <div class="d-flex align-items-center gap-2">
               <span class="badge ${scoreBadgeClass} px-2 py-1 fs-6">${score}%</span>
-              <div class="progress flex-grow-1" style="height: 6px; min-width: 50px;">
-                <div class="progress-bar ${scoreBadgeClass}" style="width: ${score}%;"></div>
-              </div>
+            </div>
+            <div class="progress mt-1" style="height: 5px; min-width: 60px;">
+              <div class="progress-bar ${scoreBadgeClass}" style="width: ${score}%;"></div>
             </div>
           </td>
-          <td>${actionBtn}</td>
+          <td class="text-end">${actionBtn}</td>
         </tr>
       `;
     }).join("");
 
-    // Attach event listeners for ATS view buttons
+    // Attach event listeners for ATS, Candidate Details, and Delete buttons
     document.querySelectorAll(".view-ats-btn").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         const idx = e.currentTarget.getAttribute("data-index");
-        const item = currentResultsStore[idx];
+        const item = results[idx];
         if (item) showAtsModal(item);
       });
     });
+
+    document.querySelectorAll(".view-cand-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const idx = e.currentTarget.getAttribute("data-index");
+        const item = results[idx];
+        if (item) showCandidateDetailsModal(item);
+      });
+    });
+
+    document.querySelectorAll(".delete-cand-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const idx = e.currentTarget.getAttribute("data-index");
+        const item = results[idx];
+        if (item && item.candidate_id) {
+          deleteCandidate(item.candidate_id, (item.extracted_data && item.extracted_data.name) || item.filename);
+        }
+      });
+    });
+  }
+
+  function showCandidateDetailsModal(item) {
+    const modalBody = document.getElementById("cand-modal-body");
+    const modalTitle = document.getElementById("cand-modal-title");
+    if (!modalBody) return;
+
+    const data = item.extracted_data || {};
+    const token = getToken();
+
+    if (modalTitle) {
+      modalTitle.textContent = `Candidate Details: ${data.name || item.filename}`;
+    }
+
+    const skillsArr = Array.isArray(data.skills) ? data.skills : (data.skills ? String(data.skills).split(",") : []);
+    const skillsBadges = skillsArr.map(s => `<span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 fs-6 me-1 mb-1">${escapeHtml(s.trim())}</span>`).join(" ");
+
+    modalBody.innerHTML = `
+      <div class="row g-4">
+        <!-- Candidate Overview Card -->
+        <div class="col-md-4 border-end">
+          <div class="text-center p-3 bg-light rounded-4 border mb-3">
+            <div class="fs-1 mb-2">👤</div>
+            <h4 class="fw-bold text-dark mb-1">${escapeHtml(data.name || item.filename)}</h4>
+            <p class="text-muted small mb-2">${escapeHtml(data.current_role || data.headline || 'Candidate Profile')}</p>
+            <span class="badge bg-success-subtle text-success border border-success px-3 py-1">ATS Score: ${Math.round(item.overall_match_score || 0)}%</span>
+          </div>
+
+          <div class="card border-0 bg-light rounded-3 p-3 mb-3">
+            <h6 class="fw-bold text-dark mb-3 border-bottom pb-2">📋 Contact &amp; Location</h6>
+            <div class="small mb-2"><strong>📧 Email:</strong> ${escapeHtml(data.email || 'N/A')}</div>
+            <div class="small mb-2"><strong>📞 Phone:</strong> ${escapeHtml(data.phone || 'N/A')}</div>
+            <div class="small mb-2"><strong>📍 Location:</strong> ${escapeHtml(data.location || 'N/A')}</div>
+            <div class="small mb-2"><strong>🏠 Address:</strong> ${escapeHtml(data.address || 'N/A')}</div>
+            <div class="small"><strong>⏳ Experience:</strong> ${data.experience_years ? data.experience_years + ' years' : 'N/A'}</div>
+          </div>
+
+          <div class="card border-0 bg-light rounded-3 p-3 mb-3">
+            <h6 class="fw-bold text-dark mb-3 border-bottom pb-2">🌐 Links &amp; Resume</h6>
+            <div class="d-flex flex-column gap-2 mb-3">
+              ${data.linkedin_url ? `<a href="${escapeHtml(data.linkedin_url)}" target="_blank" class="btn btn-sm btn-outline-info text-start fw-bold">🔗 LinkedIn Profile</a>` : '<span class="text-muted small">No LinkedIn link</span>'}
+              ${data.github_url ? `<a href="${escapeHtml(data.github_url)}" target="_blank" class="btn btn-sm btn-outline-dark text-start fw-bold">💻 GitHub Profile</a>` : '<span class="text-muted small">No GitHub link</span>'}
+              ${data.portfolio_url ? `<a href="${escapeHtml(data.portfolio_url)}" target="_blank" class="btn btn-sm btn-outline-success text-start fw-bold">🌐 Portfolio Site</a>` : '<span class="text-muted small">No Portfolio link</span>'}
+            </div>
+            ${item.candidate_id ? `
+              <a href="${BASE_URL}/resumes/${item.candidate_id}/export?format=pdf&token=${encodeURIComponent(token)}" target="_blank" class="btn btn-success btn-sm w-100 fw-bold">📄 Export Dossier PDF</a>
+            ` : ''}
+          </div>
+        </div>
+
+        <!-- Detailed Parsed Information -->
+        <div class="col-md-8">
+          <div class="mb-4">
+            <h5 class="fw-bold text-dark mb-2">📝 Professional Summary</h5>
+            <div class="p-3 bg-light rounded-3 border text-secondary small" style="line-height: 1.6;">
+              ${escapeHtml(data.summary || 'No summary extracted from resume.')}
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h5 class="fw-bold text-dark mb-2">💡 Extracted Skills (${skillsArr.length})</h5>
+            <div class="p-3 bg-light rounded-3 border">
+              ${skillsBadges || '<span class="text-muted small">No skills detected</span>'}
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h5 class="fw-bold text-dark mb-2">💼 Work History &amp; Experience</h5>
+            <div class="p-3 bg-light rounded-3 border text-secondary small" style="white-space: pre-line;">
+              ${escapeHtml(data.work_experience || 'No detailed work experience text.')}
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <h5 class="fw-bold text-dark mb-2">🎓 Education</h5>
+              <div class="p-3 bg-light rounded-3 border text-secondary small">
+                ${escapeHtml(data.education || 'No education records.')}
+              </div>
+            </div>
+            <div class="col-md-6">
+              <h5 class="fw-bold text-dark mb-2">📜 Certifications</h5>
+              <div class="p-3 bg-light rounded-3 border text-secondary small">
+                ${data.certifications ? escapeHtml(Array.isArray(data.certifications) ? data.certifications.join(', ') : data.certifications) : 'None listed.'}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const modalInst = new bootstrap.Modal(document.getElementById("candidateDetailModal"));
+    
+    const modalDeleteBtn = document.getElementById("modal-delete-cand-btn");
+    if (modalDeleteBtn) {
+      if (item.candidate_id) {
+        modalDeleteBtn.classList.remove("d-none");
+        modalDeleteBtn.onclick = () => {
+          deleteCandidate(item.candidate_id, (item.extracted_data && item.extracted_data.name) || item.filename, modalInst);
+        };
+      } else {
+        modalDeleteBtn.classList.add("d-none");
+      }
+    }
+
+    modalInst.show();
+  }
+
+  async function deleteCandidate(candidateId, candidateName, modalInst = null) {
+    if (!confirm(`Are you sure you want to delete candidate "${candidateName}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const token = getToken();
+      const response = await fetch(`${BASE_URL}/resumes/${candidateId}`, {
+        method: "DELETE",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        let errMsg = `Server returned status ${response.status}`;
+        try {
+          const errJson = JSON.parse(errText);
+          errMsg = errJson.message || errJson.detail || errMsg;
+        } catch (_) {}
+        alert(`Failed to delete candidate: ${errMsg}`);
+        return;
+      }
+
+      const res = await response.json();
+      if (res.success) {
+        if (modalInst) {
+          modalInst.hide();
+        }
+        currentResultsStore = currentResultsStore.filter(item => item.candidate_id !== candidateId);
+        renderResults(currentResultsStore);
+      } else {
+        alert(res.message || "Failed to delete candidate.");
+      }
+    } catch (err) {
+      console.error("Delete candidate error:", err);
+      alert(`Error deleting candidate: ${err.message || err}`);
+    }
   }
 
   function showAtsModal(item) {
@@ -353,7 +600,7 @@
         <div class="col-md-6">
           <h6 class="fw-bold text-success mb-2">✅ Matched Skills (${matchedSkills.length})</h6>
           <div class="d-flex flex-wrap gap-1">
-            ${matchedSkills.length > 0 
+            ${matchedSkills.length > 0
               ? matchedSkills.map(s => `<span class="badge bg-success-subtle text-success border border-success">${escapeHtml(s)}</span>`).join(" ")
               : `<span class="text-muted small">No direct skill matches detected</span>`}
           </div>
@@ -382,9 +629,39 @@
     modalInst.show();
   }
 
+  function formatCompactEducation(rawEdu) {
+    if (!rawEdu) return "—";
+    let clean = String(rawEdu)
+      .replace(/[≡\n\r]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    clean = clean.replace(/^(Qualification|Degree|Education)\s*:\s*/i, "");
+
+    const degreeMatch = clean.match(/\b(M\.?S\.?|B\.?E\.?|B\.?Tech|M\.?Tech|B\.?Sc|M\.?Sc|Ph\.?D|M\.?B\.?A|Bachelor|Master|Diploma)[^,\.\(\)]*(?:\([^\)]*\))?/i);
+    if (degreeMatch) {
+      let deg = degreeMatch[0].trim();
+      if (deg.length > 45) deg = deg.substring(0, 42) + "...";
+      return deg;
+    }
+
+    if (clean.length > 50) {
+      clean = clean.substring(0, 47) + "...";
+    }
+    return clean;
+  }
+
+  function formatCompactLocation(rawLoc) {
+    if (!rawLoc) return "Location not listed";
+    let clean = String(rawLoc).replace(/[≡\n\r]/g, " ").replace(/\s+/g, " ").trim();
+    if (clean.length > 30) {
+      clean = clean.substring(0, 27) + "...";
+    }
+    return clean;
+  }
+
   function escapeHtml(str) {
     if (!str) return "";
     return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 })();
-

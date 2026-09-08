@@ -49,8 +49,8 @@ class CandidateProfile(Base, TimestampMixin):
     other_links: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     # Recruiter Upload & Source Tracking
-    created_by_recruiter_id: Mapped[Optional[str]] = mapped_column(
-        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    created_by_recruiter_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        GUID(), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
     source: Mapped[Optional[str]] = mapped_column(String(100), default="direct_candidate", nullable=True)
 

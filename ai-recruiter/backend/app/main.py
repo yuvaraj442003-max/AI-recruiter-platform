@@ -140,6 +140,12 @@ async def lifespan(app: FastAPI):
     finally:
         db.close()
 
+    try:
+        from app.services.redis_service import init_redis_client
+        init_redis_client()
+    except Exception as err:
+        logging.getLogger("ai_recruiter").warning(f"Redis initialization notice: {err}")
+
     yield
 
 
@@ -194,3 +200,38 @@ def root():
 @app.get("/health", tags=["Health"])
 def health():
     return {"success": True, "message": "healthy", "data": {"environment": settings.ENVIRONMENT}}
+
+
+@app.get("/api/v1/system/status", tags=["System Status"])
+def system_status():
+    from app.core.database import get_db_status
+    from app.services.redis_service import get_redis_status
+
+    db_info = get_db_status()
+    redis_info = get_redis_status()
+
+    return {
+        "success": True,
+        "message": "System status retrieved successfully",
+        "data": {
+            "app_name": settings.APP_NAME,
+            "environment": settings.ENVIRONMENT,
+            "databases": {
+                "active_engine": db_info.get("dialect"),
+                "is_postgres_active": db_info.get("is_postgres"),
+                "is_sqlite_active": db_info.get("is_sqlite"),
+                "connected": db_info.get("connected"),
+                "active_url": db_info.get("active_url"),
+                "supported": ["postgresql", "sqlite"],
+            },
+            "redis_cache": {
+                "enabled": redis_info.get("enabled"),
+                "connected": redis_info.get("connected"),
+                "backend_type": redis_info.get("backend_type"),
+                "keys_cached": redis_info.get("keys_cached", 0),
+                "host": redis_info.get("host"),
+                "port": redis_info.get("port"),
+            },
+        },
+    }
+

@@ -16,8 +16,19 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
 
-    # --- Database ---
+    # --- Database (Dual PostgreSQL + SQLite Support) ---
     DATABASE_URL: str = "postgresql+psycopg2://postgres:postgres234@localhost:5432/ai_recruiter"
+    SQLITE_DATABASE_URL: str = "sqlite:///./ai_recruiter.db"
+    POSTGRES_DATABASE_URL: str = "postgresql+psycopg2://postgres:postgres234@localhost:5432/ai_recruiter"
+
+    # --- Redis & Caching Layer ---
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_PASSWORD: str = ""
+    REDIS_DB: int = 0
+    REDIS_URL: str = ""
+    REDIS_ENABLED: bool = True
+    CACHE_DEFAULT_TTL_SECONDS: int = 300  # 5 minutes
 
 
     # --- JWT / Auth ---
@@ -34,9 +45,26 @@ class Settings(BaseSettings):
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
+    SMTP_USERNAME: str = ""
     SMTP_PASSWORD: str = ""
     EMAILS_FROM_EMAIL: str = "noreply@airecruiter.com"
+    SMTP_FROM_EMAIL: str = ""
     EMAILS_FROM_NAME: str = "AI Recruiter Team"
+    SMTP_FROM_NAME: str = ""
+    FRONTEND_URL: str = "http://localhost:8000"
+
+    @property
+    def smtp_user_credential(self) -> str:
+        return self.SMTP_USERNAME or self.SMTP_USER
+
+    @property
+    def sender_email(self) -> str:
+        return self.SMTP_FROM_EMAIL or self.EMAILS_FROM_EMAIL or self.smtp_user_credential
+
+    @property
+    def sender_name(self) -> str:
+        return self.SMTP_FROM_NAME or self.EMAILS_FROM_NAME or "AI Recruiter Team"
+
 
 
     # --- LLM ---

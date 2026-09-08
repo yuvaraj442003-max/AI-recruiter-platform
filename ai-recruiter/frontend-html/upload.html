@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bulk Resume Upload — AI Recruiter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .upload-card {
+      border: 2px dashed #10b981;
+      background-color: #f0fdf4;
+      transition: all 0.2s ease-in-out;
+    }
+    .upload-card:hover {
+      background-color: #dcfce7;
+      border-color: #059669;
+      cursor: pointer;
+    }
+    .social-link-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+  </style>
+</head>
+
+<body data-required-role="recruiter" class="bg-light">
+
+  <div class="d-flex">
+    <!-- Sidebar Navigation -->
+    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 260px; min-width: 260px;">
+      <a href="recruiter-portal.html" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mb-4 px-2">
+        <span class="fs-4">💼</span>
+        <span class="fw-bold text-dark fs-5">Recruiter Portal</span>
+      </a>
+      <ul class="nav nav-pills flex-column gap-2">
+        <li class="nav-item">
+          <a href="recruiter-portal.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>🏠</span> Portal Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="recruiter-dashboard.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>📊</span> Recruiter Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="my-jobs.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>💼</span> Manage Jobs
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="post-job.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>➕</span> Post a Job
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="smart-search.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>🔍</span> Smart Search
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="upload.html" class="nav-link active d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff;">
+            <span>📤</span> Upload
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="messages.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>💬</span> Messages &amp; Chat
+          </a>
+        </li>
+      </ul>
+      <div class="mt-auto pt-3 border-top">
+        <button id="logout-btn" class="btn btn-outline-secondary w-100 fw-semibold">Log out</button>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow-1">
+      <header class="bg-white border-bottom p-3 d-flex justify-content-between align-items-center sticky-top shadow-sm z-3">
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-success text-white">Recruiter Portal</span>
+          <span class="text-muted">/ Bulk Resume Upload &amp; Candidate Intelligence</span>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <div class="text-end d-none d-sm-block">
+            <div id="user-display-name" class="fw-bold text-dark small">Recruiter</div>
+            <div class="text-muted small" style="font-size: 0.75rem;">Recruiter Account</div>
+          </div>
+        </div>
+      </header>
+
+      <div class="container-fluid p-4">
+        <!-- Page Title & Description -->
+        <div class="mb-4">
+          <h2 class="fw-bold text-dark mb-1">📤 Bulk Resume Upload &amp; Candidate Parser</h2>
+          <p class="text-muted mb-0">Upload multiple PDF, DOCX, or ZIP resume files. Our AI automatically extracts candidate contact details, skills, experience, education, location, social links (LinkedIn, GitHub, Portfolio), and computes ATS match scores.</p>
+        </div>
+
+        <!-- Upload Configuration & Dropzone Card -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+          <div class="card-body p-4">
+            <div class="row g-4">
+              <!-- Left Column: Job Link Selection -->
+              <div class="col-lg-4 border-end">
+                <h5 class="fw-bold text-dark mb-3">1. Requisition &amp; Target Role</h5>
+                <div class="btn-group w-100 mb-3" role="group">
+                  <button type="button" id="btn-mode-posted-job" class="btn btn-outline-success btn-sm active fw-semibold">Posted Job</button>
+                  <button type="button" id="btn-mode-custom-jd" class="btn btn-outline-success btn-sm fw-semibold">Custom JD</button>
+                </div>
+
+                <div id="section-posted-job" class="mb-3">
+                  <label class="form-label small fw-bold text-muted">Select Target Job Requisition</label>
+                  <select id="bulk-job-select" class="form-select form-select-sm">
+                    <option value="">General Candidate Talent Pool (No job linked)</option>
+                  </select>
+                </div>
+
+                <div id="section-custom-jd" class="d-none">
+                  <div class="mb-2">
+                    <input type="text" id="custom-jd-title" class="form-control form-control-sm" placeholder="Job Title (e.g. Senior Backend Engineer)" />
+                  </div>
+                  <div class="mb-2">
+                    <input type="number" id="custom-jd-exp" class="form-control form-control-sm" placeholder="Min Experience (years, e.g. 3)" />
+                  </div>
+                  <div class="mb-2">
+                    <input type="text" id="custom-jd-skills" class="form-control form-control-sm" placeholder="Required Skills (comma separated)" />
+                  </div>
+                  <div class="mb-2">
+                    <textarea id="custom-jd-desc" class="form-control form-control-sm" rows="2" placeholder="Paste custom Job Description text..."></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column: Drag & Drop Zone -->
+              <div class="col-lg-8">
+                <h5 class="fw-bold text-dark mb-3">2. Select &amp; Upload Resume Files</h5>
+                <div id="bulk-upload-dropzone" class="upload-card rounded-4 p-4 text-center">
+                  <input type="file" id="bulk-resume-file-input" multiple accept=".pdf,.docx,.zip" class="d-none" />
+                  <div class="fs-1 text-success mb-2">📁</div>
+                  <h6 class="fw-bold text-dark mb-1">Click to browse or drag &amp; drop resume files here</h6>
+                  <p class="text-muted small mb-0">Supports multiple .pdf, .docx files, or .zip archives containing resumes</p>
+                </div>
+
+                <div class="d-flex justify-content-end mt-3">
+                  <button type="button" id="start-bulk-upload-btn" class="btn btn-success fw-bold px-4 py-2 rounded-3 shadow-sm">
+                    🚀 Start Processing &amp; Parsing Resumes
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress & Status Counter Section -->
+        <div id="bulk-status-container" class="d-none card border-0 shadow-sm rounded-4 mb-4">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span id="bulk-status-label" class="fw-bold text-dark">Uploading and parsing candidate resumes...</span>
+              <span id="bulk-status-count" class="badge bg-success fs-6">0 / 0</span>
+            </div>
+            <div class="progress mb-3" style="height: 10px; border-radius: 6px;">
+              <div id="bulk-progress-bar" class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Match Highlight Banner -->
+        <div id="bulk-best-match-banner" class="d-none alert alert-success border-success shadow-sm mb-4 rounded-4 p-4">
+          <div class="d-flex align-items-center gap-3">
+            <div class="fs-1">🏆</div>
+            <div>
+              <div class="d-flex align-items-center gap-2">
+                <h5 class="fw-bold text-dark mb-0" id="best-candidate-name">Best Match Candidate</h5>
+                <span class="badge bg-success fs-6" id="best-candidate-score">95%</span>
+              </div>
+              <p class="text-muted mb-0 small" id="best-candidate-subtitle">Top ranked candidate based on skill matching and experience criteria.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Searchable Extracted Candidate Table & List -->
+        <div id="bulk-results-wrapper" class="d-none card border-0 shadow-sm rounded-4">
+          <div class="card-header bg-white border-bottom p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+              <h5 class="fw-bold text-dark mb-0">Extracted Candidate Details</h5>
+              <small class="text-muted">Parsed candidate profiles stored in database</small>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 flex-grow-1 flex-md-grow-0" style="max-width: 380px;">
+              <div class="input-group input-group-sm">
+                <span class="input-group-text bg-light border-end-0 text-muted">🔍</span>
+                <input type="text" id="candidate-table-search" class="form-control bg-light border-start-0" placeholder="Search name, email, skills, location..." />
+              </div>
+              <span class="badge bg-success-subtle text-success border border-success px-3 py-2" id="bulk-results-count-badge">0 Candidates</span>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th style="width: 85px;">Rank</th>
+                  <th style="min-width: 170px; max-width: 210px;">Candidate &amp; Contact</th>
+                  <th style="min-width: 160px; max-width: 200px;">Skills &amp; Experience</th>
+                  <th style="min-width: 180px; max-width: 220px;">Education &amp; Location</th>
+                  <th style="min-width: 150px; max-width: 180px;">Profiles &amp; CV</th>
+                  <th style="width: 100px;">ATS Score</th>
+                  <th style="width: 130px;" class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="bulk-results-table-body">
+                <!-- Rows injected dynamically by bulk-upload.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal 1: ATS Score Breakdown Modal -->
+  <div class="modal fade" id="atsBreakdownModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+        <div class="modal-header border-bottom bg-light">
+          <h5 class="modal-title fw-bold text-dark" id="ats-modal-title">ATS Match Analysis</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4" id="ats-modal-body">
+          <!-- ATS breakdown content -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Complete Candidate Profile Details Inspector Modal -->
+  <div class="modal fade" id="candidateDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+        <div class="modal-header border-bottom bg-light">
+          <div class="d-flex align-items-center gap-2">
+            <span class="fs-4">👤</span>
+            <h5 class="modal-title fw-bold text-dark" id="cand-modal-title">Candidate Profile &amp; Parsed Details</h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4" id="cand-modal-body">
+          <!-- Complete details content injected dynamically -->
+        </div>
+        <div class="modal-footer bg-light border-top justify-content-between">
+          <button type="button" id="modal-delete-cand-btn" class="btn btn-outline-danger rounded-3 fw-semibold btn-sm px-3 d-none">🗑️ Delete Candidate</button>
+          <button type="button" class="btn btn-secondary rounded-3 fw-semibold btn-sm px-4" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/bulk-upload.js"></script>
+</body>
+
+</html>
