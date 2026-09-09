@@ -293,3 +293,340 @@ def list_interviews(
         message="Interviews",
         data=[_to_response(interview_service.load_interview(db, i.id), include_answers=True) for i in interviews],
     )
+
+
+# --- Schedule & Calendar Extensions ---
+
+from datetime import datetime, timedelta, timezone
+from pydantic import BaseModel, Field
+from fastapi.responses import Response
+from sqlalchemy import select
+from app.models.calendar import ScheduledInterview, ScheduledInterviewStatus
+from app.services.calendar_service import CalendarService, generate_google_calendar_add_url, generate_outlook_calendar_add_url
+from app.services.ics_service import generate_ics_content
+from app.services.email_service import (
+    send_interview_invitation_email,
+    send_interview_rescheduled_email,
+    send_interview_cancelled_email,
+)
+from app.services.reminder_service import _dispatch_reminder, check_and_send_interview_reminders
+
+
+class ScheduleInterviewRequest(BaseModel):
+    candidate_id: str
+    job_id: str
+    start_time_iso: str # e.g. 2026-09-10T10:00:00Z
+    duration_minutes: int = 30
+    timezone_name: str = "Asia/Kolkata"
+    interview_type: str = "AI Technical Interview"
+    send_email: bool = True
+    sync_calendar: bool = True
+
+
+class RescheduleInterviewRequest(BaseModel):
+    new_start_time_iso: str
+    duration_minutes: int = 30
+    timezone_name: str = "Asia/Kolkata"
+    send_email: bool = True
+
+
+@router.post("/schedule", status_code=201)
+def schedule_interview(
+    payload: ScheduleInterviewRequest,
+    current_user: User = Depends(require_role(UserRole.recruiter)),
+    db: Session = Depends(get_db),
+):
+    cand_id = uuid.UUID(payload.candidate_id)
+    job_id = uuid.UUID(payload.job_id)
+
+    cand_profile = db.scalar(select(CandidateProfile).where(CandidateProfile.id == cand_id))
+    if not cand_profile:
+        raise NotFoundError("Candidate profile not found")
+    job = db.scalar(select(Job).where(Job.id == job_id))
+    if not job:
+        raise NotFoundError("Job not found")
+
+    start_dt = datetime.fromisoformat(payload.start_time_iso.replace("Z", "+00:00"))
+    if not start_dt.tzinfo:
+        start_dt = start_dt.replace(tzinfo=timezone.utc)
+    end_dt = start_dt + timedelta(minutes=payload.duration_minutes)
+
+    # Create base Interview record if none exists
+    existing_interview = db.scalar(
+        select(Interview).where(Interview.candidate_id == cand_id, Interview.job_id == job_id)
+    )
+    if not existing_interview:
+        base_type = payload.interview_type if payload.interview_type in ["technical", "behavioral", "mixed", "ai_interview"] else "mixed"
+        existing_interview = create_interview(
+            db, recruiter_id=current_user.id, candidate_profile_id=cand_id, job_id=job_id, interview_type=base_type
+        )
+
+    title = f"{job.title} Interview - {cand_profile.user.name if cand_profile.user else 'Candidate'}"
+
+    scheduled = ScheduledInterview(
+        interview_id=existing_interview.id,
+        candidate_id=cand_id,
+        recruiter_id=current_user.id,
+        job_id=job_id,
+        title=title,
+        interview_type=payload.interview_type,
+        duration_minutes=payload.duration_minutes,
+        start_time_utc=start_dt,
+        end_time_utc=end_dt,
+        timezone=payload.timezone_name,
+        status=ScheduledInterviewStatus.scheduled,
+    )
+    db.add(scheduled)
+    db.commit()
+    db.refresh(scheduled)
+
+    if payload.sync_calendar:
+        CalendarService.sync_calendar_event(db, scheduled, action="create")
+
+    # Dispatch email if requested
+    from app.core.config import settings
+    room_link = f"{settings.FRONTEND_URL.rstrip('/')}/live-interview-room.html?interview_id={existing_interview.id}"
+    cand_user = cand_profile.user
+    if payload.send_email and cand_user and cand_user.email:
+        date_str = start_dt.strftime("%B %d, %Y")
+        time_str = f"{start_dt.strftime('%I:%M %p')} ({payload.timezone_name})"
+        comp_name = job.company_name or f"{current_user.name}'s Company"
+
+        send_interview_invitation_email(
+            to_email=cand_user.email,
+            candidate_name=cand_user.name,
+            company_name=comp_name,
+            job_title=job.title,
+            interview_date=date_str,
+            interview_time=time_str,
+            location_or_link=room_link,
+            duration=payload.duration_minutes,
+            interview_type=payload.interview_type,
+            candidate_id=cand_id,
+            job_id=job_id,
+            interview_id=existing_interview.id,
+            recruiter_id=current_user.id,
+            db=db,
+        )
+
+    return APIResponse(
+        success=True,
+        message="Interview scheduled successfully",
+        data={
+            "scheduled_id": str(scheduled.id),
+            "interview_id": str(existing_interview.id),
+            "title": scheduled.title,
+            "start_time_utc": scheduled.start_time_utc,
+            "timezone": scheduled.timezone,
+            "status": scheduled.status.value,
+            "calendar_sync_status": scheduled.calendar_sync_status,
+            "join_link": room_link,
+        },
+    )
+
+
+@router.put("/{interview_id}/reschedule")
+def reschedule_interview(
+    interview_id: str,
+    payload: RescheduleInterviewRequest,
+    current_user: User = Depends(require_role(UserRole.recruiter)),
+    db: Session = Depends(get_db),
+):
+    parsed_id = uuid.UUID(interview_id)
+    scheduled = db.scalar(select(ScheduledInterview).where(ScheduledInterview.interview_id == parsed_id))
+    if not scheduled:
+        scheduled = db.scalar(select(ScheduledInterview).where(ScheduledInterview.id == parsed_id))
+    if not scheduled:
+        raise NotFoundError("Scheduled interview record not found")
+
+    if scheduled.recruiter_id != current_user.id:
+        raise PermissionDeniedError("You can only reschedule your own interviews.")
+
+    start_dt = datetime.fromisoformat(payload.new_start_time_iso.replace("Z", "+00:00"))
+    if not start_dt.tzinfo:
+        start_dt = start_dt.replace(tzinfo=timezone.utc)
+    end_dt = start_dt + timedelta(minutes=payload.duration_minutes)
+
+    scheduled.start_time_utc = start_dt
+    scheduled.end_time_utc = end_dt
+    scheduled.timezone = payload.timezone_name
+    scheduled.duration_minutes = payload.duration_minutes
+    scheduled.status = ScheduledInterviewStatus.rescheduled
+    scheduled.reminder_24h_sent = False
+    scheduled.reminder_1h_sent = False
+
+    db.commit()
+
+    CalendarService.sync_calendar_event(db, scheduled, action="update")
+
+    if payload.send_email and scheduled.candidate and scheduled.candidate.user:
+        cand_user = scheduled.candidate.user
+        job = scheduled.job
+        date_str = start_dt.strftime("%B %d, %Y")
+        time_str = f"{start_dt.strftime('%I:%M %p')} ({payload.timezone_name})"
+
+        from app.core.config import settings
+        link = f"{settings.FRONTEND_URL.rstrip('/')}/live-interview-room.html?interview_id={scheduled.interview_id or scheduled.id}"
+
+        send_interview_rescheduled_email(
+            to_email=cand_user.email,
+            candidate_name=cand_user.name,
+            job_title=job.title if job else "Position",
+            company_name=job.company_name if (job and job.company_name) else "AI Recruiter",
+            new_date=date_str,
+            new_time=time_str,
+            duration=payload.duration_minutes,
+            interview_link=link,
+            candidate_id=scheduled.candidate_id,
+            job_id=scheduled.job_id,
+            interview_id=scheduled.interview_id,
+            recruiter_id=current_user.id,
+            db=db,
+        )
+
+    return APIResponse(success=True, message="Interview rescheduled successfully", data={"status": scheduled.status.value, "new_start": start_dt})
+
+
+@router.post("/{interview_id}/cancel")
+def cancel_interview(
+    interview_id: str,
+    current_user: User = Depends(require_role(UserRole.recruiter)),
+    db: Session = Depends(get_db),
+):
+    parsed_id = uuid.UUID(interview_id)
+    scheduled = db.scalar(select(ScheduledInterview).where(ScheduledInterview.interview_id == parsed_id))
+    if not scheduled:
+        scheduled = db.scalar(select(ScheduledInterview).where(ScheduledInterview.id == parsed_id))
+    if not scheduled:
+        raise NotFoundError("Scheduled interview record not found")
+
+    if scheduled.recruiter_id != current_user.id:
+        raise PermissionDeniedError("You can only cancel your own interviews.")
+
+    scheduled.status = ScheduledInterviewStatus.cancelled
+    scheduled.cancelled_at = datetime.now(timezone.utc)
+    db.commit()
+
+    CalendarService.sync_calendar_event(db, scheduled, action="cancel")
+
+    if scheduled.candidate and scheduled.candidate.user:
+        cand_user = scheduled.candidate.user
+        job = scheduled.job
+        send_interview_cancelled_email(
+            to_email=cand_user.email,
+            candidate_name=cand_user.name,
+            job_title=job.title if job else "Position",
+            company_name=job.company_name if (job and job.company_name) else "AI Recruiter",
+            candidate_id=scheduled.candidate_id,
+            job_id=scheduled.job_id,
+            interview_id=scheduled.interview_id,
+            recruiter_id=current_user.id,
+            db=db,
+        )
+
+    return APIResponse(success=True, message="Interview cancelled successfully")
+
+
+@router.post("/{interview_id}/reminder")
+def trigger_manual_reminder(
+    interview_id: str,
+    current_user: User = Depends(require_role(UserRole.recruiter)),
+    db: Session = Depends(get_db),
+):
+    parsed_id = uuid.UUID(interview_id)
+    scheduled = db.scalar(select(ScheduledInterview).where(ScheduledInterview.interview_id == parsed_id))
+    if not scheduled:
+        scheduled = db.scalar(select(ScheduledInterview).where(ScheduledInterview.id == parsed_id))
+    if not scheduled:
+        raise NotFoundError("Scheduled interview record not found")
+
+    sent = _dispatch_reminder(db, scheduled, reminder_type="manual")
+    return APIResponse(success=sent, message="Reminder sent" if sent else "Failed to send reminder")
+
+
+@router.get("/{interview_id}/ics")
+def download_interview_ics(
+    interview_id: str,
+    db: Session = Depends(get_db),
+):
+    parsed_id = uuid.UUID(interview_id)
+    scheduled = db.scalar(select(ScheduledInterview).where(ScheduledInterview.interview_id == parsed_id))
+    if not scheduled:
+        scheduled = db.scalar(select(ScheduledInterview).where(ScheduledInterview.id == parsed_id))
+    
+    if not scheduled:
+        # Fallback dummy event
+        ics_text = generate_ics_content(
+            summary="AI Recruiter Technical Interview",
+            description="Live AI Voice Interview",
+            start_time_utc=datetime.now(timezone.utc) + timedelta(days=1),
+            end_time_utc=datetime.now(timezone.utc) + timedelta(days=1, minutes=30),
+        )
+    else:
+        from app.core.config import settings
+        link = f"{settings.FRONTEND_URL.rstrip('/')}/live-interview-room.html?interview_id={scheduled.interview_id or scheduled.id}"
+        cand_name = scheduled.candidate.user.name if (scheduled.candidate and scheduled.candidate.user) else "Candidate"
+        cand_email = scheduled.candidate.user.email if (scheduled.candidate and scheduled.candidate.user) else None
+
+        ics_text = generate_ics_content(
+            summary=scheduled.title,
+            description=f"Interview for {scheduled.job.title if scheduled.job else 'Position'}. Join link: {link}",
+            start_time_utc=scheduled.start_time_utc,
+            end_time_utc=scheduled.end_time_utc,
+            location_or_url=link,
+            attendee_name=cand_name,
+            attendee_email=cand_email,
+            uid=f"interview_{scheduled.id}@airecruiter.com",
+        )
+
+    return Response(
+        content=ics_text,
+        media_type="text/calendar",
+        headers={"Content-Disposition": 'attachment; filename="Interview_Invitation.ics"'},
+    )
+
+
+@router.get("/upcoming")
+def list_upcoming_interviews(
+    current_user: User = Depends(require_role(UserRole.candidate, UserRole.recruiter)),
+    db: Session = Depends(get_db),
+):
+    from app.core.config import settings
+    query = select(ScheduledInterview).where(ScheduledInterview.status != ScheduledInterviewStatus.cancelled)
+
+    if current_user.role == UserRole.candidate:
+        cand_profile = db.scalar(select(CandidateProfile).where(CandidateProfile.user_id == current_user.id))
+        if not cand_profile:
+            return APIResponse(success=True, message="Upcoming interviews", data=[])
+        sessions = db.scalars(query.where(ScheduledInterview.candidate_id == cand_profile.id).order_by(ScheduledInterview.start_time_utc.asc())).all()
+    else:
+        sessions = db.scalars(query.where(ScheduledInterview.recruiter_id == current_user.id).order_by(ScheduledInterview.start_time_utc.asc())).all()
+
+    result = []
+    for s in sessions:
+        room_link = f"{settings.FRONTEND_URL.rstrip('/')}/live-interview-room.html?interview_id={s.interview_id or s.id}"
+        google_add = generate_google_calendar_add_url(s.title, f"Join: {room_link}", s.start_time_utc, s.end_time_utc, room_link)
+        outlook_add = generate_outlook_calendar_add_url(s.title, f"Join: {room_link}", s.start_time_utc, s.end_time_utc, room_link)
+
+        result.append({
+            "id": str(s.id),
+            "interview_id": str(s.interview_id) if s.interview_id else None,
+            "title": s.title,
+            "candidate_name": s.candidate.user.name if (s.candidate and s.candidate.user) else "Candidate",
+            "job_title": s.job.title if s.job else "Role",
+            "interview_type": s.interview_type,
+            "duration_minutes": s.duration_minutes,
+            "start_time_utc": s.start_time_utc,
+            "end_time_utc": s.end_time_utc,
+            "timezone": s.timezone,
+            "status": s.status.value,
+            "calendar_provider": s.calendar_provider,
+            "calendar_sync_status": s.calendar_sync_status,
+            "join_link": room_link,
+            "google_calendar_url": google_add,
+            "outlook_calendar_url": outlook_add,
+            "ics_download_url": f"{settings.FRONTEND_URL.rstrip('/')}/api/v1/interviews/{s.id}/ics",
+        })
+
+    return APIResponse(success=True, message="Upcoming interviews", data=result)
+

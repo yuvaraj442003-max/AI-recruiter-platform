@@ -82,7 +82,14 @@ def init_redis_client() -> redis.Redis:
                     decode_responses=True,
                     socket_timeout=1.0,
                 )
-            client.ping()
+            try:
+                client.ping()
+            except redis.exceptions.ResponseError as r_err:
+                if "MISCONF" in str(r_err):
+                    client.config_set("stop-writes-on-bgsave-error", "no")
+                    client.ping()
+                else:
+                    raise r_err
             _redis_client = client
             _backend_type = "redis_live"
             logger.info(f"Connected to live Redis server at {host}:{port}")

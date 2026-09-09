@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; margin: 0; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+    .header { background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #ffffff; padding: 32px 24px; text-align: center; }
+    .header h1 { margin: 0; font-size: 24px; font-weight: 700; }
+    .content { padding: 32px 28px; color: #334155; line-height: 1.6; }
+    .badge { display: inline-block; background-color: #d1fae5; color: #065f46; font-size: 13px; font-weight: 700; padding: 6px 16px; border-radius: 9999px; margin-top: 8px; }
+    .footer { background-color: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎉 You're Shortlisted!</h1>
+      <div class="badge">{{job_title}}</div>
+    </div>
+    <div class="content">
+      <p style="font-size: 16px; font-weight: 600; color: #0f172a;">Hello {{candidate_name}},</p>
+      <p>Congratulations!</p>
+      <p>You have been shortlisted for the <strong>{{job_title}}</strong> position at <strong>{{company_name}}</strong>.</p>
+      <p>Our recruitment team will contact you shortly regarding the next steps in the interview process.</p>
+      <p style="margin-top: 24px; font-size: 14px; color: #475569;">
+        Thank you,<br>
+        <strong>{{company_name}} Recruitment Team</strong>
+      </p>
+    </div>
+    <div class="footer">
+      &copy; {{company_name}} &bull; Powered by AI Recruiter Platform
+    </div>
+  </div>
+</body>
+</html>

@@ -12,7 +12,7 @@ from app.core.database import Base, engine, SessionLocal
 from app.core.exceptions import register_exception_handlers
 from app.middleware.security_headers import SecurityHeadersMiddleware
 # Import all models to ensure metadata registration
-from app.models import user, candidate, job, application, interview, audit_log, recruiter, notification, application_history, message
+from app.models import user, candidate, job, application, interview, audit_log, recruiter, notification, application_history, message, saved_search
 from app.routers import (
     admin,
     analytics,
@@ -21,7 +21,11 @@ from app.routers import (
     auth,
     candidate_comparison,
     candidate_search,
+    calendar,
+    coding,
+    email_settings,
     interviews,
+    interview_ws,
     jobs,
     matching,
     messages,
@@ -38,9 +42,10 @@ logging.basicConfig(level=logging.INFO)
 
 from sqlalchemy import inspect, text
 
-def _auto_migrate_db():
+def _auto_migrate_db(target_engine=None):
     """Ensure all tables and newly added columns exist in database without data loss."""
-    Base.metadata.create_all(bind=engine)
+    active_engine = target_engine or engine
+    Base.metadata.create_all(bind=active_engine)
 
     # Helper to add column to database table if missing
     columns_to_ensure = [
@@ -81,8 +86,11 @@ def _auto_migrate_db():
         ("candidate_profiles", "created_by_recruiter_id", "VARCHAR(36)"),
         ("candidate_profiles", "source", "VARCHAR(100) DEFAULT 'direct_candidate'"),
 
-        # ATS Screening fields for applications
+        # ATS Screening & Composite Scores for applications
         ("applications", "ats_score", "FLOAT"),
+        ("applications", "coding_score", "FLOAT"),
+        ("applications", "interview_score", "FLOAT"),
+        ("applications", "overall_score", "FLOAT"),
         ("applications", "job_match_score", "FLOAT"),
         ("applications", "skills_match_score", "FLOAT"),
         ("applications", "experience_match_score", "FLOAT"),
@@ -104,9 +112,25 @@ def _auto_migrate_db():
         ("applications", "override_reason", "TEXT"),
         ("applications", "uploaded_by_recruiter_id", "VARCHAR(36)"),
         ("applications", "source", "VARCHAR(100) DEFAULT 'direct_candidate'"),
+
+        # Live Interview fields
+        ("interviews", "duration_minutes", "INTEGER DEFAULT 30"),
+        ("interviews", "camera_required", "BOOLEAN DEFAULT FALSE"),
+        ("interviews", "adaptive", "BOOLEAN DEFAULT TRUE"),
+        ("interviews", "live_transcript", "TEXT"),
+        ("interviews", "expires_at", "TIMESTAMP"),
+
+        # Email Logs extended fields
+        ("email_logs", "provider_message_id", "VARCHAR(255)"),
+        ("email_logs", "idempotency_key", "VARCHAR(255)"),
+        ("email_logs", "retry_count", "INTEGER DEFAULT 0"),
+        ("email_logs", "candidate_id", "VARCHAR(36)"),
+        ("email_logs", "job_id", "VARCHAR(36)"),
+        ("email_logs", "interview_id", "VARCHAR(36)"),
+        ("email_logs", "failed_at", "TIMESTAMP"),
     ]
 
-    with engine.begin() as conn:
+    with active_engine.begin() as conn:
         inspector = inspect(conn)
         for table, col, col_type in columns_to_ensure:
             try:
@@ -188,6 +212,11 @@ app.include_router(ats.router, prefix="/api/v1")
 app.include_router(candidate_comparison.router, prefix="/api/v1")
 app.include_router(candidate_search.router, prefix="/api/v1")
 app.include_router(candidate_search.candidate_singular_router, prefix="/api/v1")
+app.include_router(candidate_search.recruiter_candidates_router, prefix="/api/v1")
+app.include_router(coding.router, prefix="/api/v1")
+app.include_router(interview_ws.router, prefix="/api/v1")
+app.include_router(calendar.router, prefix="/api/v1")
+app.include_router(email_settings.router, prefix="/api/v1")
 
 
 

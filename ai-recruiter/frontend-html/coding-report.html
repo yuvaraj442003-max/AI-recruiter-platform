@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coding Assessment Report — AI Recruiter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm print-none">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">🤖 AI Recruiter</a>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="candidate-dashboard.html">Dashboard</a>
+        <a class="nav-link" href="#" onclick="window.print()">🖨️ Print Report</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-5" style="max-width: 900px;">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4 p-md-5">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-start border-bottom pb-4 mb-4">
+          <div>
+            <h2 class="fw-bold text-dark mb-1">CODING ASSESSMENT REPORT</h2>
+            <p id="assessment-title" class="text-primary fw-semibold mb-0">Loading Assessment Report...</p>
+            <small id="candidate-name" class="text-muted">Candidate: --</small>
+          </div>
+          <div class="text-end">
+            <span id="final-status-badge" class="badge bg-secondary fs-6 px-3 py-2">--</span>
+            <div class="mt-2 text-muted small" id="report-date">Date: --</div>
+          </div>
+        </div>
+
+        <!-- Composite Score Cards -->
+        <div class="row g-3 text-center mb-4">
+          <div class="col-md-3">
+            <div class="p-3 bg-light rounded border">
+              <div class="text-muted small">ATS Score</div>
+              <div id="ats-score" class="fs-4 fw-bold text-dark">--</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="p-3 bg-primary text-white rounded border">
+              <div class="opacity-75 small">Coding Score</div>
+              <div id="coding-score" class="fs-4 fw-bold">--</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="p-3 bg-light rounded border">
+              <div class="text-muted small">Interview Score</div>
+              <div id="interview-score" class="fs-4 fw-bold text-dark">--</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="p-3 bg-success text-white rounded border">
+              <div class="opacity-75 small">Overall Candidate Score</div>
+              <div id="overall-score" class="fs-4 fw-bold">--</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Metrics -->
+        <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">📊 Coding Performance</h5>
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between px-0">
+                <span class="text-muted">Assessment Duration:</span>
+                <span id="duration-val" class="fw-semibold">--</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between px-0">
+                <span class="text-muted">Time Taken:</span>
+                <span id="time-taken-val" class="fw-semibold">--</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between px-0">
+                <span class="text-muted">Passing Score Threshold:</span>
+                <span id="passing-threshold-val" class="fw-semibold">--</span>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between px-0">
+                <span class="text-muted">Time Complexity:</span>
+                <span id="time-comp-val" class="badge bg-secondary">--</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between px-0">
+                <span class="text-muted">Space Complexity:</span>
+                <span id="space-comp-val" class="badge bg-secondary">--</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- AI Code Review & Feedback -->
+        <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">🤖 AI Code Review & Feedback</h5>
+        <div id="ai-review-container" class="bg-light p-3 rounded mb-4">
+          <div class="row">
+            <div class="col-md-6 mb-3 mb-md-0">
+              <h6 class="fw-bold text-success">Key Strengths</h6>
+              <ul id="ai-strengths" class="small text-muted mb-0">
+                <li>Analyzing code strengths...</li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h6 class="fw-bold text-warning">Areas for Improvement</h6>
+              <ul id="ai-suggestions" class="small text-muted mb-0">
+                <li>Analyzing recommendations...</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submissions Detail -->
+        <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">💻 Question Submissions</h5>
+        <div id="submissions-list">
+          <div class="text-muted">Loading submissions...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const attemptId = urlParams.get('attempt_id');
+
+      if (!attemptId) {
+        alert('Missing attempt ID.');
+        window.location.href = 'candidate-dashboard.html';
+        return;
+      }
+
+      try {
+        const res = await codingAPI.getAttemptResult(attemptId);
+        if (res.success) {
+          const data = res.data;
+          document.getElementById('assessment-title').textContent = data.assessment_title;
+          document.getElementById('candidate-name').textContent = `Candidate: ${data.candidate_name}`;
+          document.getElementById('report-date').textContent = `Submitted: ${data.submitted_at ? new Date(data.submitted_at).toLocaleDateString() : 'N/A'}`;
+
+          const statusBadge = document.getElementById('final-status-badge');
+          statusBadge.className = data.passed ? 'badge bg-success fs-6 px-3 py-2' : 'badge bg-danger fs-6 px-3 py-2';
+          statusBadge.textContent = data.passed ? 'PASSED' : 'FAILED';
+
+          document.getElementById('ats-score').textContent = data.ats_score ? `${Math.round(data.ats_score)}%` : 'N/A';
+          document.getElementById('coding-score').textContent = `${Math.round(data.percentage)}%`;
+          document.getElementById('interview-score').textContent = data.interview_score ? `${Math.round(data.interview_score)}%` : 'N/A';
+          document.getElementById('overall-score').textContent = data.overall_score ? `${Math.round(data.overall_score)}%` : `${Math.round(data.percentage)}%`;
+
+          document.getElementById('duration-val').textContent = `${data.duration_minutes} Minutes`;
+          document.getElementById('time-taken-val').textContent = `${data.time_taken_minutes} Minutes`;
+          document.getElementById('passing-threshold-val').textContent = `${data.passing_score}%`;
+
+          // Process first submission for complexity & AI review
+          if (data.submissions && data.submissions.length > 0) {
+            const sub = data.submissions[0];
+            document.getElementById('time-comp-val').textContent = sub.time_complexity || 'O(n)';
+            document.getElementById('space-comp-val').textContent = sub.space_complexity || 'O(1)';
+
+            if (sub.ai_review) {
+              const rev = sub.ai_review;
+              document.getElementById('ai-strengths').innerHTML = (rev.strengths || ['Good functional implementation']).map(s => `<li>${s}</li>`).join('');
+              document.getElementById('ai-suggestions').innerHTML = (rev.suggestions || ['Add edge case validations']).map(s => `<li>${s}</li>`).join('');
+            }
+          }
+
+          // Submissions list
+          document.getElementById('submissions-list').innerHTML = data.submissions.map((sub, i) => `
+            <div class="card mb-3 border">
+              <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <span class="fw-semibold">${sub.question_title} (${sub.language})</span>
+                <span class="badge bg-info text-dark">Passed ${sub.test_cases_passed}/${sub.test_cases_total} Test Cases</span>
+              </div>
+              <div class="card-body bg-dark text-light p-2">
+                <pre class="small mb-0 font-monospace"><code>${escapeHtml(sub.source_code)}</code></pre>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          alert('Error loading report: ' + res.message);
+        }
+      } catch (err) {
+        alert('Failed to load report: ' + err.message);
+      }
+    });
+
+    function escapeHtml(text) {
+      return text ? text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : "";
+    }
+  </script>
+</body>
+</html>

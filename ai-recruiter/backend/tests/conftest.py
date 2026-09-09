@@ -27,9 +27,9 @@ def _setup_test_database():
     patcher = patch("app.services.email_service._send_smtp_email", return_value=True)
     patcher.start()
 
-    Base.metadata.create_all(bind=engine)
-
-    from app.main import app as fastapi_app
+    Base.metadata.drop_all(bind=engine)
+    from app.main import _auto_migrate_db, app as fastapi_app
+    _auto_migrate_db(engine)
 
     def override_get_db():
         db = TestingSessionLocal()

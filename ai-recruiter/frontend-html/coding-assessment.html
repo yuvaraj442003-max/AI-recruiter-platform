@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coding Assessment — AI Recruiter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    body { height: 100vh; overflow: hidden; background-color: #1e1e1e; color: #d4d4d4; }
+    .top-header { height: 56px; background-color: #252526; border-bottom: 1px solid #3c3c3c; }
+    .main-workspace { height: calc(100vh - 56px); }
+    .left-panel { background-color: #252526; border-right: 1px solid #3c3c3c; overflow-y: auto; }
+    .right-panel { display: flex; flex-direction: column; background-color: #1e1e1e; }
+    #editor-container { flex: 1; width: 100%; height: 100%; }
+    .console-drawer { height: 180px; background-color: #1e1e1e; border-top: 1px solid #3c3c3c; overflow-y: auto; }
+    .timer-badge { font-family: monospace; font-size: 1.1rem; }
+  </style>
+</head>
+<body>
+  <!-- Top Navigation Bar -->
+  <div class="top-header d-flex align-items-center justify-content-between px-3 text-white">
+    <div class="d-flex align-items-center">
+      <span class="fw-bold fs-5 me-3">🤖 AI Recruiter Coding</span>
+      <span id="assessment-title-nav" class="text-secondary me-3">Loading Assessment...</span>
+    </div>
+    <div class="d-flex align-items-center">
+      <div class="me-3">
+        <span class="text-secondary small me-1">Time Remaining:</span>
+        <span id="timer-display" class="badge bg-danger text-white timer-badge">--:--</span>
+      </div>
+      <button id="submit-assessment-btn" class="btn btn-sm btn-success fw-bold px-3">
+        🚀 Submit Solution
+      </button>
+    </div>
+  </div>
+
+  <!-- Workspace split -->
+  <div class="container-fluid p-0 main-workspace">
+    <div class="row g-0 h-100">
+      <!-- Left Question Panel -->
+      <div class="col-md-5 left-panel p-3">
+        <!-- Question tabs -->
+        <ul class="nav nav-pills mb-3 border-bottom pb-2" id="question-tabs">
+          <!-- Populated dynamically -->
+        </ul>
+
+        <div id="question-detail-container">
+          <h4 id="q-title" class="fw-bold text-white mb-2">Select a Question</h4>
+          <div class="mb-3">
+            <span id="q-difficulty" class="badge bg-secondary me-2">--</span>
+            <span id="q-category" class="badge bg-dark border">--</span>
+          </div>
+
+          <div class="mb-4">
+            <h6 class="text-secondary text-uppercase fs-7 fw-bold">Problem Description</h6>
+            <p id="q-description" style="line-height: 1.6;">Loading description...</p>
+          </div>
+
+          <div class="mb-4">
+            <h6 class="text-secondary text-uppercase fs-7 fw-bold">Constraints & Notes</h6>
+            <div id="q-constraints" class="bg-dark p-2 rounded small text-light font-monospace">--</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Code Editor & Console Panel -->
+      <div class="col-md-7 right-panel">
+        <!-- Control Bar -->
+        <div class="d-flex align-items-center justify-content-between p-2 bg-dark border-bottom border-secondary">
+          <div class="d-flex align-items-center">
+            <label class="me-2 small text-secondary">Language:</label>
+            <select id="language-select" class="form-select form-select-sm bg-secondary text-white border-0" style="width: 140px;">
+              <option value="python">Python 3</option>
+              <option value="javascript">JavaScript</option>
+              <option value="java">Java</option>
+              <option value="cpp">C++</option>
+              <option value="csharp">C#</option>
+            </select>
+          </div>
+          <div>
+            <button id="reset-code-btn" class="btn btn-sm btn-outline-secondary me-2">Reset Code</button>
+            <button id="run-code-btn" class="btn btn-sm btn-primary fw-bold">
+              ▶ Run Code
+            </button>
+          </div>
+        </div>
+
+        <!-- Monaco Editor Container -->
+        <div id="editor-container"></div>
+
+        <!-- Console / Test Results Drawer -->
+        <div class="console-drawer p-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0 text-secondary text-uppercase fs-7 fw-bold">Execution Console</h6>
+            <span id="run-status-badge" class="badge bg-secondary">Idle</span>
+          </div>
+          <pre id="console-output" class="text-success small font-monospace mb-0">Click "Run Code" to execute public test cases...</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monaco Editor CDN Script -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    let editor = null;
+    let attemptId = null;
+    let assessmentData = null;
+    let currentQuestionIndex = 0;
+    let codeStore = {}; // Maps questionId -> { language: code }
+    let remainingSeconds = 3600;
+    let timerInterval = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const assessmentId = urlParams.get('assessment_id');
+      attemptId = urlParams.get('attempt_id');
+
+      if (!assessmentId) {
+        alert('Missing assessment ID.');
+        window.location.href = 'candidate-dashboard.html';
+        return;
+      }
+
+      // Initialize Monaco Editor
+      require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' } });
+      require(['vs/editor/editor.main'], function () {
+        editor = monaco.editor.create(document.getElementById('editor-container'), {
+          value: '# Write your code here\n',
+          language: 'python',
+          theme: 'vs-dark',
+          automaticLayout: true,
+          fontSize: 14,
+          minimap: { enabled: false }
+        });
+      });
+
+      // Start Attempt or fetch session
+      try {
+        const startRes = await codingAPI.startAssessment(assessmentId);
+        if (startRes.success) {
+          const attemptData = startRes.data;
+          attemptId = attemptData.id;
+          assessmentData = attemptData.assessment;
+          remainingSeconds = attemptData.remaining_seconds || 3600;
+
+          document.getElementById('assessment-title-nav').textContent = assessmentData.title;
+          startTimer();
+          renderQuestionTabs();
+          loadQuestion(0);
+        } else {
+          alert('Error starting assessment: ' + startRes.message);
+        }
+      } catch (err) {
+        alert('Failed to initialize session: ' + err.message);
+      }
+
+      // Handle Language Change
+      document.getElementById('language-select').onchange = (e) => {
+        const lang = e.target.value;
+        const monacoLang = lang === 'python' ? 'python' : lang === 'javascript' ? 'javascript' : lang === 'java' ? 'java' : 'cpp';
+        if (editor) {
+          monaco.editor.setModelLanguage(editor.getModel(), monacoLang);
+        }
+      };
+
+      // Run Code Button
+      document.getElementById('run-code-btn').onclick = async () => {
+        if (!editor || !assessmentData || !assessmentData.questions[currentQuestionIndex]) return;
+        const q = assessmentData.questions[currentQuestionIndex];
+        const lang = document.getElementById('language-select').value;
+        const code = editor.getValue();
+
+        document.getElementById('run-status-badge').className = 'badge bg-warning text-dark';
+        document.getElementById('run-status-badge').textContent = 'Running...';
+        document.getElementById('console-output').textContent = 'Executing against public test cases...';
+
+        try {
+          const res = await codingAPI.runCode(attemptId, {
+            question_id: q.id,
+            language: lang,
+            source_code: code
+          });
+          if (res.success) {
+            const data = res.data;
+            document.getElementById('run-status-badge').className = data.passed === data.total ? 'badge bg-success' : 'badge bg-danger';
+            document.getElementById('run-status-badge').textContent = `Passed ${data.passed}/${data.total}`;
+            document.getElementById('console-output').textContent = JSON.stringify(data.test_case_details, null, 2);
+          } else {
+            document.getElementById('run-status-badge').className = 'badge bg-danger';
+            document.getElementById('run-status-badge').textContent = 'Error';
+            document.getElementById('console-output').textContent = res.message;
+          }
+        } catch (err) {
+          document.getElementById('run-status-badge').className = 'badge bg-danger';
+          document.getElementById('run-status-badge').textContent = 'Error';
+          document.getElementById('console-output').textContent = err.message;
+        }
+      };
+
+      // Submit Assessment Button
+      document.getElementById('submit-assessment-btn').onclick = async () => {
+        if (!confirm('Are you sure you want to submit your coding assessment?')) return;
+        submitAssessment();
+      };
+    });
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        remainingSeconds--;
+        if (remainingSeconds <= 0) {
+          clearInterval(timerInterval);
+          alert('Time expired! Auto-submitting your assessment...');
+          submitAssessment();
+          return;
+        }
+        const mins = Math.floor(remainingSeconds / 60);
+        const secs = remainingSeconds % 60;
+        document.getElementById('timer-display').textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      }, 1000);
+    }
+
+    function renderQuestionTabs() {
+      const tabs = document.getElementById('question-tabs');
+      tabs.innerHTML = assessmentData.questions.map((q, idx) => `
+        <li class="nav-item">
+          <button class="nav-link ${idx === 0 ? 'active' : ''} text-white" onclick="switchQuestion(${idx})">
+            Question ${idx + 1}
+          </button>
+        </li>
+      `).join('');
+    }
+
+    function switchQuestion(index) {
+      if (editor && assessmentData.questions[currentQuestionIndex]) {
+        const qId = assessmentData.questions[currentQuestionIndex].id;
+        codeStore[qId] = {
+          lang: document.getElementById('language-select').value,
+          code: editor.getValue()
+        };
+      }
+      currentQuestionIndex = index;
+      document.querySelectorAll('#question-tabs .nav-link').forEach((el, idx) => {
+        el.classList.toggle('active', idx === index);
+      });
+      loadQuestion(index);
+    }
+
+    function loadQuestion(index) {
+      const q = assessmentData.questions[index];
+      if (!q) return;
+
+      document.getElementById('q-title').textContent = q.title;
+      document.getElementById('q-difficulty').textContent = q.difficulty;
+      document.getElementById('q-category').textContent = q.category;
+      document.getElementById('q-description').textContent = q.description;
+      document.getElementById('q-constraints').textContent = q.constraints || 'None specified.';
+
+      const stored = codeStore[q.id];
+      const lang = stored ? stored.lang : 'python';
+      document.getElementById('language-select').value = lang;
+
+      const starter = (q.starter_code && q.starter_code[lang]) ? q.starter_code[lang] : `# Write Python 3 solution for ${q.title}\n`;
+      const codeToSet = stored ? stored.code : starter;
+
+      if (editor) {
+        editor.setValue(codeToSet);
+      }
+    }
+
+    async function submitAssessment() {
+      // Save current editor code
+      if (editor && assessmentData.questions[currentQuestionIndex]) {
+        const qId = assessmentData.questions[currentQuestionIndex].id;
+        codeStore[qId] = {
+          lang: document.getElementById('language-select').value,
+          code: editor.getValue()
+        };
+      }
+
+      const submissions = assessmentData.questions.map(q => {
+        const saved = codeStore[q.id] || { lang: 'python', code: '' };
+        return {
+          question_id: q.id,
+          language: saved.lang,
+          source_code: saved.code
+        };
+      });
+
+      try {
+        const res = await codingAPI.submitAssessment(attemptId, submissions);
+        if (res.success) {
+          window.location.href = `coding-report.html?attempt_id=${attemptId}`;
+        } else {
+          alert('Submission error: ' + res.message);
+        }
+      } catch (err) {
+        alert('Failed to submit assessment: ' + err.message);
+      }
+    }
+  </script>
+</body>
+</html>

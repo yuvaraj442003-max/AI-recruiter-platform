@@ -313,6 +313,37 @@ def apply_to_job(db: Session, candidate_user_id, job_id) -> Application:
     db.add(application)
     db.commit()
     db.refresh(application)
+
+    # Dispatch Application Received & Shortlisted emails in background
+    try:
+        cand_user = profile.user if profile else None
+        if cand_user and cand_user.email:
+            comp_name = job.company_name or "AI Recruiter"
+            from app.services.email_service import send_application_received_email, send_shortlisted_email
+            send_application_received_email(
+                to_email=cand_user.email,
+                candidate_name=cand_user.name,
+                job_title=job.title,
+                company_name=comp_name,
+                candidate_id=profile.id,
+                job_id=job.id,
+                db=db,
+            )
+
+            if is_shortlisted:
+                send_shortlisted_email(
+                    to_email=cand_user.email,
+                    candidate_name=cand_user.name,
+                    job_title=job.title,
+                    company_name=comp_name,
+                    candidate_id=profile.id,
+                    job_id=job.id,
+                    recruiter_id=job.recruiter_id,
+                    db=db,
+                )
+    except Exception as exc:
+        logging.warning(f"Failed to dispatch application confirmation email: {exc}")
+
     return application
 
 

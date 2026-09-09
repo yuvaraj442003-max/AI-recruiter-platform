@@ -269,6 +269,81 @@
               </div>
             </div>
 
+            <!-- Coding Assessment Integration Section -->
+            <div class="border-top pt-4 mt-4 mb-4">
+              <h5 class="fw-bold text-dark mb-2">💻 Coding Assessment Setting</h5>
+              <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="enable-coding-assessment" />
+                <label class="form-check-label fw-bold" for="enable-coding-assessment">Enable Coding Assessment for this Job</label>
+              </div>
+
+              <div id="coding-assessment-fields" class="d-none bg-light p-3 rounded border">
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label fw-semibold">Assessment Title</label>
+                    <input type="text" id="assessment-title" class="form-control" placeholder="e.g. Python Backend Engineer Assessment" />
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label fw-semibold">Duration (Minutes)</label>
+                    <input type="number" id="assessment-duration" class="form-control" value="60" min="15" max="180" />
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label fw-semibold">Passing Score (%)</label>
+                    <input type="number" id="assessment-passing-score" class="form-control" value="60" min="0" max="100" />
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Select Questions from Question Bank</label>
+                  <div id="coding-questions-select-container" class="border rounded bg-white p-2" style="max-height: 150px; overflow-y: auto;">
+                    <small class="text-muted">Loading question bank...</small>
+                  </div>
+                  <small class="text-muted"><a href="coding-question-management.html" target="_blank">+ Manage / Create Question Bank</a></small>
+                </div>
+              </div>
+            </div>
+
+            <!-- AI Voice Interview Setting Section -->
+            <div class="border-top pt-4 mt-4 mb-4">
+              <h5 class="fw-bold text-dark mb-2">🎤 Live AI Voice Interview Setting</h5>
+              <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="enable-ai-voice-interview" checked />
+                <label class="form-check-label fw-bold" for="enable-ai-voice-interview">Enable Live AI Voice Interview for this Job</label>
+              </div>
+
+              <div id="ai-voice-interview-fields" class="bg-light p-3 rounded border">
+                <div class="row g-3 mb-3">
+                  <div class="col-md-4">
+                    <label class="form-label fw-semibold">Interview Type</label>
+                    <select id="interview-type" class="form-select">
+                      <option value="mixed" selected>Mixed (Technical + HR + Behavioral)</option>
+                      <option value="technical">Technical Focus</option>
+                      <option value="behavioral">Behavioral Focus</option>
+                      <option value="hr">HR Focus</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label fw-semibold">Duration (Minutes)</label>
+                    <input type="number" id="interview-duration" class="form-control" value="30" min="10" max="90" />
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label fw-semibold">Camera Requirement</label>
+                    <select id="interview-camera-req" class="form-select">
+                      <option value="false" selected>Optional / Audio Only</option>
+                      <option value="true">Camera Required</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="interview-adaptive-check" checked />
+                  <label class="form-check-label small fw-semibold" for="interview-adaptive-check">
+                    Enable Adaptive Follow-up Questions (adjust difficulty based on answer strength)
+                  </label>
+                </div>
+              </div>
+            </div>
+
             <button type="submit" class="btn btn-primary" id="post-job-submit">
               <span id="post-job-submit-text">Post Job</span>
               <span id="post-job-spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>

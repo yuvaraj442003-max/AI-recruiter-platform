@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; margin: 0; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+    .header { background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); color: #ffffff; padding: 32px 24px; text-align: center; }
+    .header h1 { margin: 0; font-size: 24px; font-weight: 700; }
+    .content { padding: 32px 28px; color: #334155; line-height: 1.6; }
+    .details-card { background-color: #eef2ff; border-left: 4px solid #6366f1; padding: 20px; border-radius: 8px; margin: 20px 0; }
+    .btn { display: inline-block; background-color: #4f46e5; color: #ffffff !important; padding: 14px 32px; text-decoration: none; font-weight: 600; font-size: 15px; border-radius: 8px; margin: 20px 0; text-align: center; }
+    .footer { background-color: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🗓️ Interview Rescheduled</h1>
+      <div style="font-size: 13px; opacity: 0.9;">{{job_title}}</div>
+    </div>
+    <div class="content">
+      <p style="font-size: 16px; font-weight: 600; color: #0f172a;">Hello {{candidate_name}},</p>
+      <p>Your scheduled interview for the <strong>{{job_title}}</strong> position has been rescheduled.</p>
+
+      <div class="details-card">
+        <div><strong>New Date:</strong> {{interview_date}}</div>
+        <div><strong>New Time:</strong> {{interview_time}}</div>
+        <div><strong>Duration:</strong> {{duration}} minutes</div>
+      </div>
+
+      <div style="text-align: center;">
+        <a href="{{interview_link}}" class="btn">View Rescheduled Session &rarr;</a>
+      </div>
+    </div>
+    <div class="footer">
+      &copy; {{company_name}} &bull; Powered by AI Recruiter Platform
+    </div>
+  </div>
+</body>
+</html>

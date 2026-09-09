@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live AI Voice Interview — AI Recruiter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; height: 100vh; overflow: hidden; }
+    .interview-header { height: 60px; background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+    .main-stage { height: calc(100vh - 60px); }
+    .ai-avatar-card { background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; }
+    .avatar-circle { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 3rem; box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); transition: transform 0.3s ease; }
+    .avatar-circle.speaking { animation: pulse-avatar 1.5s infinite alternate; }
+    @keyframes pulse-avatar { 0% { transform: scale(1); box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); } 100% { transform: scale(1.1); box-shadow: 0 0 45px rgba(139, 92, 246, 0.8); } }
+    .waveform-bar { width: 4px; height: 12px; background-color: #3b82f6; border-radius: 2px; margin: 0 2px; transition: height 0.15s ease; }
+    .candidate-video-card { background: #1e293b; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); }
+    #candidate-video { width: 100%; height: 160px; object-fit: cover; background-color: #000; }
+    .transcript-box { background: rgba(30, 41, 59, 0.6); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08); max-height: 250px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <!-- Top Navigation Header -->
+  <div class="interview-header d-flex align-items-center justify-content-between px-4">
+    <div class="d-flex align-items-center gap-3">
+      <span class="fw-bold fs-5 text-white">🤖 AI Recruiter Voice Room</span>
+      <span id="job-title-header" class="badge bg-primary text-white">Loading...</span>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <div class="text-end">
+        <div class="small text-slate-400">Time Remaining</div>
+        <div id="timer-display" class="fw-bold font-monospace text-white fs-5">30:00</div>
+      </div>
+      <button id="end-interview-btn" class="btn btn-sm btn-outline-danger fw-bold px-3">End Interview</button>
+    </div>
+  </div>
+
+  <!-- Main Stage Workspace -->
+  <div class="container-fluid main-stage p-4">
+    <div class="row h-100 g-4">
+      <!-- Left Column: AI Avatar & Speech Display -->
+      <div class="col-lg-8 d-flex flex-column">
+        <div class="ai-avatar-card flex-grow-1 p-4 d-flex flex-column align-items-center justify-content-center text-center mb-3">
+          <div id="ai-avatar" class="avatar-circle mb-3">🤖</div>
+          <h4 id="turn-status-badge" class="badge bg-primary fs-6 px-3 py-2 mb-3">Initializing AI Session...</h4>
+          <p id="ai-speech-subtitle" class="fs-5 fw-medium text-white max-w-xl" style="max-width: 650px; line-height: 1.6;">
+            "Connecting to AI Interviewer..."
+          </p>
+
+          <!-- Waveform Visualizer -->
+          <div id="waveform-container" class="d-flex align-items-center mt-3" style="height: 30px;">
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+          </div>
+        </div>
+
+        <!-- Live Candidate Transcript Box -->
+        <div class="transcript-box p-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="small fw-bold text-slate-400 text-uppercase">Live Candidate Speech Recognized</span>
+            <span id="mic-status-label" class="badge bg-success">🎤 Mic Active</span>
+          </div>
+          <div id="candidate-live-transcript" class="small text-slate-200 font-monospace">
+            Listening for your speech... Speak naturally.
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Candidate Feed & Actions -->
+      <div class="col-lg-4 d-flex flex-column">
+        <!-- Candidate Camera Card -->
+        <div class="candidate-video-card mb-3 p-2 text-center">
+          <video id="candidate-video" autoplay muted playsinline></video>
+          <div class="d-flex justify-content-between align-items-center mt-2 px-2">
+            <span id="candidate-name-label" class="small fw-semibold text-white">Candidate Camera</span>
+            <span class="badge bg-dark border text-slate-300" id="cam-status">Camera Preview</span>
+          </div>
+        </div>
+
+        <!-- Turn Controls & Fallback Input -->
+        <div class="card bg-slate-800 border-0 p-3 flex-grow-1 d-flex flex-column">
+          <h6 class="fw-bold text-white mb-2">Voice & Answer Controls</h6>
+          <p class="small text-slate-400 mb-3">Speak into your microphone when status shows <span class="badge bg-success">Listening</span>. Click below if you prefer to submit typed answers.</p>
+
+          <div class="mt-auto">
+            <label class="form-label small text-slate-300">Typed Answer Fallback:</label>
+            <div class="input-group mb-2">
+              <input type="text" id="typed-answer-input" class="form-control bg-dark text-white border-secondary" placeholder="Type answer if mic unavailable..." />
+              <button id="send-typed-btn" class="btn btn-primary fw-bold">Send</button>
+            </div>
+            <button id="record-speech-btn" class="btn btn-success w-100 fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2">
+              <span>🎤 Tap to Speak Answer</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pre-Interview System Check Modal -->
+  <div class="modal fade" id="systemCheckModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-slate-900 border-secondary text-white">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title fw-bold">⚙️ Pre-Interview System Check</h5>
+        </div>
+        <div class="modal-body">
+          <p class="small text-slate-400 mb-4">Please ensure your microphone and camera permissions are granted before starting the AI Voice Interview.</p>
+          <ul class="list-group list-group-flush bg-transparent mb-4">
+            <li class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center">
+              <span>🎤 Microphone Check</span>
+              <span id="check-mic-status" class="badge bg-warning text-dark">Checking...</span>
+            </li>
+            <li class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center">
+              <span>📷 Camera Check</span>
+              <span id="check-cam-status" class="badge bg-warning text-dark">Checking...</span>
+            </li>
+            <li class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center">
+              <span>⚡ WebSocket Connectivity</span>
+              <span id="check-ws-status" class="badge bg-success">Ready</span>
+            </li>
+          </ul>
+
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="consent-check" checked />
+            <label class="form-check-label small text-slate-300" for="consent-check">
+              I understand that this interview uses speech processing and AI analysis to evaluate my response suitability.
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer border-secondary">
+          <button id="start-interview-now-btn" class="btn btn-primary w-100 fw-bold py-2">
+            🚀 Start Live AI Interview Now
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    let ws = null;
+    let interviewId = null;
+    let token = null;
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
+    let remainingSeconds = 1800;
+    let timerInterval = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      interviewId = urlParams.get('interview_id');
+      token = Session.getAccessToken();
+
+      if (!interviewId) {
+        alert('Missing interview session ID.');
+        window.location.href = 'candidate-dashboard.html';
+        return;
+      }
+
+      // Show system check modal
+      const modalEl = new bootstrap.Modal(document.getElementById('systemCheckModal'));
+      modalEl.show();
+
+      runSystemChecks();
+
+      document.getElementById('start-interview-now-btn').onclick = () => {
+        if (!document.getElementById('consent-check').checked) {
+          alert('Please agree to consent before proceeding.');
+          return;
+        }
+        modalEl.hide();
+        connectWebSocket();
+      };
+
+      document.getElementById('end-interview-btn').onclick = () => {
+        if (confirm('Are you sure you want to end your AI interview session?')) {
+          if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'interview.end' }));
+          }
+        }
+      };
+
+      document.getElementById('record-speech-btn').onclick = () => {
+        toggleRecording();
+      };
+
+      document.getElementById('send-typed-btn').onclick = () => {
+        sendTypedAnswer();
+      };
+    });
+
+    async function runSystemChecks() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+        document.getElementById('check-mic-status').className = 'badge bg-success';
+        document.getElementById('check-mic-status').textContent = 'Connected ✓';
+        document.getElementById('check-cam-status').className = 'badge bg-success';
+        document.getElementById('check-cam-status').textContent = 'Connected ✓';
+
+        const videoEl = document.getElementById('candidate-video');
+        videoEl.srcObject = stream;
+      } catch (err) {
+        document.getElementById('check-mic-status').className = 'badge bg-warning text-dark';
+        document.getElementById('check-mic-status').textContent = 'Mic Only / WebSpeech';
+        document.getElementById('check-cam-status').className = 'badge bg-secondary';
+        document.getElementById('check-cam-status').textContent = 'Optional Off';
+      }
+    }
+
+    function connectWebSocket() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//localhost:8000/api/v1/ws/interviews/${interviewId}?token=${token}`;
+
+      ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => {
+        console.log('Connected to AI Interview WebSocket server.');
+        ws.send(JSON.stringify({ type: 'client.ready' }));
+        startTimer();
+      };
+
+      ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        handleServerEvent(msg);
+      };
+
+      ws.onclose = () => {
+        document.getElementById('turn-status-badge').className = 'badge bg-danger';
+        document.getElementById('turn-status-badge').textContent = 'Disconnected';
+      };
+    }
+
+    function handleServerEvent(msg) {
+      if (msg.type === 'session.state') {
+        document.getElementById('job-title-header').textContent = msg.job_title || 'Position';
+        document.getElementById('candidate-name-label').textContent = msg.candidate_name || 'Candidate';
+      }
+      else if (msg.type === 'ai.response') {
+        const aiText = msg.text;
+        document.getElementById('ai-speech-subtitle').textContent = `"${aiText}"`;
+        document.getElementById('turn-status-badge').className = 'badge bg-primary';
+        document.getElementById('turn-status-badge').textContent = '🔊 AI Speaking...';
+        animateAvatar(true);
+
+        // Play TTS audio if available or use WebSpeech fallback
+        if (msg.audio_base64) {
+          const audio = new Audio(`data:audio/mp3;base64,${msg.audio_base64}`);
+          audio.play();
+          audio.onended = () => {
+            animateAvatar(false);
+            setListeningState();
+          };
+        } else if ('speechSynthesis' in window) {
+          const synth = window.speechSynthesis;
+          const utter = new SpeechSynthesisUtterance(aiText);
+          utter.onend = () => {
+            animateAvatar(false);
+            setListeningState();
+          };
+          synth.speak(utter);
+        } else {
+          setTimeout(() => {
+            animateAvatar(false);
+            setListeningState();
+          }, 4000);
+        }
+      }
+      else if (msg.type === 'ai.processing') {
+        document.getElementById('turn-status-badge').className = 'badge bg-warning text-dark';
+        document.getElementById('turn-status-badge').textContent = '🧠 AI Analyzing Response...';
+      }
+      else if (msg.type === 'candidate.transcript') {
+        document.getElementById('candidate-live-transcript').textContent = `"${msg.text}"`;
+      }
+      else if (msg.type === 'interview.completed') {
+        alert('Interview Session Completed! Redirecting to report...');
+        window.location.href = msg.report_url || `interview-report.html?interview_id=${interviewId}`;
+      }
+    }
+
+    function setListeningState() {
+      document.getElementById('turn-status-badge').className = 'badge bg-success';
+      document.getElementById('turn-status-badge').textContent = '🎤 Listening for Candidate...';
+    }
+
+    function animateAvatar(isSpeaking) {
+      const avatar = document.getElementById('ai-avatar');
+      avatar.classList.toggle('speaking', isSpeaking);
+    }
+
+    async function toggleRecording() {
+      if (!isRecording) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+
+          mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+          mediaRecorder.onstop = async () => {
+            const blob = new Blob(audioChunks, { type: 'audio/webm' });
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = () => {
+              const base64Audio = reader.result.split(',')[1];
+              if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'candidate.audio', audio_base64: base64Audio }));
+              }
+            };
+          };
+
+          mediaRecorder.start();
+          isRecording = true;
+          document.getElementById('record-speech-btn').className = 'btn btn-danger w-100 fw-bold py-2';
+          document.getElementById('record-speech-btn').innerHTML = '⏹️ Recording... Click to Finish Answer';
+        } catch (err) {
+          alert('Microphone error: ' + err.message);
+        }
+      } else {
+        if (mediaRecorder) mediaRecorder.stop();
+        isRecording = false;
+        document.getElementById('record-speech-btn').className = 'btn btn-success w-100 fw-bold py-2';
+        document.getElementById('record-speech-btn').innerHTML = '🎤 Tap to Speak Answer';
+      }
+    }
+
+    function sendTypedAnswer() {
+      const input = document.getElementById('typed-answer-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'candidate.text_answer', text: text }));
+        document.getElementById('candidate-live-transcript').textContent = `"${text}"`;
+        input.value = '';
+      }
+    }
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        remainingSeconds--;
+        if (remainingSeconds <= 0) {
+          clearInterval(timerInterval);
+          if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'interview.end' }));
+          }
+          return;
+        }
+        const mins = Math.floor(remainingSeconds / 60);
+        const secs = remainingSeconds % 60;
+        document.getElementById('timer-display').textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

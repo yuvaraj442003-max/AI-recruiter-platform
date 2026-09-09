@@ -104,6 +104,10 @@
       const locText = candidateProfile.location || app.candidate_location || "—";
       const isChecked = selectedCandidateIds.has(candId) ? "checked" : "";
 
+      const codingScore = app.coding_score !== null && app.coding_score !== undefined ? `${Math.round(app.coding_score)}%` : "—";
+      const interviewScore = app.interview_score !== null && app.interview_score !== undefined ? `${Math.round(app.interview_score)}%` : "—";
+      const overallScore = app.overall_score !== null && app.overall_score !== undefined ? `${Math.round(app.overall_score)}%` : `${atsScore}%`;
+
       return `
         <tr>
           <td class="ps-3 text-center">
@@ -115,16 +119,17 @@
             ${app.recruiter_override ? `<span class="badge bg-warning-subtle text-dark border border-warning px-2 py-0 small mt-1" title="${app.override_reason}">⚠️ Recruiter Override</span>` : ''}
           </td>
           <td>
-            <span class="badge ${scoreClass} px-3 py-1 rounded-pill fs-6">${atsScore}%</span>
+            <span class="badge ${scoreClass} px-2 py-1 rounded-pill fs-6">${atsScore}%</span>
           </td>
           <td>
-            <span class="badge bg-light text-dark border px-3 py-1 rounded-pill fs-6">${matchScore}%</span>
+            <span class="badge bg-info-subtle text-dark border px-2 py-1 rounded-pill fs-6">${codingScore}</span>
           </td>
-          <td class="small fw-semibold text-secondary">
-            <span class="text-success fw-bold">${matchedCount}</span> matched ${totalSkills ? `of ${totalSkills}` : ''}
+          <td>
+            <span class="badge bg-secondary-subtle text-dark border px-2 py-1 rounded-pill fs-6">${interviewScore}</span>
           </td>
-          <td class="small fw-medium text-dark">${expYears !== "—" ? `${expYears} yrs` : "—"}</td>
-          <td class="small text-secondary">${locText}</td>
+          <td>
+            <span class="badge bg-success px-2 py-1 rounded-pill fs-6 text-white">${overallScore}</span>
+          </td>
           <td class="text-secondary small fw-medium">${new Date(app.applied_at).toLocaleDateString()}</td>
           <td>${getStatusBadge(app.status)}</td>
           <td class="text-end pe-4">

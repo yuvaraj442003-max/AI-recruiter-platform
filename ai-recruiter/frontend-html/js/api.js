@@ -578,7 +578,68 @@ window.adminAPI = typeof adminAPI !== "undefined" ? adminAPI : undefined;
 window.recruiterProfileAPI = typeof recruiterProfileAPI !== "undefined" ? recruiterProfileAPI : undefined;
 window.notificationsAPI = typeof notificationsAPI !== "undefined" ? notificationsAPI : undefined;
 window.messagesAPI = typeof messagesAPI !== "undefined" ? messagesAPI : undefined;
+const codingAPI = {
+  createQuestion: (payload) => api.post("/coding/questions", payload),
+  listQuestions: (params = {}) => api.get("/coding/questions", params),
+  getQuestion: (id) => api.get(`/coding/questions/${id}`),
+  createAssessment: (payload) => api.post("/coding/assessments", payload),
+  listAssessments: (jobId) => api.get("/coding/assessments", jobId ? { job_id: jobId } : {}),
+  getAssessment: (id) => api.get(`/coding/assessments/${id}`),
+  getCandidateAssessments: () => api.get("/coding/candidate/assessments"),
+  startAssessment: (id) => api.post(`/coding/candidate/assessments/${id}/start`),
+  runCode: (attemptId, payload) => api.post(`/coding/candidate/attempts/${attemptId}/run`, payload),
+  submitAssessment: (attemptId, submissions) => api.post(`/coding/candidate/attempts/${attemptId}/submit`, submissions),
+  getAttemptResult: (attemptId) => api.get(`/coding/candidate/attempts/${attemptId}/result`),
+};
+
+window.codingAPI = codingAPI;
+
+const calendarAPI = {
+  getGoogleAuthUrl: () => api.get("/calendar/connect/google"),
+  getOutlookAuthUrl: () => api.get("/calendar/connect/outlook"),
+  disconnect: (provider = "google") => api.post(`/calendar/disconnect?provider=${provider}`),
+  getStatus: () => api.get("/calendar/status"),
+};
+
+const emailSettingsAPI = {
+  getSettings: () => api.get("/notifications/email-settings"),
+  updateSettings: (payload) => api.put("/notifications/email-settings", payload),
+  getLogs: () => api.get("/notifications/logs"),
+};
+
+const scheduledInterviewsAPI = {
+  schedule: (payload) => api.post("/interviews/schedule", payload),
+  reschedule: (interviewId, payload) => api.put(`/interviews/${interviewId}/reschedule`, payload),
+  cancel: (interviewId) => api.post(`/interviews/${interviewId}/cancel`),
+  sendReminder: (interviewId) => api.post(`/interviews/${interviewId}/reminder`),
+  getUpcoming: () => api.get("/interviews/upcoming"),
+};
+
+window.calendarAPI = calendarAPI;
+window.emailSettingsAPI = emailSettingsAPI;
+window.scheduledInterviewsAPI = scheduledInterviewsAPI;
 window.dashboardUrlForRole = dashboardUrlForRole;
+
+const candidateSearchAPI = {
+  smartSearch: (payload) => api.post("/candidates/smart-search", payload),
+  searchGet: (params = {}) => api.get("/candidates/search", params),
+  parseQuery: (query) => api.post("/candidates/parse-query", { query }),
+  getResumeUrl: (candidateId) => `${API_BASE_URL}/candidates/${candidateId}/resume`,
+  getAtsReport: (candidateId, jobId = null) => api.get(`/candidates/${candidateId}/ats-report`, jobId ? { job_id: jobId } : {}),
+  getSavedSearches: () => api.get("/candidates/saved-searches"),
+  saveSearch: (payload) => api.post("/candidates/saved-searches", payload),
+  deleteSavedSearch: (searchId) => api.delete(`/candidates/saved-searches/${searchId}`),
+  getRecentSearches: () => api.get("/candidates/recent-searches"),
+  clearRecentSearches: () => api.delete("/candidates/recent-searches"),
+  shortlist: (payload) => api.post("/candidates/shortlist", payload),
+  bulkShortlist: (payload) => api.post("/candidates/bulk-shortlist", payload),
+  invite: (payload) => api.post("/candidates/invite", payload),
+  bulkInvite: (payload) => api.post("/candidates/bulk-invite", payload),
+};
+
+window.candidateSearchAPI = candidateSearchAPI;
+
+
 
 
 

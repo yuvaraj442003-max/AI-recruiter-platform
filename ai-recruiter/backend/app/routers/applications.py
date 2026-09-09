@@ -362,9 +362,9 @@ def update_application_status(
             link="/my-applications.html",
         )
 
-        # Send status update email to candidate
+        # Send status update & shortlisted emails to candidate
         try:
-            from app.services.email_service import send_application_status_email
+            from app.services.email_service import send_application_status_email, send_shortlisted_email
             cand_user = application.candidate.user if application.candidate else None
             if cand_user and cand_user.email:
                 comp_name = (
@@ -372,15 +372,31 @@ def update_application_status(
                     else f"{current_user.name}'s Company"
                 )
                 job_title = application.job.title if application.job else "Position"
-                send_application_status_email(
-                    to_email=cand_user.email,
-                    candidate_name=cand_user.name,
-                    job_title=job_title,
-                    company_name=comp_name,
-                    new_status=new_status,
-                    notes=payload.notes if hasattr(payload, 'notes') and payload.notes else None,
-                    db=db,
-                )
+
+                if new_status == "shortlisted":
+                    send_shortlisted_email(
+                        to_email=cand_user.email,
+                        candidate_name=cand_user.name,
+                        job_title=job_title,
+                        company_name=comp_name,
+                        candidate_id=application.candidate_id,
+                        job_id=application.job_id,
+                        recruiter_id=current_user.id,
+                        db=db,
+                    )
+                else:
+                    send_application_status_email(
+                        to_email=cand_user.email,
+                        candidate_name=cand_user.name,
+                        job_title=job_title,
+                        company_name=comp_name,
+                        new_status=new_status,
+                        notes=getattr(payload, 'notes', None),
+                        candidate_id=application.candidate_id,
+                        job_id=application.job_id,
+                        recruiter_id=current_user.id,
+                        db=db,
+                    )
         except Exception as err:
             print(f"Warning: Failed to dispatch status update email: {err}")
 

@@ -81,6 +81,7 @@ class Job(Base, TimestampMixin):
 
     job_skills: Mapped[list["JobSkill"]] = relationship(back_populates="job", cascade="all, delete-orphan")
     applications: Mapped[list["Application"]] = relationship(back_populates="job", cascade="all, delete-orphan")
+    coding_assessments: Mapped[list["CodingAssessment"]] = relationship("CodingAssessment", back_populates="job", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"<Job {self.title}>"

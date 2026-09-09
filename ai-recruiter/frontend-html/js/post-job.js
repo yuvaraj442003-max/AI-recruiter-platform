@@ -136,18 +136,53 @@
     };
 
     try {
-      const res = await jobsAPI.create(payload);
-      if (res.data.fraud_risk_level === "HIGH" || res.data.status === "pending_review") {
+      const jobRes = await jobsAPI.create(payload);
+      const createdJob = jobRes.data;
+
+      // Handle Coding Assessment Creation if enabled
+      const enableCoding = document.getElementById("enable-coding-assessment")?.checked;
+      if (enableCoding && window.codingAPI) {
+        const assessmentTitle = document.getElementById("assessment-title")?.value.trim() || `${createdJob.title} Assessment`;
+        const duration = parseInt(document.getElementById("assessment-duration")?.value) || 60;
+        const passingScore = parseFloat(document.getElementById("assessment-passing-score")?.value) || 60;
+
+        const selectedQIds = Array.from(document.querySelectorAll(".coding-q-checkbox:checked")).map(cb => cb.value);
+        const questionsItems = selectedQIds.map((qId, idx) => ({
+          question_id: qId,
+          question_order: idx + 1,
+          points: 20.0
+        }));
+
+        try {
+          await codingAPI.createAssessment({
+            job_id: createdJob.id,
+            title: assessmentTitle,
+            duration_minutes: duration,
+            passing_score: passingScore,
+            total_score: 100.0,
+            max_attempts: 1,
+            allowed_languages: ["python", "javascript", "java", "cpp", "csharp"],
+            questions: questionsItems
+          });
+        } catch (cErr) {
+          console.warn("Failed to attach coding assessment:", cErr);
+        }
+      }
+
+      if (createdJob.fraud_risk_level === "HIGH" || createdJob.status === "pending_review") {
         showAlert(
-          `Job "${res.data.title}" saved, but AI Fraud Scan detected risk factors (Score: ${res.data.fraud_risk_score}/100). It is currently under Admin Review before publishing.`,
+          `Job "${createdJob.title}" saved, but AI Fraud Scan detected risk factors (Score: ${createdJob.fraud_risk_score}/100). It is currently under Admin Review before publishing.`,
           "warning"
         );
       } else {
-        showAlert(`"${res.data.title}" passed AI fraud verification and was published successfully!`, "success");
+        showAlert(`"${createdJob.title}" passed AI fraud verification and was published successfully!`, "success");
       }
       form.reset();
       document.getElementById("employment-type").value = "full_time";
       document.getElementById("status").value = "published";
+      if (document.getElementById("coding-assessment-fields")) {
+        document.getElementById("coding-assessment-fields").classList.add("d-none");
+      }
       loadPostedJobs();
     } catch (err) {
       showAlert(err.message, "danger");
@@ -261,6 +296,37 @@
 
   // Load jobs initially & listen for auth
   loadPostedJobs();
+
+  // Coding assessment field toggle & question loader
+  const enableCodingCheckbox = document.getElementById("enable-coding-assessment");
+  const codingFields = document.getElementById("coding-assessment-fields");
+  const qSelectContainer = document.getElementById("coding-questions-select-container");
+
+  if (enableCodingCheckbox && codingFields) {
+    enableCodingCheckbox.addEventListener("change", async () => {
+      codingFields.classList.toggle("d-none", !enableCodingCheckbox.checked);
+      if (enableCodingCheckbox.checked && qSelectContainer && window.codingAPI) {
+        qSelectContainer.innerHTML = '<small class="text-muted">Loading question bank...</small>';
+        try {
+          const res = await codingAPI.listQuestions();
+          if (res.success && res.data.length > 0) {
+            qSelectContainer.innerHTML = res.data.map(q => `
+              <div class="form-check">
+                <input class="form-check-input coding-q-checkbox" type="checkbox" value="${q.id}" id="q-check-${q.id}" checked />
+                <label class="form-check-label small fw-semibold" for="q-check-${q.id}">
+                  ${q.title} <span class="badge bg-secondary ms-1">${q.difficulty}</span> <span class="text-muted">(${q.category})</span>
+                </label>
+              </div>
+            `).join("");
+          } else {
+            qSelectContainer.innerHTML = '<small class="text-muted">No questions in bank. <a href="coding-question-management.html" target="_blank">Create Question</a></small>';
+          }
+        } catch (err) {
+          qSelectContainer.innerHTML = `<small class="text-danger">Failed to load question bank: ${err.message}</small>`;
+        }
+      }
+    });
+  }
 
   document.addEventListener("ar:auth-ready", (event) => {
     currentUserId = event.detail?.user?.id;

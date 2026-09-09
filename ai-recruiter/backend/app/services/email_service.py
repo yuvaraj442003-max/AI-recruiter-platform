@@ -1,26 +1,35 @@
 """
-email_service.py — Production-grade SMTP Email Delivery Service.
-Handles HTML email templates and STARTTLS/SSL SMTP transmission for:
-1. Email Verification
-2. Password Reset
-3. Interview Invitations
-4. Application Status Updates
-
-Tracks delivery logs (Pending, Sent, Failed) in PostgreSQL/SQLite database.
+email_service.py — Multi-provider Email Service Engine.
+Supports SMTP, SendGrid, and Amazon SES providers, Jinja2/HTML template rendering,
+background queueing, idempotency (duplicate prevention), recruiter email preferences,
+and exponential backoff retry tracking.
 """
+import os
 import logging
-import smtplib
+import time
+import uuid
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from typing import Optional
+from pathlib import Path
+from typing import Dict, Any, Optional
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
+from app.core.database import SessionLocal
 from app.models.email_log import EmailLog
+from app.models.email_setting import RecruiterEmailSetting
+from app.models.user import User
+from app.services.email_providers.base import BaseEmailProvider
+from app.services.email_providers.smtp_provider import SmtpEmailProvider
+from app.services.email_providers.sendgrid_provider import SendGridEmailProvider
+from app.services.email_providers.ses_provider import SesEmailProvider
 
 logger = logging.getLogger("ai_recruiter.email")
+
+_executor = ThreadPoolExecutor(max_workers=4)
+TEMPLATES_DIR = Path(__file__).parent.parent / "templates" / "email"
 
 
 def _send_smtp_email(
@@ -31,238 +40,206 @@ def _send_smtp_email(
     email_type: str = "general",
     db: Optional[Session] = None,
 ) -> bool:
-    """
-    Helper method to log and transmit email via SMTP (port 587 + STARTTLS or SSL port 465).
-    Persists delivery status (Pending -> Sent or Failed) to EmailLog table if db session provided.
-    """
-    email_log = None
-    if db:
-        try:
-            email_log = EmailLog(
-                to_email=to_email,
-                subject=subject,
-                email_type=email_type,
-                status="Pending",
-            )
-            db.add(email_log)
-            db.commit()
-            db.refresh(email_log)
-        except Exception as err:
-            logger.error(f"Failed to create EmailLog record: {err}")
+    """Backward compatibility helper mapping to EmailService.send_queued_email."""
+    return EmailService.send_queued_email(
+        to_email=to_email,
+        subject=subject,
+        email_type=email_type,
+        html_content=html_content,
+        text_content=text_content,
+    )
 
-    smtp_user = settings.smtp_user_credential
-    smtp_password = settings.SMTP_PASSWORD
 
-    if not smtp_user or not smtp_password:
-        logger.warning(
-            "SMTP configuration missing: SMTP_USER / SMTP_USERNAME or SMTP_PASSWORD is not configured. Logging email to console."
-        )
-        print(f"\n==================== [DEV EMAIL DISPATCH: {email_type.upper()}] ====================")
-        print(f"To: {to_email}\nSubject: {subject}\n\n{text_content}")
-        print(f"==============================================================\n")
+def get_email_provider() -> BaseEmailProvider:
+    provider_name = os.getenv("EMAIL_PROVIDER", getattr(settings, "EMAIL_PROVIDER", "smtp")).lower()
+    if provider_name == "sendgrid":
+        return SendGridEmailProvider()
+    elif provider_name in ("ses", "aws_ses"):
+        return SesEmailProvider()
+    return SmtpEmailProvider()
 
-        if db and email_log:
+
+def render_template(template_name: str, context: Dict[str, Any]) -> str:
+    template_path = TEMPLATES_DIR / template_name
+    if not template_path.exists():
+        logger.warning(f"Email template {template_name} not found at {template_path}. Using fallback.")
+        return "<p>" + "<br>".join([f"<strong>{k}:</strong> {v}" for k, v in context.items()]) + "</p>"
+
+    html = template_path.read_text(encoding="utf-8")
+    for key, val in context.items():
+        html = html.replace(f"{{{{{key}}}}}", str(val if val is not None else ""))
+    return html
+
+
+class EmailService:
+    @staticmethod
+    def is_event_enabled_for_recruiter(db: Session, recruiter_id: Optional[Any], event_key: str) -> bool:
+        if not recruiter_id:
+            return True
+        setting = db.scalar(select(RecruiterEmailSetting).where(RecruiterEmailSetting.recruiter_id == recruiter_id))
+        if not setting:
+            return True # default enabled
+        return getattr(setting, event_key, True)
+
+    @classmethod
+    def send_queued_email(
+        cls,
+        to_email: str,
+        subject: str,
+        email_type: str,
+        html_content: str,
+        text_content: str,
+        idempotency_key: Optional[str] = None,
+        candidate_id: Optional[Any] = None,
+        job_id: Optional[Any] = None,
+        interview_id: Optional[Any] = None,
+        max_retries: int = 3,
+    ) -> bool:
+        """
+        Dispatches email asynchronously via background thread pool with idempotency check
+        and exponential backoff retry logic.
+        """
+        def _bg_task():
+            db: Session = SessionLocal()
             try:
-                email_log.status = "Sent"
-                email_log.sent_at = datetime.now(timezone.utc)
+                # Idempotency / Duplicate send prevention
+                if idempotency_key:
+                    existing = db.scalar(select(EmailLog).where(EmailLog.idempotency_key == idempotency_key))
+                    if existing and existing.status == "Sent":
+                        logger.info(f"Duplicate email prevented by idempotency_key '{idempotency_key}'")
+                        return
+
+                email_log = EmailLog(
+                    to_email=to_email,
+                    subject=subject,
+                    email_type=email_type,
+                    status="Pending",
+                    idempotency_key=idempotency_key or f"{email_type}_{uuid.uuid4().hex[:12]}",
+                    candidate_id=candidate_id,
+                    job_id=job_id,
+                    interview_id=interview_id,
+                )
+                db.add(email_log)
                 db.commit()
-            except Exception:
-                pass
-        return True
+                db.refresh(email_log)
 
-    try:
-        from_addr = settings.sender_email
-        from_name = settings.sender_name
+                provider = get_email_provider()
+                attempt = 0
+                sent = False
+                last_err = None
 
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = subject
-        msg["From"] = f"{from_name} <{from_addr}>"
-        msg["To"] = to_email
+                while attempt < max_retries and not sent:
+                    attempt += 1
+                    email_log.retry_count = attempt
+                    result = provider.send_email(to_email, subject, html_content, text_content)
 
-        part1 = MIMEText(text_content, "plain")
-        part2 = MIMEText(html_content, "html")
-        msg.attach(part1)
-        msg.attach(part2)
+                    if result.get("success"):
+                        sent = True
+                        email_log.status = "Sent"
+                        email_log.provider_message_id = result.get("provider_message_id")
+                        email_log.sent_at = datetime.now(timezone.utc)
+                        email_log.error_message = None
+                    else:
+                        last_err = result.get("error", "Unknown delivery error")
+                        email_log.status = "Retrying" if attempt < max_retries else "Failed"
+                        email_log.error_message = last_err
+                        email_log.failed_at = datetime.now(timezone.utc)
+                    
+                    db.commit()
+                    if not sent and attempt < max_retries:
+                        time.sleep(2 ** attempt) # Exponential backoff: 2s, 4s, 8s
 
-        smtp_host = settings.SMTP_HOST or "smtp.gmail.com"
-        smtp_port = int(settings.SMTP_PORT or 587)
-
-        if smtp_port == 465:
-            with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=15) as server:
-                server.login(smtp_user, smtp_password)
-                server.sendmail(from_addr, [to_email], msg.as_string())
-        else:
-            with smtplib.SMTP(smtp_host, smtp_port, timeout=15) as server:
-                server.starttls()
-                server.login(smtp_user, smtp_password)
-                server.sendmail(from_addr, [to_email], msg.as_string())
-
-        logger.info(f"Successfully delivered email via SMTP to {to_email}")
-        print(f"✅ [SMTP SENT SUCCESS] Email delivered to {to_email}")
-
-        if db and email_log:
-            try:
-                email_log.status = "Sent"
-                email_log.sent_at = datetime.now(timezone.utc)
-                db.commit()
+                if not sent:
+                    logger.error(f"Email delivery permanently failed to {to_email} after {max_retries} attempts: {last_err}")
             except Exception as e:
-                logger.error(f"Failed to update EmailLog status: {e}")
+                logger.error(f"Background email worker error: {e}")
+            finally:
+                db.close()
 
+        _executor.submit(_bg_task)
         return True
-    except Exception as e:
-        error_msg = str(e)
-        logger.error(f"Failed to send email via SMTP to {to_email}: {error_msg}")
-        print(f"❌ [SMTP ERROR] Failed to send email to {to_email}: {error_msg}")
 
-        if db and email_log:
-            try:
-                email_log.status = "Failed"
-                email_log.error_message = error_msg
-                db.commit()
-            except Exception:
-                pass
 
-        return False
-
+# --- High-level System Event Wrappers ---
 
 def send_verification_email(
     to_email: str, name: str, token: str, db: Optional[Session] = None, base_url: Optional[str] = None
 ) -> str:
-    """Generates and dispatches a secure Account Email Verification message."""
     url_base = base_url or settings.FRONTEND_URL or "http://localhost:8000"
     verify_url = f"{url_base.rstrip('/')}/verify-email.html?token={token}"
     subject = "Verify Your AI Recruiter Account"
 
-    html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <style>
-        body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; margin: 0; padding: 20px; }}
-        .container {{ max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }}
-        .header {{ background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: #ffffff; padding: 32px 24px; text-align: center; }}
-        .header h1 {{ margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }}
-        .content {{ padding: 32px 28px; color: #334155; line-height: 1.6; }}
-        .btn {{ display: inline-block; background-color: #2563eb; color: #ffffff !important; padding: 14px 32px; text-decoration: none; font-weight: 600; font-size: 15px; border-radius: 8px; margin: 24px 0; text-align: center; }}
-        .link-box {{ background-color: #f1f5f9; padding: 12px 16px; border-radius: 6px; font-size: 13px; color: #475569; word-break: break-all; margin-top: 16px; }}
-        .footer {{ background-color: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; }}
-        .badge {{ display: inline-block; background-color: #dbeafe; color: #1e40af; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 9999px; margin-top: 8px; }}
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>⚡ AI Recruiter Platform</h1>
-          <div class="badge">Account Security Verification</div>
-        </div>
-        <div class="content">
-          <p style="font-size: 16px; font-weight: 600; color: #0f172a;">Hello {name},</p>
-          <p>Thank you for registering with <strong>AI Recruiter Platform</strong>. To activate your account and access your dashboard, please verify your email address below.</p>
-          
-          <div style="text-align: center;">
-            <a href="{verify_url}" class="btn">Verify My Account &rarr;</a>
-          </div>
+    context = {"name": name, "verify_url": verify_url}
+    html_content = render_template("application_received.html", {"candidate_name": name, "job_title": "Account Verification", "company_name": "AI Recruiter"})
+    text_content = f"Hello {name},\n\nPlease verify your account: {verify_url}\n"
 
-          <p style="font-size: 13px; color: #64748b;">Or copy and paste this secure link into your web browser:</p>
-          <div class="link-box"><a href="{verify_url}" style="color: #2563eb;">{verify_url}</a></div>
-
-          <p style="font-size: 13px; color: #e11d48; margin-top: 24px; font-weight: 600;">
-            ⏳ Note: This verification link is single-use and will expire in 24 hours.
-          </p>
-          <p style="font-size: 12px; color: #64748b;">If you did not register for an account on AI Recruiter, please ignore this email.</p>
-        </div>
-        <div class="footer">
-          &copy; AI Recruiter Platform &bull; Secure Authentication System
-        </div>
-      </div>
-    </body>
-    </html>
-    """
-
-    text_content = f"""
-Hello {name},
-
-Thank you for registering with AI Recruiter Platform.
-To activate your account, please verify your email address by visiting the link below:
-
-{verify_url}
-
-Note: This link is single-use and expires in 24 hours.
-If you did not create an account, please ignore this email.
-    """
-
-    _send_smtp_email(to_email, subject, html_content, text_content, email_type="verification", db=db)
+    EmailService.send_queued_email(
+        to_email=to_email,
+        subject=subject,
+        email_type="verification",
+        html_content=html_content,
+        text_content=text_content,
+        idempotency_key=f"verify_{token}",
+    )
     return verify_url
 
 
 def send_reset_password_email(
     to_email: str, name: str, token: str, db: Optional[Session] = None, base_url: Optional[str] = None
 ) -> str:
-    """Generates and dispatches a secure Password Reset message."""
     url_base = base_url or settings.FRONTEND_URL or "http://localhost:8000"
     reset_url = f"{url_base.rstrip('/')}/reset-password.html?token={token}"
     subject = "Reset Your AI Recruiter Password"
 
-    html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <style>
-        body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; margin: 0; padding: 20px; }}
-        .container {{ max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }}
-        .header {{ background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%); color: #ffffff; padding: 32px 24px; text-align: center; }}
-        .header h1 {{ margin: 0; font-size: 24px; font-weight: 700; }}
-        .content {{ padding: 32px 28px; color: #334155; line-height: 1.6; }}
-        .btn {{ display: inline-block; background-color: #dc2626; color: #ffffff !important; padding: 14px 32px; text-decoration: none; font-weight: 600; font-size: 15px; border-radius: 8px; margin: 24px 0; text-align: center; }}
-        .link-box {{ background-color: #f1f5f9; padding: 12px 16px; border-radius: 6px; font-size: 13px; color: #475569; word-break: break-all; margin-top: 16px; }}
-        .footer {{ background-color: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; }}
-        .warning {{ background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 12px 16px; font-size: 13px; color: #991b1b; border-radius: 4px; margin-top: 20px; }}
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>⚡ AI Recruiter Platform</h1>
-          <div style="font-size: 13px; opacity: 0.9;">Password Reset Request</div>
-        </div>
-        <div class="content">
-          <p style="font-size: 16px; font-weight: 600; color: #0f172a;">Hello {name},</p>
-          <p>We received a request to reset the password for your <strong>AI Recruiter</strong> account. Click the button below to set a new password:</p>
-          
-          <div style="text-align: center;">
-            <a href="{reset_url}" class="btn">Reset My Password &rarr;</a>
-          </div>
+    text_content = f"Hello {name},\n\nReset your password here: {reset_url}\n"
+    html_content = f"<p>Hello {name},</p><p>Reset your password <a href='{reset_url}'>here</a>.</p>"
 
-          <p style="font-size: 13px; color: #64748b;">Or copy and paste this link into your web browser:</p>
-          <div class="link-box"><a href="{reset_url}" style="color: #dc2626;">{reset_url}</a></div>
-
-          <div class="warning">
-            🔒 <strong>Security Notice:</strong> This link is single-use and valid for <strong>30 minutes</strong>. If you did not request a password reset, please ignore this message.
-          </div>
-        </div>
-        <div class="footer">
-          &copy; AI Recruiter Platform &bull; Account Security System
-        </div>
-      </div>
-    </body>
-    </html>
-    """
-
-    text_content = f"""
-Hello {name},
-
-We received a request to reset your password for your AI Recruiter account.
-Please visit the following link within 30 minutes to set a new password:
-
-{reset_url}
-
-If you did not request a password reset, you can safely ignore this email.
-    """
-
-    _send_smtp_email(to_email, subject, html_content, text_content, email_type="password_reset", db=db)
+    EmailService.send_queued_email(
+        to_email=to_email,
+        subject=subject,
+        email_type="password_reset",
+        html_content=html_content,
+        text_content=text_content,
+        idempotency_key=f"reset_{token}",
+    )
     return reset_url
+
+
+def send_shortlisted_email(
+    to_email: str,
+    candidate_name: str,
+    job_title: str,
+    company_name: str,
+    candidate_id: Optional[Any] = None,
+    job_id: Optional[Any] = None,
+    recruiter_id: Optional[Any] = None,
+    db: Optional[Session] = None,
+) -> bool:
+    if db and recruiter_id:
+        if not EmailService.is_event_enabled_for_recruiter(db, recruiter_id, "candidate_shortlisted"):
+            logger.info("Shortlisted email disabled in recruiter notification settings.")
+            return False
+
+    subject = f"You have been shortlisted for {job_title}"
+    context = {
+        "candidate_name": candidate_name,
+        "job_title": job_title,
+        "company_name": company_name,
+    }
+    html_content = render_template("shortlisted.html", context)
+    text_content = f"Hello {candidate_name},\n\nCongratulations!\n\nYou have been shortlisted for the {job_title} position at {company_name}.\nOur team will contact you with next steps.\n\nThank you,\nAI Recruiter"
+
+    idempotency = f"shortlist_{candidate_id}_{job_id}" if candidate_id and job_id else None
+    return EmailService.send_queued_email(
+        to_email=to_email,
+        subject=subject,
+        email_type="shortlisted",
+        html_content=html_content,
+        text_content=text_content,
+        idempotency_key=idempotency,
+        candidate_id=candidate_id,
+        job_id=job_id,
+    )
 
 
 def send_interview_invitation_email(
@@ -273,92 +250,161 @@ def send_interview_invitation_email(
     interview_date: str,
     interview_time: str,
     location_or_link: str,
+    duration: int = 30,
+    interview_type: str = "AI Technical Interview",
     instructions: str = "Please make sure you have a working camera, microphone, and stable internet connection.",
+    candidate_id: Optional[Any] = None,
+    job_id: Optional[Any] = None,
+    interview_id: Optional[Any] = None,
+    recruiter_id: Optional[Any] = None,
     db: Optional[Session] = None,
 ) -> bool:
-    """Sends a formatted, professional interview invitation email to a candidate."""
-    subject = f"Interview Invitation: {job_title} at {company_name}"
+    if db and recruiter_id:
+        if not EmailService.is_event_enabled_for_recruiter(db, recruiter_id, "interview_invited"):
+            logger.info("Interview invitation email disabled in recruiter settings.")
+            return False
 
-    html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <style>
-        body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; margin: 0; padding: 20px; }}
-        .container {{ max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }}
-        .header {{ background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%); color: #ffffff; padding: 32px 24px; text-align: center; }}
-        .header h1 {{ margin: 0; font-size: 24px; font-weight: 700; }}
-        .badge {{ display: inline-block; background-color: rgba(255,255,255,0.2); color: #ffffff; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 9999px; margin-top: 8px; }}
-        .content {{ padding: 32px 28px; color: #334155; line-height: 1.6; }}
-        .details-card {{ background-color: #f1f5f9; border-left: 4px solid #0284c7; padding: 20px; border-radius: 8px; margin: 20px 0; }}
-        .detail-row {{ margin-bottom: 10px; font-size: 14px; }}
-        .detail-label {{ font-weight: 700; color: #1e293b; width: 140px; display: inline-block; }}
-        .btn {{ display: inline-block; background-color: #0284c7; color: #ffffff !important; padding: 14px 32px; text-decoration: none; font-weight: 600; font-size: 15px; border-radius: 8px; margin: 20px 0; text-align: center; }}
-        .instructions-box {{ background-color: #fffbeb; border: 1px solid #fef3c7; border-radius: 8px; padding: 16px; font-size: 13px; color: #92400e; margin-top: 20px; }}
-        .footer {{ background-color: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; }}
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>📅 Interview Invitation</h1>
-          <div class="badge">{company_name}</div>
-        </div>
-        <div class="content">
-          <p style="font-size: 16px; font-weight: 600; color: #0f172a;">Dear {candidate_name},</p>
-          <p>We are pleased to invite you for an interview for the <strong>{job_title}</strong> position at <strong>{company_name}</strong>.</p>
-          
-          <div class="details-card">
-            <div class="detail-row"><span class="detail-label">Candidate Name:</span> {candidate_name}</div>
-            <div class="detail-row"><span class="detail-label">Company Name:</span> {company_name}</div>
-            <div class="detail-row"><span class="detail-label">Job Title:</span> {job_title}</div>
-            <div class="detail-row"><span class="detail-label">Scheduled Date:</span> {interview_date}</div>
-            <div class="detail-row"><span class="detail-label">Scheduled Time:</span> {interview_time}</div>
-            <div class="detail-row"><span class="detail-label">Interview Meeting:</span> <a href="{location_or_link}" style="color: #0284c7; font-weight: 600;">Join Meeting / Access Portal</a></div>
-          </div>
+    subject = f"Interview Invitation - {job_title}"
+    context = {
+        "candidate_name": candidate_name,
+        "company_name": company_name,
+        "job_title": job_title,
+        "interview_date": interview_date,
+        "interview_time": interview_time,
+        "duration": duration,
+        "interview_type": interview_type,
+        "interview_link": location_or_link,
+    }
+    html_content = render_template("interview_invitation.html", context)
+    text_content = f"Hello {candidate_name},\n\nYou have been invited to an interview for the {job_title} position.\n\nDate: {interview_date}\nTime: {interview_time}\nDuration: {duration} minutes\nInterview Type: {interview_type}\n\nJoin Link: {location_or_link}\n"
 
-          <div style="text-align: center;">
-            <a href="{location_or_link}" class="btn">Start / Join Interview &rarr;</a>
-          </div>
+    idempotency = f"invite_{interview_id}_{interview_date}_{interview_time}" if interview_id else None
+    return EmailService.send_queued_email(
+        to_email=to_email,
+        subject=subject,
+        email_type="interview_invitation",
+        html_content=html_content,
+        text_content=text_content,
+        idempotency_key=idempotency,
+        candidate_id=candidate_id,
+        job_id=job_id,
+        interview_id=interview_id,
+    )
 
-          <div class="instructions-box">
-            💡 <strong>Interview Instructions:</strong> {instructions}
-          </div>
 
-          <p style="font-size: 13px; color: #64748b; margin-top: 24px;">
-            If you need to reschedule or have any questions prior to the interview, please respond directly to this email or contact the recruiter.
-          </p>
-        </div>
-        <div class="footer">
-          &copy; {company_name} via AI Recruiter Platform &bull; Automated Candidate System
-        </div>
-      </div>
-    </body>
-    </html>
-    """
+def send_interview_rescheduled_email(
+    to_email: str,
+    candidate_name: str,
+    job_title: str,
+    company_name: str,
+    new_date: str,
+    new_time: str,
+    duration: int = 30,
+    interview_link: str = "",
+    candidate_id: Optional[Any] = None,
+    job_id: Optional[Any] = None,
+    interview_id: Optional[Any] = None,
+    recruiter_id: Optional[Any] = None,
+    db: Optional[Session] = None,
+) -> bool:
+    if db and recruiter_id:
+        if not EmailService.is_event_enabled_for_recruiter(db, recruiter_id, "interview_rescheduled"):
+            return False
 
-    text_content = f"""
-Dear {candidate_name},
+    subject = f"Interview Rescheduled - {job_title}"
+    context = {
+        "candidate_name": candidate_name,
+        "job_title": job_title,
+        "company_name": company_name,
+        "interview_date": new_date,
+        "interview_time": new_time,
+        "duration": duration,
+        "interview_link": interview_link,
+    }
+    html_content = render_template("interview_rescheduled.html", context)
+    text_content = f"Hello {candidate_name},\n\nYour interview has been rescheduled.\n\nNew Date: {new_date}\nNew Time: {new_time}\n"
 
-We are pleased to invite you for an interview for the {job_title} position at {company_name}.
+    idempotency = f"resched_{interview_id}_{new_date}_{new_time}" if interview_id else None
+    return EmailService.send_queued_email(
+        to_email=to_email,
+        subject=subject,
+        email_type="interview_rescheduled",
+        html_content=html_content,
+        text_content=text_content,
+        idempotency_key=idempotency,
+        candidate_id=candidate_id,
+        job_id=job_id,
+        interview_id=interview_id,
+    )
 
-Interview Details:
-------------------
-Candidate Name: {candidate_name}
-Company Name:   {company_name}
-Job Title:      {job_title}
-Date:           {interview_date}
-Time:           {interview_time}
-Link / Location: {location_or_link}
 
-Instructions:
-{instructions}
+def send_interview_cancelled_email(
+    to_email: str,
+    candidate_name: str,
+    job_title: str,
+    company_name: str,
+    candidate_id: Optional[Any] = None,
+    job_id: Optional[Any] = None,
+    interview_id: Optional[Any] = None,
+    recruiter_id: Optional[Any] = None,
+    db: Optional[Session] = None,
+) -> bool:
+    if db and recruiter_id:
+        if not EmailService.is_event_enabled_for_recruiter(db, recruiter_id, "interview_cancelled"):
+            return False
 
-Please visit the link above to access your interview session.
-    """
+    subject = f"Interview Cancelled - {job_title}"
+    context = {
+        "candidate_name": candidate_name,
+        "job_title": job_title,
+        "company_name": company_name,
+    }
+    html_content = render_template("interview_cancelled.html", context)
+    text_content = f"Hello {candidate_name},\n\nYour scheduled interview for {job_title} has been cancelled.\nThe recruitment team will contact you regarding next steps."
 
-    return _send_smtp_email(to_email, subject, html_content, text_content, email_type="interview_invitation", db=db)
+    idempotency = f"cancel_{interview_id}" if interview_id else None
+    return EmailService.send_queued_email(
+        to_email=to_email,
+        subject=subject,
+        email_type="interview_cancelled",
+        html_content=html_content,
+        text_content=text_content,
+        idempotency_key=idempotency,
+        candidate_id=candidate_id,
+        job_id=job_id,
+        interview_id=interview_id,
+    )
+
+
+def send_application_received_email(
+    to_email: str,
+    candidate_name: str,
+    job_title: str,
+    company_name: str,
+    candidate_id: Optional[Any] = None,
+    job_id: Optional[Any] = None,
+    db: Optional[Session] = None,
+) -> bool:
+    subject = f"Application Received - {job_title}"
+    context = {
+        "candidate_name": candidate_name,
+        "job_title": job_title,
+        "company_name": company_name,
+    }
+    html_content = render_template("application_received.html", context)
+    text_content = f"Hello {candidate_name},\n\nThank you for applying for the {job_title} position at {company_name}.\nYour application has been successfully received."
+
+    idempotency = f"app_recv_{candidate_id}_{job_id}" if candidate_id and job_id else None
+    return EmailService.send_queued_email(
+        to_email=to_email,
+        subject=subject,
+        email_type="application_received",
+        html_content=html_content,
+        text_content=text_content,
+        idempotency_key=idempotency,
+        candidate_id=candidate_id,
+        job_id=job_id,
+    )
 
 
 def send_application_status_email(
@@ -368,94 +414,37 @@ def send_application_status_email(
     company_name: str,
     new_status: str,
     notes: Optional[str] = None,
+    candidate_id: Optional[Any] = None,
+    job_id: Optional[Any] = None,
+    recruiter_id: Optional[Any] = None,
     db: Optional[Session] = None,
 ) -> bool:
-    """Sends a candidate notification email whenever their job application status updates."""
     clean_status = new_status.replace("_", " ").title()
+
+    if db and recruiter_id:
+        if clean_status == "Rejected" and not EmailService.is_event_enabled_for_recruiter(db, recruiter_id, "candidate_rejected"):
+            logger.info("Candidate rejected email disabled in recruiter notification settings.")
+            return False
+
     subject = f"Application Update: {job_title} at {company_name}"
-
-    status_color_map = {
-        "Applied": "#3b82f6",
-        "Under Review": "#8b5cf6",
-        "Shortlisted": "#10b981",
-        "Interview Scheduled": "#0284c7",
-        "Selected": "#16a34a",
-        "Rejected": "#ef4444",
+    context = {
+        "candidate_name": candidate_name,
+        "job_title": job_title,
+        "company_name": company_name,
+        "status_label": clean_status,
+        "status_description": f"Your application status has been updated to {clean_status}."
     }
-    badge_color = status_color_map.get(clean_status, "#2563eb")
+    html_content = render_template("application_status.html", context)
+    text_content = f"Hello {candidate_name},\n\nYour application status for {job_title} at {company_name} is now: {clean_status}."
 
-    status_messages = {
-        "Applied": "Your application has been received and logged successfully.",
-        "Under Review": "Our talent acquisition team is actively reviewing your application and candidate profile.",
-        "Shortlisted": "Great news! Your application has been shortlisted for further evaluation.",
-        "Interview Scheduled": "You have been selected for an interview session. Details have been updated in your portal.",
-        "Selected": "Congratulations! We are delighted to inform you that you have been selected for this role.",
-        "Rejected": "Thank you for your interest in joining our team. While we were impressed with your background, we have decided to move forward with other candidates at this time.",
-    }
-    status_desc = status_messages.get(clean_status, f"Your application status is now updated to {clean_status}.")
-
-    portal_url = f"{settings.FRONTEND_URL.rstrip('/')}/my-applications.html"
-
-    html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <style>
-        body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; margin: 0; padding: 20px; }}
-        .container {{ max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }}
-        .header {{ background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: #ffffff; padding: 32px 24px; text-align: center; }}
-        .header h1 {{ margin: 0; font-size: 22px; font-weight: 700; }}
-        .content {{ padding: 32px 28px; color: #334155; line-height: 1.6; }}
-        .status-badge {{ display: inline-block; background-color: {badge_color}; color: #ffffff; font-size: 15px; font-weight: 700; padding: 10px 24px; border-radius: 9999px; margin: 16px 0; }}
-        .details-box {{ background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; margin: 20px 0; font-size: 14px; }}
-        .btn {{ display: inline-block; background-color: #2563eb; color: #ffffff !important; padding: 12px 28px; text-decoration: none; font-weight: 600; font-size: 14px; border-radius: 8px; margin-top: 16px; text-align: center; }}
-        .footer {{ background-color: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; }}
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>📋 Application Status Update</h1>
-          <div style="font-size: 13px; opacity: 0.9; margin-top: 4px;">{company_name}</div>
-        </div>
-        <div class="content">
-          <p style="font-size: 16px; font-weight: 600; color: #0f172a;">Hello {candidate_name},</p>
-          <p>There is an update on your application for the <strong>{job_title}</strong> position at <strong>{company_name}</strong>.</p>
-          
-          <div style="text-align: center;">
-            <div class="status-badge">Current Status: {clean_status}</div>
-          </div>
-
-          <div class="details-box">
-            <p style="margin: 0; font-weight: 600; color: #1e293b;">Details / Next Steps:</p>
-            <p style="margin: 8px 0 0 0; color: #475569;">{status_desc}</p>
-            {f'<p style="margin-top: 12px; font-size: 13px; color: #64748b; font-style: italic;">Recruiter Note: {notes}</p>' if notes else ''}
-          </div>
-
-          <div style="text-align: center;">
-            <a href="{portal_url}" class="btn">View Application Portal &rarr;</a>
-          </div>
-        </div>
-        <div class="footer">
-          &copy; {company_name} &bull; Powered by AI Recruiter Platform
-        </div>
-      </div>
-    </body>
-    </html>
-    """
-
-    text_content = f"""
-Hello {candidate_name},
-
-Your application status for {job_title} at {company_name} has been updated.
-
-New Status: {clean_status}
-
-{status_desc}
-{f"Recruiter Note: {notes}" if notes else ""}
-
-View your candidate portal at: {portal_url}
-    """
-
-    return _send_smtp_email(to_email, subject, html_content, text_content, email_type="status_update", db=db)
+    idempotency = f"status_{candidate_id}_{job_id}_{clean_status}" if candidate_id and job_id else None
+    return EmailService.send_queued_email(
+        to_email=to_email,
+        subject=subject,
+        email_type="status_update",
+        html_content=html_content,
+        text_content=text_content,
+        idempotency_key=idempotency,
+        candidate_id=candidate_id,
+        job_id=job_id,
+    )

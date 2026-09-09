@@ -623,13 +623,168 @@
     });
   }
 
+  async function loadCandidateCodingAssessments() {
+    const container = document.getElementById("candidate-coding-assessments-container");
+    if (!container || !window.codingAPI) return;
+
+    try {
+      const res = await codingAPI.getCandidateAssessments();
+      if (res.success && res.data.length > 0) {
+        container.innerHTML = `
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="bg-light text-secondary small">
+                <tr>
+                  <th>Assessment Title</th>
+                  <th>Duration</th>
+                  <th>Passing Score</th>
+                  <th>Status</th>
+                  <th>Score</th>
+                  <th class="text-end">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${res.data.map(item => `
+                  <tr>
+                    <td class="fw-semibold">${item.title}</td>
+                    <td>${item.duration_minutes} Mins</td>
+                    <td>${item.passing_score}%</td>
+                    <td>
+                      <span class="badge bg-${item.status === 'Evaluated' ? (item.passed ? 'success' : 'danger') : item.status === 'In Progress' ? 'warning' : 'secondary'}">
+                        ${item.status}
+                      </span>
+                    </td>
+                    <td>${item.score !== null && item.score !== undefined ? `${Math.round(item.score)}%` : '—'}</td>
+                    <td class="text-end">
+                      ${item.status === 'Evaluated' ? `
+                        <a href="coding-report.html?attempt_id=${item.attempt_id}" class="btn btn-sm btn-outline-primary fw-semibold">View Result</a>
+                      ` : `
+                        <a href="coding-assessment.html?assessment_id=${item.id}" class="btn btn-sm btn-primary fw-bold">Start Assessment &rarr;</a>
+                      `}
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else {
+        container.innerHTML = '<div class="text-muted small text-center py-3">No coding assessments assigned to your job applications yet.</div>';
+      }
+    } catch (err) {
+      container.innerHTML = `<div class="text-danger small text-center py-3">Error loading assessments: ${err.message}</div>`;
+    }
+  }
+
+  async function loadCandidateVoiceInterviews() {
+    const container = document.getElementById("candidate-voice-interviews-container");
+    if (!container) return;
+
+    try {
+      let upcomingList = [];
+      if (window.scheduledInterviewsAPI) {
+        const schedRes = await scheduledInterviewsAPI.getUpcoming().catch(() => null);
+        if (schedRes && schedRes.success) upcomingList = schedRes.data || [];
+      }
+
+      let interviewsList = [];
+      if (window.interviewsAPI) {
+        const intRes = await interviewsAPI.list().catch(() => null);
+        if (intRes && intRes.success) interviewsList = intRes.data || [];
+      }
+
+      if (upcomingList.length > 0 || interviewsList.length > 0) {
+        let html = `
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="bg-light text-secondary small">
+                <tr>
+                  <th>Job Title</th>
+                  <th>Interview Type</th>
+                  <th>Scheduled Time</th>
+                  <th>Status</th>
+                  <th>Score</th>
+                  <th class="text-end">Calendar &amp; Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+
+        // Combine scheduled upcoming items
+        upcomingList.forEach(item => {
+          const dt = new Date(item.start_time_utc);
+          const dtStr = dt.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+          html += `
+            <tr>
+              <td class="fw-semibold">${item.job_title}</td>
+              <td><span class="badge bg-secondary">${item.interview_type}</span></td>
+              <td><span class="fw-medium text-dark">${dtStr}</span> <span class="badge bg-light text-dark border">${item.timezone || 'UTC'}</span></td>
+              <td><span class="badge bg-${item.status === 'SCHEDULED' ? 'primary' : 'info'}">${item.status}</span></td>
+              <td>—</td>
+              <td class="text-end">
+                <div class="d-inline-flex gap-1 flex-wrap justify-content-end">
+                  <a href="${item.join_link}" class="btn btn-sm btn-primary fw-bold shadow-sm">Join Voice Room &rarr;</a>
+                  <a href="${item.google_calendar_url}" target="_blank" class="btn btn-sm btn-outline-success fw-semibold" title="Add to Google Calendar">+ Google</a>
+                  <a href="${item.outlook_calendar_url}" target="_blank" class="btn btn-sm btn-outline-info fw-semibold" title="Add to Outlook Calendar">+ Outlook</a>
+                  <a href="${item.ics_download_url}" class="btn btn-sm btn-outline-secondary fw-semibold" title="Download .ics file">📥 .ICS</a>
+                </div>
+              </td>
+            </tr>
+          `;
+        });
+
+        // List standard interviews
+        interviewsList.forEach(item => {
+          if (!upcomingList.some(u => u.interview_id === item.id)) {
+            html += `
+              <tr>
+                <td class="fw-semibold">${item.job ? item.job.title : 'Position'}</td>
+                <td><span class="badge bg-secondary">${item.interview_type}</span></td>
+                <td>Instant Online Session</td>
+                <td>
+                  <span class="badge bg-${item.status === 'completed' ? 'success' : item.status === 'in_progress' ? 'warning' : 'info'}">
+                    ${item.status}
+                  </span>
+                </td>
+                <td>${item.overall_score !== null && item.overall_score !== undefined ? `${Math.round(item.overall_score)}%` : '—'}</td>
+                <td class="text-end">
+                  ${item.status === 'completed' ? `
+                    <a href="interview-report.html?interview_id=${item.id}" class="btn btn-sm btn-outline-primary fw-semibold">View Evaluation Report</a>
+                  ` : `
+                    <a href="live-interview-room.html?interview_id=${item.id}" class="btn btn-sm btn-primary fw-bold shadow-sm">Join Voice Room &rarr;</a>
+                  `}
+                </td>
+              </tr>
+            `;
+          }
+        });
+
+        html += `</tbody></table></div>`;
+        container.innerHTML = html;
+      } else {
+        container.innerHTML = '<div class="text-muted small text-center py-3">No live AI voice interviews scheduled for your applications yet.</div>';
+      }
+    } catch (err) {
+      container.innerHTML = `<div class="text-danger small text-center py-3">Error loading voice interviews: ${err.message}</div>`;
+    }
+  }
+
+  const refreshVoiceBtn = document.getElementById("btn-refresh-voice-interviews");
+  if (refreshVoiceBtn) {
+    refreshVoiceBtn.addEventListener("click", loadCandidateVoiceInterviews);
+  }
+
   // Load immediately on script execution
   loadExplorerJobs();
+  loadCandidateCodingAssessments();
+  loadCandidateVoiceInterviews();
 
   document.addEventListener("ar:auth-ready", () => {
     load();
     loadCandidateProfileData();
     loadExplorerJobs();
+    loadCandidateCodingAssessments();
+    loadCandidateVoiceInterviews();
   });
 })();
 

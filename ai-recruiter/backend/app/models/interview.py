@@ -8,7 +8,7 @@ import enum
 import uuid
 from typing import Optional
 
-from sqlalchemy import DateTime, Enum, Float, ForeignKey, Integer, JSON, Text, func
+from sqlalchemy import Boolean, DateTime, Enum, Float, ForeignKey, Integer, JSON, Text, func
 from sqlalchemy.dialects.postgresql import JSONB
 from app.core.db_types import GUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -48,8 +48,13 @@ class Interview(Base):
         Enum(InterviewStatus, name="interview_status"), default=InterviewStatus.scheduled, nullable=False
     )
     overall_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    duration_minutes: Mapped[int] = mapped_column(Integer, default=30, nullable=False)
+    camera_required: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    adaptive: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    live_transcript: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string of dialogue turns
 
     started_at: Mapped[Optional[DateTime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    expires_at: Mapped[Optional[DateTime]] = mapped_column(DateTime(timezone=True), nullable=True)
     completed_at: Mapped[Optional[DateTime]] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 

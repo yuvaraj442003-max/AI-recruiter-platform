@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email & Calendar Settings — AI Recruiter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="recruiter-dashboard.html">🤖 AI Recruiter</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="recruiter-dashboard.html">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="recruiter-calendar.html">📅 Calendar View</a></li>
+          <li class="nav-item"><a class="nav-link active" href="email-settings.html">⚙️ Email &amp; Calendar Settings</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-outline-light btn-sm" id="btn-logout" onclick="authAPI.logout(); window.location.href='index.html';">Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h3 class="fw-bold text-dark mb-1">Email &amp; Calendar Settings</h3>
+        <p class="text-muted small mb-0">Configure automated candidate email triggers and sync Google / Outlook calendar integrations.</p>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- 1. Calendar Integrations -->
+      <div class="col-lg-6">
+        <div class="card p-4 border-0 shadow-sm h-100" style="border-radius: 12px;">
+          <h5 class="fw-bold text-dark mb-3">📅 Calendar Integrations</h5>
+          <p class="text-muted small mb-4">Connect your professional Google or Outlook Calendar to automatically sync scheduled candidate interview sessions.</p>
+
+          <!-- Google Calendar -->
+          <div class="p-3 bg-white border rounded mb-3 d-flex justify-content-between align-items-center shadow-xs">
+            <div class="d-flex align-items-center gap-3">
+              <span class="fs-3">🌐</span>
+              <div>
+                <div class="fw-bold text-dark">Google Calendar</div>
+                <div class="small text-muted" id="google-status-text">Checking status...</div>
+              </div>
+            </div>
+            <div id="google-btn-container">
+              <button class="btn btn-sm btn-primary fw-bold" id="btn-connect-google">Connect Google</button>
+            </div>
+          </div>
+
+          <!-- Outlook Calendar -->
+          <div class="p-3 bg-white border rounded mb-3 d-flex justify-content-between align-items-center shadow-xs">
+            <div class="d-flex align-items-center gap-3">
+              <span class="fs-3">📬</span>
+              <div>
+                <div class="fw-bold text-dark">Microsoft Outlook</div>
+                <div class="small text-muted" id="outlook-status-text">Checking status...</div>
+              </div>
+            </div>
+            <div id="outlook-btn-container">
+              <button class="btn btn-sm btn-outline-primary fw-bold" id="btn-connect-outlook">Connect Outlook</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Email Notifications Preferences -->
+      <div class="col-lg-6">
+        <div class="card p-4 border-0 shadow-sm h-100" style="border-radius: 12px;">
+          <h5 class="fw-bold text-dark mb-3">📧 Email Notifications Settings</h5>
+          <p class="text-muted small mb-4">Control which recruitment lifecycle events trigger automated candidate emails.</p>
+
+          <form id="email-settings-form">
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="chk-app-received" checked>
+              <label class="form-check-label fw-semibold text-dark" for="chk-app-received">Application Received Confirmation</label>
+              <div class="text-muted text-xs">Send candidate instant confirmation upon submitting application.</div>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="chk-shortlisted" checked>
+              <label class="form-check-label fw-semibold text-dark" for="chk-shortlisted">Candidate Shortlisted Notification</label>
+              <div class="text-muted text-xs">Send candidate email when shortlisted for a job posting.</div>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="chk-interview-invited" checked>
+              <label class="form-check-label fw-semibold text-dark" for="chk-interview-invited">Interview Invitation</label>
+              <div class="text-muted text-xs">Send invitation email with secure join link when interview is scheduled.</div>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="chk-interview-reminder" checked>
+              <label class="form-check-label fw-semibold text-dark" for="chk-interview-reminder">Interview Reminders (24h &amp; 1h)</label>
+              <div class="text-muted text-xs">Automatically send 24-hour and 1-hour email reminders before interview start.</div>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="chk-interview-rescheduled" checked>
+              <label class="form-check-label fw-semibold text-dark" for="chk-interview-rescheduled">Interview Rescheduled</label>
+              <div class="text-muted text-xs">Send updated time notification if recruiter updates scheduled time.</div>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="chk-interview-cancelled" checked>
+              <label class="form-check-label fw-semibold text-dark" for="chk-interview-cancelled">Interview Cancelled</label>
+              <div class="text-muted text-xs">Notify candidate if interview session is cancelled.</div>
+            </div>
+
+            <div class="form-check form-switch mb-4">
+              <input class="form-check-input" type="checkbox" id="chk-candidate-rejected">
+              <label class="form-check-label fw-semibold text-dark" for="chk-candidate-rejected">Candidate Rejection Notice</label>
+              <div class="text-muted text-xs">Only send rejection emails if explicitly enabled here.</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary fw-bold px-4" id="btn-save-settings">Save Preferences</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/email-settings.js"></script>
+</body>
+</html>

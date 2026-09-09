@@ -41,6 +41,9 @@ class Application(Base):
 
     # Detailed ATS Screening & Match Sub-Scores
     ats_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    coding_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    interview_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    overall_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     job_match_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     skills_match_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     experience_match_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)

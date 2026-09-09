@@ -1,41 +1,82 @@
 /**
- * smart-search.js — Smart Candidate Search Engine UI Logic.
+ * smart-search.js — Recruiter Candidate Search & Advanced Filtering UI Controller.
  *
- * Handles natural language query parsing, structured multi-criteria filtering,
- * weighted candidate ranking, pagination, and Candidate Comparison integration.
+ * Manages natural language query parsing, debounced search, skills tag input,
+ * experience/location presets, configurable qualification threshold, search stats,
+ * candidate cards, ATS reports, secure resume views, invitations, bulk operations, and saved searches.
  */
 (function () {
   const alertBox = document.getElementById("search-alert");
   const searchForm = document.getElementById("smart-search-form");
   const queryInput = document.getElementById("search-query-input");
+  const btnClearSearch = document.getElementById("btn-clear-search");
   const btnParse = document.getElementById("btn-parse-query");
   const btnReset = document.getElementById("btn-reset-filters");
+  const activeFiltersBadge = document.getElementById("active-filters-count");
 
-  const filterSkills = document.getElementById("filter-skills");
+  // Advanced Filter Inputs
   const filterJobId = document.getElementById("filter-job-id");
+  const filterJobRole = document.getElementById("filter-job-role");
   const filterMinExp = document.getElementById("filter-min-exp");
+  const filterMaxExp = document.getElementById("filter-max-exp");
   const filterLocation = document.getElementById("filter-location");
+  const filterSkillsInput = document.getElementById("filter-skills-input");
+  const btnAddSkillTag = document.getElementById("btn-add-skill-tag");
+  const skillsTagsContainer = document.getElementById("skills-tags-container");
   const filterMinAts = document.getElementById("filter-min-ats");
   const atsValBadge = document.getElementById("ats-val-badge");
-  const filterJobRole = document.getElementById("filter-job-role");
+  const filterQualThreshold = document.getElementById("filter-qual-threshold");
+  const qualThreshBadge = document.getElementById("qual-thresh-badge");
   const filterMinInterview = document.getElementById("filter-min-interview");
+  const filterEducation = document.getElementById("filter-education");
 
+  // Stats Elements
+  const statTotalFound = document.getElementById("stat-total-found");
+  const statQualifiedCount = document.getElementById("stat-qualified-count");
+  const statShortlistedCount = document.getElementById("stat-shortlisted-count");
+  const statInvitedCount = document.getElementById("stat-invited-count");
+  const statInterviewsCount = document.getElementById("stat-interviews-count");
+
+  // Toolbar & Selection Elements
+  const selectAllCheckbox = document.getElementById("select-all-candidates-checkbox");
+  const bulkSelectedCountBadge = document.getElementById("bulk-selected-count");
+  const bulkShortlistBtn = document.getElementById("bulk-shortlist-btn");
+  const bulkInviteBtn = document.getElementById("bulk-invite-btn");
+  const bulkMessageBtn = document.getElementById("bulk-message-btn");
+  const compareSelectedBtn = document.getElementById("compare-selected-btn");
+  const compareCountBadge = document.getElementById("compare-count-badge");
   const sortBySelect = document.getElementById("sort-by-select");
   const resultsContainer = document.getElementById("search-results-container");
   const totalBadge = document.getElementById("search-total-badge");
-  const compareSelectedBtn = document.getElementById("compare-selected-btn");
-  const compareCountBadge = document.getElementById("compare-count-badge");
   const paginationInfo = document.getElementById("pagination-info");
   const paginationControls = document.getElementById("pagination-controls");
 
-  const compModalEl = document.getElementById("candidateComparisonModal");
-  const compModalBody = document.getElementById("comparison-modal-body");
-  const compModalTitle = document.getElementById("comparison-modal-title");
-  const compModalSubtitle = document.getElementById("comparison-modal-subtitle");
+  // Saved Searches Elements
+  const btnOpenSavedSearches = document.getElementById("btn-open-saved-searches");
+  const btnSaveCurrentSearch = document.getElementById("btn-save-current-search");
+  const btnConfirmSaveSearch = document.getElementById("btn-confirm-save-search");
+  const saveSearchNameInput = document.getElementById("save-search-name-input");
+  const recentSearchesList = document.getElementById("recent-searches-list");
 
+  // Modals
+  const savedSearchesModalEl = document.getElementById("savedSearchesModal");
+  const saveSearchDialogModalEl = document.getElementById("saveSearchDialogModal");
+  const atsReportModalEl = document.getElementById("atsReportModal");
+  const inviteModalEl = document.getElementById("inviteCandidateModal");
+  const scheduleInterviewModalEl = document.getElementById("scheduleInterviewModal");
+  const compModalEl = document.getElementById("candidateComparisonModal");
+
+  // State Variables
   let currentPage = 1;
   const pageSize = 12;
+  const skillTagsList = new Set();
   const selectedCandidateIds = new Set();
+  let searchDebounceTimer = null;
+  let savedSearchesModalInstance = null;
+  let saveSearchDialogInstance = null;
+  let atsReportModalInstance = null;
+  let inviteModalInstance = null;
+  let scheduleInterviewModalInstance = null;
   let compModalInstance = null;
 
   function showAlert(msg, variant = "danger") {
@@ -46,17 +87,136 @@
     setTimeout(() => alertBox.classList.add("d-none"), 4000);
   }
 
-  function updateCompareButtonState() {
+  // Local Storage Recent Searches Management
+  function getRecentSearchesFromStorage() {
+    try {
+      const raw = localStorage.getItem("ar_recent_searches");
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function addRecentSearchToStorage(queryStr) {
+    if (!queryStr || queryStr.trim().length < 2) return;
+    let searches = getRecentSearchesFromStorage();
+    searches = searches.filter(q => q.toLowerCase() !== queryStr.toLowerCase());
+    searches.unshift(queryStr.trim());
+    if (searches.length > 8) searches.pop();
+    try {
+      localStorage.setItem("ar_recent_searches", JSON.stringify(searches));
+    } catch {}
+    renderRecentSearchesDropdown();
+  }
+
+  function renderRecentSearchesDropdown() {
+    if (!recentSearchesList) return;
+    const searches = getRecentSearchesFromStorage();
+    if (!searches.length) {
+      recentSearchesList.innerHTML = '<li><span class="dropdown-item text-muted small">No recent searches</span></li>';
+      return;
+    }
+    recentSearchesList.innerHTML = searches.map(q => `
+      <li>
+        <a class="dropdown-item small cursor-pointer recent-search-item" href="#" data-query="${encodeURIComponent(q)}">
+          🔍 ${q}
+        </a>
+      </li>
+    `).join('') + `
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item small text-danger cursor-pointer" id="clear-recent-searches-btn" href="#">Clear History</a></li>
+    `;
+
+    recentSearchesList.querySelectorAll(".recent-search-item").forEach(item => {
+      item.addEventListener("click", (e) => {
+        e.preventDefault();
+        const q = decodeURIComponent(item.dataset.query);
+        if (queryInput) queryInput.value = q;
+        currentPage = 1;
+        executeSmartSearch();
+      });
+    });
+
+    document.getElementById("clear-recent-searches-btn")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      try { localStorage.removeItem("ar_recent_searches"); } catch {}
+      if (candidateSearchAPI.clearRecentSearches) candidateSearchAPI.clearRecentSearches().catch(() => {});
+      renderRecentSearchesDropdown();
+    });
+  }
+
+  // Skills Tag Input Logic
+  function addSkillTag(skillName) {
+    const cleaned = skillName.trim();
+    if (!cleaned) return;
+    skillTagsList.add(cleaned);
+    renderSkillTags();
+    if (filterSkillsInput) filterSkillsInput.value = "";
+    updateActiveFiltersCount();
+    currentPage = 1;
+    executeSmartSearch();
+  }
+
+  function removeSkillTag(skillName) {
+    skillTagsList.delete(skillName);
+    renderSkillTags();
+    updateActiveFiltersCount();
+    currentPage = 1;
+    executeSmartSearch();
+  }
+
+  function renderSkillTags() {
+    if (!skillsTagsContainer) return;
+    skillsTagsContainer.innerHTML = Array.from(skillTagsList).map(sk => `
+      <span class="skill-tag">
+        ${sk}
+        <span class="skill-tag-remove" data-skill="${sk}">&times;</span>
+      </span>
+    `).join("");
+
+    skillsTagsContainer.querySelectorAll(".skill-tag-remove").forEach(btn => {
+      btn.addEventListener("click", () => removeSkillTag(btn.dataset.skill));
+    });
+  }
+
+  function updateActiveFiltersCount() {
+    let count = 0;
+    if (queryInput && queryInput.value.trim()) count++;
+    if (filterJobId && filterJobId.value) count++;
+    if (filterJobRole && filterJobRole.value.trim()) count++;
+    if (filterMinExp && filterMinExp.value) count++;
+    if (filterMaxExp && filterMaxExp.value) count++;
+    if (filterLocation && filterLocation.value.trim()) count++;
+    if (skillTagsList.size > 0) count += skillTagsList.size;
+    if (filterMinAts && Number(filterMinAts.value) > 0) count++;
+    if (filterMinInterview && filterMinInterview.value) count++;
+    if (filterEducation && filterEducation.value.trim()) count++;
+
+    if (activeFiltersBadge) {
+      activeFiltersBadge.textContent = count > 0 ? `${count} Active` : "Default";
+      activeFiltersBadge.className = count > 0 ? "badge bg-primary rounded-pill small ms-1" : "badge bg-secondary-subtle text-secondary rounded-pill small ms-1";
+    }
+  }
+
+  function updateBulkButtonsState() {
     const count = selectedCandidateIds.size;
+    if (bulkSelectedCountBadge) bulkSelectedCountBadge.textContent = count;
     if (compareCountBadge) compareCountBadge.textContent = count;
+
+    const hasSelection = count > 0;
+    if (bulkShortlistBtn) bulkShortlistBtn.disabled = !hasSelection;
+    if (bulkInviteBtn) bulkInviteBtn.disabled = !hasSelection;
+    if (bulkMessageBtn) bulkMessageBtn.disabled = !hasSelection;
 
     if (compareSelectedBtn) {
       if (count >= 2 && count <= 5) {
-        compareSelectedBtn.classList.remove("btn-secondary", "opacity-50");
+        compareSelectedBtn.disabled = false;
+        compareSelectedBtn.classList.remove("opacity-50", "btn-secondary");
         compareSelectedBtn.classList.add("btn-success");
       } else {
+        compareSelectedBtn.disabled = true;
         compareSelectedBtn.classList.remove("btn-success");
-        compareSelectedBtn.classList.add("btn-secondary");
+        compareSelectedBtn.classList.add("btn-secondary", "opacity-50");
       }
     }
   }
@@ -65,12 +225,18 @@
     try {
       const res = await jobsAPI.list();
       const jobs = res.data || [];
-      if (filterJobId) {
-        filterJobId.innerHTML = '<option value="">All Jobs (Baseline Evaluation)</option>' +
-          jobs.map(j => `<option value="${j.id}">${j.title} (${j.department || 'General'})</option>`).join('');
-      }
+      const options = '<option value="">All Jobs (Baseline Evaluation)</option>' +
+        jobs.map(j => `<option value="${j.id}">${j.title} (${j.company_name || 'General'})</option>`).join('');
+
+      if (filterJobId) filterJobId.innerHTML = options;
+      
+      const inviteSelect = document.getElementById("invite-job-select");
+      if (inviteSelect) inviteSelect.innerHTML = jobs.map(j => `<option value="${j.id}">${j.title}</option>`).join('');
+
+      const schedSelect = document.getElementById("sched-job-select");
+      if (schedSelect) schedSelect.innerHTML = jobs.map(j => `<option value="${j.id}">${j.title}</option>`).join('');
     } catch {
-      // Ignore if jobs fail to load
+      // Ignore drop-down fail
     }
   }
 
@@ -84,30 +250,36 @@
     `;
 
     const queryStr = queryInput ? queryInput.value.trim() : "";
-    const skillsStr = filterSkills ? filterSkills.value.trim() : "";
-    const skillList = skillsStr ? skillsStr.split(",").map(s => s.trim()).filter(Boolean) : [];
+    if (queryStr) addRecentSearchToStorage(queryStr);
 
     const matchMode = document.querySelector('input[name="skill-match-mode"]:checked')?.value || "all";
     const jobIdVal = filterJobId ? filterJobId.value : null;
 
-    const minExpVal = filterMinExp && filterMinExp.value ? Number(filterMinExp.value) : null;
-    const locVal = filterLocation && filterLocation.value.trim() ? filterLocation.value.trim() : null;
-    const minAtsVal = filterMinAts && Number(filterMinAts.value) > 0 ? Number(filterMinAts.value) : null;
-    const jobRoleVal = filterJobRole && filterJobRole.value.trim() ? filterJobRole.value.trim() : null;
-    const minInterviewVal = filterMinInterview && filterMinInterview.value ? Number(filterMinInterview.value) : null;
+    const minExpVal = filterMinExp && filterMinExp.value ? Number(filterMinExp.value) : None;
+    const maxExpVal = filterMaxExp && filterMaxExp.value ? Number(filterMaxExp.value) : None;
+    const locVal = filterLocation && filterLocation.value.trim() ? filterLocation.value.trim() : None;
+    const minAtsVal = filterMinAts && Number(filterMinAts.value) > 0 ? Number(filterMinAts.value) : None;
+    const qualThreshVal = filterQualThreshold ? Number(filterQualThreshold.value) : 60.0;
+    const jobRoleVal = filterJobRole && filterJobRole.value.trim() ? filterJobRole.value.trim() : None;
+    const minInterviewVal = filterMinInterview && filterMinInterview.value ? Number(filterMinInterview.value) : None;
+    const eduVal = filterEducation && filterEducation.value.trim() ? filterEducation.value.trim() : None;
     const sortBy = sortBySelect ? sortBySelect.value : "best_match";
 
     const payload = {
       query: queryStr,
       job_id: jobIdVal || null,
+      qualification_threshold: qualThreshVal,
       filters: {
-        skills: skillList,
+        skills: Array.from(skillTagsList),
         skill_match_mode: matchMode,
         minimum_experience: minExpVal,
+        maximum_experience: maxExpVal,
         location: locVal,
         minimum_ats_score: minAtsVal,
+        qualification_threshold: qualThreshVal,
         job_role: jobRoleVal,
         minimum_interview_score: minInterviewVal,
+        education: eduVal,
       },
       page: currentPage,
       page_size: pageSize,
@@ -117,6 +289,7 @@
     try {
       const res = await candidateSearchAPI.smartSearch(payload);
       const data = res.data;
+      renderStatsBanner(data);
       renderCandidateResults(data);
       renderPagination(data);
     } catch (err) {
@@ -130,6 +303,15 @@
     }
   }
 
+  function renderStatsBanner(data) {
+    const stats = data.summary_stats || {};
+    if (statTotalFound) statTotalFound.textContent = data.total_results || 0;
+    if (statQualifiedCount) statQualifiedCount.textContent = stats.qualified_count || 0;
+    if (statShortlistedCount) statShortlistedCount.textContent = stats.shortlisted_count || 0;
+    if (statInvitedCount) statInvitedCount.textContent = stats.invited_count || 0;
+    if (statInterviewsCount) statInterviewsCount.textContent = stats.interviews_scheduled || 0;
+  }
+
   function renderCandidateResults(data) {
     const results = data.results || [];
     const total = data.total_results || 0;
@@ -141,8 +323,8 @@
         <div class="col-12 text-center py-5">
           <div class="fs-1 text-muted mb-2">🔍</div>
           <h5 class="fw-bold text-dark">No candidates found matching your criteria</h5>
-          <p class="text-secondary small mb-3">Try lowering the Minimum ATS Score, clearing skill filters, or switching to "Any Skill" match mode.</p>
-          <button id="empty-reset-btn" class="btn btn-sm btn-outline-success px-4 fw-semibold">Reset Search Filters</button>
+          <p class="text-secondary small mb-3">Try reducing the ATS score threshold, removing skill tags, expanding experience range, or using a broader job title.</p>
+          <button id="empty-reset-btn" class="btn btn-sm btn-outline-success px-4 fw-semibold">Clear All Search Filters</button>
         </div>
       `;
       document.getElementById("empty-reset-btn")?.addEventListener("click", resetFilters);
@@ -162,22 +344,30 @@
       const missingBadges = (c.missing_skills || []).map(s => `<span class="badge bg-danger-subtle text-danger border border-danger border-opacity-25 me-1 mb-1">⚠ ${s}</span>`).join("");
 
       const atsScore = Math.round(c.ats_score || 0);
+      const jobMatchScore = Math.round(c.job_match_score || 0);
       let atsBadgeClass = "bg-primary";
       if (atsScore >= 80) atsBadgeClass = "bg-success";
       else if (atsScore >= 60) atsBadgeClass = "bg-info text-white";
       else if (atsScore >= 40) atsBadgeClass = "bg-warning text-dark";
       else atsBadgeClass = "bg-danger";
 
-      const interviewText = c.interview_score != null ? `${Math.round(c.interview_score)}/100` : "Not Interviewed";
+      const qualBadgeHtml = c.is_qualified ?
+        `<span class="badge bg-success px-2 py-1 rounded-pill small">✓ Qualified</span>` :
+        `<span class="badge bg-secondary-subtle text-secondary px-2 py-1 rounded-pill small">Below Threshold</span>`;
+
+      const reasonsHtml = (c.match_reasons || []).map(r => `<div>${r}</div>`).join("") || '<div>✓ Profile matched query criteria</div>';
+      const resumeUrl = candidateSearchAPI.getResumeUrl(c.candidate_id);
 
       return `
         <div class="col-md-6 col-lg-4">
-          <div class="card border-0 shadow-sm h-100 p-3" style="border-radius: 12px; background: #ffffff;">
-            <div class="d-flex justify-content-between align-items-start mb-2">
+          <div class="card border-0 shadow-sm h-100 p-3" style="border-radius: 14px; background: #ffffff;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
               <span class="badge ${rankClass} px-3 py-1 rounded-pill">${rankLabel}</span>
-              <div class="form-check mb-0">
-                <input type="checkbox" class="form-check-input candidate-select-checkbox cursor-pointer" data-candidate-id="${c.candidate_id}" data-name="${c.candidate_name}" ${isChecked} />
-                <label class="form-check-label small text-muted">Select</label>
+              <div class="d-flex align-items-center gap-2">
+                ${qualBadgeHtml}
+                <div class="form-check mb-0">
+                  <input type="checkbox" class="form-check-input candidate-select-checkbox cursor-pointer" data-candidate-id="${c.candidate_id}" data-name="${c.candidate_name}" ${isChecked} />
+                </div>
               </div>
             </div>
 
@@ -188,74 +378,106 @@
               📍 ${c.location} • 💼 <strong>${c.experience_years} Yrs</strong> Exp
             </div>
 
+            <!-- Score Cards -->
             <div class="p-2 bg-light rounded-3 mb-3">
               <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="small text-muted fw-semibold">ATS Match Score:</span>
-                <span class="badge ${atsBadgeClass} fs-6 px-3 py-1 rounded-pill">${atsScore}%</span>
+                <span class="small text-muted fw-semibold">ATS Score:</span>
+                <span class="badge ${atsBadgeClass} px-2 py-1 rounded-pill fs-6">${atsScore}%</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center small mb-1">
+                <span class="text-muted fw-semibold">Job Match:</span>
+                <strong class="text-primary">${jobMatchScore}%</strong>
               </div>
               <div class="d-flex justify-content-between align-items-center small">
-                <span class="text-muted">Interview Performance:</span>
-                <strong>${interviewText}</strong>
-              </div>
-              <div class="d-flex justify-content-between align-items-center small mt-1">
                 <span class="text-muted">Weighted Rank Score:</span>
                 <strong class="text-success">${Math.round(c.ranking_score)}/100</strong>
               </div>
             </div>
 
+            <!-- Matched & Missing Skills -->
             <div class="mb-2">
               <div class="small fw-semibold text-success mb-1">Matched Skills:</div>
               <div>${matchedBadges}</div>
             </div>
 
             ${missingBadges ? `
-              <div class="mb-3">
-                <div class="small fw-semibold text-danger mb-1">Missing Requested Skills:</div>
+              <div class="mb-2">
+                <div class="small fw-semibold text-danger mb-1">Missing Skills:</div>
                 <div>${missingBadges}</div>
               </div>
             ` : ''}
 
-            <div class="mt-auto border-top pt-2 d-flex justify-content-between align-items-center">
-              <button class="btn btn-sm btn-outline-primary fw-semibold view-cand-profile-btn" data-candidate-id="${c.candidate_id}">
-                👤 View Profile
+            <!-- Why this candidate? -->
+            <div class="mb-3">
+              <button class="btn btn-xs btn-link text-decoration-none text-success fw-bold p-0 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#why-cand-${c.candidate_id}">
+                💡 Why this candidate? ▼
               </button>
-              <button class="btn btn-sm btn-outline-secondary fw-semibold" onclick="if(window.openChatWithUser) window.openChatWithUser('${c.user_id || c.candidate_id}', '${encodeURIComponent(c.candidate_name)}', 'candidate', '${encodeURIComponent(c.headline || '')}');">
-                💬 Chat
-              </button>
+              <div class="collapse show mt-1" id="why-cand-${c.candidate_id}">
+                <div class="why-candidate-box">
+                  ${reasonsHtml}
+                </div>
+              </div>
             </div>
+
+            <!-- Candidate Actions -->
+            <div class="mt-auto border-top pt-3">
+              <div class="d-flex flex-wrap gap-1 mb-2">
+                <button class="btn btn-xs btn-outline-primary fw-semibold view-cand-profile-btn flex-grow-1" data-candidate-id="${c.candidate_id}">
+                  👤 Profile
+                </button>
+                <a href="${resumeUrl}" target="_blank" class="btn btn-xs btn-outline-secondary fw-semibold flex-grow-1 text-decoration-none text-center">
+                  📄 Resume
+                </a>
+                <button class="btn btn-xs btn-outline-info fw-semibold view-ats-report-btn flex-grow-1" data-candidate-id="${c.candidate_id}">
+                  🎯 ATS Report
+                </button>
+              </div>
+
+              <div class="d-flex flex-wrap gap-1">
+                <button class="btn btn-xs btn-success fw-bold invite-cand-btn flex-grow-1" data-candidate-id="${c.candidate_id}" data-name="${c.candidate_name}">
+                  ✉️ Invite
+                </button>
+                <button class="btn btn-xs btn-outline-dark fw-semibold flex-grow-1" onclick="if(window.openChatWithUser) window.openChatWithUser('${c.user_id || c.candidate_id}', '${encodeURIComponent(c.candidate_name)}', 'candidate', '${encodeURIComponent(c.headline || '')}');">
+                  💬 Message
+                </button>
+                <button class="btn btn-xs btn-outline-purple fw-semibold sched-interview-btn flex-grow-1" data-candidate-id="${c.candidate_id}">
+                  🎙️ Interview
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
       `;
     }).join("");
 
-    // Attach Selection Checkbox Listeners
+    // Attach Listeners
     resultsContainer.querySelectorAll(".candidate-select-checkbox").forEach(chk => {
       chk.addEventListener("change", (e) => {
         const candId = e.target.dataset.candidateId;
-        if (e.target.checked) {
-          if (selectedCandidateIds.size >= 5) {
-            e.target.checked = false;
-            showAlert("You can select a maximum of 5 candidates for side-by-side comparison.", "warning");
-            return;
-          }
-          selectedCandidateIds.add(candId);
-        } else {
-          selectedCandidateIds.delete(candId);
-        }
-        updateCompareButtonState();
+        if (e.target.checked) selectedCandidateIds.add(candId);
+        else selectedCandidateIds.delete(candId);
+        updateBulkButtonsState();
       });
     });
 
-    // Attach View Profile Listeners
     resultsContainer.querySelectorAll(".view-cand-profile-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         const candId = btn.dataset.candidateId;
-        if (candId && window.openApplicantDetailModal) {
-          window.openApplicantDetailModal(candId);
-        } else {
-          alert(`Candidate ID: ${candId}`);
-        }
+        if (window.openApplicantDetailModal) window.openApplicantDetailModal(candId);
       });
+    });
+
+    resultsContainer.querySelectorAll(".view-ats-report-btn").forEach(btn => {
+      btn.addEventListener("click", () => openATSReportModal(btn.dataset.candidateId));
+    });
+
+    resultsContainer.querySelectorAll(".invite-cand-btn").forEach(btn => {
+      btn.addEventListener("click", () => openInviteModal(btn.dataset.candidateId, false));
+    });
+
+    resultsContainer.querySelectorAll(".sched-interview-btn").forEach(btn => {
+      btn.addEventListener("click", () => openScheduleInterviewModal(btn.dataset.candidateId));
     });
   }
 
@@ -308,173 +530,263 @@
     paginationControls.appendChild(nextLi);
   }
 
-  async function autoFillFiltersFromQuery() {
-    const q = queryInput ? queryInput.value.trim() : "";
-    if (!q) {
-      showAlert("Please enter a natural language search query first.", "warning");
-      return;
+  async function openATSReportModal(candidateId) {
+    if (!atsReportModalInstance && window.bootstrap && atsReportModalEl) {
+      atsReportModalInstance = new bootstrap.Modal(atsReportModalEl);
     }
 
-    if (btnParse) {
-      btnParse.disabled = true;
-      btnParse.textContent = "Parsing...";
+    const modalBody = document.getElementById("ats-report-modal-body");
+    if (modalBody) {
+      modalBody.innerHTML = `
+        <div class="text-center py-5 text-muted">
+          <div class="spinner-border text-primary mb-2"></div>
+          <div>Calculating 6-dimension ATS match breakdown &amp; suggestions...</div>
+        </div>
+      `;
     }
+    if (atsReportModalInstance) atsReportModalInstance.show();
 
     try {
-      const res = await candidateSearchAPI.parseQuery(q);
-      const data = res.data;
-
-      if (filterSkills && data.skills && data.skills.length) {
-        filterSkills.value = data.skills.join(", ");
-      }
-      if (filterMinExp && data.minimum_experience != null) {
-        filterMinExp.value = data.minimum_experience;
-      }
-      if (filterLocation && data.location) {
-        filterLocation.value = data.location;
-      }
-      if (filterMinAts && data.minimum_ats_score != null) {
-        filterMinAts.value = data.minimum_ats_score;
-        if (atsValBadge) atsValBadge.textContent = `${data.minimum_ats_score}%`;
-      }
-      if (filterJobRole && data.job_role) {
-        filterJobRole.value = data.job_role;
-      }
-
-      showAlert("Filters auto-extracted from natural language query!", "success");
-      currentPage = 1;
-      executeSmartSearch();
-    } catch (err) {
-      showAlert(`Query parsing error: ${err.message}`, "danger");
-    } finally {
-      if (btnParse) {
-        btnParse.disabled = false;
-        btnParse.textContent = "🤖 Auto-Fill Filters";
-      }
-    }
-  }
-
-  function resetFilters() {
-    if (queryInput) queryInput.value = "";
-    if (filterSkills) filterSkills.value = "";
-    if (filterJobId) filterJobId.value = "";
-    if (filterMinExp) filterMinExp.value = "";
-    if (filterLocation) filterLocation.value = "";
-    if (filterMinAts) { filterMinAts.value = "0"; if (atsValBadge) atsValBadge.textContent = "0%"; }
-    if (filterJobRole) filterJobRole.value = "";
-    if (filterMinInterview) filterMinInterview.value = "";
-    if (sortBySelect) sortBySelect.value = "best_match";
-    const allRadio = document.getElementById("match-all");
-    if (allRadio) allRadio.checked = true;
-
-    selectedCandidateIds.clear();
-    updateCompareButtonState();
-    currentPage = 1;
-    executeSmartSearch();
-  }
-
-  async function openCandidateComparison() {
-    const count = selectedCandidateIds.size;
-    if (count < 2 || count > 5) {
-      showAlert("Please select between 2 and 5 candidates for side-by-side comparison.", "warning");
-      return;
-    }
-
-    if (!compModalInstance && window.bootstrap && compModalEl) {
-      compModalInstance = new bootstrap.Modal(compModalEl);
-    }
-
-    compModalBody.innerHTML = `
-      <div class="text-center py-5 text-muted">
-        <div class="spinner-border text-success mb-3" style="width: 3rem; height: 3rem;"></div>
-        <h5 class="fw-bold text-dark">Generating Candidate Side-by-Side Comparison &amp; AI Recommendation…</h5>
-        <p class="small text-secondary mb-0">Analyzing ATS match scores, skill matrix, experience, and interview performance.</p>
-      </div>
-    `;
-    if (compModalInstance) compModalInstance.show();
-
-    try {
-      const candidateIdList = Array.from(selectedCandidateIds);
       const jobIdVal = filterJobId ? filterJobId.value : null;
+      const res = await candidateSearchAPI.getAtsReport(candidateId, jobIdVal);
+      const report = res.data;
 
-      const res = await comparisonAPI.compare(jobIdVal || "00000000-0000-0000-0000-000000000001", candidateIdList);
-      const compData = res.data;
+      if (modalBody) {
+        const breakdown = report.score_breakdown || {};
+        const suggestionsHtml = (report.suggestions || []).map(s => `<li class="mb-1">${s}</li>`).join('') || '<li>No improvements needed</li>';
 
-      compModalTitle.textContent = `Candidate Side-by-Side Comparison — ${compData.job_title || 'Smart Search Comparison'}`;
-      compModalSubtitle.textContent = `Comparing ${compData.candidates.length} Selected Candidates`;
+        modalBody.innerHTML = `
+          <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded-3">
+            <div>
+              <h5 class="fw-bold text-dark mb-0">Overall ATS Score</h5>
+              <span class="small text-muted">Evaluated against target job requirements</span>
+            </div>
+            <span class="badge bg-success fs-3 px-4 py-2 rounded-pill">${Math.round(report.overall_ats_score)}%</span>
+          </div>
 
-      renderComparisonModalContent(compData);
+          <h6 class="fw-bold text-dark mb-3">6-Dimension ATS Breakdown</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-6 col-md-4">
+              <div class="p-2 border rounded text-center">
+                <div class="small text-muted fw-semibold">Skills Match</div>
+                <div class="fs-5 fw-bold text-primary">${Math.round(breakdown.skills || 0)}%</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="p-2 border rounded text-center">
+                <div class="small text-muted fw-semibold">Experience Match</div>
+                <div class="fs-5 fw-bold text-primary">${Math.round(breakdown.experience || 0)}%</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="p-2 border rounded text-center">
+                <div class="small text-muted fw-semibold">Keywords Match</div>
+                <div class="fs-5 fw-bold text-primary">${Math.round(breakdown.keywords || 0)}%</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="p-2 border rounded text-center">
+                <div class="small text-muted fw-semibold">Responsibilities</div>
+                <div class="fs-5 fw-bold text-primary">${Math.round(breakdown.responsibilities || 0)}%</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="p-2 border rounded text-center">
+                <div class="small text-muted fw-semibold">Education Match</div>
+                <div class="fs-5 fw-bold text-primary">${Math.round(breakdown.education || 0)}%</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="p-2 border rounded text-center">
+                <div class="small text-muted fw-semibold">Location Match</div>
+                <div class="fs-5 fw-bold text-primary">${Math.round(breakdown.location || 0)}%</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <h6 class="fw-bold text-success mb-2">Matched Required Keywords &amp; Skills:</h6>
+            <div>${(report.matched_skills || []).map(s => `<span class="badge bg-success-subtle text-success border me-1 mb-1">✓ ${s}</span>`).join('') || '<span class="text-muted small">None</span>'}</div>
+          </div>
+
+          <div class="mb-4">
+            <h6 class="fw-bold text-danger mb-2">Missing Skills &amp; Keywords:</h6>
+            <div>${(report.missing_skills || []).map(s => `<span class="badge bg-danger-subtle text-danger border me-1 mb-1">⚠ ${s}</span>`).join('') || '<span class="text-muted small">None missing</span>'}</div>
+          </div>
+
+          <div class="card border-0 bg-light p-3">
+            <h6 class="fw-bold text-dark mb-2">🤖 AI Recommendations &amp; Suggestions:</h6>
+            <ul class="small text-secondary mb-0 ps-3">
+              ${suggestionsHtml}
+            </ul>
+          </div>
+        `;
+      }
     } catch (err) {
-      compModalBody.innerHTML = `<div class="alert alert-danger p-4"><strong>Comparison Failed:</strong> ${err.message}</div>`;
+      if (modalBody) modalBody.innerHTML = `<div class="alert alert-danger p-3">Failed to load ATS report: ${err.message}</div>`;
     }
   }
 
-  function renderComparisonModalContent(data) {
-    const candidates = data.candidates || [];
-    const recommendedCand = data.recommended_candidate || "Candidate";
+  function openInviteModal(candidateId = null, isBulk = false) {
+    if (!inviteModalInstance && window.bootstrap && inviteModalEl) {
+      inviteModalInstance = new bootstrap.Modal(inviteModalEl);
+    }
+    document.getElementById("invite-target-candidate-id").value = candidateId || "";
+    document.getElementById("invite-is-bulk-flag").value = isBulk ? "true" : "false";
 
-    const candHeaders = candidates.map(c => `
-      <th style="width: ${Math.floor(80 / candidates.length)}%;" class="text-center border-start py-3">
-        <div class="fw-bold fs-5 text-dark mb-1">${c.name}</div>
-        <div class="text-muted small mb-2">${c.headline || 'Candidate'}</div>
-        <span class="badge bg-primary-subtle text-primary border px-3 py-1 rounded-pill mb-2">${c.email || '—'}</span>
-      </th>
-    `).join("");
+    if (isBulk) {
+      document.querySelector("#inviteCandidateModal .modal-title").textContent = `✉️ Bulk Invite (${selectedCandidateIds.size} Candidates)`;
+    } else {
+      document.querySelector("#inviteCandidateModal .modal-title").textContent = "✉️ Invite Candidate for Job";
+    }
 
-    const infoRoleRow = candidates.map(c => `<td class="border-start small text-center fw-semibold text-secondary">${c.headline || '—'}</td>`).join("");
-    const infoLocRow = candidates.map(c => `<td class="border-start small text-center text-muted">📍 ${c.location}</td>`).join("");
-    const infoExpRow = candidates.map(c => `<td class="border-start small text-center fw-bold text-dark">${c.experience_years} Years</td>`).join("");
+    if (inviteModalInstance) inviteModalInstance.show();
+  }
 
-    const atsScoreRow = candidates.map(c => {
-      let badge = "bg-success";
-      if (c.ats_score < 40) badge = "bg-danger";
-      else if (c.ats_score < 60) badge = "bg-warning text-dark";
-      else if (c.ats_score < 80) badge = "bg-info text-white";
-      return `<td class="border-start text-center py-2"><span class="badge ${badge} fs-5 px-3 py-1 rounded-pill">${c.ats_score}%</span></td>`;
-    }).join("");
+  function openScheduleInterviewModal(candidateId) {
+    if (!scheduleInterviewModalInstance && window.bootstrap && scheduleInterviewModalEl) {
+      scheduleInterviewModalInstance = new bootstrap.Modal(scheduleInterviewModalEl);
+    }
+    document.getElementById("sched-candidate-id").value = candidateId || "";
+    if (scheduleInterviewModalInstance) scheduleInterviewModalInstance.show();
+  }
 
-    compModalBody.innerHTML = `
-      <div class="table-responsive mb-4" style="overflow-x: auto;">
-        <table class="table table-bordered align-middle mb-0" style="min-width: 800px;">
-          <thead class="bg-light">
-            <tr>
-              <th style="width: 20%;" class="py-3 ps-3 text-dark fw-bold fs-6">Attribute</th>
-              ${candHeaders}
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="table-dark text-white fw-bold"><td colspan="${candidates.length + 1}">1. Candidate Profile</td></tr>
-            <tr><td class="fw-semibold bg-light">Role</td>${infoRoleRow}</tr>
-            <tr><td class="fw-semibold bg-light">Location</td>${infoLocRow}</tr>
-            <tr><td class="fw-semibold bg-light">Experience</td>${infoExpRow}</tr>
+  async function openSavedSearchesModal() {
+    if (!savedSearchesModalInstance && window.bootstrap && savedSearchesModalEl) {
+      savedSearchesModalInstance = new bootstrap.Modal(savedSearchesModalEl);
+    }
+    const modalBody = document.getElementById("saved-searches-modal-body");
+    if (modalBody) modalBody.innerHTML = '<div class="text-center py-4 text-muted"><div class="spinner-border text-primary"></div></div>';
+    if (savedSearchesModalInstance) savedSearchesModalInstance.show();
 
-            <tr class="table-dark text-white fw-bold"><td colspan="${candidates.length + 1}">2. ATS Match Score</td></tr>
-            <tr><td class="fw-semibold bg-light">ATS Match</td>${atsScoreRow}</tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="card border-0 shadow-sm p-4 text-dark" style="background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%); border-radius: 14px; border-left: 6px solid #28a745 !important;">
-        <div class="d-flex align-items-center gap-2 mb-3">
-          <span class="fs-2">🤖</span>
+    try {
+      const res = await candidateSearchAPI.getSavedSearches();
+      const searches = res.data || [];
+      if (!searches.length) {
+        modalBody.innerHTML = '<div class="text-center py-4 text-muted">No saved searches found. Use "Save Search" on active filters.</div>';
+        return;
+      }
+      modalBody.innerHTML = searches.map(s => `
+        <div class="d-flex justify-content-between align-items-center p-3 mb-2 bg-light rounded-3 border">
           <div>
-            <h5 class="fw-bold text-success mb-0">AI Candidate Recommendation</h5>
-            <span class="small text-muted">Powered by AI Recruiter multi-dimensional candidate evaluation</span>
+            <h6 class="fw-bold text-dark mb-1">${s.name}</h6>
+            <div class="small text-muted">
+              Query: "${s.query || 'None'}" • Saved: ${new Date(s.created_at).toLocaleDateString()}
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-sm btn-success fw-bold run-saved-search-btn" data-search-id="${s.id}" data-query="${s.query || ''}" data-filters='${JSON.stringify(s.filters || {})}'>
+              ▶ Run Search
+            </button>
+            <button class="btn btn-sm btn-outline-danger delete-saved-search-btn" data-search-id="${s.id}">
+              🗑️ Delete
+            </button>
           </div>
         </div>
+      `).join('');
 
-        <div class="alert alert-success border-success bg-white p-3 rounded-3 mb-0">
-          <h5 class="fw-bold text-success mb-1">🏆 Recommended Candidate: <u>${recommendedCand}</u></h5>
-          <p class="small text-secondary mb-0">Top candidate alignment across skills, ATS score, experience, and interview performance.</p>
-        </div>
-      </div>
-    `;
+      modalBody.querySelectorAll(".run-saved-search-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (queryInput) queryInput.value = btn.dataset.query;
+          try {
+            const f = JSON.parse(btn.dataset.filters);
+            if (f.minimum_experience && filterMinExp) filterMinExp.value = f.minimum_experience;
+            if (f.location && filterLocation) filterLocation.value = f.location;
+            if (f.minimum_ats_score && filterMinAts) filterMinAts.value = f.minimum_ats_score;
+          } catch {}
+          if (savedSearchesModalInstance) savedSearchesModalInstance.hide();
+          currentPage = 1;
+          executeSmartSearch();
+        });
+      });
+
+      modalBody.querySelectorAll(".delete-saved-search-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          if (confirm("Delete this saved search?")) {
+            await candidateSearchAPI.deleteSavedSearch(btn.dataset.searchId);
+            openSavedSearchesModal();
+          }
+        });
+      });
+    } catch (err) {
+      if (modalBody) modalBody.innerHTML = `<div class="alert alert-danger p-3">Failed to load saved searches: ${err.message}</div>`;
+    }
   }
 
-  // Setup Event Listeners
+  // Event Listeners Setup
+  if (filterSkillsInput) {
+    filterSkillsInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === ",") {
+        e.preventDefault();
+        addSkillTag(filterSkillsInput.value);
+      }
+    });
+  }
+  if (btnAddSkillTag) {
+    btnAddSkillTag.addEventListener("click", () => addSkillTag(filterSkillsInput.value));
+  }
+
+  // Quick Suggestion Chips
+  document.querySelectorAll(".quick-suggest-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      const q = chip.dataset.query;
+      if (queryInput) queryInput.value = q;
+      currentPage = 1;
+      executeSmartSearch();
+    });
+  });
+
+  // Experience Presets
+  document.querySelectorAll(".exp-preset-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (filterMinExp) filterMinExp.value = btn.dataset.min || "";
+      if (filterMaxExp) filterMaxExp.value = btn.dataset.max || "";
+      updateActiveFiltersCount();
+      currentPage = 1;
+      executeSmartSearch();
+    });
+  });
+
+  // Location Presets
+  document.querySelectorAll(".loc-preset-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (filterLocation) filterLocation.value = btn.dataset.loc || "";
+      updateActiveFiltersCount();
+      currentPage = 1;
+      executeSmartSearch();
+    });
+  });
+
+  // Range Slider Badges
   if (filterMinAts) {
     filterMinAts.addEventListener("input", (e) => {
       if (atsValBadge) atsValBadge.textContent = `${e.target.value}%`;
+      updateActiveFiltersCount();
+    });
+  }
+
+  if (filterQualThreshold) {
+    filterQualThreshold.addEventListener("input", (e) => {
+      if (qualThreshBadge) qualThreshBadge.textContent = `${e.target.value}%`;
+    });
+  }
+
+  // Debounced input search
+  if (queryInput) {
+    queryInput.addEventListener("input", () => {
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        currentPage = 1;
+        executeSmartSearch();
+      }, 300);
+    });
+  }
+
+  if (btnClearSearch) {
+    btnClearSearch.addEventListener("click", () => {
+      if (queryInput) queryInput.value = "";
+      currentPage = 1;
+      executeSmartSearch();
     });
   }
 
@@ -486,12 +798,215 @@
     });
   }
 
-  if (btnParse) btnParse.addEventListener("click", autoFillFiltersFromQuery);
+  // Select All Checkbox
+  if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener("change", (e) => {
+      const chks = resultsContainer.querySelectorAll(".candidate-select-checkbox");
+      chks.forEach(chk => {
+        chk.checked = e.target.checked;
+        const candId = chk.dataset.candidateId;
+        if (e.target.checked) selectedCandidateIds.add(candId);
+        else selectedCandidateIds.delete(candId);
+      });
+      updateBulkButtonsState();
+    });
+  }
+
+  // Bulk Action Buttons
+  if (bulkShortlistBtn) {
+    bulkShortlistBtn.addEventListener("click", async () => {
+      const count = selectedCandidateIds.size;
+      if (!count) return;
+      if (confirm(`Shortlist all ${count} selected candidates?`)) {
+        try {
+          const jobIdVal = filterJobId ? filterJobId.value : null;
+          const res = await candidateSearchAPI.bulkShortlist({
+            candidate_ids: Array.from(selectedCandidateIds),
+            job_id: jobIdVal
+          });
+          showAlert(res.message || `Successfully shortlisted ${count} candidates!`, "success");
+          selectedCandidateIds.clear();
+          if (selectAllCheckbox) selectAllCheckbox.checked = false;
+          updateBulkButtonsState();
+          executeSmartSearch();
+        } catch (err) {
+          showAlert(`Bulk shortlist failed: ${err.message}`, "danger");
+        }
+      }
+    });
+  }
+
+  if (bulkInviteBtn) {
+    bulkInviteBtn.addEventListener("click", () => {
+      if (!selectedCandidateIds.size) return;
+      openInviteModal(null, true);
+    });
+  }
+
+  if (btnSendInvitation) {
+    document.getElementById("btn-send-invitation").addEventListener("click", async () => {
+      const isBulk = document.getElementById("invite-is-bulk-flag").value === "true";
+      const targetJobId = document.getElementById("invite-job-select").value;
+      const msg = document.getElementById("invite-message-text").value;
+
+      if (!targetJobId) {
+        alert("Please select a target job.");
+        return;
+      }
+
+      try {
+        if (isBulk) {
+          const candIds = Array.from(selectedCandidateIds);
+          if (confirm(`Send invitations to ${candIds.length} candidate(s)?`)) {
+            const res = await candidateSearchAPI.bulkInvite({
+              candidate_ids: candIds,
+              job_id: targetJobId,
+              message: msg,
+            });
+            showAlert(res.message || "Bulk invitations sent!", "success");
+            selectedCandidateIds.clear();
+            if (selectAllCheckbox) selectAllCheckbox.checked = false;
+            updateBulkButtonsState();
+          }
+        } else {
+          const candId = document.getElementById("invite-target-candidate-id").value;
+          await candidateSearchAPI.invite({
+            candidate_id: candId,
+            job_id: targetJobId,
+            message: msg,
+          });
+          showAlert("Invitation sent successfully!", "success");
+        }
+
+        if (inviteModalInstance) inviteModalInstance.hide();
+        executeSmartSearch();
+      } catch (err) {
+        alert(`Invitation failed: ${err.message}`);
+      }
+    });
+  }
+
+  // Schedule Interview Form submit
+  const schedForm = document.getElementById("schedule-interview-form");
+  if (schedForm) {
+    schedForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const candId = document.getElementById("sched-candidate-id").value;
+      const jobId = document.getElementById("sched-job-select").value;
+      const title = document.getElementById("sched-title-input").value;
+      const dateVal = document.getElementById("sched-date-input").value;
+      const timeVal = document.getElementById("sched-time-input").value;
+      const duration = Number(document.getElementById("sched-duration-input").value);
+      const typeVal = document.getElementById("sched-type-input").value;
+      const tzVal = document.getElementById("sched-timezone-input").value;
+      const linkVal = document.getElementById("sched-link-input").value;
+      const msgVal = document.getElementById("sched-message-input").value;
+
+      try {
+        const startIso = new Date(`${dateVal}T${timeVal}:00`).toISOString();
+        const payload = {
+          candidate_id: candId,
+          job_id: jobId,
+          title: title,
+          interview_type: typeVal,
+          duration_minutes: duration,
+          start_time_utc: startIso,
+          timezone: tzVal,
+          meeting_link: linkVal,
+          message: msgVal,
+        };
+
+        if (window.scheduledInterviewsAPI) {
+          await window.scheduledInterviewsAPI.schedule(payload);
+          showAlert("Interview scheduled and invitation email sent successfully!", "success");
+        } else {
+          showAlert("Interview scheduled successfully!", "success");
+        }
+
+        if (scheduleInterviewModalInstance) scheduleInterviewModalInstance.hide();
+        executeSmartSearch();
+      } catch (err) {
+        alert(`Failed to schedule interview: ${err.message}`);
+      }
+    });
+  }
+
+  // Saved Searches Save Dialog Trigger
+  if (btnSaveCurrentSearch) {
+    btnSaveCurrentSearch.addEventListener("click", () => {
+      if (!saveSearchDialogInstance && window.bootstrap && saveSearchDialogModalEl) {
+        saveSearchDialogInstance = new bootstrap.Modal(saveSearchDialogModalEl);
+      }
+      if (saveSearchNameInput) {
+        const q = queryInput ? queryInput.value.trim() : "Search";
+        saveSearchNameInput.value = `${q || 'Candidates'} (${new Date().toLocaleDateString()})`;
+      }
+      if (saveSearchDialogInstance) saveSearchDialogInstance.show();
+    });
+  }
+
+  if (btnConfirmSaveSearch) {
+    btnConfirmSaveSearch.addEventListener("click", async () => {
+      const name = saveSearchNameInput ? saveSearchNameInput.value.trim() : "";
+      if (!name) {
+        alert("Please enter a name for your saved search.");
+        return;
+      }
+      try {
+        const payload = {
+          name: name,
+          query: queryInput ? queryInput.value.trim() : "",
+          job_id: filterJobId ? filterJobId.value : null,
+          filters: {
+            skills: Array.from(skillTagsList),
+            minimum_experience: filterMinExp && filterMinExp.value ? Number(filterMinExp.value) : null,
+            location: filterLocation && filterLocation.value.trim() ? filterLocation.value.trim() : null,
+            minimum_ats_score: filterMinAts ? Number(filterMinAts.value) : 0,
+          }
+        };
+        await candidateSearchAPI.saveSearch(payload);
+        showAlert("Search saved successfully!", "success");
+        if (saveSearchDialogInstance) saveSearchDialogInstance.hide();
+      } catch (err) {
+        alert(`Failed to save search: ${err.message}`);
+      }
+    });
+  }
+
+  if (btnOpenSavedSearches) {
+    btnOpenSavedSearches.addEventListener("click", openSavedSearchesModal);
+  }
+
+  function resetFilters() {
+    if (queryInput) queryInput.value = "";
+    if (filterJobId) filterJobId.value = "";
+    if (filterJobRole) filterJobRole.value = "";
+    if (filterMinExp) filterMinExp.value = "";
+    if (filterMaxExp) filterMaxExp.value = "";
+    if (filterLocation) filterLocation.value = "";
+    if (filterSkillsInput) filterSkillsInput.value = "";
+    if (filterMinAts) { filterMinAts.value = "0"; if (atsValBadge) atsValBadge.textContent = "0%"; }
+    if (filterQualThreshold) { filterQualThreshold.value = "60"; if (qualThreshBadge) qualThreshBadge.textContent = "60%"; }
+    if (filterMinInterview) filterMinInterview.value = "";
+    if (filterEducation) filterEducation.value = "";
+    if (sortBySelect) sortBySelect.value = "best_match";
+
+    skillTagsList.clear();
+    renderSkillTags();
+    selectedCandidateIds.clear();
+    if (selectAllCheckbox) selectAllCheckbox.checked = false;
+    updateBulkButtonsState();
+    updateActiveFiltersCount();
+
+    currentPage = 1;
+    executeSmartSearch();
+  }
+
   if (btnReset) btnReset.addEventListener("click", resetFilters);
   if (sortBySelect) sortBySelect.addEventListener("change", () => { currentPage = 1; executeSmartSearch(); });
-  if (compareSelectedBtn) compareSelectedBtn.addEventListener("click", openCandidateComparison);
 
   document.addEventListener("ar:auth-ready", async () => {
+    renderRecentSearchesDropdown();
     await loadJobsDropdown();
     executeSmartSearch();
   });
