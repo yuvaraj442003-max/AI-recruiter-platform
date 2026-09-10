@@ -769,6 +769,39 @@
     }
   }
 
+  async function loadCandidateScreeningStatus() {
+    const container = document.getElementById("candidate-screening-container");
+    if (!container) return;
+    try {
+      const res = await API.get("/applications");
+      const apps = res.data || [];
+      if (!apps || apps.length === 0) {
+        container.innerHTML = '<div class="text-muted small text-center py-3">No active job applications found.</div>';
+        return;
+      }
+
+      let html = `<div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead class="bg-light text-secondary small"><tr><th>Job Title</th><th>Applied Date</th><th>Screening Channel</th><th>Status</th><th>Pre-Screening Score</th></tr></thead><tbody>`;
+      apps.forEach(app => {
+        const scStatus = app.screening_status || "in_progress";
+        const scoreDisplay = app.overall_score ? `${Math.round(app.overall_score)}%` : (scStatus === "completed" ? "Completed" : "In Progress (WhatsApp/SMS)");
+        const statusBadge = scStatus === "completed" ? '<span class="badge bg-success">Completed ✓</span>' : '<span class="badge bg-primary">In Progress</span>';
+        html += `
+          <tr>
+            <td class="fw-semibold">${app.job_title || 'Position'}</td>
+            <td class="text-muted small">${new Date(app.applied_at).toLocaleDateString()}</td>
+            <td><span class="badge bg-light text-dark border">WhatsApp / SMS</span></td>
+            <td>${statusBadge}</td>
+            <td class="fw-bold text-primary">${scoreDisplay}</td>
+          </tr>
+        `;
+      });
+      html += `</tbody></table></div>`;
+      container.innerHTML = html;
+    } catch (err) {
+      container.innerHTML = `<div class="text-muted small text-center py-3">No active screening sessions.</div>`;
+    }
+  }
+
   const refreshVoiceBtn = document.getElementById("btn-refresh-voice-interviews");
   if (refreshVoiceBtn) {
     refreshVoiceBtn.addEventListener("click", loadCandidateVoiceInterviews);
@@ -778,6 +811,7 @@
   loadExplorerJobs();
   loadCandidateCodingAssessments();
   loadCandidateVoiceInterviews();
+  loadCandidateScreeningStatus();
 
   document.addEventListener("ar:auth-ready", () => {
     load();
@@ -785,6 +819,7 @@
     loadExplorerJobs();
     loadCandidateCodingAssessments();
     loadCandidateVoiceInterviews();
+    loadCandidateScreeningStatus();
   });
 })();
 

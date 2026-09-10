@@ -131,6 +131,51 @@ def start_interview(
     )
 
 
+@router.get("/upcoming")
+def list_upcoming_interviews(
+    current_user: User = Depends(require_role(UserRole.candidate, UserRole.recruiter)),
+    db: Session = Depends(get_db),
+):
+    from app.core.config import settings
+    query = select(ScheduledInterview).where(ScheduledInterview.status != ScheduledInterviewStatus.cancelled)
+
+    if current_user.role == UserRole.candidate:
+        cand_profile = db.scalar(select(CandidateProfile).where(CandidateProfile.user_id == current_user.id))
+        if not cand_profile:
+            return APIResponse(success=True, message="Upcoming interviews", data=[])
+        sessions = db.scalars(query.where(ScheduledInterview.candidate_id == cand_profile.id).order_by(ScheduledInterview.start_time_utc.asc())).all()
+    else:
+        sessions = db.scalars(query.where(ScheduledInterview.recruiter_id == current_user.id).order_by(ScheduledInterview.start_time_utc.asc())).all()
+
+    result = []
+    for s in sessions:
+        room_link = f"{settings.FRONTEND_URL.rstrip('/')}/live-interview-room.html?interview_id={s.interview_id or s.id}"
+        google_add = generate_google_calendar_add_url(s.title, f"Join: {room_link}", s.start_time_utc, s.end_time_utc, room_link)
+        outlook_add = generate_outlook_calendar_add_url(s.title, f"Join: {room_link}", s.start_time_utc, s.end_time_utc, room_link)
+
+        result.append({
+            "id": str(s.id),
+            "interview_id": str(s.interview_id) if s.interview_id else None,
+            "title": s.title,
+            "candidate_name": s.candidate.user.name if (s.candidate and s.candidate.user) else "Candidate",
+            "job_title": s.job.title if s.job else "Role",
+            "interview_type": s.interview_type,
+            "duration_minutes": s.duration_minutes,
+            "start_time_utc": s.start_time_utc,
+            "end_time_utc": s.end_time_utc,
+            "timezone": s.timezone,
+            "status": s.status.value,
+            "calendar_provider": s.calendar_provider,
+            "calendar_sync_status": s.calendar_sync_status,
+            "join_link": room_link,
+            "google_calendar_url": google_add,
+            "outlook_calendar_url": outlook_add,
+            "ics_download_url": f"{settings.FRONTEND_URL.rstrip('/')}/api/v1/interviews/{s.id}/ics",
+        })
+
+    return APIResponse(success=True, message="Upcoming interviews", data=result)
+
+
 @router.get("/{interview_id}", response_model=APIResponse[InterviewResponse])
 def get_interview(
     interview_id: str,
@@ -584,49 +629,4 @@ def download_interview_ics(
         media_type="text/calendar",
         headers={"Content-Disposition": 'attachment; filename="Interview_Invitation.ics"'},
     )
-
-
-@router.get("/upcoming")
-def list_upcoming_interviews(
-    current_user: User = Depends(require_role(UserRole.candidate, UserRole.recruiter)),
-    db: Session = Depends(get_db),
-):
-    from app.core.config import settings
-    query = select(ScheduledInterview).where(ScheduledInterview.status != ScheduledInterviewStatus.cancelled)
-
-    if current_user.role == UserRole.candidate:
-        cand_profile = db.scalar(select(CandidateProfile).where(CandidateProfile.user_id == current_user.id))
-        if not cand_profile:
-            return APIResponse(success=True, message="Upcoming interviews", data=[])
-        sessions = db.scalars(query.where(ScheduledInterview.candidate_id == cand_profile.id).order_by(ScheduledInterview.start_time_utc.asc())).all()
-    else:
-        sessions = db.scalars(query.where(ScheduledInterview.recruiter_id == current_user.id).order_by(ScheduledInterview.start_time_utc.asc())).all()
-
-    result = []
-    for s in sessions:
-        room_link = f"{settings.FRONTEND_URL.rstrip('/')}/live-interview-room.html?interview_id={s.interview_id or s.id}"
-        google_add = generate_google_calendar_add_url(s.title, f"Join: {room_link}", s.start_time_utc, s.end_time_utc, room_link)
-        outlook_add = generate_outlook_calendar_add_url(s.title, f"Join: {room_link}", s.start_time_utc, s.end_time_utc, room_link)
-
-        result.append({
-            "id": str(s.id),
-            "interview_id": str(s.interview_id) if s.interview_id else None,
-            "title": s.title,
-            "candidate_name": s.candidate.user.name if (s.candidate and s.candidate.user) else "Candidate",
-            "job_title": s.job.title if s.job else "Role",
-            "interview_type": s.interview_type,
-            "duration_minutes": s.duration_minutes,
-            "start_time_utc": s.start_time_utc,
-            "end_time_utc": s.end_time_utc,
-            "timezone": s.timezone,
-            "status": s.status.value,
-            "calendar_provider": s.calendar_provider,
-            "calendar_sync_status": s.calendar_sync_status,
-            "join_link": room_link,
-            "google_calendar_url": google_add,
-            "outlook_calendar_url": outlook_add,
-            "ics_download_url": f"{settings.FRONTEND_URL.rstrip('/')}/api/v1/interviews/{s.id}/ics",
-        })
-
-    return APIResponse(success=True, message="Upcoming interviews", data=result)
 

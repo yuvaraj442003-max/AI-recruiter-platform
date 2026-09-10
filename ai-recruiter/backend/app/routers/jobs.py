@@ -5,7 +5,7 @@ Job endpoints: CRUD (recruiter-owned), browsing/search, applying
 import uuid
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from sqlalchemy import or_
 from sqlalchemy.orm import Session, joinedload
 
@@ -71,7 +71,12 @@ def create_job_endpoint(
     db: Session = Depends(get_db),
 ):
     job = create_job(db, current_user.id, payload)
-    return APIResponse(success=True, message="Job created successfully", data=JobResponse.from_job(job))
+    try:
+        from app.services.talent_rediscovery_service import trigger_rediscovery_async
+        trigger_rediscovery_async(job.id)
+    except Exception:
+        pass
+    return APIResponse(success=True, message="Job created successfully and Talent Rediscovery launched", data=JobResponse.from_job(job))
 
 
 @router.get("/recruiter/my-jobs", response_model=APIResponse[list[JobResponse]])
@@ -245,6 +250,7 @@ def _to_application_response(app: Application, job_title: str | None = None) -> 
 @router.post("/{job_id}/apply", response_model=APIResponse[ApplicationResponse], status_code=201)
 def apply_to_job_endpoint(
     job_id: str,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(require_role(UserRole.candidate)),
     db: Session = Depends(get_db),
 ):
@@ -255,6 +261,16 @@ def apply_to_job_endpoint(
 
     application = apply_to_job(db, current_user.id, parsed_id)
     job = application.job or db.query(Job).filter(Job.id == application.job_id).first()
+
+    # Automatically trigger AI Candidate Pre-Screening session
+    try:
+        from app.core.config import settings
+        from app.services.screening_worker import start_screening_session_task
+        if settings.SCREENING_AUTO_START:
+            background_tasks.add_task(start_screening_session_task, db, str(application.id))
+    except Exception as err:
+        pass
+
     return APIResponse(
         success=True,
         message="Application submitted and resume skills verified successfully",

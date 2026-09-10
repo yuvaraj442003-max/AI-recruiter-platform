@@ -69,6 +69,31 @@
     </main>
   </div>
 
+  <!-- Candidate Feedback Viewer Modal -->
+  <div class="modal fade" id="candFeedbackViewerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content border-0 shadow" style="border-radius: 16px;">
+        <div class="modal-header border-bottom bg-primary text-white p-3">
+          <div class="d-flex align-items-center gap-2">
+            <span class="fs-4">📑</span>
+            <div>
+              <h5 class="modal-title fw-bold mb-0" id="cand-fb-modal-title">Feedback from Hiring Team</h5>
+              <span class="small text-white-50" id="cand-fb-modal-subtitle">Application Status Update &amp; Guidance</span>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4" id="cand-fb-modal-body">
+          <div class="text-center py-4 text-muted">Loading feedback…</div>
+        </div>
+        <div class="modal-footer border-top bg-light p-3 d-flex justify-content-between">
+          <a href="jobs.html" class="btn btn-outline-primary fw-semibold px-3">🔍 Explore Recommended Jobs</a>
+          <button type="button" class="btn btn-secondary px-4 fw-semibold" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth-guard.js"></script>

@@ -64,6 +64,9 @@ class Interview(Base):
     evaluation: Mapped[Optional["InterviewEvaluation"]] = relationship(
         back_populates="interview", cascade="all, delete-orphan", uselist=False
     )
+    scorecard: Mapped[Optional["InterviewScorecard"]] = relationship(
+        "InterviewScorecard", back_populates="interview", cascade="all, delete-orphan", uselist=False
+    )
     candidate: Mapped["CandidateProfile"] = relationship()
     job: Mapped["Job"] = relationship()
 

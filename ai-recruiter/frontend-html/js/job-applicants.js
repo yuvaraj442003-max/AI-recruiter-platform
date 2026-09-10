@@ -122,10 +122,19 @@
             <span class="badge ${scoreClass} px-2 py-1 rounded-pill fs-6">${atsScore}%</span>
           </td>
           <td>
-            <span class="badge bg-info-subtle text-dark border px-2 py-1 rounded-pill fs-6">${codingScore}</span>
+            <a href="screening-detail.html?application_id=${app.id}" class="badge bg-primary-subtle text-primary border border-primary px-2 py-1 rounded-pill fs-6 text-decoration-none" title="View AI Screening Breakdown">
+              ${app.overall_score ? Math.round(app.overall_score) + '%' : (app.screening_status === 'completed' ? 'Completed' : 'Screening ➔')}
+            </a>
           </td>
           <td>
-            <span class="badge bg-secondary-subtle text-dark border px-2 py-1 rounded-pill fs-6">${interviewScore}</span>
+            <a href="integrity-report.html?attempt_id=${app.coding_attempt_id || app.id}" class="badge bg-info-subtle text-dark border border-info px-2 py-1 rounded-pill fs-6 text-decoration-none" title="View AI-Assisted Integrity Monitoring Report">
+              ${codingScore} 🛡️
+            </a>
+          </td>
+          <td>
+            <a href="interview-scorecard.html?interview_id=${app.interview_id || app.id}&job_id=${currentJob ? currentJob.id : ''}" class="badge bg-purple-subtle text-dark border border-purple px-2 py-1 rounded-pill fs-6 text-decoration-none" title="View AI Executive Candidate Scorecard">
+              ${interviewScore} 📊
+            </a>
           </td>
           <td>
             <span class="badge bg-success px-2 py-1 rounded-pill fs-6 text-white">${overallScore}</span>
@@ -133,11 +142,17 @@
           <td class="text-secondary small fw-medium">${new Date(app.applied_at).toLocaleDateString()}</td>
           <td>${getStatusBadge(app.status)}</td>
           <td class="text-end pe-4">
+            <a href="screening-detail.html?application_id=${app.id}" class="btn btn-sm btn-outline-info fw-semibold me-1" title="Inspect AI Candidate Pre-Screening">
+              🤖 AI Screening
+            </a>
             <button class="btn btn-sm btn-outline-success fw-semibold download-resume-btn me-1" data-candidate-id="${candidateProfile.id || app.candidate_id}">
               📄 Resume
             </button>
             <button class="btn btn-sm btn-outline-primary fw-semibold msg-applicant-btn me-1" data-user-id="${candidateProfile.user_id || ''}" data-name="${app.candidate_name || 'Candidate'}">
               💬 Message
+            </button>
+            <button class="btn btn-sm btn-outline-dark fw-semibold feedback-btn me-1" data-app-id="${app.id}" data-name="${app.candidate_name || 'Candidate'}" title="Candidate Feedback">
+              💬 Feedback
             </button>
             <button class="btn btn-sm btn-primary fw-semibold view-applicant-btn px-3" data-app-id="${app.id}">
               👤 Profile &amp; ATS &rarr;
@@ -197,6 +212,88 @@
     tableBody.querySelectorAll(".view-applicant-btn").forEach(btn => {
       btn.addEventListener("click", () => openApplicantDetail(btn.dataset.appId));
     });
+
+    tableBody.querySelectorAll(".feedback-btn").forEach(btn => {
+      btn.addEventListener("click", () => openFeedbackModal(btn.dataset.appId, btn.dataset.name));
+    });
+  }
+
+  let activeFeedbackAppId = null;
+  let feedbackModalInstance = null;
+
+  async function openFeedbackModal(appId, candName = "Candidate") {
+    activeFeedbackAppId = appId;
+    const modalEl = document.getElementById("candidateFeedbackModal");
+    const bodyEl = document.getElementById("feedback-modal-body");
+    const titleEl = document.getElementById("feedback-modal-title");
+    if (!modalEl || !bodyEl) return;
+
+    if (!feedbackModalInstance && window.bootstrap) {
+      feedbackModalInstance = new bootstrap.Modal(modalEl);
+    }
+    if (titleEl) titleEl.textContent = `Candidate Feedback — ${candName}`;
+    bodyEl.innerHTML = `<div class="text-center py-5 text-muted"><div class="spinner-border text-primary mb-3"></div><div>Loading or generating candidate feedback draft…</div></div>`;
+    feedbackModalInstance.show();
+
+    try {
+      let fbRes;
+      try {
+        fbRes = await feedbackAPI.get(appId);
+      } catch (err) {
+        fbRes = await feedbackAPI.generate(appId);
+      }
+      const fb = fbRes.data || fbRes;
+      renderFeedbackModalContent(fb);
+    } catch (err) {
+      bodyEl.innerHTML = `<div class="alert alert-danger py-2 mb-0">Failed to load candidate feedback: ${err.message}</div>`;
+    }
+  }
+
+  function renderFeedbackModalContent(fb) {
+    const bodyEl = document.getElementById("feedback-modal-body");
+    if (!bodyEl) return;
+
+    const strengthsList = (fb.strengths || []).map(s => `<span class="badge bg-success-subtle text-success border border-success border-opacity-25 px-2 py-1 rounded-pill me-1 mb-1">✓ ${s}</span>`).join("");
+    const gapsList = (fb.areas_for_improvement || []).map(g => `<span class="badge bg-danger-subtle text-danger border border-danger border-opacity-25 px-2 py-1 rounded-pill me-1 mb-1">• ${g}</span>`).join("");
+
+    bodyEl.innerHTML = `
+      <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span class="badge ${fb.feedback_status === 'SENT' ? 'bg-success' : 'bg-warning text-dark'} px-3 py-1 rounded-pill fw-bold">
+            Status: ${fb.feedback_status}
+          </span>
+          <span class="text-muted small">Generated: ${fb.generated_at ? new Date(fb.generated_at).toLocaleString() : 'Now'}</span>
+        </div>
+        <div class="card p-3 bg-light border-0 mb-3" style="border-radius: 10px;">
+          <h6 class="fw-bold text-dark mb-2">Evidence-Based Profile Assessment</h6>
+          <div class="mb-2">
+            <span class="small fw-bold text-secondary d-block mb-1">Verified Strengths:</span>
+            <div>${strengthsList || '<span class="text-muted small">Technical background</span>'}</div>
+          </div>
+          <div>
+            <span class="small fw-bold text-secondary d-block mb-1">Top Job Requirements Gaps:</span>
+            <div>${gapsList || '<span class="text-muted small">Specific role requirement gap</span>'}</div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold text-dark mb-1">Feedback Content (Editable Text):</label>
+          <textarea id="feedback-editable-text" class="form-control" rows="8" style="border-radius: 8px; font-size: 0.95rem; line-height: 1.5;">${fb.final_content || fb.draft_content || ''}</textarea>
+          <div class="form-text small text-muted">You can edit the text above before approving and sending it to the candidate.</div>
+        </div>
+      </div>
+    `;
+
+    const approveBtn = document.getElementById("btn-feedback-approve-send");
+    if (approveBtn) {
+      if (fb.feedback_status === "SENT") {
+        approveBtn.disabled = true;
+        approveBtn.textContent = "✓ Already Sent";
+      } else {
+        approveBtn.disabled = false;
+        approveBtn.textContent = "✅ Approve & Send";
+      }
+    }
   }
 
   function applyFilters() {
@@ -224,20 +321,53 @@
   }
 
   async function loadJobAndApplicants() {
-    if (!jobId) {
-      tableBody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-danger">No job specified in URL parameter.</td></tr>`;
-      return;
+    let activeJobId = jobId;
+
+    if (!activeJobId || activeJobId === "undefined" || activeJobId === "null") {
+      try {
+        const jobsRes = await jobsAPI.list();
+        const myJobs = jobsRes.data || [];
+        if (myJobs.length > 0) {
+          activeJobId = myJobs[0].id || myJobs[0].job_id;
+          window.history.replaceState({}, "", `job-applicants.html?job_id=${activeJobId}`);
+        } else {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="10" class="text-center py-5">
+                <div class="fs-1 text-muted mb-2">📁</div>
+                <h6 class="fw-bold text-dark">No job selected or posted yet</h6>
+                <p class="text-secondary small mb-3">Please select a job from <a href="my-jobs.html" class="fw-semibold text-primary">Manage Jobs</a> or create a new job posting.</p>
+                <a href="post-job.html" class="btn btn-sm btn-success text-white fw-semibold">➕ Post a New Job</a>
+              </td>
+            </tr>
+          `;
+          return;
+        }
+      } catch (e) {
+        tableBody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-danger">No job specified. Please select a job from <a href="my-jobs.html">Manage Jobs</a>.</td></tr>`;
+        return;
+      }
     }
 
     try {
       const [jobRes, appsRes] = await Promise.all([
-        jobsAPI.get(jobId),
-        jobsAPI.applications(jobId)
+        jobsAPI.get(activeJobId),
+        jobsAPI.applications(activeJobId)
       ]);
 
       currentJob = jobRes.data;
       jobTitleHeader.textContent = `${currentJob.title} — Applicants`;
       locationBadge.textContent = currentJob.location ? `📍 ${currentJob.location}` : "";
+
+      const rediscoveryBtn = document.getElementById("btn-talent-rediscovery");
+      if (rediscoveryBtn && currentJob) {
+        rediscoveryBtn.href = `talent-rediscovery.html?job_id=${currentJob.id || currentJob.job_id}`;
+      }
+
+      const blindBtn = document.getElementById("btn-blind-screening");
+      if (blindBtn && currentJob) {
+        blindBtn.href = `blind-screening.html?job_id=${currentJob.id || currentJob.job_id}`;
+      }
 
       allApplications = appsRes.data || [];
       applyFilters();
@@ -773,6 +903,76 @@
 
   if (compareSelectedBtn) {
     compareSelectedBtn.addEventListener("click", openCandidateComparison);
+  }
+
+  const approveSendBtn = document.getElementById("btn-feedback-approve-send");
+  if (approveSendBtn) {
+    approveSendBtn.addEventListener("click", async () => {
+      if (!activeFeedbackAppId) return;
+      const textEl = document.getElementById("feedback-editable-text");
+      const overrideText = textEl ? textEl.value : null;
+
+      approveSendBtn.disabled = true;
+      approveSendBtn.textContent = "Sending...";
+      try {
+        await feedbackAPI.approve(activeFeedbackAppId, overrideText);
+        showAlert("Candidate feedback approved and sent successfully!", "success");
+        if (feedbackModalInstance) feedbackModalInstance.hide();
+        loadJobAndApplicants();
+      } catch (err) {
+        alert(`Failed to approve & send feedback: ${err.message}`);
+        approveSendBtn.disabled = false;
+        approveSendBtn.textContent = "✅ Approve & Send";
+      }
+    });
+  }
+
+  const regenBtn = document.getElementById("btn-feedback-regenerate");
+  if (regenBtn) {
+    regenBtn.addEventListener("click", async () => {
+      if (!activeFeedbackAppId) return;
+      const promptDir = prompt("Enter regeneration focus (e.g. 'more concise', 'more detailed', 'more encouraging', 'focus on skill gaps'):", "more encouraging");
+      if (!promptDir) return;
+
+      regenBtn.disabled = true;
+      regenBtn.textContent = "Regenerating...";
+      try {
+        const res = await feedbackAPI.regenerate(activeFeedbackAppId, promptDir);
+        const fb = res.data || res;
+        renderFeedbackModalContent(fb);
+        showAlert("Feedback draft regenerated with new recruiter direction.", "info");
+      } catch (err) {
+        alert(`Regeneration failed: ${err.message}`);
+      } finally {
+        regenBtn.disabled = false;
+        regenBtn.textContent = "🔄 Regenerate";
+      }
+    });
+  }
+
+  const bulkFbBtn = document.getElementById("bulk-feedback-btn");
+  if (bulkFbBtn) {
+    bulkFbBtn.addEventListener("click", async () => {
+      if (!allApplications.length) return;
+      const rejectedApps = allApplications.filter(a => (a.status || "").toLowerCase() === "rejected");
+      if (!rejectedApps.length) {
+        showAlert("No rejected applications found for bulk feedback generation.", "info");
+        return;
+      }
+      const appIds = rejectedApps.map(a => a.id);
+      bulkFbBtn.disabled = true;
+      bulkFbBtn.textContent = "Generating...";
+      try {
+        const res = await feedbackAPI.bulkGenerate(appIds, false);
+        const data = res.data || res;
+        showAlert(`Bulk candidate feedback generated for ${data.completed || appIds.length} rejected applications!`, "success");
+      } catch (err) {
+        showAlert(`Bulk feedback failed: ${err.message}`, "danger");
+      } finally {
+        bulkFbBtn.disabled = false;
+        bulkFbBtn.textContent = "💬 Bulk Feedback";
+      }
+    });
   }
 
   document.querySelectorAll(".filter-btn").forEach(btn => {

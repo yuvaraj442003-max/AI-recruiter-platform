@@ -90,6 +90,17 @@ class Settings(BaseSettings):
     # --- CORS ---
     CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000,http://localhost:5501,http://127.0.0.1:5501"
 
+    # --- Twilio / Communication ---
+    TWILIO_ACCOUNT_SID: str = ""
+    TWILIO_AUTH_TOKEN: str = ""
+    TWILIO_WHATSAPP_NUMBER: str = "whatsapp:+14155238886"  # Twilio Sandbox default
+    TWILIO_SMS_NUMBER: str = ""
+    TWILIO_VOICE_NUMBER: str = ""
+
+    # --- AI Screening Settings ---
+    SCREENING_AUTO_START: bool = True
+    SCREENING_DEFAULT_CHANNEL: str = "whatsapp"
+
     # --- Rate limiting ---
     RATE_LIMIT_REGISTER_PER_MINUTE: int = 200  # per-IP; generous default, tighten in production
     LOGIN_LOCKOUT_MAX_ATTEMPTS: int = 5

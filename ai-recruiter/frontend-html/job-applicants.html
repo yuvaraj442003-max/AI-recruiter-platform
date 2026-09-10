@@ -60,6 +60,16 @@
           </a>
         </li>
         <li class="nav-item">
+          <a href="talent-rediscovery.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>✨</span> Talent Rediscovery
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="blind-screening.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>🙈</span> Blind Screening
+          </a>
+        </li>
+        <li class="nav-item">
           <a href="upload.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
             <span>📤</span> Upload
           </a>
@@ -87,7 +97,13 @@
             <span id="job-location-badge" class="text-muted small"></span>
           </div>
         </div>
-        <div class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-2">
+          <a id="btn-blind-screening" href="blind-screening.html" class="btn btn-sm btn-dark text-white fw-semibold shadow-sm">
+            🙈 Blind Screening
+          </a>
+          <a id="btn-talent-rediscovery" href="talent-rediscovery.html" class="btn btn-sm btn-success text-white fw-semibold shadow-sm">
+            ✨ Talent Rediscovery
+          </a>
           <a href="my-jobs.html" class="btn btn-sm btn-outline-secondary fw-semibold">&larr; Back to Jobs</a>
           <span id="user-greeting" class="text-muted-custom small"></span>
         </div>
@@ -111,6 +127,9 @@
                 <button id="compare-selected-btn" class="btn btn-sm btn-success fw-bold px-3 d-inline-flex align-items-center gap-1 shadow-sm me-2">
                   <span>📊 Compare Selected</span>
                   <span id="compare-count-badge" class="badge bg-white text-success rounded-pill ms-1">0</span>
+                </button>
+                <button id="bulk-feedback-btn" class="btn btn-sm btn-outline-dark fw-bold px-3 d-inline-flex align-items-center gap-1 shadow-sm me-2">
+                  <span>💬 Bulk Feedback</span>
                 </button>
                 <span class="text-secondary small fw-medium me-1">Quick Filters:</span>
                 <button class="btn btn-sm btn-outline-secondary rounded-pill filter-btn active" data-filter="all">All</button>
@@ -136,6 +155,7 @@
                   <th class="ps-3 py-3 text-center" style="width: 50px;">Select</th>
                   <th class="ps-2 py-3">Candidate</th>
                   <th class="py-3">ATS</th>
+                  <th class="py-3">AI Screening</th>
                   <th class="py-3">Coding</th>
                   <th class="py-3">Interview</th>
                   <th class="py-3">Overall</th>
@@ -196,6 +216,33 @@
         </div>
         <div class="modal-footer border-top bg-light p-3">
           <button type="button" class="btn btn-secondary px-4 fw-semibold" data-bs-dismiss="modal">Close</button>
+        </div>
+  <!-- Recruiter Candidate Feedback Review & Approval Modal -->
+  <div class="modal fade" id="candidateFeedbackModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow" style="border-radius: 16px;">
+        <div class="modal-header border-bottom bg-dark text-white p-3">
+          <div class="d-flex align-items-center gap-2">
+            <span class="fs-4">💬</span>
+            <div>
+              <h5 class="modal-title fw-bold mb-0" id="feedback-modal-title">Candidate Rejection Feedback</h5>
+              <span class="small text-white-50" id="feedback-modal-subtitle">AI-assisted personalized non-selection feedback</span>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4" id="feedback-modal-body">
+          <div class="text-center py-5 text-muted">
+            <div class="spinner-border text-primary mb-3"></div>
+            <div>Loading candidate feedback draft…</div>
+          </div>
+        </div>
+        <div class="modal-footer border-top bg-light p-3 d-flex justify-content-between">
+          <button type="button" class="btn btn-outline-secondary fw-semibold" id="btn-feedback-regenerate">🔄 Regenerate</button>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-secondary px-4 fw-semibold" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-success fw-bold px-4 shadow-sm" id="btn-feedback-approve-send">✅ Approve &amp; Send</button>
+          </div>
         </div>
       </div>
     </div>

@@ -27,6 +27,48 @@ from app.models.saved_search import (
     CandidateInvitation,
     CandidateShortlist,
 )
+from app.models.screening import (
+    ScreeningSession,
+    ScreeningQuestion,
+    ScreeningAnswer,
+    ScreeningResult,
+    CommunicationLog,
+    CandidateConsent,
+    ScreeningStatus,
+    ScreeningChannel,
+)
+from app.models.proctoring import (
+    AssessmentConsent,
+    AssessmentEvent,
+    CodeSimilarityResult,
+    IntegrityResult,
+    EventSeverity,
+    RiskLevel,
+)
+from app.models.interview_scorecard import (
+    InterviewScorecard,
+    InterviewScoreCategory,
+    InterviewKeyMoment,
+    InterviewChapter,
+    InterviewQuestionEvaluation,
+    CandidateRecommendation,
+    MomentImportance,
+)
+from app.models.talent_rediscovery import (
+    TalentRediscoveryRun,
+    TalentRediscoveryResult,
+    RediscoveryRunStatus,
+)
+from app.models.blind_screening import (
+    BlindScreeningConfig,
+    BlindScreeningCandidate,
+)
+from app.models.candidate_feedback import (
+    CandidateFeedback,
+    CandidateFeedbackReason,
+    FeedbackStatus,
+    FeedbackType,
+)
 
 __all__ = [
     "User",
@@ -59,6 +101,37 @@ __all__ = [
     "CandidateSearchHistory",
     "CandidateInvitation",
     "CandidateShortlist",
+    "ScreeningSession",
+    "ScreeningQuestion",
+    "ScreeningAnswer",
+    "ScreeningResult",
+    "CommunicationLog",
+    "CandidateConsent",
+    "ScreeningStatus",
+    "ScreeningChannel",
+    "AssessmentConsent",
+    "AssessmentEvent",
+    "CodeSimilarityResult",
+    "IntegrityResult",
+    "EventSeverity",
+    "RiskLevel",
+    "InterviewScorecard",
+    "InterviewScoreCategory",
+    "InterviewKeyMoment",
+    "InterviewChapter",
+    "InterviewQuestionEvaluation",
+    "CandidateRecommendation",
+    "MomentImportance",
+    "TalentRediscoveryRun",
+    "TalentRediscoveryResult",
+    "RediscoveryRunStatus",
+    "BlindScreeningConfig",
+    "BlindScreeningCandidate",
+    "CandidateFeedback",
+    "CandidateFeedbackReason",
+    "FeedbackStatus",
+    "FeedbackType",
 ]
+
 
 

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Candidate Pre-Screening Detail | AI Recruiter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+    .header-card { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; border-radius: 16px; }
+    .score-badge { font-size: 2.2rem; font-weight: 800; border-radius: 12px; padding: 12px 24px; text-align: center; }
+    .score-high { background: #dcfce7; color: #15803d; }
+    .score-mid { background: #fef9c3; color: #a16207; }
+    .score-low { background: #fee2e2; color: #b91c1c; }
+    .subscore-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px; transition: transform 0.2s; }
+    .subscore-card:hover { transform: translateY(-3px); }
+    .progress-bar-custom { height: 10px; border-radius: 5px; }
+    .qa-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 16px; padding: 20px; }
+    .extracted-box { background: #f1f5f9; border-left: 4px solid #3b82f6; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 py-3 shadow-sm">
+    <a class="navbar-brand fw-bold fs-4 text-primary" href="recruiter-dashboard.html">
+      <i class="bi bi-robot me-2"></i>AI Recruiter
+    </a>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <a href="recruiter-dashboard.html" class="btn btn-outline-light btn-sm px-3">
+        <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+      </a>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <!-- Loading State -->
+    <div id="loading-spinner" class="text-center py-5">
+      <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
+      <p class="mt-3 text-muted">Loading AI Screening Results...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="error-box" class="alert alert-danger d-none shadow-sm" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <span id="error-message">Failed to load screening details.</span>
+    </div>
+
+    <!-- Main Content Container -->
+    <div id="screening-content" class="d-none">
+      <!-- Header Banner -->
+      <div class="header-card p-4 p-md-5 mb-4 shadow-sm">
+        <div class="row align-items-center">
+          <div class="col-lg-8">
+            <span class="badge bg-primary px-3 py-2 text-uppercase mb-2" id="channel-badge">WhatsApp Screening</span>
+            <h2 class="fw-bold mb-1" id="candidate-name">Candidate Name</h2>
+            <p class="text-light text-opacity-75 mb-3 fs-5" id="job-title">Job Title</p>
+            <div class="d-flex flex-wrap gap-3 text-sm text-light text-opacity-90">
+              <div><i class="bi bi-calendar-event me-1"></i><span id="completed-date">Completed Date</span></div>
+              <div><i class="bi bi-question-circle me-1"></i><span id="question-count">0 / 0 Questions</span></div>
+              <div><i class="bi bi-activity me-1"></i>Status: <span id="status-text" class="fw-bold">Completed</span></div>
+            </div>
+          </div>
+          <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+            <div class="d-inline-block">
+              <div class="score-badge shadow-sm" id="score-badge">87%</div>
+              <div class="mt-2 fw-semibold text-center text-light" id="recommendation-badge">SHORTLIST</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-Score Breakdown Grid -->
+      <h4 class="fw-bold mb-3"><i class="bi bi-bar-chart-line me-2 text-primary"></i>Score Breakdown</h4>
+      <div class="row g-3 mb-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="subscore-card shadow-sm">
+            <div class="d-flex justify-content-between text-muted small fw-semibold mb-1">
+              <span>Technical Skills (30%)</span>
+              <span id="score-tech">90%</span>
+            </div>
+            <div class="progress">
+              <div class="progress-bar bg-success progress-bar-custom" id="bar-tech" style="width: 90%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+          <div class="subscore-card shadow-sm">
+            <div class="d-flex justify-content-between text-muted small fw-semibold mb-1">
+              <span>Experience Match (20%)</span>
+              <span id="score-exp">85%</span>
+            </div>
+            <div class="progress">
+              <div class="progress-bar bg-info progress-bar-custom" id="bar-exp" style="width: 85%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+          <div class="subscore-card shadow-sm">
+            <div class="d-flex justify-content-between text-muted small fw-semibold mb-1">
+              <span>Location / Work Mode (10%)</span>
+              <span id="score-loc">100%</span>
+            </div>
+            <div class="progress">
+              <div class="progress-bar bg-primary progress-bar-custom" id="bar-loc" style="width: 100%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+          <div class="subscore-card shadow-sm">
+            <div class="d-flex justify-content-between text-muted small fw-semibold mb-1">
+              <span>Notice Period / Availability (10%)</span>
+              <span id="score-avail">80%</span>
+            </div>
+            <div class="progress">
+              <div class="progress-bar bg-warning progress-bar-custom" id="bar-avail" style="width: 80%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+          <div class="subscore-card shadow-sm">
+            <div class="d-flex justify-content-between text-muted small fw-semibold mb-1">
+              <span>Salary Compatibility (5%)</span>
+              <span id="score-sal">85%</span>
+            </div>
+            <div class="progress">
+              <div class="progress-bar bg-secondary progress-bar-custom" id="bar-sal" style="width: 85%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+          <div class="subscore-card shadow-sm">
+            <div class="d-flex justify-content-between text-muted small fw-semibold mb-1">
+              <span>Communication Quality (5%)</span>
+              <span id="score-comm">90%</span>
+            </div>
+            <div class="progress">
+              <div class="progress-bar bg-dark progress-bar-custom" id="bar-comm" style="width: 90%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Summary Box -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-3"><i class="bi bi-cpu me-2 text-primary"></i>AI Evaluation Summary</h5>
+          <div id="ai-summary-text" class="text-secondary style-line-height">
+            Evaluation details will appear here.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q&A Transcripts Section -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold mb-0"><i class="bi bi-chat-left-text me-2 text-primary"></i>Screening Q&A Transcript</h4>
+      </div>
+
+      <div id="qa-list-container">
+        <!-- Dynamic QA Cards inserted via JS -->
+      </div>
+
+      <!-- Recruiter Manual Override Modal / Action Form -->
+      <div class="card border-0 shadow-sm mt-4 bg-white p-4">
+        <h5 class="fw-bold mb-3"><i class="bi bi-sliders me-2 text-primary"></i>Recruiter Override</h5>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Override Recommendation</label>
+            <select id="override-select" class="form-select">
+              <option value="">-- No Override (Keep AI Recommendation) --</option>
+              <option value="Strong Match">Strong Match</option>
+              <option value="Shortlist">Shortlist</option>
+              <option value="Recruiter Review">Recruiter Review</option>
+              <option value="Not Recommended">Not Recommended</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Override Reason</label>
+            <input type="text" id="override-reason" class="form-control" placeholder="e.g., Confirmed candidate has 5+ years experience offline." />
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button type="button" id="btn-save-override" class="btn btn-primary w-100 fw-semibold">Save Override</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/screening-detail.js"></script>
+</body>
+</html>

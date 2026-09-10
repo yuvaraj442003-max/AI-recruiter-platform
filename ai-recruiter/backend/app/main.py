@@ -12,7 +12,7 @@ from app.core.database import Base, engine, SessionLocal
 from app.core.exceptions import register_exception_handlers
 from app.middleware.security_headers import SecurityHeadersMiddleware
 # Import all models to ensure metadata registration
-from app.models import user, candidate, job, application, interview, audit_log, recruiter, notification, application_history, message, saved_search
+from app.models import user, candidate, job, application, interview, interview_scorecard, talent_rediscovery, blind_screening, candidate_feedback, audit_log, recruiter, notification, application_history, message, saved_search
 from app.routers import (
     admin,
     analytics,
@@ -26,6 +26,10 @@ from app.routers import (
     email_settings,
     interviews,
     interview_ws,
+    interview_scorecard as interview_scorecard_router,
+    talent_rediscovery as talent_rediscovery_router,
+    blind_screening as blind_screening_router,
+    feedback as feedback_router,
     jobs,
     matching,
     messages,
@@ -33,6 +37,8 @@ from app.routers import (
     recommendations,
     recruiter_profile,
     resumes,
+    screening,
+    proctoring,
     speech,
 )
 from app.services.resume_service import seed_skills
@@ -128,6 +134,14 @@ def _auto_migrate_db(target_engine=None):
         ("email_logs", "job_id", "VARCHAR(36)"),
         ("email_logs", "interview_id", "VARCHAR(36)"),
         ("email_logs", "failed_at", "TIMESTAMP"),
+
+        # Coding Assessments proctoring & monitoring fields
+        ("coding_assessments", "enable_tab_monitoring", "BOOLEAN DEFAULT TRUE"),
+        ("coding_assessments", "enable_fullscreen", "BOOLEAN DEFAULT TRUE"),
+        ("coding_assessments", "enable_webcam", "BOOLEAN DEFAULT TRUE"),
+        ("coding_assessments", "enable_audio", "BOOLEAN DEFAULT TRUE"),
+        ("coding_assessments", "enable_code_similarity", "BOOLEAN DEFAULT TRUE"),
+        ("coding_assessments", "clipboard_policy", "VARCHAR(20) DEFAULT 'monitor'"),
     ]
 
     with active_engine.begin() as conn:
@@ -217,6 +231,12 @@ app.include_router(coding.router, prefix="/api/v1")
 app.include_router(interview_ws.router, prefix="/api/v1")
 app.include_router(calendar.router, prefix="/api/v1")
 app.include_router(email_settings.router, prefix="/api/v1")
+app.include_router(screening.router, prefix="/api/v1")
+app.include_router(proctoring.router, prefix="/api/v1")
+app.include_router(interview_scorecard_router.router, prefix="/api/v1")
+app.include_router(talent_rediscovery_router.router, prefix="/api/v1")
+app.include_router(blind_screening_router.router, prefix="/api/v1")
+app.include_router(feedback_router.router)
 
 
 

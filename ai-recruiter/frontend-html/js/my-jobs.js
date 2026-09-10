@@ -44,14 +44,15 @@
 
     const rows = jobs
       .map((job) => {
+        const jobId = job.id || job.job_id;
         const isPaused = job.status === "paused";
         const isPublished = job.status === "published";
 
         let statusToggleBtn = "";
         if (isPublished) {
-          statusToggleBtn = `<button class="btn btn-sm btn-outline-warning pause-job-btn me-1 fw-medium" data-job-id="${job.id}">⏸️ Pause</button>`;
+          statusToggleBtn = `<button class="btn btn-sm btn-outline-warning pause-job-btn me-1 fw-medium" data-job-id="${jobId}">⏸️ Pause</button>`;
         } else if (isPaused) {
-          statusToggleBtn = `<button class="btn btn-sm btn-outline-success resume-job-btn me-1 fw-medium" data-job-id="${job.id}">▶️ Resume</button>`;
+          statusToggleBtn = `<button class="btn btn-sm btn-outline-success resume-job-btn me-1 fw-medium" data-job-id="${jobId}">▶️ Resume</button>`;
         }
 
         const appCount = job.applications_count != null ? job.applications_count : (job.applicant_count || 0);
@@ -60,7 +61,7 @@
           <tr>
             <td class="ps-4">
               <div class="fw-bold text-dark fs-6">${job.title}</div>
-              <div class="text-muted small">Job ID: #${job.id}</div>
+              <div class="text-muted small">Job ID: #${jobId}</div>
             </td>
             <td>
               <span class="text-secondary fw-medium">${job.location ? '📍 ' + job.location : '—'}</span>
@@ -73,11 +74,14 @@
               </span>
             </td>
             <td class="text-end pe-4">
-              <a href="job-applicants.html?job_id=${job.id}" class="btn btn-sm btn-primary fw-semibold me-1 px-3 shadow-sm">
+              <a href="job-applicants.html?job_id=${jobId}" class="btn btn-sm btn-primary fw-semibold me-1 px-3 shadow-sm">
                 👥 View Applicants
               </a>
+              <a href="blind-screening.html?job_id=${jobId}" class="btn btn-sm btn-outline-dark fw-semibold me-1 px-2 shadow-sm">
+                🙈 Blind Screening
+              </a>
               ${statusToggleBtn}
-              <button class="btn btn-sm btn-outline-danger delete-job-btn fw-medium" data-job-id="${job.id}" data-job-title="${job.title}">🗑️ Delete</button>
+              <button class="btn btn-sm btn-outline-danger delete-job-btn fw-medium" data-job-id="${jobId}" data-job-title="${job.title}">🗑️ Delete</button>
             </td>
           </tr>
         `;
@@ -107,9 +111,14 @@
     // Attach event handlers
     wrapper.querySelectorAll(".pause-job-btn").forEach((btn) => {
       btn.addEventListener("click", async () => {
+        const jobId = btn.dataset.jobId;
+        if (!jobId || jobId === "undefined") {
+          alert("Invalid job ID.");
+          return;
+        }
         btn.disabled = true;
         try {
-          await jobsAPI.update(btn.dataset.jobId, { status: "paused" });
+          await jobsAPI.update(jobId, { status: "paused" });
           loadJobs(currentUserId);
         } catch (e) {
           alert(e.message);
@@ -120,9 +129,14 @@
 
     wrapper.querySelectorAll(".resume-job-btn").forEach((btn) => {
       btn.addEventListener("click", async () => {
+        const jobId = btn.dataset.jobId;
+        if (!jobId || jobId === "undefined") {
+          alert("Invalid job ID.");
+          return;
+        }
         btn.disabled = true;
         try {
-          await jobsAPI.update(btn.dataset.jobId, { status: "published" });
+          await jobsAPI.update(jobId, { status: "published" });
           loadJobs(currentUserId);
         } catch (e) {
           alert(e.message);
@@ -133,14 +147,19 @@
 
     wrapper.querySelectorAll(".delete-job-btn").forEach((btn) => {
       btn.addEventListener("click", async () => {
+        const jobId = btn.dataset.jobId;
+        if (!jobId || jobId === "undefined") {
+          alert("Invalid job ID.");
+          return;
+        }
         const title = btn.dataset.jobTitle || "this job";
         if (confirm(`Are you sure you want to permanently delete "${title}"? This action cannot be undone.`)) {
           btn.disabled = true;
           try {
             if (jobsAPI.remove) {
-              await jobsAPI.remove(btn.dataset.jobId);
+              await jobsAPI.remove(jobId);
             } else {
-              await jobsAPI.update(btn.dataset.jobId, { status: "closed" });
+              await jobsAPI.update(jobId, { status: "closed" });
             }
             loadJobs(currentUserId);
           } catch (e) {

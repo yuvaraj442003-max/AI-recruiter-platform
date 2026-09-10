@@ -147,6 +147,17 @@ async function request(path, { method = "GET", body, auth = true } = {}) {
   return payload;
 }
 
+function buildQueryString(params = {}) {
+  const cleanParams = {};
+  for (const [key, value] of Object.entries(params || {})) {
+    if (value !== undefined && value !== null && value !== "") {
+      cleanParams[key] = value;
+    }
+  }
+  const query = new URLSearchParams(cleanParams).toString();
+  return query ? `?${query}` : "";
+}
+
 const api = {
   get: (path, opts) => request(path, { ...opts, method: "GET" }),
   post: (path, body, opts) => request(path, { ...opts, method: "POST", body }),
@@ -199,12 +210,6 @@ const resumeImprovementAPI = {
       section: section,
     }),
 };
-
-const candidateSearchAPI = {
-  smartSearch: (payload) => api.post("/candidates/smart-search", payload),
-  parseQuery: (query) => api.post("/candidates/parse-query", { query: query }),
-};
-
 
 
 
@@ -305,19 +310,25 @@ const resumesAPI = resumeAPI;
 
 const jobsAPI = {
   create: (payload) => api.post("/jobs", payload),
-  list: (params = {}) => {
-    const query = new URLSearchParams(params).toString();
-    return api.get(`/jobs${query ? `?${query}` : ""}`);
+  list: (params = {}) => api.get(`/jobs${buildQueryString(params)}`),
+  get: (jobId) => {
+    if (!jobId || jobId === "undefined") return Promise.reject(new ApiError("Invalid Job ID", "INVALID_PARAM", 400));
+    return api.get(`/jobs/${jobId}`);
   },
-  get: (jobId) => api.get(`/jobs/${jobId}`),
-  update: (jobId, payload) => api.put(`/jobs/${jobId}`, payload),
-  remove: (jobId) => api.delete(`/jobs/${jobId}`),
-  apply: (jobId) => api.post(`/jobs/${jobId}/apply`, {}),
+  update: (jobId, payload) => {
+    if (!jobId || jobId === "undefined") return Promise.reject(new ApiError("Invalid Job ID", "INVALID_PARAM", 400));
+    return api.put(`/jobs/${jobId}`, payload);
+  },
+  remove: (jobId) => {
+    if (!jobId || jobId === "undefined") return Promise.reject(new ApiError("Invalid Job ID", "INVALID_PARAM", 400));
+    return api.delete(`/jobs/${jobId}`);
+  },
+  apply: (jobId) => {
+    if (!jobId || jobId === "undefined") return Promise.reject(new ApiError("Invalid Job ID", "INVALID_PARAM", 400));
+    return api.post(`/jobs/${jobId}/apply`, {});
+  },
   ranking: (jobId) => api.get(`/jobs/${jobId}/ranking`),
-  applications: (jobId, params = {}) => {
-    const query = new URLSearchParams(params).toString();
-    return api.get(`/jobs/${jobId}/applications${query ? `?${query}` : ""}`);
-  },
+  applications: (jobId, params = {}) => api.get(`/jobs/${jobId}/applications${buildQueryString(params)}`),
   eligibleApplications: (jobId) => api.get(`/jobs/${jobId}/applications/eligible`),
   screeningStats: (jobId) => api.get(`/jobs/${jobId}/screening-statistics`),
   updateScreeningSettings: (jobId, payload) => api.patch(`/jobs/${jobId}/screening-settings`, payload),
@@ -637,7 +648,80 @@ const candidateSearchAPI = {
   bulkInvite: (payload) => api.post("/candidates/bulk-invite", payload),
 };
 
+const screeningAPI = {
+  start: (applicationId) => api.post(`/screening/applications/${applicationId}/start`),
+  getByApplication: (applicationId) => api.get(`/screening/applications/${applicationId}`),
+  getSession: (screeningId) => api.get(`/screening/${screeningId}`),
+  submitAnswer: (screeningId, answer) => api.post(`/screening/${screeningId}/answer`, { answer }),
+  cancel: (screeningId) => api.post(`/screening/${screeningId}/cancel`),
+  resume: (screeningId) => api.post(`/screening/${screeningId}/resume`),
+  getResult: (screeningId) => api.get(`/screening/${screeningId}/result`),
+  override: (screeningId, formData) => api.post(`/screening/${screeningId}/override`, formData),
+  getConsent: () => api.get("/screening/consent/me"),
+  updateConsent: (payload) => api.post("/screening/consent", payload),
+};
+
+const proctoringAPI = {
+  submitConsent: (attemptId, payload) => api.post(`/proctoring/attempts/${attemptId}/consent`, payload),
+  recordEvent: (attemptId, payload) => api.post(`/proctoring/attempts/${attemptId}/events`, payload),
+  getEvents: (attemptId) => api.get(`/proctoring/attempts/${attemptId}/events`),
+  getIntegrity: (attemptId) => api.get(`/proctoring/attempts/${attemptId}/integrity`),
+  analyzeSimilarity: (attemptId, submissionId) => api.post(`/proctoring/attempts/${attemptId}/code-similarity?submission_id=${submissionId}`),
+  saveDecision: (attemptId, payload) => api.post(`/proctoring/attempts/${attemptId}/recruiter-decision`, payload),
+};
+
+const interviewScorecardAPI = {
+  getScorecard: (interviewId) => api.get(`/interviews/${interviewId}/scorecard`),
+  regenerateScorecard: (interviewId) => api.post(`/interviews/${interviewId}/scorecard/regenerate`, {}),
+  saveDecision: (scorecardId, payload) => api.post(`/scorecards/${scorecardId}/recruiter-decision`, payload),
+};
+
+const talentRediscoveryAPI = {
+  triggerRediscovery: (jobId) => api.post(`/jobs/${jobId}/rediscover`, {}),
+  getStatus: (jobId) => api.get(`/jobs/${jobId}/rediscovery/status`),
+  getSummary: (jobId) => api.get(`/jobs/${jobId}/rediscovery`),
+  getCandidates: (jobId, params = {}) => api.get(`/jobs/${jobId}/rediscovery/candidates${buildQueryString(params)}`),
+  getCandidateDetail: (jobId, candidateId) => api.get(`/jobs/${jobId}/rediscovery/${candidateId}`),
+  shortlistCandidate: (jobId, candidateId) => api.post(`/jobs/${jobId}/rediscovery/${candidateId}/shortlist`, {}),
+  contactCandidate: (jobId, candidateId) => api.post(`/jobs/${jobId}/rediscovery/${candidateId}/contact`, {}),
+  smartSearch: (query, minScore = 50, silverOnly = false) =>
+    api.post("/talent-rediscovery/smart-search", { query, min_score: minScore, silver_medalist_only: silverOnly }),
+  getAnalytics: () => api.get("/talent-rediscovery/analytics"),
+};
+
+const blindScreeningAPI = {
+  getConfig: (jobId) => api.get(`/jobs/${jobId}/blind-screening/config`),
+  updateConfig: (jobId, payload) => api.put(`/jobs/${jobId}/blind-screening/config`, payload),
+  getCandidates: (jobId, params = {}) => api.get(`/jobs/${jobId}/blind-screening/candidates${buildQueryString(params)}`),
+  getCandidateDetail: (jobId, candidateCode) => api.get(`/jobs/${jobId}/blind-screening/candidates/${candidateCode}`),
+  saveDecision: (jobId, candidateCode, decision) => api.post(`/jobs/${jobId}/blind-screening/candidates/${candidateCode}/decision`, { decision }),
+  revealCandidate: (jobId, candidateCode) => api.post(`/jobs/${jobId}/blind-screening/candidates/${candidateCode}/reveal`, {}),
+  getStatistics: (jobId) => api.get(`/jobs/${jobId}/blind-screening/statistics`),
+};
+
+const feedbackAPI = {
+  generate: (appId, level = "personalized", direction = null) => {
+    const query = new URLSearchParams();
+    if (level) query.set("feedback_level", level);
+    if (direction) query.set("custom_direction", direction);
+    return api.post(`/applications/${appId}/feedback/generate?${query.toString()}`, {});
+  },
+  get: (appId) => api.get(`/applications/${appId}/feedback`),
+  update: (appId, payload) => api.put(`/applications/${appId}/feedback`, payload),
+  approve: (appId, finalContent = null) => api.post(`/applications/${appId}/feedback/approve`, { final_content_override: finalContent }),
+  send: (appId, finalContent = null) => api.post(`/applications/${appId}/feedback/send`, { final_content_override: finalContent }),
+  regenerate: (appId, customDirection = "more encouraging") =>
+    api.post(`/applications/${appId}/feedback/regenerate?custom_direction=${encodeURIComponent(customDirection)}`, {}),
+  bulkGenerate: (appIds, autoApprove = false) => api.post(`/recruiter/feedback/bulk-generate`, { application_ids: appIds, auto_approve: autoApprove }),
+};
+
 window.candidateSearchAPI = candidateSearchAPI;
+window.screeningAPI = screeningAPI;
+window.proctoringAPI = proctoringAPI;
+window.interviewScorecardAPI = interviewScorecardAPI;
+window.talentRediscoveryAPI = talentRediscoveryAPI;
+window.blindScreeningAPI = blindScreeningAPI;
+window.feedbackAPI = feedbackAPI;
 
 
 

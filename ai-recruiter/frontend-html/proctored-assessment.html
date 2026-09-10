@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proctored Assessment | AI Recruiter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+    .card-dark { background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; }
+    .status-bar { background-color: #1e293b; border-bottom: 1px solid #334155; }
+    .code-editor { font-family: 'Courier New', Courier, monospace; background-color: #090d16; color: #38bdf8; border: 1px solid #334155; border-radius: 8px; font-size: 14px; }
+    .video-preview { width: 140px; height: 105px; border-radius: 8px; border: 2px solid #3b82f6; object-fit: cover; background: #000; }
+    .timer-badge { font-size: 1.2rem; font-weight: 700; font-family: monospace; background: #0284c7; color: white; border-radius: 8px; padding: 6px 14px; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Status & Monitoring Bar -->
+  <header class="status-bar py-3 px-4 shadow-sm">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <h5 class="fw-bold mb-0 text-white" id="assessment-title"><i class="bi bi-shield-check me-2 text-primary"></i>Online Proctored Coding Assessment</h5>
+        <span class="badge bg-primary-subtle text-primary border border-primary px-3 py-1 rounded-pill">AI-Assisted Integrity Monitoring</span>
+      </div>
+
+      <div class="d-flex align-items-center gap-3">
+        <!-- Live Camera & Mic Status Badges -->
+        <div class="d-none d-md-flex align-items-center gap-2 small text-light">
+          <span id="badge-cam" class="badge bg-secondary"><i class="bi bi-camera-video-off me-1"></i>Camera</span>
+          <span id="badge-mic" class="badge bg-secondary"><i class="bi bi-mic-mute me-1"></i>Mic</span>
+          <span id="badge-fs" class="badge bg-secondary"><i class="bi bi-fullscreen me-1"></i>Fullscreen</span>
+        </div>
+        <div class="timer-badge" id="timer-display">60:00</div>
+        <button id="btn-finish-test" class="btn btn-success fw-bold px-4">Submit Test</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container-fluid p-4">
+
+    <!-- 1. Candidate Consent & System Check Screen (Overlay Modal View) -->
+    <div id="consent-screen" class="row justify-content-center py-4">
+      <div class="col-lg-8">
+        <div class="card-dark p-4 p-md-5 shadow-lg">
+          <div class="text-center mb-4">
+            <div class="display-5 text-primary mb-2"><i class="bi bi-shield-lock"></i></div>
+            <h3 class="fw-bold text-white">AI-Assisted Integrity Monitoring Notice</h3>
+            <p class="text-secondary">Please review assessment parameters and complete system checks before proceeding.</p>
+          </div>
+
+          <div class="alert alert-info border-0 text-dark bg-info-subtle mb-4">
+            <h6 class="fw-bold mb-1"><i class="bi bi-info-circle me-2"></i>Understanding Proctoring Parameters</h6>
+            <p class="mb-0 small">
+              This assessment uses <strong>AI-Assisted Integrity Monitoring</strong> to record potential suspicious activity (tab switches, webcam presence, audio signals, and AST code similarity). It does <strong>not</strong> guarantee detection of cheating and does <strong>not</strong> automatically fail candidates. Evidence is logged for recruiter review.
+            </p>
+          </div>
+
+          <!-- Pre-Assessment System Checklist -->
+          <h6 class="fw-bold text-white mb-3"><i class="bi bi-sliders me-2 text-primary"></i>Pre-Assessment System Check</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+              <div class="p-3 rounded bg-slate-800 border border-secondary text-light d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-camera-video me-2"></i>Webcam Access</span>
+                <span id="check-cam" class="badge bg-warning text-dark">Checking...</span>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded bg-slate-800 border border-secondary text-light d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-mic me-2"></i>Microphone Access</span>
+                <span id="check-mic" class="badge bg-warning text-dark">Checking...</span>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded bg-slate-800 border border-secondary text-light d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-fullscreen me-2"></i>Fullscreen Mode</span>
+                <span id="check-fs" class="badge bg-warning text-dark">Checking...</span>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded bg-slate-800 border border-secondary text-light d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-wifi me-2"></i>Network Stability</span>
+                <span id="check-net" class="badge bg-success">Stable</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center border-top border-secondary pt-4">
+            <a href="candidate-dashboard.html" class="btn btn-outline-secondary">Exit Assessment</a>
+            <button id="btn-start-consent" class="btn btn-primary btn-lg fw-bold px-4">I Understand &amp; Start Test &rarr;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Active Proctored Assessment Editor Screen -->
+    <div id="assessment-editor-screen" class="row g-4 d-none">
+      <!-- Left Column: Question Details & Test Cases -->
+      <div class="col-lg-5">
+        <div class="card-dark p-4 h-100 d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-white mb-0" id="question-title">Problem 1: Two Sum</h5>
+            <span class="badge bg-info text-dark" id="question-difficulty">Medium</span>
+          </div>
+          <div class="text-secondary small mb-4" id="question-description" style="white-space: pre-wrap;">
+            Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
+          </div>
+
+          <h6 class="fw-bold text-white mb-2"><i class="bi bi-check2-square me-2 text-success"></i>Test Cases</h6>
+          <div id="test-cases-container" class="bg-dark p-3 rounded border border-secondary flex-grow-1 font-monospace text-light small mb-3">
+            Loading test cases...
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Code Editor & Execution Output -->
+      <div class="col-lg-7">
+        <div class="card-dark p-4 h-100 d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <label class="form-label text-white small fw-bold mb-0">Language:</label>
+              <select id="lang-select" class="form-select form-select-sm bg-dark text-white border-secondary w-auto">
+                <option value="python">Python 3</option>
+                <option value="javascript">JavaScript (Node.js)</option>
+                <option value="java">Java</option>
+                <option value="cpp">C++</option>
+                <option value="go">Go</option>
+              </select>
+            </div>
+
+            <!-- Webcam Floating Video Feed -->
+            <video id="webcam-feed" class="video-preview" autoplay playsinline muted></video>
+          </div>
+
+          <!-- Code Editor Textarea -->
+          <textarea id="code-editor" class="code-editor p-3 w-100 flex-grow-1" rows="16" spellcheck="false" placeholder="Write your solution here..."></textarea>
+
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <button id="btn-run-code" class="btn btn-outline-info fw-semibold"><i class="bi bi-play-fill me-1"></i>Run Code</button>
+            <button id="btn-save-submission" class="btn btn-primary fw-bold px-4">Submit Answer</button>
+          </div>
+
+          <!-- Console Output Box -->
+          <div id="console-output" class="bg-dark p-3 rounded border border-secondary font-monospace text-success small mt-3 d-none">
+            Output will appear here.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Warning Toast Overlay for Integrity Alerts -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="integrity-toast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body fw-semibold" id="toast-message">
+          ⚠️ Fullscreen mode exited! Please return to fullscreen.
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/proctored-assessment.js"></script>
+</body>
+</html>

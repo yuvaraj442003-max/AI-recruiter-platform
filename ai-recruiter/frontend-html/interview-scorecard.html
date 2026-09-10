@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Executive Candidate Scorecard — AI Recruiter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <!-- Chart.js for Radar Chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .score-badge {
+      font-size: 2.2rem;
+      font-weight: 800;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    }
+    .score-badge.score-high { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+    .score-badge.score-mid { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+    .score-badge.score-low { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+
+    .key-moment-card {
+      border-left: 4px solid #3b82f6;
+      transition: all 0.2s ease-in-out;
+      cursor: pointer;
+    }
+    .key-moment-card:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    .key-moment-card.importance-high { border-left-color: #ef4444; }
+    .key-moment-card.importance-medium { border-left-color: #f59e0b; }
+    .key-moment-card.importance-low { border-left-color: #10b981; }
+
+    .chapter-pill {
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .chapter-pill:hover {
+      background-color: rgba(59, 130, 246, 0.15) !important;
+    }
+
+    .transcript-turn {
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      background-color: var(--bs-tertiary-bg);
+      font-size: 0.95rem;
+    }
+    .transcript-turn.speaker-candidate {
+      border-left: 3px solid #3b82f6;
+    }
+    .transcript-turn.speaker-interviewer {
+      border-left: 3px solid #6b7280;
+    }
+    .timestamp-link {
+      color: #2563eb;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      font-family: monospace;
+      padding: 2px 6px;
+      background: rgba(37, 99, 235, 0.1);
+      border-radius: 4px;
+    }
+    .timestamp-link:hover {
+      background: rgba(37, 99, 235, 0.25);
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body class="bg-body-tertiary" data-required-role="recruiter">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand navbar-light bg-body border-bottom shadow-sm">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2" href="recruiter-portal.html">
+        <span>🤖</span> AI Recruiter <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill fs-7">Executive Intelligence</span>
+      </a>
+      <div class="d-flex align-items-center gap-2 ms-auto">
+        <button id="theme-toggle-btn" class="btn btn-sm btn-outline-secondary">🌙</button>
+        <button id="btn-regenerate" class="btn btn-sm btn-outline-primary fw-semibold d-flex align-items-center gap-1">
+          <span>🔄</span> Re-analyze Interview
+        </button>
+        <a id="back-to-applicants" href="job-applicants.html" class="btn btn-sm btn-secondary fw-semibold">Back to Applicants</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid px-4 py-4">
+    <!-- Header Banner -->
+    <div id="scorecard-alert" class="alert d-none py-2" role="alert"></div>
+
+    <div id="loading-spinner" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-3 text-muted">Analyzing interview session & constructing AI Executive Scorecard…</p>
+    </div>
+
+    <div id="scorecard-content" class="d-none">
+      
+      <!-- Top Overview Bar -->
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-4">
+          <div class="row align-items-center">
+            <div class="col-md-7 d-flex align-items-center gap-4">
+              <div id="overall-badge" class="score-badge score-high">
+                <span id="badge-score">88</span>
+              </div>
+              <div>
+                <h3 id="candidate-name" class="fw-bold mb-1">Candidate Name</h3>
+                <p id="job-title" class="text-muted mb-2 fs-6">Job Title</p>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                  <span id="recommendation-badge" class="badge bg-success fs-6 px-3 py-2">Strong Candidate</span>
+                  <span id="confidence-badge" class="badge bg-light text-dark border px-2 py-1 fs-7">Confidence: High</span>
+                  <span id="ai-assisted-tag" class="badge bg-info-subtle text-info border border-info-subtle px-2 py-1 fs-7">
+                    🛡️ AI-Assisted Intelligence
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Recruiter Decision Card -->
+            <div class="col-md-5 mt-3 mt-md-0 border-start ps-md-4">
+              <div class="bg-body-tertiary p-3 rounded-3 border">
+                <label class="form-label fw-bold small text-uppercase text-muted mb-2">Recruiter Audit Decision</label>
+                <div class="d-flex gap-2 mb-2 flex-wrap">
+                  <button class="btn btn-sm btn-outline-success btn-decision" data-decision="Strong Candidate">Strong Candidate</button>
+                  <button class="btn btn-sm btn-outline-primary btn-decision" data-decision="Shortlist">Shortlist</button>
+                  <button class="btn btn-sm btn-outline-warning btn-decision" data-decision="Hold">Hold</button>
+                  <button class="btn btn-sm btn-outline-danger btn-decision" data-decision="Reject">Reject</button>
+                </div>
+                <div class="input-group input-group-sm">
+                  <input type="text" id="recruiter-notes-input" class="form-aria form-control" placeholder="Add recruiter evaluation notes…" />
+                  <button id="btn-save-decision" class="btn btn-primary fw-semibold">Save Audit</button>
+                </div>
+                <div id="decision-status" class="small text-muted mt-1"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Grid: Radar Chart + Executive Summary + Media Player -->
+      <div class="row g-4 mb-4">
+        
+        <!-- Radar Chart & Categories -->
+        <div class="col-lg-5">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-body border-0 fw-bold d-flex justify-content-between align-items-center pt-3 px-4">
+              <span>🎯 Competency Dimension Radar</span>
+              <span class="small text-muted fw-normal">Weighted Matrix</span>
+            </div>
+            <div class="card-body p-4 text-center">
+              <div style="max-height: 280px; position: relative;">
+                <canvas id="competencyRadarChart"></canvas>
+              </div>
+              <hr />
+              <div id="categories-list" class="text-start small">
+                <!-- Competency Category list with weights -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Executive Summary & Strengths/Weaknesses -->
+        <div class="col-lg-7">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-body border-0 fw-bold pt-3 px-4">
+              <span>📋 Executive Intelligence Summary</span>
+            </div>
+            <div class="card-body p-4">
+              <p id="executive-summary-text" class="lead fs-6 mb-4 text-secondary">
+                Executive summary analysis will appear here.
+              </p>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="p-3 bg-success-subtle rounded-3 border border-success-subtle h-100">
+                    <h6 class="fw-bold text-success d-flex align-items-center gap-1 mb-2">
+                      <span>✅</span> Key Candidate Strengths
+                    </h6>
+                    <ul id="strengths-list" class="small text-dark mb-0 ps-3">
+                      <!-- Strengths -->
+                    </ul>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 bg-warning-subtle rounded-3 border border-warning-subtle h-100">
+                    <h6 class="fw-bold text-warning-emphasis d-flex align-items-center gap-1 mb-2">
+                      <span>⚠️</span> Areas to Review
+                    </h6>
+                    <ul id="weaknesses-list" class="small text-dark mb-0 ps-3">
+                      <!-- Weaknesses -->
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Media Player & Chapters Section -->
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-body border-0 fw-bold d-flex align-items-center justify-content-between pt-3 px-4">
+          <span class="d-flex align-items-center gap-2">🎥 Interview Recording & Interactive Chapters</span>
+          <span class="badge bg-secondary-subtle text-secondary small">Click any timestamp to seek playback</span>
+        </div>
+        <div class="card-body p-4">
+          <div class="row g-4">
+            <div class="col-lg-7">
+              <!-- Video / Audio Player -->
+              <div class="bg-black rounded-3 overflow-hidden d-flex align-items-center justify-content-center" style="min-height: 280px; position: relative;">
+                <video id="interview-media-player" controls class="w-100" style="max-height: 360px;" poster="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800">
+                  <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
+                  Your browser does not support HTML5 video playback.
+                </video>
+              </div>
+            </div>
+
+            <!-- Chapters list -->
+            <div class="col-lg-5">
+              <h6 class="fw-bold mb-3">Interview Timeline & Chapters</h6>
+              <div id="chapters-container" class="list-group list-group-flush border rounded-3 overflow-auto" style="max-height: 300px;">
+                <!-- Chapters -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Highlight Moments (Click-to-Jump) -->
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-body border-0 fw-bold pt-3 px-4 d-flex justify-content-between align-items-center">
+          <span>⚡ Timestamped Key Moments</span>
+          <span class="small text-muted">Evidence-based Click-to-Jump Highlights</span>
+        </div>
+        <div class="card-body p-4">
+          <div id="key-moments-grid" class="row g-3">
+            <!-- Key moments cards -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Question Evaluations & Interactive Transcript -->
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-body border-0 fw-bold pt-3 px-4">
+          <span>💬 Question-by-Question Evaluation & Searchable Transcript</span>
+        </div>
+        <div class="card-body p-4">
+          <div class="mb-3">
+            <input type="text" id="transcript-search-input" class="form-control" placeholder="Search transcript or question responses by keyword…" />
+          </div>
+
+          <div id="question-evaluations-container">
+            <!-- Questions and candidate answers -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/interview-scorecard.js"></script>
+</body>
+</html>

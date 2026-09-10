@@ -66,6 +66,14 @@ class CodingAssessment(Base, TimestampMixin):
     max_attempts: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
     allowed_languages: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string e.g. ["python","javascript","java"]
 
+    # AI-Assisted Integrity Monitoring Configuration
+    enable_tab_monitoring: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    enable_fullscreen: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    enable_webcam: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    enable_audio: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    enable_code_similarity: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    clipboard_policy: Mapped[str] = mapped_column(String(20), default="monitor", nullable=False)  # monitor, block, flag
+
     job: Mapped[Optional["Job"]] = relationship("Job", back_populates="coding_assessments")
     questions: Mapped[List["CodingAssessmentQuestion"]] = relationship(
         "CodingAssessmentQuestion", back_populates="assessment", cascade="all, delete-orphan", order_by="CodingAssessmentQuestion.question_order"
@@ -114,6 +122,12 @@ class CandidateCodingAttempt(Base, TimestampMixin):
     assessment: Mapped["CodingAssessment"] = relationship("CodingAssessment", back_populates="attempts")
     submissions: Mapped[List["CodingSubmission"]] = relationship(
         "CodingSubmission", back_populates="attempt", cascade="all, delete-orphan"
+    )
+    integrity_result: Mapped[Optional["IntegrityResult"]] = relationship(
+        "IntegrityResult", back_populates="attempt", uselist=False, cascade="all, delete-orphan"
+    )
+    events: Mapped[List["AssessmentEvent"]] = relationship(
+        "AssessmentEvent", back_populates="attempt", cascade="all, delete-orphan"
     )
 
 

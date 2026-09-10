@@ -253,7 +253,7 @@ def generate_ai_code_review(
     "suggestions" (list of strings)
     """
 
-    llm_resp = generate_llm(user_prompt, system_prompt=system_prompt)
+    llm_resp = generate_llm(system_prompt=system_prompt, user_prompt=user_prompt)
     if llm_resp:
         try:
             # Extract JSON block

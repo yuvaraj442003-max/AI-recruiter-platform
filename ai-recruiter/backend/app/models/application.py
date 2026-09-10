@@ -81,6 +81,9 @@ class Application(Base):
 
     candidate: Mapped["CandidateProfile"] = relationship()
     job: Mapped["Job"] = relationship(back_populates="applications")
+    screening_session: Mapped[Optional["ScreeningSession"]] = relationship(
+        "ScreeningSession", uselist=False, cascade="all, delete-orphan"
+    )
 
     def __repr__(self) -> str:
         return f"<Application candidate={self.candidate_id} job={self.job_id} score={self.match_score}>"

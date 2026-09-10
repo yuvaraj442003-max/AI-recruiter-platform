@@ -5,7 +5,7 @@
  * the page to a specific role via `data-required-role` on <body>.
  */
 (async function guard() {
-  if (!Session.isLoggedIn()) {
+  if (typeof Session === "undefined" || !Session.isLoggedIn()) {
     window.location.href = "login.html";
     return;
   }
@@ -30,7 +30,9 @@
     document.dispatchEvent(new CustomEvent("ar:auth-ready", { detail: { user } }));
 
   } catch (err) {
-    Session.clear();
+    if (typeof Session !== "undefined" && Session.clear) {
+      Session.clear();
+    }
     window.location.href = "login.html";
   }
 })();
