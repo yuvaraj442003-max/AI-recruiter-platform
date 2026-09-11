@@ -42,6 +42,10 @@ class User(Base, TimestampMixin):
     reset_token: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     reset_token_expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
+    @property
+    def full_name(self) -> str:
+        return self.name or ""
+
     def __repr__(self) -> str:
         return f"<User {self.email} ({self.role}) status={self.verification_status}>"
 

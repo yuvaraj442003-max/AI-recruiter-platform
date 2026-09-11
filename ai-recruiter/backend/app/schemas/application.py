@@ -58,6 +58,13 @@ class ApplicationResponse(BaseModel):
     keyword_match_score: Optional[float] = None
     responsibility_match_score: Optional[float] = None
 
+    # Assessment & Interview Composite Scores
+    coding_score: Optional[float] = None
+    interview_score: Optional[float] = None
+    overall_score: Optional[float] = None
+    coding_attempt_id: Optional[str] = None
+    interview_id: Optional[str] = None
+
     matched_skills: Optional[list[str]] = []
     missing_skills: Optional[list[str]] = []
     matched_keywords: Optional[list[str]] = []

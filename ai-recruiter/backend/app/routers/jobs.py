@@ -363,10 +363,45 @@ def generate_candidate_interview_questions_endpoint(
         data=QuestionGenerationResponse(**result),
     )
 
-
+from sqlalchemy import select as sa_select
 from app.routers.applications import _to_response
 from app.services.job_service import re_screen_application
 from pydantic import BaseModel, Field
+from app.models.coding import CandidateCodingAttempt, CodingAssessment
+
+
+def _get_coding_attempt_id(db: Session, candidate_id, job_id) -> str | None:
+    """Return the most recent coding attempt ID for this candidate+job."""
+    try:
+        assessment = db.scalar(
+            sa_select(CodingAssessment).where(CodingAssessment.job_id == job_id)
+        )
+        if not assessment:
+            return None
+        attempt = db.scalar(
+            sa_select(CandidateCodingAttempt).where(
+                CandidateCodingAttempt.candidate_id == candidate_id,
+                CandidateCodingAttempt.assessment_id == assessment.id,
+            )
+        )
+        return str(attempt.id) if attempt else None
+    except Exception:
+        return None
+
+
+def _get_interview_id(db, candidate_id, job_id) -> str | None:
+    """Return the most recent interview ID for this candidate+job."""
+    try:
+        from app.models.interview import Interview
+        interview = db.execute(
+            sa_select(Interview).where(
+                Interview.candidate_id == candidate_id,
+                Interview.job_id == job_id,
+            ).order_by(Interview.created_at.desc())
+        ).scalars().first()
+        return str(interview.id) if interview else None
+    except Exception:
+        return None
 
 
 class ScreeningSettingsUpdate(BaseModel):
@@ -498,7 +533,9 @@ def get_eligible_job_applications(
         if not app.ats_score:
             app = re_screen_application(db, app)
         if (app.ats_score or app.match_score or 0.0) >= min_ats:
-            results.append(_to_response(app, job_title=job.title))
+            coding_attempt_id = _get_coding_attempt_id(db, app.candidate_id, job.id)
+            interview_id = _get_interview_id(db, app.candidate_id, job.id)
+            results.append(_to_response(app, job_title=job.title, coding_attempt_id=coding_attempt_id, interview_id=interview_id))
 
     results.sort(key=lambda a: a.ats_score or 0.0, reverse=True)
     return APIResponse(success=True, message="Eligible applications", data=results)
@@ -545,7 +582,9 @@ def get_job_applications(
             if app_st != status_filter.lower():
                 continue
 
-        results.append(_to_response(app, job_title=job.title))
+        coding_attempt_id = _get_coding_attempt_id(db, app.candidate_id, job.id)
+        interview_id = _get_interview_id(db, app.candidate_id, job.id)
+        results.append(_to_response(app, job_title=job.title, coding_attempt_id=coding_attempt_id, interview_id=interview_id))
 
     results.sort(key=lambda a: a.ats_score or 0.0, reverse=True)
     return APIResponse(success=True, message="Applications", data=results)

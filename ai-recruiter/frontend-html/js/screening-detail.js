@@ -57,6 +57,9 @@ function renderScreeningDetails(session) {
   const recBadge = document.getElementById("recommendation-badge");
 
   channelBadge.textContent = (session.channel || "WhatsApp").toUpperCase() + " SCREENING";
+  if (candidateName) candidateName.textContent = session.candidate_name || session.candidate_email || "Candidate Profile";
+  if (jobTitle) jobTitle.textContent = session.job_title || "Target Position";
+
   statusText.textContent = (session.status || "Pending").toUpperCase();
   questionCount.textContent = `${session.current_question_index || 0} / ${session.total_questions || 0} Questions Answered`;
 
@@ -66,15 +69,27 @@ function renderScreeningDetails(session) {
   const score = session.screening_score != null ? Math.round(session.screening_score) : 0;
   scoreBadge.textContent = `${score}%`;
 
-  if (score >= 85) {
+  const statusLower = (session.status || "").toLowerCase();
+  const isFailed = statusLower === "failed" || (session.recommendation || "").toLowerCase().includes("fail") || (session.recommendation || "").toLowerCase().includes("reject");
+
+  if (score >= 85 && !isFailed) {
     scoreBadge.className = "score-badge score-high shadow-sm";
-  } else if (score >= 70) {
+  } else if (score >= 70 && !isFailed) {
     scoreBadge.className = "score-badge score-mid shadow-sm";
   } else {
     scoreBadge.className = "score-badge score-low shadow-sm";
   }
 
-  recBadge.textContent = session.recommendation || "PENDING EVALUATION";
+  if (isFailed) {
+    recBadge.textContent = "❌ ASSESSMENT FAILED (NOT RECOMMENDED)";
+    recBadge.className = "mt-2 fw-bold text-center text-danger bg-white px-2 py-1 rounded shadow-sm";
+  } else if (session.recommendation) {
+    recBadge.textContent = session.recommendation.toUpperCase();
+  } else if (statusLower === "completed") {
+    recBadge.textContent = "PASSED";
+  } else {
+    recBadge.textContent = "PENDING EVALUATION";
+  }
 
   // Sub-scores from session.result
   const result = session.result || {};

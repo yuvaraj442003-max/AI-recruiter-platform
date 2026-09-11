@@ -7,60 +7,75 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
   <style>
-    body { height: 100vh; overflow: hidden; background-color: #1e1e1e; color: #d4d4d4; }
+    body { height: 100vh; overflow: hidden; background-color: #1e1e1e; color: #d4d4d4; font-family: system-ui, -apple-system, sans-serif; }
     .top-header { height: 56px; background-color: #252526; border-bottom: 1px solid #3c3c3c; }
     .main-workspace { height: calc(100vh - 56px); }
-    .left-panel { background-color: #252526; border-right: 1px solid #3c3c3c; overflow-y: auto; }
+    .left-panel { background-color: #252526; border-right: 1px solid #3c3c3c; overflow-y: auto; display: flex; flex-direction: column; }
     .right-panel { display: flex; flex-direction: column; background-color: #1e1e1e; }
     #editor-container { flex: 1; width: 100%; height: 100%; }
-    .console-drawer { height: 180px; background-color: #1e1e1e; border-top: 1px solid #3c3c3c; overflow-y: auto; }
-    .timer-badge { font-family: monospace; font-size: 1.1rem; }
+    .console-drawer { height: 220px; background-color: #1e1e1e; border-top: 1px solid #3c3c3c; overflow-y: auto; }
+    .timer-badge { font-family: monospace; font-size: 1.15rem; background-color: #dc3545; }
+    .tab-status-icon { font-size: 0.85rem; margin-left: 6px; }
   </style>
 </head>
 <body>
   <!-- Top Navigation Bar -->
   <div class="top-header d-flex align-items-center justify-content-between px-3 text-white">
     <div class="d-flex align-items-center">
-      <span class="fw-bold fs-5 me-3">🤖 AI Recruiter Coding</span>
-      <span id="assessment-title-nav" class="text-secondary me-3">Loading Assessment...</span>
+      <span class="fw-bold fs-5 me-3 text-primary">🤖 AI Recruiter Coding</span>
+      <span id="assessment-title-nav" class="text-slate-300 me-3 fw-semibold">Loading Assessment...</span>
     </div>
-    <div class="d-flex align-items-center">
-      <div class="me-3">
-        <span class="text-secondary small me-1">Time Remaining:</span>
-        <span id="timer-display" class="badge bg-danger text-white timer-badge">--:--</span>
+    <div class="d-flex align-items-center gap-3">
+      <div class="d-flex align-items-center gap-2 bg-dark px-3 py-1 rounded border border-secondary">
+        <span class="text-slate-400 small fw-bold">TIME REMAINING:</span>
+        <span id="timer-display" class="badge timer-badge text-white">60:00</span>
       </div>
-      <button id="submit-assessment-btn" class="btn btn-sm btn-success fw-bold px-3">
-        🚀 Submit Solution
+      <button id="submit-assessment-btn" class="btn btn-sm btn-success fw-bold px-3 py-2 shadow-sm d-flex align-items-center gap-2">
+        <span>🚀</span> Submit Final Assessment
       </button>
     </div>
   </div>
 
-  <!-- Workspace split -->
+  <!-- Workspace Split -->
   <div class="container-fluid p-0 main-workspace">
     <div class="row g-0 h-100">
       <!-- Left Question Panel -->
       <div class="col-md-5 left-panel p-3">
         <!-- Question tabs -->
-        <ul class="nav nav-pills mb-3 border-bottom pb-2" id="question-tabs">
+        <ul class="nav nav-pills mb-3 border-bottom border-secondary pb-2" id="question-tabs">
           <!-- Populated dynamically -->
         </ul>
 
-        <div id="question-detail-container">
-          <h4 id="q-title" class="fw-bold text-white mb-2">Select a Question</h4>
+        <div id="question-detail-container" class="flex-grow-1">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <h4 id="q-title" class="fw-bold text-white mb-0">Select a Question</h4>
+            <span id="q-status-badge" class="badge bg-secondary">Not Started</span>
+          </div>
           <div class="mb-3">
             <span id="q-difficulty" class="badge bg-secondary me-2">--</span>
-            <span id="q-category" class="badge bg-dark border">--</span>
+            <span id="q-category" class="badge bg-dark border border-secondary">--</span>
           </div>
 
           <div class="mb-4">
             <h6 class="text-secondary text-uppercase fs-7 fw-bold">Problem Description</h6>
-            <p id="q-description" style="line-height: 1.6;">Loading description...</p>
+            <div id="q-description" style="line-height: 1.6;" class="text-slate-200">Loading description...</div>
           </div>
 
           <div class="mb-4">
             <h6 class="text-secondary text-uppercase fs-7 fw-bold">Constraints & Notes</h6>
-            <div id="q-constraints" class="bg-dark p-2 rounded small text-light font-monospace">--</div>
+            <div id="q-constraints" class="bg-dark p-2 rounded small text-light font-monospace border border-secondary">--</div>
           </div>
+        </div>
+
+        <!-- Question Navigation Bar at bottom of Left Panel -->
+        <div class="pt-3 border-top border-secondary d-flex justify-content-between align-items-center mt-auto">
+          <button id="prev-q-btn" class="btn btn-sm btn-outline-secondary fw-semibold">
+            ← Previous Question
+          </button>
+          <span id="q-counter-label" class="small text-slate-400 font-monospace">Question 1 of 3</span>
+          <button id="next-q-btn" class="btn btn-sm btn-outline-primary fw-semibold">
+            Next Question →
+          </button>
         </div>
       </div>
 
@@ -69,7 +84,7 @@
         <!-- Control Bar -->
         <div class="d-flex align-items-center justify-content-between p-2 bg-dark border-bottom border-secondary">
           <div class="d-flex align-items-center">
-            <label class="me-2 small text-secondary">Language:</label>
+            <label class="me-2 small text-secondary fw-semibold">Language:</label>
             <select id="language-select" class="form-select form-select-sm bg-secondary text-white border-0" style="width: 140px;">
               <option value="python">Python 3</option>
               <option value="javascript">JavaScript</option>
@@ -78,10 +93,10 @@
               <option value="csharp">C#</option>
             </select>
           </div>
-          <div>
-            <button id="reset-code-btn" class="btn btn-sm btn-outline-secondary me-2">Reset Code</button>
-            <button id="run-code-btn" class="btn btn-sm btn-primary fw-bold">
-              ▶ Run Code
+          <div class="d-flex align-items-center gap-2">
+            <button id="reset-code-btn" class="btn btn-sm btn-outline-secondary">Reset Code</button>
+            <button id="run-code-btn" class="btn btn-sm btn-primary fw-bold px-3">
+              ▶ Run & Test Code
             </button>
           </div>
         </div>
@@ -92,10 +107,23 @@
         <!-- Console / Test Results Drawer -->
         <div class="console-drawer p-3">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <h6 class="mb-0 text-secondary text-uppercase fs-7 fw-bold">Execution Console</h6>
+            <h6 class="mb-0 text-secondary text-uppercase fs-7 fw-bold">Execution Console & Test Cases</h6>
             <span id="run-status-badge" class="badge bg-secondary">Idle</span>
           </div>
-          <pre id="console-output" class="text-success small font-monospace mb-0">Click "Run Code" to execute public test cases...</pre>
+
+          <!-- Alert / Next Question Banner -->
+          <div id="passed-banner" class="alert alert-success d-none mb-3 py-2 d-flex justify-content-between align-items-center">
+            <div>
+              <strong>🎉 Correct Solution!</strong> All public test cases passed.
+            </div>
+            <button id="banner-next-btn" class="btn btn-sm btn-success fw-bold px-3">
+              Proceed to Next Question ➔
+            </button>
+          </div>
+
+          <div id="console-output-container">
+            <pre id="console-output" class="text-secondary small font-monospace mb-0">Click "Run & Test Code" to execute your solution against public test cases...</pre>
+          </div>
         </div>
       </div>
     </div>
@@ -109,8 +137,13 @@
     let attemptId = null;
     let assessmentData = null;
     let currentQuestionIndex = 0;
-    let codeStore = {}; // Maps questionId -> { language: code }
-    let remainingSeconds = 3600;
+
+    // Per-question state stores
+    let codeStore = {};      // qId -> { lang, code }
+    let consoleStore = {};   // qId -> { html, badgeText, badgeClass, passedAll }
+    let autoAdvanceTimeout = null;
+
+    let remainingSeconds = 3600; // 60 minutes default
     let timerInterval = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -118,8 +151,8 @@
       const assessmentId = urlParams.get('assessment_id');
       attemptId = urlParams.get('attempt_id');
 
-      if (!assessmentId) {
-        alert('Missing assessment ID.');
+      if (!assessmentId && !attemptId) {
+        alert('Missing assessment context.');
         window.location.href = 'candidate-dashboard.html';
         return;
       }
@@ -139,14 +172,21 @@
 
       // Start Attempt or fetch session
       try {
-        const startRes = await codingAPI.startAssessment(assessmentId);
+        const targetId = assessmentId || 'default';
+        const startRes = await codingAPI.startAssessment(targetId);
         if (startRes.success) {
           const attemptData = startRes.data;
           attemptId = attemptData.id;
           assessmentData = attemptData.assessment;
-          remainingSeconds = attemptData.remaining_seconds || 3600;
 
-          document.getElementById('assessment-title-nav').textContent = assessmentData.title;
+          // Standard 60 minutes assessment duration constraint
+          if (attemptData.remaining_seconds && attemptData.remaining_seconds > 0 && attemptData.remaining_seconds <= 3600) {
+            remainingSeconds = attemptData.remaining_seconds;
+          } else {
+            remainingSeconds = (assessmentData.duration_minutes || 60) * 60;
+          }
+
+          document.getElementById('assessment-title-nav').textContent = assessmentData.title || 'Coding Assessment';
           startTimer();
           renderQuestionTabs();
           loadQuestion(0);
@@ -157,62 +197,73 @@
         alert('Failed to initialize session: ' + err.message);
       }
 
-      // Handle Language Change
+      // Handle Language Select Change
       document.getElementById('language-select').onchange = (e) => {
         const lang = e.target.value;
         const monacoLang = lang === 'python' ? 'python' : lang === 'javascript' ? 'javascript' : lang === 'java' ? 'java' : 'cpp';
         if (editor) {
           monaco.editor.setModelLanguage(editor.getModel(), monacoLang);
+          const q = assessmentData.questions[currentQuestionIndex];
+          if (q) {
+            const starter = (q.starter_code && q.starter_code[lang]) ? q.starter_code[lang] : `# Solution for ${q.title} (${lang})\n`;
+            if (!codeStore[q.id] || !codeStore[q.id].code) {
+              editor.setValue(starter);
+            }
+          }
         }
       };
 
-      // Run Code Button
-      document.getElementById('run-code-btn').onclick = async () => {
-        if (!editor || !assessmentData || !assessmentData.questions[currentQuestionIndex]) return;
+      // Reset Code Button
+      document.getElementById('reset-code-btn').onclick = () => {
+        if (!assessmentData || !assessmentData.questions[currentQuestionIndex]) return;
+        if (!confirm('Reset editor to original starter template?')) return;
         const q = assessmentData.questions[currentQuestionIndex];
         const lang = document.getElementById('language-select').value;
-        const code = editor.getValue();
-
-        document.getElementById('run-status-badge').className = 'badge bg-warning text-dark';
-        document.getElementById('run-status-badge').textContent = 'Running...';
-        document.getElementById('console-output').textContent = 'Executing against public test cases...';
-
-        try {
-          const res = await codingAPI.runCode(attemptId, {
-            question_id: q.id,
-            language: lang,
-            source_code: code
-          });
-          if (res.success) {
-            const data = res.data;
-            document.getElementById('run-status-badge').className = data.passed === data.total ? 'badge bg-success' : 'badge bg-danger';
-            document.getElementById('run-status-badge').textContent = `Passed ${data.passed}/${data.total}`;
-            document.getElementById('console-output').textContent = JSON.stringify(data.test_case_details, null, 2);
-          } else {
-            document.getElementById('run-status-badge').className = 'badge bg-danger';
-            document.getElementById('run-status-badge').textContent = 'Error';
-            document.getElementById('console-output').textContent = res.message;
-          }
-        } catch (err) {
-          document.getElementById('run-status-badge').className = 'badge bg-danger';
-          document.getElementById('run-status-badge').textContent = 'Error';
-          document.getElementById('console-output').textContent = err.message;
+        const starter = (q.starter_code && q.starter_code[lang]) ? q.starter_code[lang] : `# Solution for ${q.title}\n`;
+        editor.setValue(starter);
+        if (codeStore[q.id]) {
+          codeStore[q.id].code = starter;
         }
       };
 
-      // Submit Assessment Button
+      // Run & Test Code Button
+      document.getElementById('run-code-btn').onclick = async () => {
+        await executeAndTestCode();
+      };
+
+      // Previous / Next Nav Buttons
+      document.getElementById('prev-q-btn').onclick = () => {
+        if (currentQuestionIndex > 0) switchQuestion(currentQuestionIndex - 1);
+      };
+      document.getElementById('next-q-btn').onclick = () => {
+        if (assessmentData && currentQuestionIndex < assessmentData.questions.length - 1) {
+          switchQuestion(currentQuestionIndex + 1);
+        }
+      };
+
+      // Banner Next Button
+      document.getElementById('banner-next-btn').onclick = () => {
+        if (assessmentData && currentQuestionIndex < assessmentData.questions.length - 1) {
+          switchQuestion(currentQuestionIndex + 1);
+        } else {
+          submitAssessment();
+        }
+      };
+
+      // Submit Final Assessment Button
       document.getElementById('submit-assessment-btn').onclick = async () => {
-        if (!confirm('Are you sure you want to submit your coding assessment?')) return;
+        if (!confirm('Are you sure you want to submit your final assessment?')) return;
         submitAssessment();
       };
     });
 
     function startTimer() {
+      if (timerInterval) clearInterval(timerInterval);
       timerInterval = setInterval(() => {
         remainingSeconds--;
         if (remainingSeconds <= 0) {
           clearInterval(timerInterval);
-          alert('Time expired! Auto-submitting your assessment...');
+          alert('Time expired! Auto-submitting your final coding assessment...');
           submitAssessment();
           return;
         }
@@ -224,27 +275,66 @@
 
     function renderQuestionTabs() {
       const tabs = document.getElementById('question-tabs');
-      tabs.innerHTML = assessmentData.questions.map((q, idx) => `
-        <li class="nav-item">
-          <button class="nav-link ${idx === 0 ? 'active' : ''} text-white" onclick="switchQuestion(${idx})">
-            Question ${idx + 1}
-          </button>
-        </li>
-      `).join('');
+      if (!assessmentData || !assessmentData.questions) return;
+
+      tabs.innerHTML = assessmentData.questions.map((q, idx) => {
+        const store = consoleStore[q.id];
+        let statusBadge = '';
+        if (store && store.passedAll) {
+          statusBadge = '<span class="tab-status-icon text-success">🟢</span>';
+        } else if (store && store.passedAll === false) {
+          statusBadge = '<span class="tab-status-icon text-danger">🔴</span>';
+        }
+
+        return `
+          <li class="nav-item">
+            <button class="nav-link ${idx === 0 ? 'active' : ''} text-white d-flex align-items-center gap-1" onclick="switchQuestion(${idx})">
+              Question ${idx + 1} ${statusBadge}
+            </button>
+          </li>
+        `;
+      }).join('');
     }
 
-    function switchQuestion(index) {
-      if (editor && assessmentData.questions[currentQuestionIndex]) {
+    function saveCurrentState() {
+      if (editor && assessmentData && assessmentData.questions[currentQuestionIndex]) {
         const qId = assessmentData.questions[currentQuestionIndex].id;
         codeStore[qId] = {
           lang: document.getElementById('language-select').value,
           code: editor.getValue()
         };
+
+        const consoleOutput = document.getElementById('console-output-container').innerHTML;
+        const statusBadge = document.getElementById('run-status-badge');
+        const passedBanner = document.getElementById('passed-banner');
+
+        const prevStore = consoleStore[qId] || {};
+        consoleStore[qId] = {
+          html: consoleOutput,
+          badgeText: statusBadge.textContent,
+          badgeClass: statusBadge.className,
+          passedAll: prevStore.passedAll,
+          bannerVisible: !passedBanner.classList.contains('d-none')
+        };
       }
+    }
+
+    function switchQuestion(index) {
+      if (index < 0 || !assessmentData || index >= assessmentData.questions.length) return;
+
+      if (autoAdvanceTimeout) {
+        clearTimeout(autoAdvanceTimeout);
+        autoAdvanceTimeout = null;
+      }
+
+      saveCurrentState();
       currentQuestionIndex = index;
+
+      renderQuestionTabs();
       document.querySelectorAll('#question-tabs .nav-link').forEach((el, idx) => {
         el.classList.toggle('active', idx === index);
       });
+
       loadQuestion(index);
     }
 
@@ -252,33 +342,167 @@
       const q = assessmentData.questions[index];
       if (!q) return;
 
+      // Update Header & Details
       document.getElementById('q-title').textContent = q.title;
       document.getElementById('q-difficulty').textContent = q.difficulty;
       document.getElementById('q-category').textContent = q.category;
       document.getElementById('q-description').textContent = q.description;
       document.getElementById('q-constraints').textContent = q.constraints || 'None specified.';
 
-      const stored = codeStore[q.id];
-      const lang = stored ? stored.lang : 'python';
+      // Nav Counter
+      document.getElementById('q-counter-label').textContent = `Question ${index + 1} of ${assessmentData.questions.length}`;
+      document.getElementById('prev-q-btn').disabled = (index === 0);
+      document.getElementById('next-q-btn').disabled = (index === assessmentData.questions.length - 1);
+
+      // Restore Code & Language
+      const storedCode = codeStore[q.id];
+      const lang = storedCode ? storedCode.lang : 'python';
       document.getElementById('language-select').value = lang;
 
       const starter = (q.starter_code && q.starter_code[lang]) ? q.starter_code[lang] : `# Write Python 3 solution for ${q.title}\n`;
-      const codeToSet = stored ? stored.code : starter;
+      const codeToSet = storedCode ? storedCode.code : starter;
 
       if (editor) {
+        monaco.editor.setModelLanguage(editor.getModel(), lang === 'python' ? 'python' : lang === 'javascript' ? 'javascript' : lang === 'java' ? 'java' : 'cpp');
         editor.setValue(codeToSet);
+      }
+
+      // Restore Console Drawer state
+      const storedConsole = consoleStore[q.id];
+      const badge = document.getElementById('run-status-badge');
+      const banner = document.getElementById('passed-banner');
+      const container = document.getElementById('console-output-container');
+      const qStatus = document.getElementById('q-status-badge');
+
+      if (storedConsole) {
+        container.innerHTML = storedConsole.html;
+        badge.textContent = storedConsole.badgeText;
+        badge.className = storedConsole.badgeClass;
+
+        if (storedConsole.passedAll) {
+          banner.classList.remove('d-none');
+          qStatus.className = 'badge bg-success';
+          qStatus.textContent = 'Passed ✓';
+        } else if (storedConsole.passedAll === false) {
+          banner.classList.add('d-none');
+          qStatus.className = 'badge bg-danger';
+          qStatus.textContent = 'Needs Review';
+        } else {
+          banner.classList.add('d-none');
+          qStatus.className = 'badge bg-secondary';
+          qStatus.textContent = 'Not Started';
+        }
+      } else {
+        container.innerHTML = `<pre id="console-output" class="text-secondary small font-monospace mb-0">Click "Run & Test Code" to execute your solution against public test cases...</pre>`;
+        badge.className = 'badge bg-secondary';
+        badge.textContent = 'Idle';
+        banner.classList.add('d-none');
+        qStatus.className = 'badge bg-secondary';
+        qStatus.textContent = 'Not Started';
+      }
+
+      // Update banner button text if last question
+      const bannerBtn = document.getElementById('banner-next-btn');
+      if (index === assessmentData.questions.length - 1) {
+        bannerBtn.textContent = '🚀 Review & Submit Final Assessment';
+      } else {
+        bannerBtn.textContent = 'Proceed to Next Question ➔';
+      }
+    }
+
+    async function executeAndTestCode() {
+      if (!editor || !assessmentData || !assessmentData.questions[currentQuestionIndex]) return;
+      const q = assessmentData.questions[currentQuestionIndex];
+      const lang = document.getElementById('language-select').value;
+      const code = editor.getValue();
+
+      const badge = document.getElementById('run-status-badge');
+      const container = document.getElementById('console-output-container');
+      const banner = document.getElementById('passed-banner');
+      const qStatus = document.getElementById('q-status-badge');
+
+      badge.className = 'badge bg-warning text-dark';
+      badge.textContent = 'Running...';
+      banner.classList.add('d-none');
+      container.innerHTML = `<div class="text-warning small font-monospace">⏳ Executing code against public test cases...</div>`;
+
+      try {
+        const res = await codingAPI.runCode(attemptId, {
+          question_id: q.id,
+          language: lang,
+          source_code: code
+        });
+
+        if (res.success) {
+          const data = res.data;
+          const passedAll = (data.passed === data.total);
+
+          if (passedAll) {
+            badge.className = 'badge bg-success';
+            badge.textContent = `Passed ${data.passed}/${data.total}`;
+            qStatus.className = 'badge bg-success';
+            qStatus.textContent = 'Passed ✓';
+            banner.classList.remove('d-none');
+
+            // Automatic advancement to next question if correct
+            if (currentQuestionIndex < assessmentData.questions.length - 1) {
+              const nextNum = currentQuestionIndex + 2;
+              banner.querySelector('strong').textContent = `🎉 Correct Solution! Auto-advancing to Question ${nextNum}...`;
+              document.getElementById('banner-next-btn').textContent = `Proceeding to Question ${nextNum} ➔`;
+
+              if (autoAdvanceTimeout) clearTimeout(autoAdvanceTimeout);
+              autoAdvanceTimeout = setTimeout(() => {
+                if (currentQuestionIndex < assessmentData.questions.length - 1) {
+                  switchQuestion(currentQuestionIndex + 1);
+                }
+              }, 1500);
+            } else {
+              banner.querySelector('strong').textContent = `🎉 Correct Solution! All assessment questions completed.`;
+              document.getElementById('banner-next-btn').textContent = '🚀 Review & Submit Final Assessment';
+            }
+          } else {
+            badge.className = 'badge bg-danger';
+            badge.textContent = `Failed ${data.passed}/${data.total}`;
+            qStatus.className = 'badge bg-danger';
+            qStatus.textContent = 'Failed';
+            banner.classList.add('d-none');
+          }
+
+          let detailsHtml = `<pre class="text-light small font-monospace border p-2 bg-dark rounded mb-2">${JSON.stringify(data.test_case_details, null, 2)}</pre>`;
+          container.innerHTML = detailsHtml;
+
+          consoleStore[q.id] = {
+            html: detailsHtml,
+            badgeText: badge.textContent,
+            badgeClass: badge.className,
+            passedAll: passedAll,
+            bannerVisible: passedAll
+          };
+
+          renderQuestionTabs();
+
+        } else {
+          badge.className = 'badge bg-danger';
+          badge.textContent = 'Execution Error';
+          container.innerHTML = `<div class="text-danger small font-monospace">${res.message}</div>`;
+          consoleStore[q.id] = {
+            html: container.innerHTML,
+            badgeText: 'Execution Error',
+            badgeClass: 'badge bg-danger',
+            passedAll: false,
+            bannerVisible: false
+          };
+          renderQuestionTabs();
+        }
+      } catch (err) {
+        badge.className = 'badge bg-danger';
+        badge.textContent = 'Error';
+        container.innerHTML = `<div class="text-danger small font-monospace">${err.message || 'Execution error.'}</div>`;
       }
     }
 
     async function submitAssessment() {
-      // Save current editor code
-      if (editor && assessmentData.questions[currentQuestionIndex]) {
-        const qId = assessmentData.questions[currentQuestionIndex].id;
-        codeStore[qId] = {
-          lang: document.getElementById('language-select').value,
-          code: editor.getValue()
-        };
-      }
+      saveCurrentState();
 
       const submissions = assessmentData.questions.map(q => {
         const saved = codeStore[q.id] || { lang: 'python', code: '' };

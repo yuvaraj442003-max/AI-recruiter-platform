@@ -28,17 +28,40 @@
     <main class="flex-grow-1">
       <header class="bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
         <div>
-          <h1 class="h5 mb-0">AI Interview</h1>
+          <h1 class="h5 mb-0 fw-bold text-dark">AI Technical Interview</h1>
           <div id="interview-subtitle" class="text-muted-custom small">Loading…</div>
         </div>
         <div class="d-flex align-items-center gap-3">
+          <div class="text-end me-2">
+            <div class="small text-muted fw-semibold" style="font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">Time Remaining</div>
+            <div id="timer-display" class="fw-bold text-danger font-monospace fs-5">30:00</div>
+          </div>
           <span id="user-greeting" class="text-muted-custom skeleton" style="width: 140px; height: 1rem; display: inline-block;"></span>
           <button id="logout-btn-mobile" class="btn btn-sm btn-outline-secondary d-md-none">Log out</button>
         </div>
       </header>
 
-      <div class="container p-4" style="max-width: 760px;">
+      <div class="container p-4" style="max-width: 780px;">
         <div id="interview-alert" class="alert d-none py-2" role="alert"></div>
+
+        <!-- Proctored Camera & Security Status Card -->
+        <div class="card p-3 mb-4 shadow-sm rounded-4 border-0 bg-dark text-white d-flex flex-row align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-3">
+            <div style="width: 110px; height: 75px; background: #000; border-radius: 10px; overflow: hidden; position: relative;" class="border border-secondary flex-shrink-0">
+              <video id="proctor-video" autoplay muted playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+            </div>
+            <div>
+              <h6 class="mb-1 fw-bold text-white d-flex align-items-center gap-2">
+                📹 Proctored Live Feed
+                <span id="cam-status-badge" class="badge bg-danger">Checking Camera...</span>
+              </h6>
+              <p class="small text-slate-300 mb-0" style="font-size: 0.825rem; color: #cbd5e1;">Camera monitoring is active. Do not switch tabs or minimize your window.</p>
+            </div>
+          </div>
+          <div class="text-end">
+            <span class="badge bg-warning text-dark px-3 py-2 fw-bold" style="font-size: 0.8rem;">🔒 Anti-Cheating Active</span>
+          </div>
+        </div>
 
         <div id="progress-wrapper" class="mb-3 d-none">
           <div class="d-flex justify-content-between small text-muted-custom mb-1">

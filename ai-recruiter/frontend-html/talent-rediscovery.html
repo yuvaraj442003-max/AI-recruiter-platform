@@ -32,25 +32,78 @@
     }
   </style>
 </head>
-<body class="bg-body-tertiary" data-required-role="recruiter">
+<body class="bg-light" data-required-role="recruiter">
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand navbar-light bg-body border-bottom shadow-sm">
-    <div class="container-fluid px-4">
-      <a class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2" href="recruiter-portal.html">
-        <span>🤖</span> AI Recruiter <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill fs-7">Talent Rediscovery</span>
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 260px; min-width: 260px;">
+      <a href="recruiter-portal.html" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mb-4 px-2">
+        <span class="fs-4">💼</span>
+        <span class="fw-bold text-dark fs-5">Recruiter Portal</span>
       </a>
-      <div class="d-flex align-items-center gap-2 ms-auto">
-        <button id="theme-toggle-btn" class="btn btn-sm btn-outline-secondary">🌙</button>
-        <button id="btn-rerun-rediscovery" class="btn btn-sm btn-primary fw-semibold d-flex align-items-center gap-1">
-          <span>✨</span> Re-run Talent Search
-        </button>
-        <a href="recruiter-portal.html" class="btn btn-sm btn-secondary fw-semibold">Back to Jobs</a>
+      <ul class="nav nav-pills flex-column gap-2">
+        <li class="nav-item">
+          <a href="recruiter-portal.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>🏠</span> Portal Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="recruiter-dashboard.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>📊</span> Recruiter Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="my-jobs.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>💼</span> Manage Jobs
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="post-job.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>➕</span> Post a Job
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="smart-search.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>🔍</span> Smart Search
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="talent-rediscovery.html" class="nav-link active d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff;">
+            <span>✨</span> Talent Rediscovery
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="upload.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>📤</span> Upload
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="messages.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>💬</span> Messages &amp; Chat
+          </a>
+        </li>
+      </ul>
+      <div class="mt-auto pt-3 border-top">
+        <button id="logout-btn" class="btn btn-outline-secondary w-100 fw-semibold">Log out</button>
       </div>
-    </div>
-  </nav>
+    </nav>
 
-  <div class="container-fluid px-4 py-4">
+    <!-- Main content -->
+    <main class="flex-grow-1">
+      <header class="bg-white border-bottom p-3 d-flex justify-content-between align-items-center sticky-top" style="z-index: 10;">
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-success-subtle text-success fw-semibold px-3 py-1 rounded-pill">Recruiter Workspace</span>
+          <h1 class="h5 mb-0 fw-bold">✨ Talent Rediscovery &amp; Silver Medalists</h1>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <button id="theme-toggle-btn" class="btn btn-sm btn-outline-secondary">🌙</button>
+          <button id="btn-rerun-rediscovery" class="btn btn-sm btn-primary fw-semibold d-flex align-items-center gap-1">
+            <span>✨</span> Re-run Talent Search
+          </button>
+        </div>
+      </header>
+
+      <div class="container-fluid px-4 py-4">
     <div id="rediscovery-alert" class="alert d-none py-2 mb-4" role="alert"></div>
 
     <!-- Real-time Redis Progress Indicator -->
@@ -159,6 +212,8 @@
     </div>
 
   </div>
+  </main>
+</div>
 
   <!-- Candidate Detail & Explanation Modal -->
   <div class="modal fade" id="candidateDetailModal" tabindex="-1" aria-hidden="true">

@@ -77,9 +77,6 @@
               <a href="job-applicants.html?job_id=${jobId}" class="btn btn-sm btn-primary fw-semibold me-1 px-3 shadow-sm">
                 👥 View Applicants
               </a>
-              <a href="blind-screening.html?job_id=${jobId}" class="btn btn-sm btn-outline-dark fw-semibold me-1 px-2 shadow-sm">
-                🙈 Blind Screening
-              </a>
               ${statusToggleBtn}
               <button class="btn btn-sm btn-outline-danger delete-job-btn fw-medium" data-job-id="${jobId}" data-job-title="${job.title}">🗑️ Delete</button>
             </td>

@@ -12,7 +12,7 @@ from app.core.database import Base, engine, SessionLocal
 from app.core.exceptions import register_exception_handlers
 from app.middleware.security_headers import SecurityHeadersMiddleware
 # Import all models to ensure metadata registration
-from app.models import user, candidate, job, application, interview, interview_scorecard, talent_rediscovery, blind_screening, candidate_feedback, audit_log, recruiter, notification, application_history, message, saved_search
+from app.models import user, candidate, job, application, interview, interview_scorecard, talent_rediscovery, candidate_feedback, audit_log, recruiter, notification, application_history, message, saved_search
 from app.routers import (
     admin,
     analytics,
@@ -28,7 +28,6 @@ from app.routers import (
     interview_ws,
     interview_scorecard as interview_scorecard_router,
     talent_rediscovery as talent_rediscovery_router,
-    blind_screening as blind_screening_router,
     feedback as feedback_router,
     jobs,
     matching,
@@ -142,6 +141,25 @@ def _auto_migrate_db(target_engine=None):
         ("coding_assessments", "enable_audio", "BOOLEAN DEFAULT TRUE"),
         ("coding_assessments", "enable_code_similarity", "BOOLEAN DEFAULT TRUE"),
         ("coding_assessments", "clipboard_policy", "VARCHAR(20) DEFAULT 'monitor'"),
+
+        # Scheduled Interviews extended fields
+        ("scheduled_interviews", "application_id", "VARCHAR(36)"),
+        ("scheduled_interviews", "meeting_room_id", "VARCHAR(255)"),
+        ("scheduled_interviews", "join_url", "TEXT"),
+        ("scheduled_interviews", "recruiter_joined_at", "TIMESTAMP"),
+        ("scheduled_interviews", "candidate_joined_at", "TIMESTAMP"),
+        ("scheduled_interviews", "calendar_provider", "VARCHAR(50)"),
+        ("scheduled_interviews", "calendar_event_id", "VARCHAR(255)"),
+        ("scheduled_interviews", "calendar_event_url", "TEXT"),
+        ("scheduled_interviews", "calendar_sync_status", "VARCHAR(50) DEFAULT 'synced'"),
+        ("scheduled_interviews", "reminder_sent", "BOOLEAN DEFAULT FALSE"),
+        ("scheduled_interviews", "reminder_24h_sent", "BOOLEAN DEFAULT FALSE"),
+        ("scheduled_interviews", "reminder_1h_sent", "BOOLEAN DEFAULT FALSE"),
+        ("scheduled_interviews", "invitation_sent", "BOOLEAN DEFAULT FALSE"),
+        ("scheduled_interviews", "calendar_synced", "BOOLEAN DEFAULT FALSE"),
+        ("scheduled_interviews", "cancelled_at", "TIMESTAMP"),
+        ("scheduled_interviews", "cancellation_reason", "TEXT"),
+        ("scheduled_interviews", "rescheduled_from_id", "VARCHAR(36)"),
     ]
 
     with active_engine.begin() as conn:
@@ -235,7 +253,6 @@ app.include_router(screening.router, prefix="/api/v1")
 app.include_router(proctoring.router, prefix="/api/v1")
 app.include_router(interview_scorecard_router.router, prefix="/api/v1")
 app.include_router(talent_rediscovery_router.router, prefix="/api/v1")
-app.include_router(blind_screening_router.router, prefix="/api/v1")
 app.include_router(feedback_router.router)
 
 

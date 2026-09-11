@@ -98,3 +98,34 @@ class InterviewReport(BaseModel):
     questions: list[ReportQuestionAnswer] = []
     evaluation: Optional[ReportEvaluation] = None
     human_review_required: bool = True
+
+
+class ScheduleInterviewRequest(BaseModel):
+    job_id: str
+    candidate_id: str
+    application_id: Optional[str] = None
+    scheduled_date: Optional[str] = None  # e.g. "2026-09-12"
+    start_time: Optional[str] = None      # e.g. "10:00"
+    start_time_iso: Optional[str] = None  # e.g. "2026-09-12T10:00:00Z"
+    duration_minutes: int = 30
+    timezone: str = "Asia/Kolkata"
+    interview_type: str = "AI Technical Interview"
+    send_email: bool = True
+    sync_calendar: bool = True
+
+
+class RescheduleInterviewRequest(BaseModel):
+    new_date: Optional[str] = None
+    new_start_time: Optional[str] = None
+    new_start_time_iso: Optional[str] = None
+    duration_minutes: int = 30
+    timezone: str = "Asia/Kolkata"
+    reason: Optional[str] = None
+    send_email: bool = True
+
+
+class CancelInterviewRequest(BaseModel):
+    reason: Optional[str] = None
+    cancellation_reason: Optional[str] = None
+    send_email: bool = True
+

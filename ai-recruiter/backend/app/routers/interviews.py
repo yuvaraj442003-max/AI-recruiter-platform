@@ -357,22 +357,11 @@ from app.services.email_service import (
 from app.services.reminder_service import _dispatch_reminder, check_and_send_interview_reminders
 
 
-class ScheduleInterviewRequest(BaseModel):
-    candidate_id: str
-    job_id: str
-    start_time_iso: str # e.g. 2026-09-10T10:00:00Z
-    duration_minutes: int = 30
-    timezone_name: str = "Asia/Kolkata"
-    interview_type: str = "AI Technical Interview"
-    send_email: bool = True
-    sync_calendar: bool = True
-
-
-class RescheduleInterviewRequest(BaseModel):
-    new_start_time_iso: str
-    duration_minutes: int = 30
-    timezone_name: str = "Asia/Kolkata"
-    send_email: bool = True
+from zoneinfo import ZoneInfo
+from fastapi import HTTPException
+from sqlalchemy import or_, select
+from app.models.application import Application
+from app.schemas.interview import ScheduleInterviewRequest, RescheduleInterviewRequest, CancelInterviewRequest
 
 
 @router.post("/schedule", status_code=201)
@@ -381,20 +370,72 @@ def schedule_interview(
     current_user: User = Depends(require_role(UserRole.recruiter)),
     db: Session = Depends(get_db),
 ):
-    cand_id = uuid.UUID(payload.candidate_id)
-    job_id = uuid.UUID(payload.job_id)
+    try:
+        cand_id = uuid.UUID(payload.candidate_id)
+        job_id = uuid.UUID(payload.job_id)
+        app_id = uuid.UUID(payload.application_id) if payload.application_id else None
+    except ValueError:
+        raise NotFoundError("Invalid candidate, job, or application ID format.")
 
     cand_profile = db.scalar(select(CandidateProfile).where(CandidateProfile.id == cand_id))
     if not cand_profile:
-        raise NotFoundError("Candidate profile not found")
+        raise NotFoundError("Candidate profile not found.")
+
     job = db.scalar(select(Job).where(Job.id == job_id))
     if not job:
-        raise NotFoundError("Job not found")
+        raise NotFoundError("Job position not found.")
 
-    start_dt = datetime.fromisoformat(payload.start_time_iso.replace("Z", "+00:00"))
-    if not start_dt.tzinfo:
-        start_dt = start_dt.replace(tzinfo=timezone.utc)
+    if job.recruiter_id != current_user.id:
+        raise PermissionDeniedError("You can only schedule interviews for job postings you own.")
+
+    if app_id:
+        application = db.scalar(select(Application).where(Application.id == app_id))
+        if not application:
+            raise NotFoundError("Application record not found.")
+        if application.candidate_id != cand_id:
+            raise HTTPException(status_code=400, detail="Candidate does not match specified application record.")
+    else:
+        application = db.scalar(select(Application).where(Application.candidate_id == cand_id, Application.job_id == job_id))
+        if application:
+            app_id = application.id
+
+    # Parse date/time & timezone
+    tz_str = payload.timezone or "Asia/Kolkata"
+    try:
+        tz_info = ZoneInfo(tz_str)
+    except Exception:
+        tz_info = timezone.utc
+
+    if payload.scheduled_date and payload.start_time:
+        raw_dt_str = f"{payload.scheduled_date}T{payload.start_time}:00"
+        local_dt = datetime.fromisoformat(raw_dt_str).replace(tzinfo=tz_info)
+        start_dt = local_dt.astimezone(timezone.utc)
+    elif payload.start_time_iso:
+        start_dt = datetime.fromisoformat(payload.start_time_iso.replace("Z", "+00:00"))
+        if not start_dt.tzinfo:
+            start_dt = start_dt.replace(tzinfo=timezone.utc)
+    else:
+        raise HTTPException(status_code=422, detail="Either (scheduled_date and start_time) or start_time_iso must be provided.")
+
+    if start_dt < datetime.now(timezone.utc) - timedelta(minutes=5):
+        raise HTTPException(status_code=400, detail="Cannot schedule an interview in the past.")
+
     end_dt = start_dt + timedelta(minutes=payload.duration_minutes)
+
+    # 409 Conflict Detection: check overlapping active interviews for recruiter OR candidate
+    conflict = db.scalar(
+        select(ScheduledInterview).where(
+            ScheduledInterview.status.not_in([ScheduledInterviewStatus.cancelled]),
+            or_(
+                ScheduledInterview.recruiter_id == current_user.id,
+                ScheduledInterview.candidate_id == cand_id,
+            ),
+            ScheduledInterview.start_time_utc < end_dt,
+            ScheduledInterview.end_time_utc > start_dt,
+        )
+    )
+    if conflict:
+        raise HTTPException(status_code=409, detail="An interview already exists during this time.")
 
     # Create base Interview record if none exists
     existing_interview = db.scalar(
@@ -407,19 +448,27 @@ def schedule_interview(
         )
 
     title = f"{job.title} Interview - {cand_profile.user.name if cand_profile.user else 'Candidate'}"
+    room_id = str(uuid.uuid4())
+    from app.core.config import settings
+    room_link = f"{settings.FRONTEND_URL.rstrip('/')}/live-interview-room.html?interview_id={existing_interview.id}"
 
     scheduled = ScheduledInterview(
         interview_id=existing_interview.id,
         candidate_id=cand_id,
         recruiter_id=current_user.id,
         job_id=job_id,
+        application_id=app_id,
         title=title,
         interview_type=payload.interview_type,
         duration_minutes=payload.duration_minutes,
         start_time_utc=start_dt,
         end_time_utc=end_dt,
-        timezone=payload.timezone_name,
+        timezone=tz_str,
         status=ScheduledInterviewStatus.scheduled,
+        meeting_room_id=room_id,
+        join_url=room_link,
+        invitation_sent=payload.send_email,
+        calendar_synced=payload.sync_calendar,
     )
     db.add(scheduled)
     db.commit()
@@ -429,12 +478,11 @@ def schedule_interview(
         CalendarService.sync_calendar_event(db, scheduled, action="create")
 
     # Dispatch email if requested
-    from app.core.config import settings
-    room_link = f"{settings.FRONTEND_URL.rstrip('/')}/live-interview-room.html?interview_id={existing_interview.id}"
     cand_user = cand_profile.user
     if payload.send_email and cand_user and cand_user.email:
-        date_str = start_dt.strftime("%B %d, %Y")
-        time_str = f"{start_dt.strftime('%I:%M %p')} ({payload.timezone_name})"
+        local_start = start_dt.astimezone(tz_info)
+        date_str = local_start.strftime("%B %d, %Y")
+        time_str = f"{local_start.strftime('%I:%M %p')} ({tz_str})"
         comp_name = job.company_name or f"{current_user.name}'s Company"
 
         send_interview_invitation_email(
@@ -461,11 +509,14 @@ def schedule_interview(
             "scheduled_id": str(scheduled.id),
             "interview_id": str(existing_interview.id),
             "title": scheduled.title,
-            "start_time_utc": scheduled.start_time_utc,
+            "scheduled_start_utc": scheduled.start_time_utc,
+            "scheduled_end_utc": scheduled.end_time_utc,
             "timezone": scheduled.timezone,
             "status": scheduled.status.value,
+            "meeting_room_id": scheduled.meeting_room_id,
+            "join_url": room_link,
+            "recruiter_join_url": f"{room_link}&role=recruiter",
             "calendar_sync_status": scheduled.calendar_sync_status,
-            "join_link": room_link,
         },
     )
 
@@ -629,4 +680,87 @@ def download_interview_ics(
         media_type="text/calendar",
         headers={"Content-Disposition": 'attachment; filename="Interview_Invitation.ics"'},
     )
+
+
+@router.post("/{interview_id}/join")
+def join_interview_room(
+    interview_id: str,
+    current_user: User = Depends(require_role(UserRole.candidate, UserRole.recruiter)),
+    db: Session = Depends(get_db),
+):
+    try:
+        parsed_id = uuid.UUID(interview_id)
+    except ValueError:
+        raise NotFoundError("Invalid interview ID format.")
+
+    interview = interview_service.load_interview(db, parsed_id)
+    scheduled = db.scalar(select(ScheduledInterview).where(ScheduledInterview.interview_id == parsed_id))
+    if not scheduled:
+        scheduled = db.scalar(select(ScheduledInterview).where(ScheduledInterview.id == parsed_id))
+
+    if not interview and not scheduled:
+        raise NotFoundError("Interview session not found.")
+
+    if scheduled:
+        cand_user_id = scheduled.candidate.user_id if (scheduled.candidate) else None
+        if current_user.role == UserRole.candidate and cand_user_id != current_user.id:
+            raise PermissionDeniedError("You are not authorized to join this interview.")
+        if current_user.role == UserRole.recruiter and scheduled.recruiter_id != current_user.id:
+            raise PermissionDeniedError("You are not authorized to join this interview room.")
+
+        now_utc = datetime.now(timezone.utc)
+        start_utc = scheduled.start_time_utc
+        if not start_utc.tzinfo:
+            start_utc = start_utc.replace(tzinfo=timezone.utc)
+
+        early_window = start_utc - timedelta(minutes=10)
+        if now_utc < early_window and scheduled.status not in [ScheduledInterviewStatus.in_progress, ScheduledInterviewStatus.completed]:
+            minutes_until = max(1, int((start_utc - now_utc).total_seconds() // 60))
+            raise HTTPException(
+                status_code=403,
+                detail=f"Room opens 10 minutes prior to scheduled start time. Scheduled start is in {minutes_until} minutes."
+            )
+
+        if current_user.role == UserRole.candidate:
+            scheduled.candidate_joined_at = now_utc
+        elif current_user.role == UserRole.recruiter:
+            scheduled.recruiter_joined_at = now_utc
+
+        if scheduled.status in [ScheduledInterviewStatus.scheduled, ScheduledInterviewStatus.confirmed]:
+            scheduled.status = ScheduledInterviewStatus.in_progress
+        db.commit()
+
+    if interview and interview.status == InterviewStatus.scheduled:
+        interview.status = InterviewStatus.in_progress
+        interview.started_at = datetime.now(timezone.utc)
+        db.commit()
+
+    duration_mins = scheduled.duration_minutes if scheduled else 30
+    if scheduled and scheduled.end_time_utc:
+        end_utc = scheduled.end_time_utc
+        if not end_utc.tzinfo:
+            end_utc = end_utc.replace(tzinfo=timezone.utc)
+        rem_sec = max(0, int((end_utc - datetime.now(timezone.utc)).total_seconds()))
+    else:
+        rem_sec = duration_mins * 60
+
+    cand_name = scheduled.candidate.user.name if (scheduled and scheduled.candidate and scheduled.candidate.user) else "Candidate"
+    job_title = scheduled.job.title if (scheduled and scheduled.job) else "Position"
+
+    return APIResponse(
+        success=True,
+        message="Joined interview room successfully",
+        data={
+            "interview_id": str(interview.id) if interview else (str(scheduled.interview_id) if scheduled and scheduled.interview_id else interview_id),
+            "scheduled_id": str(scheduled.id) if scheduled else None,
+            "status": scheduled.status.value if scheduled else "IN_PROGRESS",
+            "role": current_user.role.value,
+            "candidate_name": cand_name,
+            "job_title": job_title,
+            "duration_minutes": duration_mins,
+            "remaining_seconds": rem_sec,
+            "meeting_room_id": scheduled.meeting_room_id if scheduled else str(uuid.uuid4()),
+        }
+    )
+
 

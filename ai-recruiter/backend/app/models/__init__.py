@@ -59,10 +59,6 @@ from app.models.talent_rediscovery import (
     TalentRediscoveryResult,
     RediscoveryRunStatus,
 )
-from app.models.blind_screening import (
-    BlindScreeningConfig,
-    BlindScreeningCandidate,
-)
 from app.models.candidate_feedback import (
     CandidateFeedback,
     CandidateFeedbackReason,
@@ -125,8 +121,6 @@ __all__ = [
     "TalentRediscoveryRun",
     "TalentRediscoveryResult",
     "RediscoveryRunStatus",
-    "BlindScreeningConfig",
-    "BlindScreeningCandidate",
     "CandidateFeedback",
     "CandidateFeedbackReason",
     "FeedbackStatus",

@@ -651,7 +651,7 @@
                     <td>${item.passing_score}%</td>
                     <td>
                       <span class="badge bg-${item.status === 'Evaluated' ? (item.passed ? 'success' : 'danger') : item.status === 'In Progress' ? 'warning' : 'secondary'}">
-                        ${item.status}
+                        ${item.status === 'Evaluated' ? (item.passed ? 'Passed ✓' : 'Failed ❌') : item.status}
                       </span>
                     </td>
                     <td>${item.score !== null && item.score !== undefined ? `${Math.round(item.score)}%` : '—'}</td>

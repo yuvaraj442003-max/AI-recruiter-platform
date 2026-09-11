@@ -110,6 +110,38 @@ def _seed_default_questions_if_empty(db: Session):
         db.commit()
 
 
+def _seed_default_assessment_if_empty(db: Session) -> CodingAssessment:
+    """Seed initial questions and default 60-minute coding assessment if none exists."""
+    _seed_default_questions_if_empty(db)
+    assessment = db.scalar(select(CodingAssessment).order_by(CodingAssessment.created_at.asc()))
+    if not assessment:
+        questions = db.scalars(select(CodingQuestion).order_by(CodingQuestion.created_at.asc())).all()
+        assessment = CodingAssessment(
+            title="AI Developer Technical Coding Assessment",
+            description="Complete 3 algorithm and data structure problems within 60 minutes.",
+            duration_minutes=60,
+            passing_score=60.0,
+            total_score=100.0,
+            max_attempts=1,
+            allowed_languages=json.dumps(["python", "javascript", "java", "cpp", "csharp"]),
+        )
+        db.add(assessment)
+        db.flush()
+
+        for idx, q in enumerate(questions, 1):
+            aq = CodingAssessmentQuestion(
+                assessment_id=assessment.id,
+                question_id=q.id,
+                question_order=idx,
+                points=35 if idx < 3 else 30
+            )
+            db.add(aq)
+        db.commit()
+        db.refresh(assessment)
+    return assessment
+
+
+
 # --- QUESTION MANAGEMENT ENDPOINTS ---
 
 @router.post("/questions", response_model=APIResponse[CodingQuestionResponse])
@@ -294,6 +326,9 @@ def candidate_list_assessments(
     job_ids = [app.job_id for app in apps]
 
     assessments = db.scalars(select(CodingAssessment).where(CodingAssessment.job_id.in_(job_ids))).all() if job_ids else []
+    if not assessments:
+        def_assessment = _seed_default_assessment_if_empty(db)
+        assessments = [def_assessment]
 
     out = []
     for a in assessments:
@@ -332,7 +367,8 @@ def start_assessment_attempt(
 
     assessment = db.scalar(select(CodingAssessment).where(CodingAssessment.id == assessment_id))
     if not assessment:
-        raise NotFoundError("Coding assessment not found.")
+        assessment = _seed_default_assessment_if_empty(db)
+        assessment_id = assessment.id
 
     # Check existing attempts
     attempt = db.scalar(
@@ -543,11 +579,18 @@ def submit_candidate_assessment(
         )
         if app:
             app.coding_score = avg_percentage
-            # Recalculate Overall Score: Overall = (ATS * 40%) + (Coding * 35%) + (Interview * 25%)
             ats = app.ats_score or app.match_score or 70.0
             coding = avg_percentage
             interview = app.interview_score or 70.0
             app.overall_score = round((ats * 0.40) + (coding * 0.35) + (interview * 0.25), 2)
+
+            if not passed:
+                app.status = ApplicationStatus.rejected
+                app.recommendation = f"Failed Coding Assessment ({round(avg_percentage, 1)}% < {assessment.passing_score}%)"
+            else:
+                if app.status in (ApplicationStatus.applied, ApplicationStatus.under_review):
+                    app.status = ApplicationStatus.shortlisted
+                app.recommendation = f"Passed Coding Assessment ({round(avg_percentage, 1)}%)"
 
     db.commit()
     db.refresh(attempt)

@@ -36,3 +36,13 @@
     window.location.href = "login.html";
   }
 })();
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("#logout-btn, #logout-btn-mobile").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (typeof authAPI !== "undefined" && authAPI.logout) authAPI.logout();
+      else if (typeof Session !== "undefined" && Session.clear) Session.clear();
+      window.location.href = "login.html";
+    });
+  });
+});

@@ -59,6 +59,10 @@ class CandidateProfile(Base, TimestampMixin):
     )
     user: Mapped["User"] = relationship(foreign_keys=[user_id])
 
+    @property
+    def full_name(self) -> str:
+        return self.user.name if (self.user and self.user.name) else "Candidate"
+
     def __repr__(self) -> str:
         return f"<CandidateProfile user_id={self.user_id}>"
 

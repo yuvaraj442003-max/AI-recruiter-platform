@@ -151,6 +151,9 @@
             <button class="btn btn-sm btn-outline-primary fw-semibold msg-applicant-btn me-1" data-user-id="${candidateProfile.user_id || ''}" data-name="${app.candidate_name || 'Candidate'}">
               💬 Message
             </button>
+            <button class="btn btn-sm btn-outline-secondary fw-semibold schedule-applicant-btn me-1" data-app-id="${app.id}" data-candidate-id="${candId}" data-candidate-name="${app.candidate_name || 'Candidate'}" title="Request &amp; Schedule Interview Time Slot">
+              📅 Schedule
+            </button>
             <button class="btn btn-sm btn-outline-dark fw-semibold feedback-btn me-1" data-app-id="${app.id}" data-name="${app.candidate_name || 'Candidate'}" title="Candidate Feedback">
               💬 Feedback
             </button>
@@ -205,6 +208,34 @@
           window.openChatWithUser(uid, name, "candidate");
         } else if (window.openChatWithUser) {
           window.openChatWithUser();
+        }
+      });
+    });
+
+    tableBody.querySelectorAll(".schedule-applicant-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const appId = btn.dataset.appId;
+        const candId = btn.dataset.candidateId;
+        const candName = btn.dataset.candidateName;
+
+        document.getElementById("sched-modal-job-display").value = currentJob ? currentJob.title : "Position";
+        document.getElementById("sched-modal-job-id").value = currentJob ? currentJob.id : "";
+        document.getElementById("sched-modal-cand-display").value = candName;
+        document.getElementById("sched-modal-cand-id").value = candId;
+        document.getElementById("sched-modal-app-id").value = appId;
+
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById("sched-modal-date").value = tomorrow.toISOString().slice(0, 10);
+        document.getElementById("sched-modal-time").value = "10:00";
+
+        const alertEl = document.getElementById("modal-sched-alert");
+        if (alertEl) alertEl.classList.add("d-none");
+
+        const modalEl = document.getElementById("scheduleInterviewModal");
+        if (window.bootstrap && modalEl) {
+          const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+          modal.show();
         }
       });
     });
@@ -362,11 +393,6 @@
       const rediscoveryBtn = document.getElementById("btn-talent-rediscovery");
       if (rediscoveryBtn && currentJob) {
         rediscoveryBtn.href = `talent-rediscovery.html?job_id=${currentJob.id || currentJob.job_id}`;
-      }
-
-      const blindBtn = document.getElementById("btn-blind-screening");
-      if (blindBtn && currentJob) {
-        blindBtn.href = `blind-screening.html?job_id=${currentJob.id || currentJob.job_id}`;
       }
 
       allApplications = appsRes.data || [];
@@ -640,6 +666,226 @@
     });
   }
 
+  function escapeHtml(str) {
+    if (!str) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function renderAssessmentHeaderBanner(session, app = {}) {
+    const channel = (session?.channel || "WhatsApp").toUpperCase() + " SCREENING";
+    const candidateName = session?.candidate_name || app?.candidate_name || "Candidate Profile";
+    const jobTitle = session?.job_title || app?.job_title || (currentJob ? currentJob.title : "Target Position");
+
+    const currentQ = session?.current_question_index ?? 0;
+    const totalQ = session?.total_questions ?? 5;
+    const statusStr = (session?.status || app?.status || "Pending").toUpperCase();
+
+    const dateStr = session?.completed_at || session?.created_at || app?.applied_at;
+    const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString() : "In Progress";
+
+    const rawScore = session?.screening_score ?? app?.overall_score ?? app?.ats_score ?? 0;
+    const score = Math.round(rawScore);
+
+    const statusLower = (session?.status || app?.status || "").toLowerCase();
+    const recLower = (session?.recommendation || app?.recommendation || "").toLowerCase();
+    const isFailed = statusLower === "failed" || statusLower === "rejected" || 
+                     recLower.includes("fail") || recLower.includes("reject") || recLower.includes("not recommended") ||
+                     (score === 0 && (currentQ > 0 || statusLower === "completed" || statusLower === "failed"));
+
+    let scoreBoxBg = "#fee2e2";
+    let scoreBoxColor = "#b91c1c";
+    if (isFailed) {
+      scoreBoxBg = "#fee2e2";
+      scoreBoxColor = "#b91c1c";
+    } else if (score >= 80) {
+      scoreBoxBg = "#dcfce7";
+      scoreBoxColor = "#15803d";
+    } else if (score >= 60) {
+      scoreBoxBg = "#fef9c3";
+      scoreBoxColor = "#a16207";
+    }
+
+    let recText = "PENDING EVALUATION";
+    if (isFailed) {
+      recText = "❌ ASSESSMENT FAILED (NOT RECOMMENDED)";
+    } else if (session?.recommendation) {
+      recText = session.recommendation.toUpperCase();
+    } else if (statusStr === "COMPLETED") {
+      recText = "PASSED / RECOMMENDED";
+    }
+
+    const appId = app?.id || session?.application_id || "";
+    const failedNoticeHtml = isFailed ? `
+      <div class="alert alert-danger border-danger shadow-sm p-4 mb-4" style="border-radius: 12px; background: #fff5f5;">
+        <div class="d-flex align-items-start gap-3">
+          <span class="fs-1 text-danger">⚠️</span>
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-1">
+              <h5 class="fw-bold text-danger mb-0">Assessment Status: FAILED (Not Recommended)</h5>
+              <span class="badge bg-danger text-white px-3 py-1 rounded-pill fw-bold">Evaluation Failed</span>
+            </div>
+            <p class="mb-2 text-dark fs-6 fw-medium">
+              This candidate did not clear the pre-screening criteria or achieved a 0% / below-threshold match score.
+            </p>
+            <div class="p-3 bg-white rounded border border-danger border-opacity-25 mb-3 text-secondary small">
+              <strong class="text-dark d-block mb-1 fs-6">💡 How to Fix &amp; Handle This Candidate:</strong>
+              <ul class="mb-0 ps-3 style-line-height">
+                <li><strong>Option 1 (Recruiter Override):</strong> If candidate has verified offline qualifications, click <strong>"⭐ Save Recruiter Override &amp; Shortlist"</strong> below to override the failure and shortlist them.</li>
+                <li><strong>Option 2 (Request Re-Assessment):</strong> Reset or request candidate to re-take the pre-screening questionnaire.</li>
+                <li><strong>Option 3 (Confirm Rejection):</strong> Leave status as Rejected to generate candidate feedback report.</li>
+              </ul>
+            </div>
+            ${appId ? `
+            <div class="d-flex flex-wrap gap-2">
+              <button type="button" class="btn btn-sm btn-success fw-bold px-3 shadow-sm" onclick="window.overrideCandidateStatus && window.overrideCandidateStatus('${appId}', 'shortlisted', 'Recruiter Override from Assessment Breakdown')">
+                ⭐ Save Recruiter Override &amp; Shortlist
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-danger fw-semibold px-3" onclick="window.overrideCandidateStatus && window.overrideCandidateStatus('${appId}', 'rejected', 'Confirmed Rejection from Assessment Breakdown')">
+                ❌ Confirm Rejection
+              </button>
+            </div>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+    ` : '';
+
+    const result = session?.result || {};
+    const techScore = Math.round(result.technical_score ?? (app.skills_match_score || app.ats_score || (isFailed ? 0 : 75)));
+    const expScore = Math.round(result.experience_score ?? (app.experience_match_score || app.ats_score || (isFailed ? 0 : 75)));
+    const locScore = Math.round(result.location_score ?? (app.location_match_score || (isFailed ? 0 : 80)));
+    const availScore = Math.round(result.availability_score ?? (app.availability_score || (isFailed ? 0 : 80)));
+    const salScore = Math.round(result.salary_score ?? (app.salary_score || (isFailed ? 0 : 80)));
+    const commScore = Math.round(result.communication_score ?? (app.communication_score || (isFailed ? 0 : 85)));
+
+    const aiSummary = result.ai_summary || app.ai_summary || session?.ai_summary || (isFailed ? "Candidate failed evaluation. Does not meet core role qualifications." : "Detailed AI summary available upon completion of all questions.");
+
+    return `
+      <!-- Candidate Assessment Banner & Subscore Breakdown -->
+      <div class="assessment-breakdown-card mb-4">
+        <div class="card border-0 p-4 p-md-5 mb-4 shadow-sm" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; border-radius: 16px;">
+          <div class="row align-items-center">
+            <div class="col-lg-8">
+              <span class="badge bg-primary px-3 py-2 text-uppercase mb-3 fw-bold" style="letter-spacing: 0.05em; font-size: 0.75rem;">${channel}</span>
+              <h2 class="fw-bold mb-1 text-white">${escapeHtml(candidateName)}</h2>
+              <p class="text-light text-opacity-75 mb-3 fs-5">${escapeHtml(jobTitle)}</p>
+              <div class="d-flex flex-wrap gap-3 text-sm text-light text-opacity-90">
+                <div>📅 ${formattedDate}</div>
+                <div>❓ ${currentQ} / ${totalQ} Questions Answered</div>
+                <div>⚡ Status: <span class="fw-bold ${isFailed ? 'text-danger' : 'text-white'}">${statusStr}</span></div>
+              </div>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+              <div class="d-inline-block text-center">
+                <div class="shadow-sm mb-2" style="background: ${scoreBoxBg}; color: ${scoreBoxColor}; font-size: 2.2rem; font-weight: 800; border-radius: 12px; padding: 12px 28px; display: inline-block;">
+                  ${score}%
+                </div>
+                <div class="fw-bold text-uppercase text-light small" style="letter-spacing: 0.05em;">${recText}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        ${failedNoticeHtml}
+
+        <!-- Sub-Score Breakdown Grid -->
+        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2 text-dark">
+          <span class="text-primary">📈</span> Score Breakdown
+        </h5>
+        <div class="row g-3 mb-4">
+          <div class="col-md-4 col-sm-6">
+            <div class="card border p-3 shadow-sm h-100" style="border-radius: 12px; background: #ffffff;">
+              <div class="d-flex justify-content-between text-muted small fw-semibold mb-2">
+                <span>Technical Skills (30%)</span>
+                <span class="text-dark fw-bold">${techScore}%</span>
+              </div>
+              <div class="progress" style="height: 10px; border-radius: 5px; background-color: #e2e8f0;">
+                <div class="progress-bar" style="width: ${techScore}%; background-color: #10b981; border-radius: 5px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-6">
+            <div class="card border p-3 shadow-sm h-100" style="border-radius: 12px; background: #ffffff;">
+              <div class="d-flex justify-content-between text-muted small fw-semibold mb-2">
+                <span>Experience Match (20%)</span>
+                <span class="text-dark fw-bold">${expScore}%</span>
+              </div>
+              <div class="progress" style="height: 10px; border-radius: 5px; background-color: #e2e8f0;">
+                <div class="progress-bar" style="width: ${expScore}%; background-color: #06b6d4; border-radius: 5px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-6">
+            <div class="card border p-3 shadow-sm h-100" style="border-radius: 12px; background: #ffffff;">
+              <div class="d-flex justify-content-between text-muted small fw-semibold mb-2">
+                <span>Location / Work Mode (10%)</span>
+                <span class="text-dark fw-bold">${locScore}%</span>
+              </div>
+              <div class="progress" style="height: 10px; border-radius: 5px; background-color: #e2e8f0;">
+                <div class="progress-bar" style="width: ${locScore}%; background-color: #3b82f6; border-radius: 5px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-6">
+            <div class="card border p-3 shadow-sm h-100" style="border-radius: 12px; background: #ffffff;">
+              <div class="d-flex justify-content-between text-muted small fw-semibold mb-2">
+                <span>Notice Period / Availability (10%)</span>
+                <span class="text-dark fw-bold">${availScore}%</span>
+              </div>
+              <div class="progress" style="height: 10px; border-radius: 5px; background-color: #e2e8f0;">
+                <div class="progress-bar" style="width: ${availScore}%; background-color: #f59e0b; border-radius: 5px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-6">
+            <div class="card border p-3 shadow-sm h-100" style="border-radius: 12px; background: #ffffff;">
+              <div class="d-flex justify-content-between text-muted small fw-semibold mb-2">
+                <span>Salary Compatibility (5%)</span>
+                <span class="text-dark fw-bold">${salScore}%</span>
+              </div>
+              <div class="progress" style="height: 10px; border-radius: 5px; background-color: #e2e8f0;">
+                <div class="progress-bar" style="width: ${salScore}%; background-color: #6b7280; border-radius: 5px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-6">
+            <div class="card border p-3 shadow-sm h-100" style="border-radius: 12px; background: #ffffff;">
+              <div class="d-flex justify-content-between text-muted small fw-semibold mb-2">
+                <span>Communication Quality (5%)</span>
+                <span class="text-dark fw-bold">${commScore}%</span>
+              </div>
+              <div class="progress" style="height: 10px; border-radius: 5px; background-color: #e2e8f0;">
+                <div class="progress-bar" style="width: ${commScore}%; background-color: #1f2937; border-radius: 5px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Summary Box -->
+        <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px; background: #ffffff;">
+          <div class="card-body p-4">
+            <h5 class="fw-bold mb-3 d-flex align-items-center gap-2 text-dark">
+              <span class="text-primary">🤖</span> AI Evaluation Summary
+            </h5>
+            <div class="text-secondary" style="line-height: 1.6;">
+              ${aiSummary.split('\n').map(line => `<p class="mb-1">${escapeHtml(line)}</p>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   async function openApplicantDetail(appId) {
     if (!modalInstance && window.bootstrap) {
       modalInstance = new bootstrap.Modal(modalEl);
@@ -649,8 +895,14 @@
     if (modalInstance) modalInstance.show();
 
     try {
-      const res = await applicationsAPI.get(appId);
-      const app = res.data;
+      const [res, sessionRes] = await Promise.allSettled([
+        applicationsAPI.get(appId),
+        screeningAPI.getByApplication(appId)
+      ]);
+
+      const app = res.status === "fulfilled" ? res.value.data : {};
+      const session = sessionRes.status === "fulfilled" ? (sessionRes.value.data || sessionRes.value) : null;
+
       const c = app.candidate_profile || {};
       const atsRep = app.ats_report || {};
       const brk = app.breakdown || {};
@@ -726,8 +978,71 @@
       const reqExp = (currentJob && currentJob.experience_required) || 0;
       const expMatched = candExp >= reqExp;
 
+      // Assessment Score Data
+      const codingScoreVal = app.coding_score != null ? Math.round(app.coding_score) : null;
+      const interviewScoreVal = app.interview_score != null ? Math.round(app.interview_score) : null;
+      const overallScoreVal = app.overall_score != null ? Math.round(app.overall_score) : null;
+
+      const codingAttemptId = app.coding_attempt_id || null;
+      const interviewId = app.interview_id || null;
+
+      // Score card helper
+      function scoreCard(label, value, isHighlighted = false, href = null) {
+        const display = value != null ? `${value}%` : `N/A`;
+        let cardStyle = isHighlighted
+          ? `background: #2f5fff; color: #fff;`
+          : `background: #f8fafc; color: #1a1a2e; border: 1px solid #e2e8f0;`;
+        if (value != null && isHighlighted === false) {
+          if (value >= 80) cardStyle = `background: #1a7a4a; color: #fff;`;
+          else if (value >= 60) cardStyle = `background: #0d6efd; color: #fff;`;
+          else if (value >= 40) cardStyle = `background: #ffc107; color: #1a1a2e;`;
+          else if (value != null) cardStyle = `background: #dc3545; color: #fff;`;
+        }
+        const inner = `
+          <div style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.85; margin-bottom: 6px;">${label}</div>
+          <div style="font-size: 2rem; font-weight: 800; line-height: 1;">${display}</div>
+        `;
+        if (href) {
+          return `<a href="${href}" target="_blank" class="text-decoration-none flex-fill" style="min-width: 120px;">
+            <div class="rounded-3 p-3 text-center h-100" style="${cardStyle} transition: opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">${inner}</div>
+          </a>`;
+        }
+        return `<div class="flex-fill rounded-3 p-3 text-center" style="${cardStyle}; min-width: 120px;">${inner}</div>`;
+      }
+
+      const assessmentBannerHtml = `
+        <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 14px; background: #fff;">
+          <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+            <div>
+              <h6 class="fw-bold text-dark mb-0">📊 Candidate Score Overview</h6>
+              <span class="small text-muted">ATS · Coding Assessment · Interview · Overall</span>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              ${codingAttemptId ? `<a href="integrity-report.html?attempt_id=${codingAttemptId}" target="_blank" class="btn btn-sm btn-outline-info fw-semibold">🛡️ View Coding Report</a>` : ''}
+              ${interviewId ? `<a href="interview-scorecard.html?interview_id=${interviewId}" target="_blank" class="btn btn-sm btn-outline-warning fw-semibold">📋 View Interview Scorecard</a>` : ''}
+            </div>
+          </div>
+          <div class="d-flex flex-wrap gap-3">
+            ${scoreCard('ATS Score', atsScore, false)}
+            ${scoreCard('Coding Score', codingScoreVal, codingScoreVal != null,
+              codingAttemptId ? `integrity-report.html?attempt_id=${codingAttemptId}` : null)}
+            ${scoreCard('Interview Score', interviewScoreVal, false,
+              interviewId ? `interview-scorecard.html?interview_id=${interviewId}` : null)}
+            ${scoreCard('Overall Score', overallScoreVal != null ? overallScoreVal : atsScore, false)}
+          </div>
+          ${codingScoreVal == null && interviewScoreVal == null ? `
+            <div class="alert alert-info py-2 mb-0 mt-3 small">
+              ℹ️ <strong>Assessment Not Completed:</strong> This candidate has not yet completed the coding assessment or interview for this job.
+            </div>` : ''}
+        </div>
+      `;
+
       modalBody.innerHTML = `
+        ${renderAssessmentHeaderBanner(session, app)}
+
         ${statusPipelineHtml}
+
+        ${assessmentBannerHtml}
 
         <div class="row g-4 mb-4">
           <!-- Candidate Profile Left Column -->
@@ -983,6 +1298,52 @@
       applyFilters();
     });
   });
+
+  const schedForm = document.getElementById("form-schedule-interview-modal");
+  if (schedForm) {
+    schedForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const alertEl = document.getElementById("modal-sched-alert");
+      const btn = document.getElementById("btn-submit-modal-sched");
+      if (alertEl) alertEl.classList.add("d-none");
+      btn.disabled = true;
+      btn.textContent = "Scheduling...";
+
+      const payload = {
+        job_id: document.getElementById("sched-modal-job-id").value,
+        candidate_id: document.getElementById("sched-modal-cand-id").value,
+        application_id: document.getElementById("sched-modal-app-id").value,
+        scheduled_date: document.getElementById("sched-modal-date").value,
+        start_time: document.getElementById("sched-modal-time").value,
+        duration_minutes: parseInt(document.getElementById("sched-modal-duration").value) || 30,
+        timezone: document.getElementById("sched-modal-timezone").value || "Asia/Kolkata",
+        send_email: document.getElementById("sched-modal-chk-email").checked,
+        sync_calendar: document.getElementById("sched-modal-chk-cal").checked,
+      };
+
+      try {
+        await scheduledInterviewsAPI.schedule(payload);
+        showAlert("Interview scheduled successfully!", "success");
+        const modalEl = document.getElementById("scheduleInterviewModal");
+        if (window.bootstrap && modalEl) {
+          const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+          modal.hide();
+        }
+        loadJobAndApplicants();
+      } catch (err) {
+        if (alertEl) {
+          alertEl.textContent = err.status === 409 ? (err.message || "An interview already exists during this time.") : err.message;
+          alertEl.className = "alert alert-danger py-2 mb-3";
+          alertEl.classList.remove("d-none");
+        } else {
+          showAlert(err.message, "danger");
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Schedule Interview";
+      }
+    });
+  }
 
   document.addEventListener("ar:auth-ready", () => {
     loadJobAndApplicants();

@@ -22,6 +22,8 @@ class CalendarProvider(str, enum.Enum):
 
 class ScheduledInterviewStatus(str, enum.Enum):
     scheduled = "SCHEDULED"
+    confirmed = "CONFIRMED"
+    in_progress = "IN_PROGRESS"
     rescheduled = "RESCHEDULED"
     cancelled = "CANCELLED"
     completed = "COMPLETED"
@@ -66,6 +68,9 @@ class ScheduledInterview(Base, TimestampMixin):
     job_id: Mapped[uuid.UUID] = mapped_column(
         GUID(), ForeignKey("jobs.id", ondelete="CASCADE"), nullable=False, index=True
     )
+    application_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        GUID(), ForeignKey("applications.id", ondelete="CASCADE"), nullable=True, index=True
+    )
 
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     interview_type: Mapped[str] = mapped_column(String(100), default="AI Technical Interview", nullable=False)
@@ -82,19 +87,41 @@ class ScheduledInterview(Base, TimestampMixin):
         index=True
     )
 
+    meeting_room_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    join_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    recruiter_joined_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    candidate_joined_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
     calendar_provider: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     calendar_event_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     calendar_event_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     calendar_sync_status: Mapped[str] = mapped_column(String(50), default="synced", nullable=False) # synced, failed, pending
 
+    reminder_sent: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     reminder_24h_sent: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     reminder_1h_sent: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    invitation_sent: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    calendar_synced: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+
     cancelled_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    cancellation_reason: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    rescheduled_from_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        GUID(), ForeignKey("scheduled_interviews.id", ondelete="SET NULL"), nullable=True
+    )
 
     candidate = relationship("CandidateProfile", backref="scheduled_interviews")
     recruiter = relationship("User", backref="recruiter_scheduled_interviews")
     job = relationship("Job", backref="scheduled_interviews")
+    application = relationship("Application", backref="scheduled_interviews")
     interview = relationship("Interview", backref="scheduled_session")
+
+    @property
+    def scheduled_start_utc(self) -> datetime:
+        return self.start_time_utc
+
+    @property
+    def scheduled_end_utc(self) -> datetime:
+        return self.end_time_utc
 
     def __repr__(self) -> str:
         return f"<ScheduledInterview {self.title} status={self.status} start={self.start_time_utc}>"

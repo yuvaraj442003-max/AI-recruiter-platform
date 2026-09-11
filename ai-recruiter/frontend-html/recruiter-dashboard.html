@@ -45,6 +45,11 @@
           </a>
         </li>
         <li class="nav-item">
+          <a href="talent-rediscovery.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>✨</span> Talent Rediscovery
+          </a>
+        </li>
+        <li class="nav-item">
           <a href="upload.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
             <span>📤</span> Upload
           </a>
@@ -286,13 +291,14 @@
                   <th>Job Title</th>
                   <th>ATS Score</th>
                   <th>Job Match</th>
+                  <th>💻 Assessment</th>
                   <th>Recommendation</th>
                   <th class="text-end">Actions</th>
                 </tr>
               </thead>
               <tbody id="top-candidates-body">
                 <tr>
-                  <td colspan="7" class="text-center py-3 text-muted">Loading top ranked candidates…</td>
+                  <td colspan="8" class="text-center py-3 text-muted">Loading top ranked candidates…</td>
                 </tr>
               </tbody>
             </table>
@@ -573,6 +579,30 @@
         </div>
         <div class="modal-body p-4" id="ats-modal-body">
           <!-- Dynamic Content Inserted by bulk-upload.js -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Candidate Pre-Screening & Assessment Score Breakdown Modal -->
+  <div class="modal fade" id="recruiterAssessmentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+        <div class="modal-header border-0 bg-dark text-white p-3">
+          <div class="d-flex align-items-center gap-2">
+            <span class="fs-4">📊</span>
+            <h5 class="modal-title fw-bold mb-0">Candidate Assessment &amp; AI Pre-Screening</h5>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4" id="recruiter-assessment-modal-body">
+          <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2 text-muted">Loading candidate assessment details...</p>
+          </div>
+        </div>
+        <div class="modal-footer border-top bg-light p-3">
+          <button type="button" class="btn btn-secondary px-4 fw-semibold" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>

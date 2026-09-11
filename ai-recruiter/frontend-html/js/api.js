@@ -689,30 +689,16 @@ const talentRediscoveryAPI = {
   getAnalytics: () => api.get("/talent-rediscovery/analytics"),
 };
 
-const blindScreeningAPI = {
-  getConfig: (jobId) => api.get(`/jobs/${jobId}/blind-screening/config`),
-  updateConfig: (jobId, payload) => api.put(`/jobs/${jobId}/blind-screening/config`, payload),
-  getCandidates: (jobId, params = {}) => api.get(`/jobs/${jobId}/blind-screening/candidates${buildQueryString(params)}`),
-  getCandidateDetail: (jobId, candidateCode) => api.get(`/jobs/${jobId}/blind-screening/candidates/${candidateCode}`),
-  saveDecision: (jobId, candidateCode, decision) => api.post(`/jobs/${jobId}/blind-screening/candidates/${candidateCode}/decision`, { decision }),
-  revealCandidate: (jobId, candidateCode) => api.post(`/jobs/${jobId}/blind-screening/candidates/${candidateCode}/reveal`, {}),
-  getStatistics: (jobId) => api.get(`/jobs/${jobId}/blind-screening/statistics`),
-};
-
 const feedbackAPI = {
-  generate: (appId, level = "personalized", direction = null) => {
-    const query = new URLSearchParams();
-    if (level) query.set("feedback_level", level);
-    if (direction) query.set("custom_direction", direction);
-    return api.post(`/applications/${appId}/feedback/generate?${query.toString()}`, {});
-  },
-  get: (appId) => api.get(`/applications/${appId}/feedback`),
-  update: (appId, payload) => api.put(`/applications/${appId}/feedback`, payload),
-  approve: (appId, finalContent = null) => api.post(`/applications/${appId}/feedback/approve`, { final_content_override: finalContent }),
-  send: (appId, finalContent = null) => api.post(`/applications/${appId}/feedback/send`, { final_content_override: finalContent }),
-  regenerate: (appId, customDirection = "more encouraging") =>
-    api.post(`/applications/${appId}/feedback/regenerate?custom_direction=${encodeURIComponent(customDirection)}`, {}),
-  bulkGenerate: (appIds, autoApprove = false) => api.post(`/recruiter/feedback/bulk-generate`, { application_ids: appIds, auto_approve: autoApprove }),
+  get: (applicationId) => api.get(`/applications/${applicationId}/feedback`),
+  generate: (applicationId, feedbackLevel = "personalized", customDirection = null) =>
+    api.post(`/applications/${applicationId}/feedback/generate?feedback_level=${feedbackLevel}${customDirection ? `&custom_direction=${encodeURIComponent(customDirection)}` : ""}`, {}),
+  approve: (applicationId, finalContentOverride = null) =>
+    api.post(`/applications/${applicationId}/feedback/approve`, finalContentOverride ? { final_content_override: finalContentOverride } : {}),
+  regenerate: (applicationId, customDirection = "more encouraging") =>
+    api.post(`/applications/${applicationId}/feedback/regenerate?custom_direction=${encodeURIComponent(customDirection)}`, {}),
+  bulkGenerate: (applicationIds, autoApprove = false, prompt = null) =>
+    api.post("/recruiter/feedback/bulk-generate", { application_ids: applicationIds, auto_approve: autoApprove, regeneration_prompt: prompt }),
 };
 
 window.candidateSearchAPI = candidateSearchAPI;
@@ -720,8 +706,39 @@ window.screeningAPI = screeningAPI;
 window.proctoringAPI = proctoringAPI;
 window.interviewScorecardAPI = interviewScorecardAPI;
 window.talentRediscoveryAPI = talentRediscoveryAPI;
-window.blindScreeningAPI = blindScreeningAPI;
 window.feedbackAPI = feedbackAPI;
+
+// Attach sub-namespaces directly to api object so API.interviews, API.jobs, etc. work seamlessly
+Object.assign(api, {
+  auth: authAPI,
+  ats: atsAPI,
+  comparison: comparisonAPI,
+  resumeImprovement: resumeImprovementAPI,
+  resume: resumeAPI,
+  resumes: resumeAPI,
+  jobs: jobsAPI,
+  applications: applicationsAPI,
+  matching: matchingAPI,
+  recommendations: recommendationsAPI,
+  interviews: interviewsAPI,
+  speech: speechAPI,
+  analytics: analyticsAPI,
+  admin: adminAPI,
+  recruiterProfile: recruiterProfileAPI,
+  notifications: notificationsAPI,
+  messages: messagesAPI,
+  coding: codingAPI,
+  calendar: calendarAPI,
+  emailSettings: emailSettingsAPI,
+  scheduledInterviews: scheduledInterviewsAPI,
+  candidateSearch: candidateSearchAPI,
+  screening: screeningAPI,
+  proctoring: proctoringAPI,
+  interviewScorecard: interviewScorecardAPI,
+  talentRediscovery: talentRediscoveryAPI,
+  feedback: feedbackAPI,
+});
+
 
 
 

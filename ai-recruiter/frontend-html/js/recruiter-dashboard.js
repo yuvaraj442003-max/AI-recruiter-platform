@@ -404,11 +404,23 @@
             totalApps++;
             const score = app.ats_score || app.match_score || 0;
             const st = (app.status || "applied").toLowerCase();
+            const recLower = (app.recommendation || "").toLowerCase();
 
-            if (score >= minAts) eligibleApps++;
+            const isFailed = st === "rejected" || recLower.includes("failed");
+
+            if (score >= minAts && !isFailed) eligibleApps++;
             if (st === "shortlisted") shortlistedApps++;
             if ((st === "applied" || st === "under_review") && score < minAts) reviewApps++;
-            if (score < 40) notRecApps++;
+            if (score < 40 || isFailed) notRecApps++;
+
+            let recText = app.recommendation;
+            if (!recText) {
+              if (isFailed) recText = "Failed Assessment (Rejected)";
+              else if (score >= 80) recText = "Priority Candidate";
+              else if (score >= 60) recText = "Shortlist for Review";
+              else if (score >= 40) recText = "Manual Review";
+              else recText = "Not Recommended";
+            }
 
             allCandidateApps.push({
               application: app,
@@ -417,7 +429,9 @@
               candidateEmail: app.candidate_email || "",
               atsScore: Math.round(score),
               jobMatchScore: Math.round(app.job_match_score || score),
-              recommendation: app.recommendation || (score >= 80 ? "Priority Candidate" : score >= 60 ? "Shortlist for Review" : score >= 40 ? "Manual Review" : "Not Recommended"),
+              codingScore: app.coding_score != null ? Math.round(app.coding_score) : null,
+              recommendation: recText,
+              isFailed: isFailed,
             });
           });
         } catch (e) {
@@ -436,7 +450,7 @@
       const topBody = document.getElementById("top-candidates-body");
       if (topBody) {
         if (!allCandidateApps.length) {
-          topBody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No applicants submitted yet.</td></tr>`;
+          topBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">No applicants submitted yet.</td></tr>`;
           return;
         }
 
@@ -446,24 +460,40 @@
           else if (item.atsScore < 60) scoreBadge = "bg-warning text-dark";
           else if (item.atsScore < 80) scoreBadge = "bg-info text-white";
 
+          let recBadge = '<span class="badge bg-secondary-subtle text-secondary px-2 py-1 rounded-pill small">' + item.recommendation + '</span>';
+          if (item.isFailed) {
+            recBadge = '<span class="badge bg-danger-subtle text-danger border border-danger px-2 py-1 rounded-pill small">❌ ' + item.recommendation + '</span>';
+          } else if (item.recommendation.includes("Passed")) {
+            recBadge = '<span class="badge bg-success-subtle text-success border border-success px-2 py-1 rounded-pill small">✅ ' + item.recommendation + '</span>';
+          }
+
           return `
             <tr>
               <td class="fw-bold text-secondary">#${idx + 1}</td>
               <td>
-                <div class="fw-bold text-dark fs-6">${item.candidateName}</div>
+                <div class="fw-bold text-dark fs-6 cursor-pointer text-primary" onclick="window.openRecruiterAssessmentModal('${item.application.id}', '${escapeHtml(item.candidateName)}', '${escapeHtml(item.job.title)}')">${item.candidateName}</div>
                 <div class="text-muted small">${item.candidateEmail}</div>
               </td>
               <td class="text-secondary small fw-medium">${item.job.title}</td>
               <td>
-                <span class="badge ${scoreBadge} px-3 py-1 rounded-pill fs-6">${item.atsScore}%</span>
+                <span class="badge ${scoreBadge} px-3 py-1 rounded-pill fs-6 cursor-pointer" onclick="window.openRecruiterAssessmentModal('${item.application.id}', '${escapeHtml(item.candidateName)}', '${escapeHtml(item.job.title)}')">${item.atsScore}%</span>
               </td>
               <td>
                 <span class="badge bg-light text-dark border px-3 py-1 rounded-pill fs-6">${item.jobMatchScore}%</span>
               </td>
               <td>
-                <span class="badge bg-secondary-subtle text-secondary px-2 py-1 rounded-pill small">${item.recommendation}</span>
+                ${item.codingScore != null
+                  ? `<span class="badge ${item.codingScore >= 60 ? 'bg-info' : 'bg-warning text-dark'} px-3 py-1 rounded-pill fs-6">${item.codingScore}%</span>`
+                  : `<span class="text-muted small">—</span>`
+                }
+              </td>
+              <td>
+                ${recBadge}
               </td>
               <td class="text-end">
+                <button class="btn btn-sm btn-info text-white fw-semibold view-assessment-btn me-1 shadow-sm" data-app-id="${item.application.id}" data-candidate-name="${escapeHtml(item.candidateName)}" data-job-title="${escapeHtml(item.job.title)}">
+                  📊 Score Breakdown
+                </button>
                 <a href="job-applicants.html?job_id=${item.job.id}" class="btn btn-sm btn-outline-primary fw-semibold px-3">
                   Inspect Applicants &rarr;
                 </a>
@@ -471,11 +501,298 @@
             </tr>
           `;
         }).join("");
+
+        topBody.querySelectorAll(".view-assessment-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            openCandidateAssessmentModal(btn.dataset.appId, btn.dataset.candidateName, btn.dataset.jobTitle);
+          });
+        });
       }
     } catch (err) {
       console.warn("Could not load ATS screening summary:", err);
     }
   }
+
+  function escapeHtml(str) {
+    if (!str) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function generateAssessmentBreakdownHTML(session, app = {}) {
+    const channel = (session?.channel || "WhatsApp").toUpperCase() + " SCREENING";
+    const candidateName = session?.candidate_name || app?.candidate_name || "Candidate Profile";
+    const jobTitle = session?.job_title || app?.job_title || "Target Position";
+
+    const currentQ = session?.current_question_index ?? 0;
+    const totalQ = session?.total_questions ?? 5;
+    const statusStr = (session?.status || app?.status || "Pending").toUpperCase();
+
+    const dateStr = session?.completed_at || session?.created_at || app?.applied_at;
+    const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString() : "In Progress";
+
+    const rawScore = session?.screening_score ?? app?.overall_score ?? app?.ats_score ?? 0;
+    const score = Math.round(rawScore);
+
+    const statusLower = (session?.status || app?.status || "").toLowerCase();
+    const recLower = (session?.recommendation || app?.recommendation || "").toLowerCase();
+    const isFailed = statusLower === "failed" || statusLower === "rejected" || 
+                     recLower.includes("fail") || recLower.includes("reject") || recLower.includes("not recommended") ||
+                     (score === 0 && (currentQ > 0 || statusLower === "completed" || statusLower === "failed"));
+
+    let scoreBoxBg = "#fee2e2";
+    let scoreBoxColor = "#b91c1c";
+    if (isFailed) {
+      scoreBoxBg = "#fee2e2";
+      scoreBoxColor = "#b91c1c";
+    } else if (score >= 80) {
+      scoreBoxBg = "#dcfce7";
+      scoreBoxColor = "#15803d";
+    } else if (score >= 60) {
+      scoreBoxBg = "#fef9c3";
+      scoreBoxColor = "#a16207";
+    }
+
+    let recText = "PENDING EVALUATION";
+    if (isFailed) {
+      recText = "❌ ASSESSMENT FAILED (NOT RECOMMENDED)";
+    } else if (session?.recommendation) {
+      recText = session.recommendation.toUpperCase();
+    } else if (statusStr === "COMPLETED") {
+      recText = "PASSED / RECOMMENDED";
+    }
+
+    const appId = app?.id || session?.application_id || "";
+    const failedNoticeHtml = isFailed ? `
+      <div class="alert alert-danger border-danger shadow-sm p-4 mb-4" style="border-radius: 12px; background: #fff5f5;">
+        <div class="d-flex align-items-start gap-3">
+          <span class="fs-1 text-danger">⚠️</span>
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-1">
+              <h5 class="fw-bold text-danger mb-0">Assessment Status: FAILED (Not Recommended)</h5>
+              <span class="badge bg-danger text-white px-3 py-1 rounded-pill fw-bold">Evaluation Failed</span>
+            </div>
+            <p class="mb-2 text-dark fs-6 fw-medium">
+              This candidate did not clear the pre-screening criteria or achieved a 0% / below-threshold match score.
+            </p>
+            <div class="p-3 bg-white rounded border border-danger border-opacity-25 mb-3 text-secondary small">
+              <strong class="text-dark d-block mb-1 fs-6">💡 How to Fix &amp; Handle This Candidate:</strong>
+              <ul class="mb-0 ps-3 style-line-height">
+                <li><strong>Option 1 (Recruiter Override):</strong> If candidate has verified offline qualifications, click <strong>"⭐ Save Recruiter Override &amp; Shortlist"</strong> below to override the failure and shortlist them.</li>
+                <li><strong>Option 2 (Request Re-Assessment):</strong> Reset or request the candidate to re-take the pre-screening questionnaire.</li>
+                <li><strong>Option 3 (Confirm Rejection):</strong> Leave status as Rejected to generate candidate feedback report.</li>
+              </ul>
+            </div>
+            ${appId ? `
+            <div class="d-flex flex-wrap gap-2">
+              <button type="button" class="btn btn-sm btn-success fw-bold px-3 shadow-sm" onclick="window.overrideCandidateStatus && window.overrideCandidateStatus('${appId}', 'shortlisted', 'Recruiter Override from Assessment Breakdown')">
+                ⭐ Save Recruiter Override &amp; Shortlist
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-danger fw-semibold px-3" onclick="window.overrideCandidateStatus && window.overrideCandidateStatus('${appId}', 'rejected', 'Confirmed Rejection from Assessment Breakdown')">
+                ❌ Confirm Rejection
+              </button>
+            </div>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+    ` : '';
+
+    const result = session?.result || {};
+    const techScore = Math.round(result.technical_score ?? (app.skills_match_score || app.ats_score || (isFailed ? 0 : 75)));
+    const expScore = Math.round(result.experience_score ?? (app.experience_match_score || app.ats_score || (isFailed ? 0 : 75)));
+    const locScore = Math.round(result.location_score ?? (app.location_match_score || (isFailed ? 0 : 80)));
+    const availScore = Math.round(result.availability_score ?? (app.availability_score || (isFailed ? 0 : 80)));
+    const salScore = Math.round(result.salary_score ?? (app.salary_score || (isFailed ? 0 : 80)));
+    const commScore = Math.round(result.communication_score ?? (app.communication_score || (isFailed ? 0 : 85)));
+
+    const aiSummary = result.ai_summary || app.ai_summary || session?.ai_summary || (isFailed ? "Candidate failed evaluation. Does not meet core role qualifications." : "Detailed AI summary available upon completion of all questions.");
+
+    return `
+      <div class="assessment-breakdown-container">
+        <!-- Header Banner -->
+        <div class="card border-0 p-4 p-md-5 mb-4 shadow-sm" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; border-radius: 16px;">
+          <div class="row align-items-center">
+            <div class="col-lg-8">
+              <span class="badge bg-primary px-3 py-2 text-uppercase mb-3 fw-bold" style="letter-spacing: 0.05em; font-size: 0.75rem;">${channel}</span>
+              <h2 class="fw-bold mb-1 text-white">${escapeHtml(candidateName)}</h2>
+              <p class="text-light text-opacity-75 mb-3 fs-5">${escapeHtml(jobTitle)}</p>
+              <div class="d-flex flex-wrap gap-3 text-sm text-light text-opacity-90">
+                <div>📅 ${formattedDate}</div>
+                <div>❓ ${currentQ} / ${totalQ} Questions Answered</div>
+                <div>⚡ Status: <span class="fw-bold ${isFailed ? 'text-danger' : 'text-white'}">${statusStr}</span></div>
+              </div>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+              <div class="d-inline-block text-center">
+                <div class="shadow-sm mb-2" style="background: ${scoreBoxBg}; color: ${scoreBoxColor}; font-size: 2.2rem; font-weight: 800; border-radius: 12px; padding: 12px 28px; display: inline-block;">
+                  ${score}%
+                </div>
+                <div class="fw-bold text-uppercase text-light small" style="letter-spacing: 0.05em;">${recText}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        ${failedNoticeHtml}
+
+        <!-- Sub-Score Breakdown Grid -->
+        <h4 class="fw-bold mb-3 d-flex align-items-center gap-2 text-dark">
+          <span class="text-primary">📈</span> Score Breakdown
+        </h4>
+        <div class="row g-3 mb-4">
+          <div class="col-md-4 col-sm-6">
+            <div class="card border p-3 shadow-sm h-100" style="border-radius: 12px; background: #ffffff;">
+              <div class="d-flex justify-content-between text-muted small fw-semibold mb-2">
+                <span>Technical Skills (30%)</span>
+                <span class="text-dark fw-bold">${techScore}%</span>
+              </div>
+              <div class="progress" style="height: 10px; border-radius: 5px; background-color: #e2e8f0;">
+                <div class="progress-bar" style="width: ${techScore}%; background-color: #10b981; border-radius: 5px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-6">
+            <div class="card border p-3 shadow-sm h-100" style="border-radius: 12px; background: #ffffff;">
+              <div class="d-flex justify-content-between text-muted small fw-semibold mb-2">
+                <span>Experience Match (20%)</span>
+                <span class="text-dark fw-bold">${expScore}%</span>
+              </div>
+              <div class="progress" style="height: 10px; border-radius: 5px; background-color: #e2e8f0;">
+                <div class="progress-bar" style="width: ${expScore}%; background-color: #06b6d4; border-radius: 5px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-6">
+            <div class="card border p-3 shadow-sm h-100" style="border-radius: 12px; background: #ffffff;">
+              <div class="d-flex justify-content-between text-muted small fw-semibold mb-2">
+                <span>Location / Work Mode (10%)</span>
+                <span class="text-dark fw-bold">${locScore}%</span>
+              </div>
+              <div class="progress" style="height: 10px; border-radius: 5px; background-color: #e2e8f0;">
+                <div class="progress-bar" style="width: ${locScore}%; background-color: #3b82f6; border-radius: 5px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-6">
+            <div class="card border p-3 shadow-sm h-100" style="border-radius: 12px; background: #ffffff;">
+              <div class="d-flex justify-content-between text-muted small fw-semibold mb-2">
+                <span>Notice Period / Availability (10%)</span>
+                <span class="text-dark fw-bold">${availScore}%</span>
+              </div>
+              <div class="progress" style="height: 10px; border-radius: 5px; background-color: #e2e8f0;">
+                <div class="progress-bar" style="width: ${availScore}%; background-color: #f59e0b; border-radius: 5px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-6">
+            <div class="card border p-3 shadow-sm h-100" style="border-radius: 12px; background: #ffffff;">
+              <div class="d-flex justify-content-between text-muted small fw-semibold mb-2">
+                <span>Salary Compatibility (5%)</span>
+                <span class="text-dark fw-bold">${salScore}%</span>
+              </div>
+              <div class="progress" style="height: 10px; border-radius: 5px; background-color: #e2e8f0;">
+                <div class="progress-bar" style="width: ${salScore}%; background-color: #6b7280; border-radius: 5px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-6">
+            <div class="card border p-3 shadow-sm h-100" style="border-radius: 12px; background: #ffffff;">
+              <div class="d-flex justify-content-between text-muted small fw-semibold mb-2">
+                <span>Communication Quality (5%)</span>
+                <span class="text-dark fw-bold">${commScore}%</span>
+              </div>
+              <div class="progress" style="height: 10px; border-radius: 5px; background-color: #e2e8f0;">
+                <div class="progress-bar" style="width: ${commScore}%; background-color: #1f2937; border-radius: 5px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Summary Box -->
+        <div class="card border-0 shadow-sm mb-3" style="border-radius: 12px; background: #ffffff;">
+          <div class="card-body p-4">
+            <h5 class="fw-bold mb-3 d-flex align-items-center gap-2 text-dark">
+              <span class="text-primary">🤖</span> AI Evaluation Summary
+            </h5>
+            <div class="text-secondary" style="line-height: 1.6;">
+              ${aiSummary.split('\n').map(line => `<p class="mb-1">${escapeHtml(line)}</p>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  async function openCandidateAssessmentModal(appId, candidateName, jobTitle) {
+    const modalEl = document.getElementById("recruiterAssessmentModal");
+    const modalBody = document.getElementById("recruiter-assessment-modal-body");
+    if (!modalEl || !modalBody) return;
+
+    modalBody.innerHTML = `
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2 text-muted">Loading candidate assessment details...</p>
+      </div>
+    `;
+
+    if (window.bootstrap) {
+      const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+      modal.show();
+    }
+
+    try {
+      let session = null;
+      try {
+        const res = await screeningAPI.getByApplication(appId);
+        session = res.data || res;
+      } catch (err) {
+        // Fallback session object
+      }
+
+      modalBody.innerHTML = generateAssessmentBreakdownHTML(session, {
+        candidate_name: candidateName,
+        job_title: jobTitle,
+      });
+    } catch (err) {
+      modalBody.innerHTML = `
+        <div class="alert alert-danger">
+          Failed to load candidate assessment score: ${escapeHtml(err.message || String(err))}
+        </div>
+      `;
+    }
+  }
+
+  window.openRecruiterAssessmentModal = openCandidateAssessmentModal;
+
+  window.overrideCandidateStatus = async function (appId, newStatus, reason = "") {
+    if (!appId) {
+      alert("Application ID is missing.");
+      return;
+    }
+    try {
+      await applicationsAPI.updateStatus(appId, newStatus, reason);
+      alert(`Candidate application status successfully updated to '${newStatus.toUpperCase()}'!`);
+      const modalEl = document.getElementById("recruiterAssessmentModal") || document.getElementById("applicantDetailModal");
+      if (modalEl && window.bootstrap) {
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+      }
+      if (typeof loadAnalytics === "function") loadAnalytics();
+      if (typeof renderScreeningStatsAndTopCandidates === "function") renderScreeningStatsAndTopCandidates();
+    } catch (err) {
+      alert("Failed to update status: " + (err?.message || String(err)));
+    }
+  };
 
   function calculateDateFilterIso() {
     if (!dateFilterSelect) return { start_date: null, end_date: null };

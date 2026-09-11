@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session, joinedload
 from app.core.database import get_db
 from app.core.deps import require_role
 from app.core.exceptions import NotFoundError, PermissionDeniedError
-from app.models.application import Application
+from app.models.application import Application, ApplicationStatus
 from app.models.candidate import CandidateProfile
 from app.models.job import Job
 from app.models.user import User, UserRole
@@ -28,7 +28,12 @@ router = APIRouter(prefix="/applications", tags=["Applications"])
 
 from app.services.job_service import re_screen_application
 
-def _to_response(app: Application, job_title: str | None = None) -> ApplicationResponse:
+def _to_response(
+    app: Application,
+    job_title: str | None = None,
+    coding_attempt_id: str | None = None,
+    interview_id: str | None = None,
+) -> ApplicationResponse:
     matched_sk = json.loads(app.matched_skills) if app.matched_skills else []
     missing_sk = json.loads(app.missing_skills) if app.missing_skills else []
     matched_kw = json.loads(app.matched_keywords) if app.matched_keywords else []
@@ -52,6 +57,12 @@ def _to_response(app: Application, job_title: str | None = None) -> ApplicationR
         location_match_score=app.location_match_score,
         keyword_match_score=app.keyword_match_score,
         responsibility_match_score=app.responsibility_match_score,
+        # Assessment & Interview composite scores (written back to Application on submission)
+        coding_score=app.coding_score,
+        interview_score=app.interview_score,
+        overall_score=app.overall_score,
+        coding_attempt_id=coding_attempt_id,
+        interview_id=interview_id,
         matched_skills=matched_sk,
         missing_skills=missing_sk,
         matched_keywords=matched_kw,

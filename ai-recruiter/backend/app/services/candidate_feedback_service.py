@@ -48,7 +48,7 @@ def collect_feedback_evidence(db: Session, app: Application) -> Dict[str, Any]:
 
     cand_name = cand.full_name if cand else "Candidate"
     job_title = job.title if job else "Position"
-    company_name = job.company.name if (job and job.company) else "our hiring team"
+    company_name = job.company_name if (job and job.company_name) else "our hiring team"
 
     cand_skills = []
     if cand and cand.candidate_skills:
@@ -56,11 +56,8 @@ def collect_feedback_evidence(db: Session, app: Application) -> Dict[str, Any]:
     cand_exp = float(cand.experience_years) if (cand and cand.experience_years is not None) else 0.0
 
     job_skills = []
-    if job and job.skills:
-        if isinstance(job.skills, str):
-            job_skills = [s.strip() for s in job.skills.split(",") if s.strip()]
-        elif isinstance(job.skills, list):
-            job_skills = [str(s).strip() for s in job.skills if s]
+    if job and job.job_skills:
+        job_skills = [js.skill.skill_name for js in job.job_skills if js.skill]
 
     job_min_exp = float(job.min_experience or job.experience_required or 0.0) if job else 0.0
 

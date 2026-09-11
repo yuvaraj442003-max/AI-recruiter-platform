@@ -5,6 +5,7 @@ integrity score calculation, recruiter manual review actions, and WebSocket live
 """
 import json
 import logging
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 import uuid
 
@@ -245,7 +246,7 @@ def save_recruiter_decision(
     result.recruiter_decision = decision_req.decision
     result.recruiter_notes = decision_req.notes
     result.reviewed_by_user_id = current_user.id
-    result.reviewed_at = db.func.now()
+    result.reviewed_at = datetime.now(timezone.utc)
 
     db.commit()
     db.refresh(result)
