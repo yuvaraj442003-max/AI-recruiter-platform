@@ -175,6 +175,85 @@
     camBadge.className = "badge bg-success";
     camBadge.textContent = "Camera Active (Virtual Feed) ✓";
     if (submitBtn) submitBtn.disabled = false;
+    setupProctorDetectors(proctorStream, proctorVideo, camBadge);
+  }
+
+  let cameraDetector = null;
+  let audioDetector = null;
+
+  function setupProctorDetectors(stream, proctorVideo, camBadge) {
+    if (window.ProctorCameraDetector && proctorVideo) {
+      if (cameraDetector) cameraDetector.stop();
+      cameraDetector = new window.ProctorCameraDetector(proctorVideo, {
+        intervalMs: 1000,
+        onFaceUpdate: ({ count, state, message }) => {
+          const antiCheatingBadge = document.getElementById("anti-cheating-badge");
+          if (state === "MULTIPLE_FACES") {
+            camBadge.className = "badge bg-danger text-white";
+            camBadge.textContent = `⚠️ ${count} Persons Detected!`;
+            showAlert(message, "danger");
+            if (antiCheatingBadge) {
+              antiCheatingBadge.className = "badge bg-danger text-white px-3 py-2 fw-bold";
+              antiCheatingBadge.textContent = `⚠️ Flagged: ${count} Persons`;
+            }
+            if (window.proctoringAPI && interviewId) {
+              window.proctoringAPI.recordEvent(interviewId, {
+                event_type: "MULTIPLE_FACES",
+                severity: "high",
+                confidence: 0.95,
+                metadata_json: { face_count: count }
+              }).catch(() => {});
+            }
+          } else if (state === "NO_FACE") {
+            camBadge.className = "badge bg-warning text-dark";
+            camBadge.textContent = "⚠️ Face Lost";
+            showAlert(message, "warning");
+          } else {
+            camBadge.className = "badge bg-success";
+            camBadge.textContent = "Camera Active ✓";
+            if (antiCheatingBadge && !antiCheatingBadge.textContent.includes("Flagged")) {
+              antiCheatingBadge.className = "badge bg-warning text-dark px-3 py-2 fw-bold";
+              antiCheatingBadge.textContent = "🔒 Anti-Cheating Active";
+            }
+          }
+        }
+      });
+      cameraDetector.start();
+    }
+
+    if (window.ProctorAudioDetector && stream) {
+      if (audioDetector) audioDetector.stop();
+      const audioStatusBadge = document.getElementById("audio-status-badge");
+      audioDetector = new window.ProctorAudioDetector({
+        noiseThresholdDb: 18,
+        onAudioStateChange: ({ decibels, delta }) => {
+          if (audioStatusBadge && !audioStatusBadge.textContent.includes("Spike")) {
+            audioStatusBadge.textContent = `🎙️ Mic: Active (${decibels} dB)`;
+          }
+        },
+        onNoiseDetected: ({ decibels, delta, message }) => {
+          showAlert(message, "danger");
+          const antiCheatingBadge = document.getElementById("anti-cheating-badge");
+          if (antiCheatingBadge) {
+            antiCheatingBadge.className = "badge bg-danger text-white px-3 py-2 fw-bold";
+            antiCheatingBadge.textContent = `⚠️ Flagged: Background Noise (${decibels} dB)`;
+          }
+          if (audioStatusBadge) {
+            audioStatusBadge.className = "small text-danger mt-1 fw-bold";
+            audioStatusBadge.textContent = `🎙️ Noise Spike: ${decibels} dB (+${delta} dB)`;
+          }
+          if (window.proctoringAPI && interviewId) {
+            window.proctoringAPI.recordEvent(interviewId, {
+              event_type: "SUSPICIOUS_AUDIO",
+              severity: "medium",
+              confidence: 0.90,
+              metadata_json: { decibels, delta_over_baseline: delta }
+            }).catch(() => {});
+          }
+        }
+      });
+      audioDetector.start(stream);
+    }
   }
 
   async function initCameraFeed() {
@@ -193,6 +272,7 @@
       camBadge.className = "badge bg-success";
       camBadge.textContent = "Camera Active ✓";
       if (submitBtn) submitBtn.disabled = false;
+      setupProctorDetectors(proctorStream, proctorVideo, camBadge);
       const alertBox = document.getElementById("interview-alert");
       if (alertBox && alertBox.textContent.includes("Camera")) {
         alertBox.classList.add("d-none");
@@ -239,45 +319,9 @@
     }, 1000);
   }
 
-  // --- Anti-Cheating: Tab Switch Detection & Auto-Logout ---
-  function initTabProctoring() {
-    function handleSecurityViolation() {
-      if (hasTerminated) return;
-      hasTerminated = true;
-
-      // Stop camera stream
-      if (proctorStream) {
-        proctorStream.getTracks().forEach((track) => track.stop());
-      }
-      if (timerInterval) clearInterval(timerInterval);
-
-      // Alert security violation
-      alert("⚠️ PROCTORING SECURITY VIOLATION:\n\nYou switched tabs or moved away from the 30-minute interview window.\n\nYour session has been terminated and you have been logged out.");
-
-      // Log out candidate and redirect
-      if (window.Session && window.Session.clear) {
-        window.Session.clear();
-      } else {
-        localStorage.clear();
-      }
-      window.location.href = "login.html?proctor_violation=tab_switch";
-    }
-
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) {
-        handleSecurityViolation();
-      }
-    });
-
-    window.addEventListener("blur", () => {
-      handleSecurityViolation();
-    });
-  }
-
   async function loadInterview() {
     initCameraFeed();
     start30MinTimer();
-    initTabProctoring();
 
     if (!interviewId) {
       showAlert("No interview specified.", "danger");

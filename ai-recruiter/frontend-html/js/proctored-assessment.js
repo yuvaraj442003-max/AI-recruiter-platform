@@ -92,6 +92,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
+let activeProctorStream = null;
+
 async function runSystemChecks() {
   const checkCam = document.getElementById("check-cam");
   const checkMic = document.getElementById("check-mic");
@@ -100,6 +102,7 @@ async function runSystemChecks() {
   // Camera & Mic check
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    activeProctorStream = stream;
     if (checkCam) { checkCam.textContent = "Ready ✓"; checkCam.className = "badge bg-success"; }
     if (checkMic) { checkMic.textContent = "Ready ✓"; checkMic.className = "badge bg-success"; }
 
@@ -156,6 +159,39 @@ function initActiveMonitoring(attemptId) {
       const pastedText = (e.clipboardData || window.clipboardData).getData("text");
       recordProctoringEvent(attemptId, "PASTE", "low", 0.95, { length: pastedText.length });
     });
+  }
+
+  // 4. Multi-Person Camera Detector & Background Noise Audio Detector
+  const videoEl = document.getElementById("webcam-feed");
+  if (window.ProctorCameraDetector && videoEl) {
+    const camDetector = new window.ProctorCameraDetector(videoEl, {
+      intervalMs: 1000,
+      onFaceUpdate: ({ count, state }) => {
+        if (state === "MULTIPLE_FACES") {
+          if (badgeCam) { badgeCam.className = "badge bg-danger"; badgeCam.innerHTML = `<i class="bi bi-person-x me-1"></i>${count} Persons`; }
+          showIntegrityToast(`⚠️ Multiple persons (${count}) detected on camera feed!`);
+          recordProctoringEvent(attemptId, "MULTIPLE_FACES", "high", 0.95, { count });
+        } else if (state === "NO_FACE") {
+          if (badgeCam) { badgeCam.className = "badge bg-warning text-dark"; badgeCam.innerHTML = '<i class="bi bi-person-slash me-1"></i>Face Lost'; }
+          recordProctoringEvent(attemptId, "NO_FACE", "medium", 0.90, {});
+        } else {
+          if (badgeCam) { badgeCam.className = "badge bg-success"; badgeCam.innerHTML = '<i class="bi bi-camera-video me-1"></i>Camera Active'; }
+        }
+      }
+    });
+    camDetector.start();
+  }
+
+  if (window.ProctorAudioDetector && activeProctorStream) {
+    const audioDetector = new window.ProctorAudioDetector({
+      noiseThresholdDb: 18,
+      onNoiseDetected: ({ decibels, delta }) => {
+        if (badgeMic) { badgeMic.className = "badge bg-danger"; badgeMic.innerHTML = `<i class="bi bi-mic-fill me-1"></i>Noise ${decibels}dB`; }
+        showIntegrityToast(`⚠️ Background noise detected: ${decibels} dB (+${delta} dB)`);
+        recordProctoringEvent(attemptId, "SUSPICIOUS_AUDIO", "medium", 0.90, { decibels, delta });
+      }
+    });
+    audioDetector.start(activeProctorStream);
   }
 }
 

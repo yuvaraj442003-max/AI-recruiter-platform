@@ -25,6 +25,7 @@ PENALTY_RULES = {
     "FACE_LOST": {"deduction": 10.0, "max_deduction": 30.0, "category": "webcam"},
     "ADDITIONAL_VOICE": {"deduction": 20.0, "max_deduction": 50.0, "category": "audio"},
     "SUSPICIOUS_AUDIO": {"deduction": 10.0, "max_deduction": 30.0, "category": "audio"},
+    "NOISE_DETECTED": {"deduction": 10.0, "max_deduction": 30.0, "category": "audio"},
 }
 
 
@@ -69,6 +70,9 @@ def calculate_attempt_integrity(db: Session, attempt_id: str) -> IntegrityResult
         evidence_bullets.append(f"• Face absence detected on camera: {event_counts['NO_FACE']} event(s).")
     if event_counts.get("ADDITIONAL_VOICE", 0) > 0:
         evidence_bullets.append(f"• Additional secondary voice detected on audio stream: {event_counts['ADDITIONAL_VOICE']} event(s).")
+    if event_counts.get("SUSPICIOUS_AUDIO", 0) > 0 or event_counts.get("NOISE_DETECTED", 0) > 0:
+        audio_events_cnt = event_counts.get("SUSPICIOUS_AUDIO", 0) + event_counts.get("NOISE_DETECTED", 0)
+        evidence_bullets.append(f"• External background noise or suspicious audio detected: {audio_events_cnt} event(s).")
 
     # Compute Sub-Scores (Starting from 100.0)
     browser_score = max(0.0, 100.0 - category_penalties["browser"])

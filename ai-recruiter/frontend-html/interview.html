@@ -44,25 +44,6 @@
       <div class="container p-4" style="max-width: 780px;">
         <div id="interview-alert" class="alert d-none py-2" role="alert"></div>
 
-        <!-- Proctored Camera & Security Status Card -->
-        <div class="card p-3 mb-4 shadow-sm rounded-4 border-0 bg-dark text-white d-flex flex-row align-items-center justify-content-between">
-          <div class="d-flex align-items-center gap-3">
-            <div style="width: 110px; height: 75px; background: #000; border-radius: 10px; overflow: hidden; position: relative;" class="border border-secondary flex-shrink-0">
-              <video id="proctor-video" autoplay muted playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
-            </div>
-            <div>
-              <h6 class="mb-1 fw-bold text-white d-flex align-items-center gap-2">
-                📹 Proctored Live Feed
-                <span id="cam-status-badge" class="badge bg-danger">Checking Camera...</span>
-              </h6>
-              <p class="small text-slate-300 mb-0" style="font-size: 0.825rem; color: #cbd5e1;">Camera monitoring is active. Do not switch tabs or minimize your window.</p>
-            </div>
-          </div>
-          <div class="text-end">
-            <span class="badge bg-warning text-dark px-3 py-2 fw-bold" style="font-size: 0.8rem;">🔒 Anti-Cheating Active</span>
-          </div>
-        </div>
-
         <div id="progress-wrapper" class="mb-3 d-none">
           <div class="d-flex justify-content-between small text-muted-custom mb-1">
             <span id="progress-label">Question 1 of N</span>
@@ -112,6 +93,7 @@
   <script src="js/api.js"></script>
   <script src="js/auth-guard.js"></script>
   <script src="js/dashboard.js"></script>
+  <script src="js/proctoring-detector.js"></script>
   <script src="js/interview.js"></script>
 </body>
 </html>

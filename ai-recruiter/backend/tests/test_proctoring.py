@@ -67,3 +67,75 @@ def test_code_similarity_distinct():
 
     score, summary = compare_code_pair(code1, code2, "python")
     assert score < 40.0
+
+
+def test_integrity_scoring_camera_and_audio_violations(db_session):
+    """Verify integrity scoring correctly calculates deductions for MULTIPLE_FACES and NOISE_DETECTED events."""
+    from app.models.coding import CandidateCodingAttempt, CodingAssessment
+    from app.models.candidate import CandidateProfile
+    from app.models.user import User, UserRole
+    from app.models.proctoring import AssessmentEvent, EventSeverity
+    from app.services.integrity_scoring_service import calculate_attempt_integrity
+    import uuid
+
+    # Create user & candidate profile
+    test_user = User(
+        id=uuid.uuid4(),
+        email=f"test_proc_{uuid.uuid4().hex[:6]}@example.com",
+        password_hash="hashed_pass_123",
+        name="Test Proctor Candidate",
+        role=UserRole.candidate,
+    )
+    db_session.add(test_user)
+    db_session.commit()
+
+    candidate = CandidateProfile(id=uuid.uuid4(), user_id=test_user.id)
+    db_session.add(candidate)
+    db_session.commit()
+
+    assessment = CodingAssessment(
+        id=uuid.uuid4(),
+        title="Test Proctoring Assessment",
+        description="Assessment",
+        duration_minutes=60,
+    )
+    db_session.add(assessment)
+    db_session.commit()
+
+    attempt = CandidateCodingAttempt(
+        id=uuid.uuid4(),
+        candidate_id=candidate.id,
+        assessment_id=assessment.id,
+        status="in_progress",
+    )
+    db_session.add(attempt)
+    db_session.commit()
+
+    # Record MULTIPLE_FACES and NOISE_DETECTED events
+    ev1 = AssessmentEvent(
+        id=uuid.uuid4(),
+        attempt_id=attempt.id,
+        candidate_id=candidate.id,
+        event_type="MULTIPLE_FACES",
+        severity=EventSeverity.high,
+        confidence=0.95,
+    )
+    ev2 = AssessmentEvent(
+        id=uuid.uuid4(),
+        attempt_id=attempt.id,
+        candidate_id=candidate.id,
+        event_type="NOISE_DETECTED",
+        severity=EventSeverity.medium,
+        confidence=0.90,
+    )
+    db_session.add_all([ev1, ev2])
+    db_session.commit()
+
+    # Calculate integrity
+    result = calculate_attempt_integrity(db_session, str(attempt.id))
+
+    assert result.webcam_score == 75.0  # 100 - 25
+    assert result.audio_score == 90.0   # 100 - 10
+    assert "Multiple faces detected on webcam" in result.ai_summary
+    assert "External background noise or suspicious audio detected" in result.ai_summary
+

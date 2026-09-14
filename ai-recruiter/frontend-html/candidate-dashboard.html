@@ -69,13 +69,13 @@
       <div class="container-fluid p-4">
         <div id="dashboard-alert" class="alert d-none py-2" role="alert"></div>
 
-        <!-- LinkedIn-Style Candidate Profile Card -->
-        <div class="card border-0 shadow-sm mb-4 overflow-hidden" style="border-radius: 20px; background: #ffffff;">
-          <div style="height: 140px; background: linear-gradient(135deg, #4f46e5 0%, #8b5cf6 50%, #06b6d4 100%);"></div>
+        <!-- Modern Candidate Profile Banner Card -->
+        <div class="card border-0 shadow-lg mb-4 overflow-hidden" style="border-radius: 24px; background: var(--ar-card-bg);">
+          <div style="height: 150px; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #06b6d4 100%);"></div>
           <div class="card-body p-4 pt-0 position-relative">
             <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3">
               <div class="d-flex align-items-end gap-3">
-                <img id="cand-profile-photo" src="https://ui-avatars.com/api/?name=Candidate&background=4f46e5&color=fff&size=128" alt="Candidate Avatar" class="rounded-circle" style="width: 104px; height: 104px; margin-top: -52px; border: 4px solid #ffffff; box-shadow: 0 8px 20px rgba(0,0,0,0.15); object-fit: cover;" />
+                <img id="cand-profile-photo" src="https://ui-avatars.com/api/?name=Candidate&background=4f46e5&color=fff&size=128" alt="Candidate Avatar" class="rounded-circle avatar-glow-indigo" style="width: 108px; height: 108px; margin-top: -54px; object-fit: cover;" />
                 <div class="mt-2">
                   <h3 id="cand-name-display" class="fw-bold text-dark mb-0">Candidate Name</h3>
                   <p id="cand-headline-display" class="text-secondary fw-medium mb-1">Software Engineer | Full Stack Developer</p>
@@ -87,9 +87,9 @@
                 </div>
               </div>
 
-              <div>
-                <a href="upload-resume.html" class="btn btn-outline-primary fw-semibold px-3 py-2 me-1 hover-lift">📄 Manage Resume</a>
-                <button class="btn btn-primary fw-semibold px-3 py-2 hover-lift" data-bs-toggle="modal" data-bs-target="#editCandProfileModal">✏️ Edit Profile</button>
+              <div class="d-flex gap-2">
+                <a href="upload-resume.html" class="btn btn-outline-primary fw-semibold px-3 py-2 hover-lift">📄 Manage Resume</a>
+                <button class="btn btn-primary fw-semibold px-3 py-2 hover-lift" data-bs-toggle="modal" data-bs-target="#editCandProfileModal" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); border: none;">✏️ Edit Profile</button>
               </div>
             </div>
 
@@ -110,27 +110,27 @@
 
         <div class="row g-3 mb-4">
           <div class="col-6 col-lg-3">
-            <div class="card stat-card p-3">
-              <div class="text-muted-custom small">Profile Completion</div>
-              <div class="stat-value" id="stat-profile-completion">—</div>
+            <div class="card stat-card p-3 border-0 shadow-sm hover-lift" style="border-radius: 16px; border-left: 4px solid #4f46e5 !important;">
+              <div class="text-muted-custom small fw-semibold">Profile Completion</div>
+              <div class="stat-value text-gradient-indigo" id="stat-profile-completion">—</div>
             </div>
           </div>
           <div class="col-6 col-lg-3">
-            <div class="card stat-card p-3">
-              <div class="text-muted-custom small">Resume Status</div>
-              <div class="stat-value" id="stat-resume-status" style="font-size: 1.2rem;">—</div>
+            <div class="card stat-card p-3 border-0 shadow-sm hover-lift" style="border-radius: 16px; border-left: 4px solid #10b981 !important;">
+              <div class="text-muted-custom small fw-semibold">Resume Status</div>
+              <div class="stat-value text-gradient-emerald" id="stat-resume-status" style="font-size: 1.35rem; font-weight: 700;">Not Uploaded</div>
             </div>
           </div>
           <div class="col-6 col-lg-3">
-            <div class="card stat-card p-3">
-              <div class="text-muted-custom small">Applications</div>
-              <div class="stat-value" id="stat-applications">—</div>
+            <div class="card stat-card p-3 border-0 shadow-sm hover-lift" style="border-radius: 16px; border-left: 4px solid #8b5cf6 !important;">
+              <div class="text-muted-custom small fw-semibold">My Applications</div>
+              <div class="stat-value text-gradient-violet" id="stat-applications-count">0</div>
             </div>
           </div>
           <div class="col-6 col-lg-3">
-            <div class="card stat-card p-3">
-              <div class="text-muted-custom small">Interview Status</div>
-              <div class="stat-value" id="stat-interview-status" style="font-size: 1.2rem;">—</div>
+            <div class="card stat-card p-3 border-0 shadow-sm hover-lift" style="border-radius: 16px; border-left: 4px solid #0284c7 !important;">
+              <div class="text-muted-custom small fw-semibold">Interviews Completed</div>
+              <div class="stat-value" id="stat-interviews-count" style="color: #0284c7;">0</div>
             </div>
           </div>
         </div>

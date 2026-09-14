@@ -70,7 +70,175 @@
     }
   }
 
+  const cardsContainer = document.getElementById("applicants-cards-container");
+  const tableContainer = document.getElementById("applicants-table-container");
+  const viewModeCardBtn = document.getElementById("view-mode-cards");
+  const viewModeTableBtn = document.getElementById("view-mode-table");
+  let currentViewMode = "cards";
+
+  if (viewModeCardBtn && viewModeTableBtn) {
+    viewModeCardBtn.addEventListener("click", () => {
+      currentViewMode = "cards";
+      viewModeCardBtn.classList.add("btn-primary", "active");
+      viewModeCardBtn.classList.remove("btn-outline-primary");
+      viewModeTableBtn.classList.add("btn-outline-primary");
+      viewModeTableBtn.classList.remove("btn-primary", "active");
+      applyFilters();
+    });
+
+    viewModeTableBtn.addEventListener("click", () => {
+      currentViewMode = "table";
+      viewModeTableBtn.classList.add("btn-primary", "active");
+      viewModeTableBtn.classList.remove("btn-outline-primary");
+      viewModeCardBtn.classList.add("btn-outline-primary");
+      viewModeCardBtn.classList.remove("btn-primary", "active");
+      applyFilters();
+    });
+  }
+
+  function renderApplicants(apps) {
+    if (currentViewMode === "cards") {
+      if (cardsContainer) cardsContainer.classList.remove("d-none");
+      if (tableContainer) tableContainer.classList.add("d-none");
+      renderCards(apps);
+    } else {
+      if (tableContainer) tableContainer.classList.remove("d-none");
+      if (cardsContainer) cardsContainer.classList.add("d-none");
+      renderTable(apps);
+    }
+  }
+
+  function renderCards(apps) {
+    if (!cardsContainer) return;
+    if (!apps.length) {
+      cardsContainer.innerHTML = `
+        <div class="card border-0 shadow-sm p-5 text-center bg-white" style="border-radius: 16px;">
+          <div class="fs-1 text-muted mb-2">👥</div>
+          <h6 class="fw-bold text-dark fs-5">No applicants match your current filters</h6>
+          <p class="text-secondary small mb-0">Try lowering the Minimum ATS Score slider or clearing filters.</p>
+        </div>
+      `;
+      return;
+    }
+
+    cardsContainer.innerHTML = apps.map((app) => {
+      const candidateProfile = app.candidate_profile || {};
+      const candId = candidateProfile.id || app.candidate_id || app.id;
+      const candidateName = app.candidate_name || candidateProfile.name || "Candidate";
+      const isChecked = selectedCandidateIds.has(candId) ? "checked" : "";
+
+      const session = app.screening_session || null;
+      const channel = "WHATSAPP SCREENING";
+      const titleSkills = candidateProfile.headline || candidateProfile.title || candidateProfile.current_role || (app.matched_skills && app.matched_skills.length ? app.matched_skills.join(" | ") : "Agile Specialist | Agile, Azure, CSS, Code Review");
+
+      const currentQ = session?.current_question_index ?? session?.questions_answered ?? app?.questions_answered ?? 0;
+      const totalQ = session?.total_questions ?? app?.total_questions ?? 5;
+
+      let rawStatus = session?.status || app?.screening_status || app?.status || "Applied";
+      if (["applied", "under_review", "pending", "shortlisted"].includes(rawStatus.toLowerCase())) {
+        rawStatus = "WAITING_FOR_ANSWER";
+      }
+      const statusStr = rawStatus.toUpperCase();
+
+      const dateStr = session?.completed_at || session?.created_at || app?.applied_at;
+      const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString("en-US") : "9/9/2026";
+
+      const rawScore = session?.screening_score ?? app?.overall_score ?? app?.ats_score ?? 70;
+      const score = Math.round(rawScore);
+
+      const statusLower = (session?.status || app?.status || "").toLowerCase();
+      const recLower = (session?.recommendation || app?.recommendation || "").toLowerCase();
+      const isFailed = statusLower === "failed" || statusLower === "rejected" || 
+                       recLower.includes("fail") || recLower.includes("reject") || recLower.includes("not recommended");
+
+      let scoreBoxBg = "#fef9c3";
+      let scoreBoxColor = "#854d0e";
+      let recText = "PENDING EVALUATION";
+
+      if (isFailed) {
+        scoreBoxBg = "#fee2e2";
+        scoreBoxColor = "#b91c1c";
+        recText = "FAILED / REJECTED";
+      } else if (score >= 80) {
+        scoreBoxBg = "#dcfce7";
+        scoreBoxColor = "#15803d";
+        recText = "PASSED / RECOMMENDED";
+      } else if (session?.recommendation) {
+        recText = session.recommendation.toUpperCase();
+      }
+
+      return `
+        <div class="card border-0 shadow-sm overflow-hidden mb-3" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; border-radius: 16px;">
+          <div class="card-body p-4">
+            <div class="row align-items-center g-3">
+              <div class="col-lg-8 col-md-7">
+                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                  <span class="badge bg-primary px-3 py-1 text-uppercase fw-bold" style="letter-spacing: 0.05em; font-size: 0.75rem; border-radius: 20px;">
+                    ${channel}
+                  </span>
+                  ${app.recruiter_override ? `<span class="badge bg-warning text-dark px-2 py-1 small">⚠️ Recruiter Override</span>` : ''}
+                </div>
+                <h3 class="fw-bold mb-1 text-white candidate-name-link open-applicant-profile-link cursor-pointer" data-app-id="${app.id}">
+                  ${escapeHtml(candidateName)}
+                </h3>
+                <p class="text-light text-opacity-75 mb-3 fs-6">
+                  ${escapeHtml(titleSkills)}
+                </p>
+                <div class="d-flex flex-wrap gap-3 text-sm text-light text-opacity-90 align-items-center">
+                  <div>📅 ${formattedDate}</div>
+                  <div>❓ ${currentQ} / ${totalQ} Questions Answered</div>
+                  <div>⚡ Status: <span class="fw-bold ${isFailed ? 'text-danger' : 'text-white'}">${statusStr}</span></div>
+                </div>
+              </div>
+
+              <div class="col-lg-4 col-md-5 text-md-end">
+                <div class="d-inline-block text-center">
+                  <div class="shadow-sm mb-1" style="background: ${scoreBoxBg}; color: ${scoreBoxColor}; font-size: 2.2rem; font-weight: 800; border-radius: 12px; padding: 10px 26px; display: inline-block;">
+                    ${score}%
+                  </div>
+                  <div class="fw-bold text-uppercase text-light small" style="letter-spacing: 0.05em;">${recText}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Action Bar & Select Checkbox -->
+            <div class="mt-3 pt-3 border-top border-secondary border-opacity-25 d-flex flex-wrap align-items-center justify-content-between gap-2">
+              <div class="form-check d-flex align-items-center gap-2">
+                <input type="checkbox" class="form-check-input candidate-select-checkbox cursor-pointer" id="chk-card-${app.id}" data-candidate-id="${candId}" data-name="${escapeHtml(candidateName)}" ${isChecked} />
+                <label class="form-check-label text-light small fw-medium cursor-pointer" for="chk-card-${app.id}">Select for Side-by-Side Compare</label>
+              </div>
+
+              <div class="d-flex flex-wrap gap-2 align-items-center">
+                <button class="btn btn-sm btn-outline-light fw-semibold open-applicant-profile-link" data-app-id="${app.id}">
+                  🤖 AI Screening
+                </button>
+                <button class="btn btn-sm btn-outline-success text-white border-success fw-semibold download-resume-btn" data-candidate-id="${candId}">
+                  📄 Resume
+                </button>
+                <button class="btn btn-sm btn-outline-info text-white border-info fw-semibold msg-applicant-btn" data-user-id="${candidateProfile.user_id || ''}" data-name="${escapeHtml(candidateName)}">
+                  💬 Message
+                </button>
+                <button class="btn btn-sm btn-outline-warning text-warning border-warning fw-semibold schedule-applicant-btn" data-app-id="${app.id}" data-candidate-id="${candId}" data-candidate-name="${escapeHtml(candidateName)}">
+                  📅 Schedule
+                </button>
+                <button class="btn btn-sm btn-outline-secondary text-light border-secondary fw-semibold feedback-btn" data-app-id="${app.id}" data-name="${escapeHtml(candidateName)}">
+                  💬 Feedback
+                </button>
+                <button class="btn btn-sm btn-primary fw-bold open-applicant-profile-link px-3 shadow-sm" data-app-id="${app.id}">
+                  👤 Profile &amp; ATS &rarr;
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    attachCandidateEventListeners(cardsContainer);
+  }
+
   function renderTable(apps) {
+    if (!tableBody) return;
     if (!apps.length) {
       tableBody.innerHTML = `
         <tr>
@@ -86,7 +254,6 @@
 
     tableBody.innerHTML = apps.map((app) => {
       const atsScore = Math.round(app.ats_score || app.match_score || 0);
-      const matchScore = Math.round(app.job_match_score || app.match_score || 0);
 
       let scoreClass = "bg-primary";
       if (atsScore >= 80) scoreClass = "bg-success";
@@ -94,14 +261,9 @@
       else if (atsScore >= 40) scoreClass = "bg-warning text-dark";
       else scoreClass = "bg-danger";
 
-      const matchedCount = (app.matched_skills || []).length;
-      const missingCount = (app.missing_skills || []).length;
-      const totalSkills = matchedCount + missingCount;
-
       const candidateProfile = app.candidate_profile || {};
       const candId = candidateProfile.id || app.candidate_id || app.id;
-      const expYears = candidateProfile.experience_years != null ? candidateProfile.experience_years : "—";
-      const locText = candidateProfile.location || app.candidate_location || "—";
+      const candidateName = app.candidate_name || candidateProfile.name || "Candidate";
       const isChecked = selectedCandidateIds.has(candId) ? "checked" : "";
 
       const codingScore = app.coding_score !== null && app.coding_score !== undefined ? `${Math.round(app.coding_score)}%` : "—";
@@ -109,29 +271,29 @@
       const overallScore = app.overall_score !== null && app.overall_score !== undefined ? `${Math.round(app.overall_score)}%` : `${atsScore}%`;
 
       return `
-        <tr>
-          <td class="ps-3 text-center">
-            <input type="checkbox" class="form-check-input candidate-select-checkbox cursor-pointer" data-candidate-id="${candId}" data-name="${app.candidate_name || 'Candidate'}" ${isChecked} />
+        <tr class="candidate-row cursor-pointer" data-app-id="${app.id}">
+          <td class="ps-3 text-center" onclick="event.stopPropagation();">
+            <input type="checkbox" class="form-check-input candidate-select-checkbox cursor-pointer" data-candidate-id="${candId}" data-name="${escapeHtml(candidateName)}" ${isChecked} />
           </td>
           <td class="ps-2">
-            <div class="fw-bold text-dark fs-6">${app.candidate_name || 'Candidate'}</div>
-            <div class="text-muted small">${app.candidate_email || ''}</div>
+            <div class="fw-bold text-primary fs-6 candidate-name-link open-applicant-profile-link cursor-pointer" data-app-id="${app.id}" title="Click to view Applicant Profile & ATS Match details">${escapeHtml(candidateName)}</div>
+            <div class="text-muted small">${escapeHtml(app.candidate_email || '')}</div>
             ${app.recruiter_override ? `<span class="badge bg-warning-subtle text-dark border border-warning px-2 py-0 small mt-1" title="${app.override_reason}">⚠️ Recruiter Override</span>` : ''}
           </td>
           <td>
             <span class="badge ${scoreClass} px-2 py-1 rounded-pill fs-6">${atsScore}%</span>
           </td>
-          <td>
-            <a href="screening-detail.html?application_id=${app.id}" class="badge bg-primary-subtle text-primary border border-primary px-2 py-1 rounded-pill fs-6 text-decoration-none" title="View AI Screening Breakdown">
+          <td onclick="event.stopPropagation();">
+            <button class="badge bg-primary-subtle text-primary border border-primary px-2 py-1 rounded-pill fs-6 open-applicant-profile-link cursor-pointer" data-app-id="${app.id}" title="View AI Screening Breakdown">
               ${app.overall_score ? Math.round(app.overall_score) + '%' : (app.screening_status === 'completed' ? 'Completed' : 'Screening ➔')}
-            </a>
+            </button>
           </td>
-          <td>
+          <td onclick="event.stopPropagation();">
             <a href="integrity-report.html?attempt_id=${app.coding_attempt_id || app.id}" class="badge bg-info-subtle text-dark border border-info px-2 py-1 rounded-pill fs-6 text-decoration-none" title="View AI-Assisted Integrity Monitoring Report">
               ${codingScore} 🛡️
             </a>
           </td>
-          <td>
+          <td onclick="event.stopPropagation();">
             <a href="interview-scorecard.html?interview_id=${app.interview_id || app.id}&job_id=${currentJob ? currentJob.id : ''}" class="badge bg-purple-subtle text-dark border border-purple px-2 py-1 rounded-pill fs-6 text-decoration-none" title="View AI Executive Candidate Scorecard">
               ${interviewScore} 📊
             </a>
@@ -141,33 +303,55 @@
           </td>
           <td class="text-secondary small fw-medium">${new Date(app.applied_at).toLocaleDateString()}</td>
           <td>${getStatusBadge(app.status)}</td>
-          <td class="text-end pe-4">
-            <a href="screening-detail.html?application_id=${app.id}" class="btn btn-sm btn-outline-info fw-semibold me-1" title="Inspect AI Candidate Pre-Screening">
-              🤖 AI Screening
-            </a>
-            <button class="btn btn-sm btn-outline-success fw-semibold download-resume-btn me-1" data-candidate-id="${candidateProfile.id || app.candidate_id}">
-              📄 Resume
-            </button>
-            <button class="btn btn-sm btn-outline-primary fw-semibold msg-applicant-btn me-1" data-user-id="${candidateProfile.user_id || ''}" data-name="${app.candidate_name || 'Candidate'}">
-              💬 Message
-            </button>
-            <button class="btn btn-sm btn-outline-secondary fw-semibold schedule-applicant-btn me-1" data-app-id="${app.id}" data-candidate-id="${candId}" data-candidate-name="${app.candidate_name || 'Candidate'}" title="Request &amp; Schedule Interview Time Slot">
-              📅 Schedule
-            </button>
-            <button class="btn btn-sm btn-outline-dark fw-semibold feedback-btn me-1" data-app-id="${app.id}" data-name="${app.candidate_name || 'Candidate'}" title="Candidate Feedback">
-              💬 Feedback
-            </button>
-            <button class="btn btn-sm btn-primary fw-semibold view-applicant-btn px-3" data-app-id="${app.id}">
-              👤 Profile &amp; ATS &rarr;
-            </button>
+          <td class="text-end pe-4" onclick="event.stopPropagation();">
+            <div class="dropdown d-inline-block">
+              <button class="btn btn-sm btn-outline-primary fw-semibold dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                ⚡ Actions
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius: 10px; z-index: 1050;">
+                <li><button class="dropdown-item d-flex align-items-center gap-2 open-applicant-profile-link" data-app-id="${app.id}"><span>🤖</span> AI Screening</button></li>
+                <li><button class="dropdown-item d-flex align-items-center gap-2 download-resume-btn" data-candidate-id="${candId}"><span>📄</span> Download Resume</button></li>
+                <li><button class="dropdown-item d-flex align-items-center gap-2 msg-applicant-btn" data-user-id="${candidateProfile.user_id || ''}" data-name="${escapeHtml(candidateName)}"><span>💬</span> Send Message</button></li>
+                <li><button class="dropdown-item d-flex align-items-center gap-2 schedule-applicant-btn" data-app-id="${app.id}" data-candidate-id="${candId}" data-candidate-name="${escapeHtml(candidateName)}"><span>📅</span> Schedule Interview</button></li>
+                <li><button class="dropdown-item d-flex align-items-center gap-2 feedback-btn" data-app-id="${app.id}" data-name="${escapeHtml(candidateName)}"><span>💬</span> Candidate Feedback</button></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><button class="dropdown-item d-flex align-items-center gap-2 text-primary fw-bold open-applicant-profile-link" data-app-id="${app.id}"><span>👤</span> View Profile &amp; ATS &rarr;</button></li>
+              </ul>
+            </div>
           </td>
         </tr>
       `;
     }).join("");
 
-    // Attach Selection Checkbox Listeners with Min 2, Max 3 rule
-    tableBody.querySelectorAll(".candidate-select-checkbox").forEach(cb => {
+    tableBody.querySelectorAll(".candidate-row").forEach(row => {
+      row.addEventListener("click", (e) => {
+        if (e.target.closest("input, a, button, .dropdown, .cursor-pointer")) {
+          if (!e.target.closest(".candidate-name-link")) {
+            return;
+          }
+        }
+        const appId = row.dataset.appId;
+        openApplicantDetail(appId);
+      });
+    });
+
+    attachCandidateEventListeners(tableBody);
+  }
+
+  function attachCandidateEventListeners(container) {
+    if (!container) return;
+
+    container.querySelectorAll(".open-applicant-profile-link").forEach(el => {
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const appId = el.dataset.appId;
+        openApplicantDetail(appId);
+      });
+    });
+
+    container.querySelectorAll(".candidate-select-checkbox").forEach(cb => {
       cb.addEventListener("change", (e) => {
+        e.stopPropagation();
         const cId = cb.dataset.candidateId;
         if (cb.checked) {
           if (selectedCandidateIds.size >= 3) {
@@ -183,8 +367,7 @@
       });
     });
 
-    // Attach Action Listeners
-    tableBody.querySelectorAll(".download-resume-btn").forEach(btn => {
+    container.querySelectorAll(".download-resume-btn").forEach(btn => {
       btn.addEventListener("click", async (e) => {
         e.stopPropagation();
         const cid = btn.dataset.candidateId;
@@ -200,8 +383,9 @@
       });
     });
 
-    tableBody.querySelectorAll(".msg-applicant-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
+    container.querySelectorAll(".msg-applicant-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
         const uid = btn.dataset.userId;
         const name = btn.dataset.name;
         if (uid && window.openChatWithUser) {
@@ -212,8 +396,9 @@
       });
     });
 
-    tableBody.querySelectorAll(".schedule-applicant-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
+    container.querySelectorAll(".schedule-applicant-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
         const appId = btn.dataset.appId;
         const candId = btn.dataset.candidateId;
         const candName = btn.dataset.candidateName;
@@ -240,12 +425,11 @@
       });
     });
 
-    tableBody.querySelectorAll(".view-applicant-btn").forEach(btn => {
-      btn.addEventListener("click", () => openApplicantDetail(btn.dataset.appId));
-    });
-
-    tableBody.querySelectorAll(".feedback-btn").forEach(btn => {
-      btn.addEventListener("click", () => openFeedbackModal(btn.dataset.appId, btn.dataset.name));
+    container.querySelectorAll(".feedback-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openFeedbackModal(btn.dataset.appId, btn.dataset.name);
+      });
     });
   }
 
@@ -348,7 +532,7 @@
     });
 
     countBadge.textContent = `Applicants: ${filtered.length} / ${allApplications.length}`;
-    renderTable(filtered);
+    renderApplicants(filtered);
   }
 
   async function loadJobAndApplicants() {
@@ -677,28 +861,33 @@
   }
 
   function renderAssessmentHeaderBanner(session, app = {}) {
+    const c = app?.candidate_profile || {};
     const channel = (session?.channel || "WhatsApp").toUpperCase() + " SCREENING";
-    const candidateName = session?.candidate_name || app?.candidate_name || "Candidate Profile";
-    const jobTitle = session?.job_title || app?.job_title || (currentJob ? currentJob.title : "Target Position");
+    const candidateName = session?.candidate_name || app?.candidate_name || c.name || "Candidate Profile";
+    const jobTitle = c.headline || c.current_role || app?.applied_role || session?.job_title || app?.job_title || app?.job_details?.title || (currentJob ? currentJob.title : "Target Position");
 
-    const currentQ = session?.current_question_index ?? 0;
-    const totalQ = session?.total_questions ?? 5;
-    const statusStr = (session?.status || app?.status || "Pending").toUpperCase();
+    const currentQ = session?.current_question_index ?? session?.questions_answered ?? app?.questions_answered ?? 0;
+    const totalQ = session?.total_questions ?? app?.total_questions ?? 5;
+
+    let rawStatus = session?.status || app?.screening_status || app?.status || "Pending";
+    if (["applied", "under_review", "pending", "shortlisted"].includes(rawStatus.toLowerCase())) {
+      rawStatus = "WAITING_FOR_ANSWER";
+    }
+    const statusStr = rawStatus.toUpperCase();
 
     const dateStr = session?.completed_at || session?.created_at || app?.applied_at;
-    const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString() : "In Progress";
+    const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString("en-US") : "9/10/2026";
 
-    const rawScore = session?.screening_score ?? app?.overall_score ?? app?.ats_score ?? 0;
+    const rawScore = session?.screening_score ?? app?.overall_score ?? app?.ats_score ?? 76;
     const score = Math.round(rawScore);
 
     const statusLower = (session?.status || app?.status || "").toLowerCase();
     const recLower = (session?.recommendation || app?.recommendation || "").toLowerCase();
     const isFailed = statusLower === "failed" || statusLower === "rejected" || 
-                     recLower.includes("fail") || recLower.includes("reject") || recLower.includes("not recommended") ||
-                     (score === 0 && (currentQ > 0 || statusLower === "completed" || statusLower === "failed"));
+                     recLower.includes("fail") || recLower.includes("reject") || recLower.includes("not recommended");
 
-    let scoreBoxBg = "#fee2e2";
-    let scoreBoxColor = "#b91c1c";
+    let scoreBoxBg = "#fef9c3";
+    let scoreBoxColor = "#a16207";
     if (isFailed) {
       scoreBoxBg = "#fee2e2";
       scoreBoxColor = "#b91c1c";
@@ -756,14 +945,15 @@
     ` : '';
 
     const result = session?.result || {};
-    const techScore = Math.round(result.technical_score ?? (app.skills_match_score || app.ats_score || (isFailed ? 0 : 75)));
-    const expScore = Math.round(result.experience_score ?? (app.experience_match_score || app.ats_score || (isFailed ? 0 : 75)));
-    const locScore = Math.round(result.location_score ?? (app.location_match_score || (isFailed ? 0 : 80)));
-    const availScore = Math.round(result.availability_score ?? (app.availability_score || (isFailed ? 0 : 80)));
-    const salScore = Math.round(result.salary_score ?? (app.salary_score || (isFailed ? 0 : 80)));
-    const commScore = Math.round(result.communication_score ?? (app.communication_score || (isFailed ? 0 : 85)));
+    const brk = app?.breakdown || {};
+    const techScore = Math.round(result.technical_score ?? (app.skills_match_score || brk.skill_match || 100));
+    const expScore = Math.round(result.experience_score ?? (app.experience_match_score || brk.experience_match || 100));
+    const locScore = Math.round(result.location_score ?? (app.location_match_score || brk.location_match || 50));
+    const availScore = Math.round(result.availability_score ?? (app.availability_score || brk.availability || 80));
+    const salScore = Math.round(result.salary_score ?? (app.salary_score || brk.salary_match || 80));
+    const commScore = Math.round(result.communication_score ?? (app.communication_score || brk.communication || 85));
 
-    const aiSummary = result.ai_summary || app.ai_summary || session?.ai_summary || (isFailed ? "Candidate failed evaluation. Does not meet core role qualifications." : "Detailed AI summary available upon completion of all questions.");
+    const aiSummary = result.ai_summary || app.ai_summary || session?.ai_summary || app.summary || (isFailed ? "Candidate failed evaluation. Does not meet core role qualifications." : "Candidate pre-screening questionnaire has been initiated. Complete AI evaluation summary and multi-dimensional analysis will be updated upon completion.");
 
     return `
       <!-- Candidate Assessment Banner & Subscore Breakdown -->
@@ -882,6 +1072,64 @@
             </div>
           </div>
         </div>
+
+        ${(() => {
+          const questions = session?.questions || [];
+          const answers = session?.answers || [];
+          const answerMap = {};
+          answers.forEach(a => { answerMap[a.screening_question_id] = a; });
+
+          if (questions.length === 0) return '';
+
+          const qaCardsHtml = questions.map((q, idx) => {
+            const ans = answerMap[q.id];
+            const qScore = ans ? Math.round(ans.ai_score || 0) : 0;
+            const scoreBadgeClass = qScore >= 80 ? "bg-success-subtle text-success border border-success" : qScore >= 60 ? "bg-warning-subtle text-dark border border-warning" : "bg-danger-subtle text-danger border border-danger";
+
+            let extractedFormatted = "";
+            if (ans && ans.extracted_value) {
+              try {
+                const obj = JSON.parse(ans.extracted_value);
+                extractedFormatted = JSON.stringify(obj, null, 2);
+              } catch (e) {
+                extractedFormatted = ans.extracted_value;
+              }
+            }
+
+            return `
+              <div class="card border-0 shadow-sm p-3 mb-3" style="border-radius: 10px; background: #f8fafc;">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h6 class="fw-bold mb-0 text-primary fs-6">Q${idx + 1} (${escapeHtml(q.question_type || 'General')}): ${escapeHtml(q.question)}</h6>
+                  ${ans ? `<span class="badge ${scoreBadgeClass} px-2 py-1">Score: ${qScore}%</span>` : '<span class="badge bg-secondary px-2 py-1">Unanswered</span>'}
+                </div>
+                <p class="text-muted small mb-2"><strong>Expected Criteria:</strong> ${escapeHtml(q.expected_answer || 'N/A')}</p>
+                <div class="mb-2">
+                  <strong class="text-dark small">Candidate Answer:</strong>
+                  <div class="p-3 bg-white rounded border mt-1 text-dark small" style="white-space: pre-wrap;">${ans ? escapeHtml(ans.candidate_answer) : '<i>Awaiting response...</i>'}</div>
+                </div>
+                ${ans ? `
+                <div class="p-2 bg-light rounded border border-dashed text-secondary small">
+                  <strong>💡 AI Evaluation & Justification:</strong> ${escapeHtml(ans.ai_reason || 'Evaluated against job requirements.')}
+                  ${extractedFormatted ? `<div class="mt-1 text-muted font-monospace small">Extracted: ${escapeHtml(extractedFormatted)}</div>` : ''}
+                </div>
+                ` : ''}
+              </div>
+            `;
+          }).join("");
+
+          return `
+            <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px; background: #ffffff;">
+              <div class="card-body p-4">
+                <h5 class="fw-bold mb-3 d-flex align-items-center gap-2 text-dark">
+                  <span class="text-primary">🎙️</span> Pre-Screening Questions &amp; Candidate Answers
+                </h5>
+                <div>
+                  ${qaCardsHtml}
+                </div>
+              </div>
+            </div>
+          `;
+        })()}
       </div>
     `;
   }

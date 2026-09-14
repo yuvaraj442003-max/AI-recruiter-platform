@@ -236,46 +236,10 @@
       }
     }
 
-    let hasTerminated = false;
-
-    function setupTabProctoring() {
-      function triggerViolation() {
-        if (hasTerminated) return;
-        hasTerminated = true;
-
-        if (ws && ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ type: 'interview.end', reason: 'proctor_tab_switch' }));
-        }
-        if (timerInterval) clearInterval(timerInterval);
-
-        alert("⚠️ PROCTORING SECURITY VIOLATION:\n\nYou switched tabs or left the 30-minute AI interview window.\n\nYour session has been terminated and you have been logged out.");
-        if (window.Session && window.Session.clear) {
-          window.Session.clear();
-        } else {
-          localStorage.clear();
-        }
-        window.location.href = "login.html?proctor_violation=tab_switch";
-      }
-
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden) triggerViolation();
-      });
-      window.addEventListener("blur", () => {
-        triggerViolation();
-      });
-    }
-
-    function connectWebSocket() {
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsUrl = `${protocol}//localhost:8000/api/v1/ws/interviews/${interviewId}?token=${token}`;
-
-      ws = new WebSocket(wsUrl);
-
       ws.onopen = () => {
         console.log('Connected to AI Interview WebSocket server.');
         ws.send(JSON.stringify({ type: 'client.ready' }));
         startTimer();
-        setupTabProctoring();
       };
 
       ws.onmessage = (event) => {
