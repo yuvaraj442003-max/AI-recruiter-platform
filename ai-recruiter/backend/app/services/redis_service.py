@@ -19,8 +19,8 @@ _redis_client: Optional[redis.Redis] = None
 _backend_type: str = "none"
 
 
-def _is_redis_port_open(host: str, port: int, timeout: float = 0.2) -> bool:
-    """Fast socket check to verify if Redis port is open before attempting client connection."""
+def _is_redis_port_open(host: str, port: int, timeout: float = 0.05) -> bool:
+    """Fast non-blocking socket check to verify if Redis port is open before attempting client connection."""
     try:
         with socket.create_connection((host, port), timeout=timeout):
             return True
@@ -34,7 +34,6 @@ def _try_autostart_redis(host: str, port: int) -> bool:
         return False
     try:
         import subprocess
-        import time
 
         kwargs = {}
         if hasattr(subprocess, "CREATE_NO_WINDOW"):
@@ -42,8 +41,7 @@ def _try_autostart_redis(host: str, port: int) -> bool:
 
         logger.info("Attempting to auto-start local redis-server process...")
         subprocess.Popen(["redis-server"], **kwargs)
-        time.sleep(1.2)
-        return _is_redis_port_open(host, port, timeout=0.5)
+        return _is_redis_port_open(host, port, timeout=0.1)
     except Exception as e:
         logger.debug(f"Auto-start redis-server attempt failed: {e}")
         return False

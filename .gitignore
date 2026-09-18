@@ -5,6 +5,9 @@ ai-recruiter/uploads/*
 !ai-recruiter/uploads/.gitkeep
 *.rdb
 *.db
+*.db-shm
+*.db-wal
+*.db-journal
 __pycache__/
 *.pyc
 .pytest_cache/

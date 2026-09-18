@@ -6,7 +6,7 @@ and automatic fallback.
 import logging
 from typing import Generator
 
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text, event
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from app.core.config import settings
@@ -19,14 +19,25 @@ def _create_database_engine(url: str):
     is_sqlite = url.startswith("sqlite")
     
     if is_sqlite:
-        return create_engine(
+        eng = create_engine(
             url,
-            connect_args={"check_same_thread": False},
+            connect_args={"check_same_thread": False, "timeout": 30},
             future=True,
         )
+
+        @event.listens_for(eng, "connect")
+        def set_sqlite_pragma(dbapi_connection, connection_record):
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA journal_mode=WAL;")
+            cursor.execute("PRAGMA busy_timeout=30000;")
+            cursor.execute("PRAGMA synchronous=NORMAL;")
+            cursor.close()
+
+        return eng
     else:
         return create_engine(
             url,
+            connect_args={"connect_timeout": 2},
             pool_pre_ping=True,
             pool_size=10,
             max_overflow=20,

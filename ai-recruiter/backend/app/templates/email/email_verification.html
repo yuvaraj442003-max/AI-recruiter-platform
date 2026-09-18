@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; margin: 0; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+    .header { background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%); color: #ffffff; padding: 32px 24px; text-align: center; }
+    .header h1 { margin: 0; font-size: 24px; font-weight: 700; }
+    .content { padding: 32px 28px; color: #334155; line-height: 1.6; }
+    .btn-container { text-align: center; margin: 30px 0; }
+    .btn { display: inline-block; background-color: #0284c7; color: #ffffff !important; font-size: 16px; font-weight: 600; text-decoration: none; padding: 14px 32px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.3); }
+    .btn:hover { background-color: #0369a1; }
+    .url-box { background-color: #f1f5f9; border-radius: 8px; padding: 12px 16px; word-break: break-all; font-size: 13px; color: #475569; font-family: monospace; margin-top: 10px; }
+    .footer { background-color: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>✉️ Verify Your Account</h1>
+      <div style="font-size: 13px; opacity: 0.9; margin-top: 6px;">AI Recruiter Platform</div>
+    </div>
+    <div class="content">
+      <p style="font-size: 16px; font-weight: 600; color: #0f172a;">Hello {{name}},</p>
+      <p>Thank you for registering with <strong>{{company_name}}</strong>!</p>
+      <p>Please click the button below to verify your email address and complete your account setup:</p>
+      
+      <div class="btn-container">
+        <a href="{{verify_url}}" class="btn" target="_blank">Verify Email Address</a>
+      </div>
+
+      <p style="font-size: 13px; color: #64748b; margin-top: 24px;">
+        If the button above does not work, copy and paste the following URL into your browser:
+      </p>
+      <div class="url-box">
+        <a href="{{verify_url}}" style="color: #0284c7; text-decoration: underline;">{{verify_url}}</a>
+      </div>
+
+      <p style="font-size: 13px; color: #94a3b8; margin-top: 20px;">
+        <em>Note: This verification link will expire in 24 hours. If you did not create an account, you can safely ignore this email.</em>
+      </p>
+    </div>
+    <div class="footer">
+      &copy; {{company_name}} &bull; Powered by AI Recruiter Platform
+    </div>
+  </div>
+</body>
+</html>

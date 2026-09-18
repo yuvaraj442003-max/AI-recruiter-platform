@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Coding Assessment — AI Recruiter</title>
+  <title>Assessment — AI Recruiter</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
   <style>
@@ -15,20 +15,77 @@
     #editor-container { flex: 1; width: 100%; height: 100%; }
     .console-drawer { height: 220px; background-color: #1e1e1e; border-top: 1px solid #3c3c3c; overflow-y: auto; }
     .timer-badge { font-family: monospace; font-size: 1.15rem; background-color: #dc3545; }
-    .tab-status-icon { font-size: 0.85rem; margin-left: 6px; }
+    .tab-status-icon { font-size: 0.85rem; margin-left: 4px; }
+    
+    /* Aptitude Option Cards */
+    .aptitude-option-card {
+      background-color: #252526;
+      border: 2px solid #3c3c3c;
+      border-radius: 10px;
+      padding: 14px 18px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #e2e8f0;
+    }
+    .aptitude-option-card:hover {
+      border-color: #0d6efd;
+      background-color: #2d2d30;
+      transform: translateY(-1px);
+    }
+    .aptitude-option-card.selected {
+      border-color: #0d6efd;
+      background-color: #1e3a5f;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(13, 110, 253, 0.4);
+    }
+    .option-letter-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: #3c3c3c;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    .aptitude-option-card.selected .option-letter-badge {
+      background-color: #0d6efd;
+    }
+    .q-pill-btn {
+      min-width: 42px;
+      height: 32px;
+      padding: 2px 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border-radius: 6px;
+      margin: 2px;
+    }
+    .question-tabs-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      max-height: 120px;
+      overflow-y: auto;
+      padding-bottom: 6px;
+    }
   </style>
 </head>
 <body>
   <!-- Top Navigation Bar -->
   <div class="top-header d-flex align-items-center justify-content-between px-3 text-white">
     <div class="d-flex align-items-center">
-      <span class="fw-bold fs-5 me-3 text-primary">🤖 AI Recruiter Coding</span>
+      <span class="fw-bold fs-5 me-3 text-primary">🤖 AI Recruiter Assessment</span>
       <span id="assessment-title-nav" class="text-slate-300 me-3 fw-semibold">Loading Assessment...</span>
     </div>
     <div class="d-flex align-items-center gap-3">
       <div class="d-flex align-items-center gap-2 bg-dark px-3 py-1 rounded border border-secondary">
         <span class="text-slate-400 small fw-bold">TIME REMAINING:</span>
-        <span id="timer-display" class="badge timer-badge text-white">60:00</span>
+        <span id="timer-display" class="badge timer-badge text-white">75:00</span>
       </div>
       <button id="submit-assessment-btn" class="btn btn-sm btn-success fw-bold px-3 py-2 shadow-sm d-flex align-items-center gap-2">
         <span>🚀</span> Submit Final Assessment
@@ -41,10 +98,20 @@
     <div class="row g-0 h-100">
       <!-- Left Question Panel -->
       <div class="col-md-5 left-panel p-3">
-        <!-- Question tabs -->
-        <ul class="nav nav-pills mb-3 border-bottom border-secondary pb-2" id="question-tabs">
+        <!-- Section Jump Switchers -->
+        <div class="d-flex gap-2 mb-2">
+          <button id="nav-sec-aptitude" class="btn btn-sm btn-primary flex-fill fw-bold py-1 shadow-sm" onclick="jumpToSection('aptitude')">
+            📝 Section 1: Aptitude (Q1 - 25)
+          </button>
+          <button id="nav-sec-coding" class="btn btn-sm btn-outline-info flex-fill fw-bold py-1 shadow-sm" onclick="jumpToSection('coding')">
+            💻 Section 2: Coding (Q26 - 30)
+          </button>
+        </div>
+
+        <!-- 30 Question Tabs Grid -->
+        <div class="question-tabs-container mb-3 border-bottom border-secondary" id="question-tabs">
           <!-- Populated dynamically -->
-        </ul>
+        </div>
 
         <div id="question-detail-container" class="flex-grow-1">
           <div class="d-flex align-items-center justify-content-between mb-2">
@@ -53,16 +120,17 @@
           </div>
           <div class="mb-3">
             <span id="q-difficulty" class="badge bg-secondary me-2">--</span>
-            <span id="q-category" class="badge bg-dark border border-secondary">--</span>
+            <span id="q-category" class="badge bg-dark border border-secondary me-2">--</span>
+            <span id="q-section-indicator" class="badge bg-primary">Section 1: Aptitude</span>
           </div>
 
           <div class="mb-4">
             <h6 class="text-secondary text-uppercase fs-7 fw-bold">Problem Description</h6>
-            <div id="q-description" style="line-height: 1.6;" class="text-slate-200">Loading description...</div>
+            <div id="q-description" style="line-height: 1.6; white-space: pre-line;" class="text-slate-200">Loading description...</div>
           </div>
 
           <div class="mb-4">
-            <h6 class="text-secondary text-uppercase fs-7 fw-bold">Constraints & Notes</h6>
+            <h6 class="text-secondary text-uppercase fs-7 fw-bold">Constraints &amp; Notes</h6>
             <div id="q-constraints" class="bg-dark p-2 rounded small text-light font-monospace border border-secondary">--</div>
           </div>
         </div>
@@ -72,17 +140,17 @@
           <button id="prev-q-btn" class="btn btn-sm btn-outline-secondary fw-semibold">
             ← Previous Question
           </button>
-          <span id="q-counter-label" class="small text-slate-400 font-monospace">Question 1 of 3</span>
+          <span id="q-counter-label" class="small text-slate-400 font-monospace">Question 1 of 30</span>
           <button id="next-q-btn" class="btn btn-sm btn-outline-primary fw-semibold">
             Next Question →
           </button>
         </div>
       </div>
 
-      <!-- Right Code Editor & Console Panel -->
+      <!-- Right Code Editor & Aptitude Console Panel -->
       <div class="col-md-7 right-panel">
-        <!-- Control Bar -->
-        <div class="d-flex align-items-center justify-content-between p-2 bg-dark border-bottom border-secondary">
+        <!-- Control Bar (active for coding mode) -->
+        <div id="coding-control-bar" class="d-flex align-items-center justify-content-between p-2 bg-dark border-bottom border-secondary">
           <div class="d-flex align-items-center">
             <label class="me-2 small text-secondary fw-semibold">Language:</label>
             <select id="language-select" class="form-select form-select-sm bg-secondary text-white border-0" style="width: 140px;">
@@ -96,7 +164,32 @@
           <div class="d-flex align-items-center gap-2">
             <button id="reset-code-btn" class="btn btn-sm btn-outline-secondary">Reset Code</button>
             <button id="run-code-btn" class="btn btn-sm btn-primary fw-bold px-3">
-              ▶ Run & Test Code
+              ▶ Run &amp; Test Code
+            </button>
+          </div>
+        </div>
+
+        <!-- Interactive Aptitude Option Selection View (Shown for Q1 to Q25) -->
+        <div id="aptitude-options-container" class="flex-grow-1 p-4 d-none overflow-auto" style="background-color: #1e1e1e;">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-primary px-3 py-2 fs-6">📝 Section 1: Aptitude Question</span>
+              <span class="badge bg-dark border border-secondary text-light">2 Points</span>
+            </div>
+            <button id="toggle-editor-btn" class="btn btn-sm btn-outline-secondary">
+              💻 Toggle Code Editor
+            </button>
+          </div>
+          <div class="alert alert-dark border border-secondary text-light py-2 px-3 small mb-4">
+            📌 <strong>Instruction:</strong> Read the question on the left and click your chosen option below. Your answer is recorded automatically.
+          </div>
+          <div id="aptitude-options-list" class="d-flex flex-column gap-3 mb-4">
+            <!-- Options dynamically rendered -->
+          </div>
+          <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary">
+            <span id="apt-selected-status" class="text-secondary small">No option selected yet.</span>
+            <button id="apt-next-btn" class="btn btn-primary fw-bold px-4 py-2">
+              Save &amp; Next Question ➔
             </button>
           </div>
         </div>
@@ -107,14 +200,14 @@
         <!-- Console / Test Results Drawer -->
         <div class="console-drawer p-3">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <h6 class="mb-0 text-secondary text-uppercase fs-7 fw-bold">Execution Console & Test Cases</h6>
+            <h6 class="mb-0 text-secondary text-uppercase fs-7 fw-bold">Execution Console &amp; Test Cases</h6>
             <span id="run-status-badge" class="badge bg-secondary">Idle</span>
           </div>
 
           <!-- Alert / Next Question Banner -->
           <div id="passed-banner" class="alert alert-success d-none mb-3 py-2 d-flex justify-content-between align-items-center">
             <div>
-              <strong>🎉 Correct Solution!</strong> All public test cases passed.
+              <strong>🎉 Correct Solution!</strong> Test cases passed.
             </div>
             <button id="banner-next-btn" class="btn btn-sm btn-success fw-bold px-3">
               Proceed to Next Question ➔
@@ -122,7 +215,7 @@
           </div>
 
           <div id="console-output-container">
-            <pre id="console-output" class="text-secondary small font-monospace mb-0">Click "Run & Test Code" to execute your solution against public test cases...</pre>
+            <pre id="console-output" class="text-secondary small font-monospace mb-0">Select an answer or click "Run & Test Code" to verify against test cases...</pre>
           </div>
         </div>
       </div>
@@ -139,12 +232,13 @@
     let currentQuestionIndex = 0;
 
     // Per-question state stores
-    let codeStore = {};      // qId -> { lang, code }
+    let codeStore = {};      // qId -> { lang, code, selectedOption }
     let consoleStore = {};   // qId -> { html, badgeText, badgeClass, passedAll }
     let autoAdvanceTimeout = null;
 
-    let remainingSeconds = 3600; // 60 minutes default
+    let remainingSeconds = 4500; // 75 minutes default
     let timerInterval = null;
+    let forceEditorMode = false;
 
     document.addEventListener('DOMContentLoaded', async () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -179,14 +273,13 @@
           attemptId = attemptData.id;
           assessmentData = attemptData.assessment;
 
-          // Standard 60 minutes assessment duration constraint
-          if (attemptData.remaining_seconds && attemptData.remaining_seconds > 0 && attemptData.remaining_seconds <= 3600) {
+          if (attemptData.remaining_seconds && attemptData.remaining_seconds > 0) {
             remainingSeconds = attemptData.remaining_seconds;
           } else {
-            remainingSeconds = (assessmentData.duration_minutes || 60) * 60;
+            remainingSeconds = (assessmentData.duration_minutes || 75) * 60;
           }
 
-          document.getElementById('assessment-title-nav').textContent = assessmentData.title || 'Coding Assessment';
+          document.getElementById('assessment-title-nav').textContent = assessmentData.title || 'Technical & Aptitude Assessment';
           startTimer();
           renderQuestionTabs();
           loadQuestion(0);
@@ -226,6 +319,12 @@
         }
       };
 
+      // Toggle editor button on aptitude mode
+      document.getElementById('toggle-editor-btn').onclick = () => {
+        forceEditorMode = !forceEditorMode;
+        loadQuestion(currentQuestionIndex);
+      };
+
       // Run & Test Code Button
       document.getElementById('run-code-btn').onclick = async () => {
         await executeAndTestCode();
@@ -238,6 +337,15 @@
       document.getElementById('next-q-btn').onclick = () => {
         if (assessmentData && currentQuestionIndex < assessmentData.questions.length - 1) {
           switchQuestion(currentQuestionIndex + 1);
+        }
+      };
+
+      // Aptitude Next Button
+      document.getElementById('apt-next-btn').onclick = () => {
+        if (assessmentData && currentQuestionIndex < assessmentData.questions.length - 1) {
+          switchQuestion(currentQuestionIndex + 1);
+        } else {
+          submitAssessment();
         }
       };
 
@@ -263,7 +371,7 @@
         remainingSeconds--;
         if (remainingSeconds <= 0) {
           clearInterval(timerInterval);
-          alert('Time expired! Auto-submitting your final coding assessment...');
+          alert('Time expired! Auto-submitting your assessment...');
           submitAssessment();
           return;
         }
@@ -271,6 +379,15 @@
         const secs = remainingSeconds % 60;
         document.getElementById('timer-display').textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
       }, 1000);
+    }
+
+    function jumpToSection(sec) {
+      if (!assessmentData || !assessmentData.questions) return;
+      if (sec === 'aptitude') {
+        switchQuestion(0);
+      } else if (sec === 'coding') {
+        switchQuestion(Math.min(25, assessmentData.questions.length - 1));
+      }
     }
 
     function renderQuestionTabs() {
@@ -286,34 +403,53 @@
           statusBadge = '<span class="tab-status-icon text-danger">🔴</span>';
         }
 
+        const isApt = idx < 25;
+        const activeClass = idx === currentQuestionIndex ? 'btn-primary active text-white' : 'btn-dark text-light';
+        const borderClass = isApt ? 'border-secondary' : 'border-info';
+        const label = isApt ? `${idx + 1}` : `💻 ${idx + 1}`;
+
         return `
-          <li class="nav-item">
-            <button class="nav-link ${idx === 0 ? 'active' : ''} text-white d-flex align-items-center gap-1" onclick="switchQuestion(${idx})">
-              Question ${idx + 1} ${statusBadge}
-            </button>
-          </li>
+          <button class="btn btn-sm ${activeClass} ${borderClass} q-pill-btn d-inline-flex align-items-center justify-content-center" onclick="switchQuestion(${idx})" title="${escapeHtml(q.title)}">
+            ${label} ${statusBadge}
+          </button>
         `;
       }).join('');
+
+      // Update Section Tabs Active Styling
+      const isAptActive = currentQuestionIndex < 25;
+      const aptSecBtn = document.getElementById('nav-sec-aptitude');
+      const codingSecBtn = document.getElementById('nav-sec-coding');
+      if (aptSecBtn && codingSecBtn) {
+        if (isAptActive) {
+          aptSecBtn.className = "btn btn-sm btn-primary flex-fill fw-bold py-1 shadow-sm";
+          codingSecBtn.className = "btn btn-sm btn-outline-info flex-fill fw-bold py-1 shadow-sm";
+        } else {
+          aptSecBtn.className = "btn btn-sm btn-outline-primary flex-fill fw-bold py-1 shadow-sm";
+          codingSecBtn.className = "btn btn-sm btn-info text-dark flex-fill fw-bold py-1 shadow-sm";
+        }
+      }
     }
 
     function saveCurrentState() {
       if (editor && assessmentData && assessmentData.questions[currentQuestionIndex]) {
         const qId = assessmentData.questions[currentQuestionIndex].id;
+        const prevStore = codeStore[qId] || {};
         codeStore[qId] = {
           lang: document.getElementById('language-select').value,
-          code: editor.getValue()
+          code: editor.getValue(),
+          selectedOption: prevStore.selectedOption
         };
 
         const consoleOutput = document.getElementById('console-output-container').innerHTML;
         const statusBadge = document.getElementById('run-status-badge');
         const passedBanner = document.getElementById('passed-banner');
 
-        const prevStore = consoleStore[qId] || {};
+        const prevConsole = consoleStore[qId] || {};
         consoleStore[qId] = {
           html: consoleOutput,
           badgeText: statusBadge.textContent,
           badgeClass: statusBadge.className,
-          passedAll: prevStore.passedAll,
+          passedAll: prevConsole.passedAll,
           bannerVisible: !passedBanner.classList.contains('d-none')
         };
       }
@@ -329,18 +465,29 @@
 
       saveCurrentState();
       currentQuestionIndex = index;
+      forceEditorMode = false;
 
       renderQuestionTabs();
-      document.querySelectorAll('#question-tabs .nav-link').forEach((el, idx) => {
-        el.classList.toggle('active', idx === index);
-      });
-
       loadQuestion(index);
+    }
+
+    function extractOptionsFromDescription(desc) {
+      const options = [];
+      const lines = (desc || '').split('\n');
+      for (const line of lines) {
+        const m = line.trim().match(/^([A-D])\)\s*(.+)$/i);
+        if (m) {
+          options.push({ letter: m[1].toUpperCase(), text: m[2].trim() });
+        }
+      }
+      return options;
     }
 
     function loadQuestion(index) {
       const q = assessmentData.questions[index];
       if (!q) return;
+
+      const isAptitude = (q.category === 'Aptitude') || (index < 25);
 
       // Update Header & Details
       document.getElementById('q-title').textContent = q.title;
@@ -348,18 +495,54 @@
       document.getElementById('q-category').textContent = q.category;
       document.getElementById('q-description').textContent = q.description;
       document.getElementById('q-constraints').textContent = q.constraints || 'None specified.';
+      
+      const secIndicator = document.getElementById('q-section-indicator');
+      if (secIndicator) {
+        secIndicator.textContent = isAptitude ? "📝 Section 1: Aptitude" : "💻 Section 2: Coding Challenge";
+        secIndicator.className = isAptitude ? "badge bg-primary me-2" : "badge bg-info text-dark me-2";
+      }
 
       // Nav Counter
       document.getElementById('q-counter-label').textContent = `Question ${index + 1} of ${assessmentData.questions.length}`;
       document.getElementById('prev-q-btn').disabled = (index === 0);
       document.getElementById('next-q-btn').disabled = (index === assessmentData.questions.length - 1);
 
-      // Restore Code & Language
+      // Aptitude vs Coding View Toggle
+      const aptContainer = document.getElementById('aptitude-options-container');
+      const codingBar = document.getElementById('coding-control-bar');
+      const editorElem = document.getElementById('editor-container');
+
+      const options = extractOptionsFromDescription(q.description);
+
+      if (isAptitude && options.length >= 2 && !forceEditorMode) {
+        aptContainer.classList.remove('d-none');
+        codingBar.classList.add('d-none');
+        editorElem.classList.add('d-none');
+
+        const savedAns = codeStore[q.id]?.selectedOption;
+        const optsContainer = document.getElementById('aptitude-options-list');
+        optsContainer.innerHTML = options.map(opt => `
+          <div class="aptitude-option-card ${savedAns === opt.letter ? 'selected' : ''}" onclick="selectAptitudeOption('${opt.letter}')">
+            <div class="option-letter-badge">${opt.letter}</div>
+            <div class="flex-grow-1 fs-6">${escapeHtml(opt.text)}</div>
+          </div>
+        `).join('');
+
+        document.getElementById('apt-selected-status').innerHTML = savedAns
+          ? `Selected: <strong>Option ${savedAns}</strong> ✓`
+          : `No option selected yet.`;
+      } else {
+        aptContainer.classList.add('d-none');
+        codingBar.classList.remove('d-none');
+        editorElem.classList.remove('d-none');
+      }
+
+      // Restore Code & Language in Editor
       const storedCode = codeStore[q.id];
       const lang = storedCode ? storedCode.lang : 'python';
       document.getElementById('language-select').value = lang;
 
-      const starter = (q.starter_code && q.starter_code[lang]) ? q.starter_code[lang] : `# Write Python 3 solution for ${q.title}\n`;
+      const starter = (q.starter_code && q.starter_code[lang]) ? q.starter_code[lang] : `# Solution for ${q.title}\n`;
       const codeToSet = storedCode ? storedCode.code : starter;
 
       if (editor) {
@@ -393,7 +576,7 @@
           qStatus.textContent = 'Not Started';
         }
       } else {
-        container.innerHTML = `<pre id="console-output" class="text-secondary small font-monospace mb-0">Click "Run & Test Code" to execute your solution against public test cases...</pre>`;
+        container.innerHTML = `<pre id="console-output" class="text-secondary small font-monospace mb-0">Select an option or click "Run & Test Code" to verify...</pre>`;
         badge.className = 'badge bg-secondary';
         badge.textContent = 'Idle';
         banner.classList.add('d-none');
@@ -410,11 +593,36 @@
       }
     }
 
-    async function executeAndTestCode() {
-      if (!editor || !assessmentData || !assessmentData.questions[currentQuestionIndex]) return;
+    async function selectAptitudeOption(letter) {
       const q = assessmentData.questions[currentQuestionIndex];
-      const lang = document.getElementById('language-select').value;
-      const code = editor.getValue();
+      if (!q) return;
+
+      document.querySelectorAll('.aptitude-option-card').forEach(card => {
+        card.classList.toggle('selected', card.querySelector('.option-letter-badge').textContent.trim() === letter);
+      });
+
+      document.getElementById('apt-selected-status').innerHTML = `Selected: <strong>Option ${letter}</strong> (Saved)`;
+
+      const codeStr = `print("${letter}")\n`;
+      codeStore[q.id] = {
+        lang: 'python',
+        code: codeStr,
+        selectedOption: letter
+      };
+
+      if (editor) {
+        editor.setValue(codeStr);
+      }
+
+      // Auto test against test case to mark status
+      await executeAndTestCode();
+    }
+
+    async function executeAndTestCode() {
+      if (!assessmentData || !assessmentData.questions[currentQuestionIndex]) return;
+      const q = assessmentData.questions[currentQuestionIndex];
+      const lang = document.getElementById('language-select').value || 'python';
+      const code = (editor ? editor.getValue() : (codeStore[q.id]?.code || ''));
 
       const badge = document.getElementById('run-status-badge');
       const container = document.getElementById('console-output-container');
@@ -424,7 +632,7 @@
       badge.className = 'badge bg-warning text-dark';
       badge.textContent = 'Running...';
       banner.classList.add('d-none');
-      container.innerHTML = `<div class="text-warning small font-monospace">⏳ Executing code against public test cases...</div>`;
+      container.innerHTML = `<div class="text-warning small font-monospace">⏳ Verifying solution against test cases...</div>`;
 
       try {
         const res = await codingAPI.runCode(attemptId, {
@@ -444,10 +652,9 @@
             qStatus.textContent = 'Passed ✓';
             banner.classList.remove('d-none');
 
-            // Automatic advancement to next question if correct
             if (currentQuestionIndex < assessmentData.questions.length - 1) {
               const nextNum = currentQuestionIndex + 2;
-              banner.querySelector('strong').textContent = `🎉 Correct Solution! Auto-advancing to Question ${nextNum}...`;
+              banner.querySelector('strong').textContent = `🎉 Correct Answer! Auto-advancing to Question ${nextNum}...`;
               document.getElementById('banner-next-btn').textContent = `Proceeding to Question ${nextNum} ➔`;
 
               if (autoAdvanceTimeout) clearTimeout(autoAdvanceTimeout);
@@ -455,16 +662,16 @@
                 if (currentQuestionIndex < assessmentData.questions.length - 1) {
                   switchQuestion(currentQuestionIndex + 1);
                 }
-              }, 1500);
+              }, 1400);
             } else {
-              banner.querySelector('strong').textContent = `🎉 Correct Solution! All assessment questions completed.`;
+              banner.querySelector('strong').textContent = `🎉 Correct! All assessment questions completed.`;
               document.getElementById('banner-next-btn').textContent = '🚀 Review & Submit Final Assessment';
             }
           } else {
             badge.className = 'badge bg-danger';
             badge.textContent = `Failed ${data.passed}/${data.total}`;
             qStatus.className = 'badge bg-danger';
-            qStatus.textContent = 'Failed';
+            qStatus.textContent = 'Needs Review';
             banner.classList.add('d-none');
           }
 
@@ -508,8 +715,8 @@
         const saved = codeStore[q.id] || { lang: 'python', code: '' };
         return {
           question_id: q.id,
-          language: saved.lang,
-          source_code: saved.code
+          language: saved.lang || 'python',
+          source_code: saved.code || ''
         };
       });
 
@@ -523,6 +730,16 @@
       } catch (err) {
         alert('Failed to submit assessment: ' + err.message);
       }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
   </script>
 </body>

@@ -153,6 +153,10 @@ def evaluate_question_submission(
         norm_expected = normalize_output(expected)
 
         passed = (exec_res["status"] == "Success") and (norm_actual == norm_expected)
+        if not passed and norm_expected.upper() in ["A", "B", "C", "D"]:
+            cleaned_source = source_code.strip().strip("'\"").strip().upper()
+            if cleaned_source == norm_expected.upper() or norm_actual.strip().upper() == norm_expected.upper():
+                passed = True
 
         if passed:
             passed_count += 1

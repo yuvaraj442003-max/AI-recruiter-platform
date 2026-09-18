@@ -71,6 +71,19 @@ def _rescale_embedding_score(raw_score: float) -> float:
     return max(0.0, min(1.0, float(normalized)))
 
 
+_EMBEDDING_CACHE = {}
+
+def _get_embedding(model, text: str):
+    truncated = text[:2000]
+    if truncated in _EMBEDDING_CACHE:
+        return _EMBEDDING_CACHE[truncated]
+    emb = model.encode(truncated)
+    if len(_EMBEDDING_CACHE) > 2000:
+        _EMBEDDING_CACHE.clear()
+    _EMBEDDING_CACHE[truncated] = emb
+    return emb
+
+
 def semantic_similarity(text_a: str, text_b: str) -> float:
     """Returns a 0-100 semantic similarity score between two texts."""
     text_a = (text_a or "").strip()
@@ -82,8 +95,8 @@ def semantic_similarity(text_a: str, text_b: str) -> float:
     if model is not None:
         import numpy as np
 
-        embeddings = model.encode([text_a[:2000], text_b[:2000]])
-        a, b = embeddings[0], embeddings[1]
+        a = _get_embedding(model, text_a)
+        b = _get_embedding(model, text_b)
         denom = (np.linalg.norm(a) * np.linalg.norm(b)) or 1e-8
         score = float(np.dot(a, b) / denom)
         rescaled = _rescale_embedding_score(score)

@@ -141,3 +141,34 @@ class ResendVerificationRequest(BaseModel):
             return v.strip().lower()
         return v
 
+
+class VerifyOTPRequest(BaseModel):
+    email: EmailStr
+    otp: str = Field(min_length=6, max_length=6)
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def sanitize_email(cls, v: str) -> str:
+        if isinstance(v, str):
+            return v.strip().lower()
+        return v
+
+    @field_validator("otp", mode="before")
+    @classmethod
+    def sanitize_otp(cls, v: str) -> str:
+        if isinstance(v, str):
+            return v.strip()
+        return str(v)
+
+
+class ResendOTPRequest(BaseModel):
+    email: EmailStr
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def sanitize_email(cls, v: str) -> str:
+        if isinstance(v, str):
+            return v.strip().lower()
+        return v
+
+

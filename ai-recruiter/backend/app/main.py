@@ -3,9 +3,11 @@ AI Recruiter — FastAPI application entrypoint (Phase 1: auth foundation, Phase
 """
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.core.config import settings
 from app.core.database import Base, engine, SessionLocal
@@ -255,10 +257,20 @@ app.include_router(interview_scorecard_router.router, prefix="/api/v1")
 app.include_router(talent_rediscovery_router.router, prefix="/api/v1")
 app.include_router(feedback_router.router)
 
+# Serve frontend HTML pages statically for direct verification / reset links
+_frontend_dir = Path(__file__).parent.parent.parent / "frontend-html"
+if _frontend_dir.exists():
+    from fastapi.responses import FileResponse
+    @app.get("/{page_name}.html", include_in_schema=False)
+    def serve_frontend_page(page_name: str):
+        file_path = _frontend_dir / f"{page_name}.html"
+        if file_path.exists():
+            return FileResponse(str(file_path))
+        from fastapi.exceptions import HTTPException
+        raise HTTPException(status_code=404, detail="Page not found")
 
+    app.mount("/static-frontend", StaticFiles(directory=str(_frontend_dir), html=True), name="frontend-html")
 
-
-@app.get("/", tags=["Health"])
 def root():
     return {"success": True, "message": f"{settings.APP_NAME} API is running", "data": {"version": "0.1.0"}}
 

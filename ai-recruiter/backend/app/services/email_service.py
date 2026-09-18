@@ -163,25 +163,28 @@ class EmailService:
 # --- High-level System Event Wrappers ---
 
 def send_verification_email(
-    to_email: str, name: str, token: str, db: Optional[Session] = None, base_url: Optional[str] = None
+    to_email: str, name: str, otp_code: str, db: Optional[Session] = None, base_url: Optional[str] = None
 ) -> str:
-    url_base = base_url or settings.FRONTEND_URL or "http://localhost:8000"
-    verify_url = f"{url_base.rstrip('/')}/verify-email.html?token={token}"
-    subject = "Verify Your AI Recruiter Account"
+    subject = "Your AI Recruiter Verification Code"
 
-    context = {"name": name, "verify_url": verify_url}
-    html_content = render_template("application_received.html", {"candidate_name": name, "job_title": "Account Verification", "company_name": "AI Recruiter"})
-    text_content = f"Hello {name},\n\nPlease verify your account: {verify_url}\n"
+    context = {"name": name, "otp_code": otp_code, "company_name": "AI Recruiter"}
+    html_content = render_template("email_otp.html", context)
+    text_content = (
+        f"Hello {name},\n\n"
+        f"Thank you for registering with AI Recruiter!\n"
+        f"Your account verification code is: {otp_code}\n\n"
+        f"This code will expire in 10 minutes.\n"
+    )
 
     EmailService.send_queued_email(
         to_email=to_email,
         subject=subject,
-        email_type="verification",
+        email_type="verification_otp",
         html_content=html_content,
         text_content=text_content,
-        idempotency_key=f"verify_{token}",
+        idempotency_key=f"verify_otp_{to_email}_{otp_code}",
     )
-    return verify_url
+    return otp_code
 
 
 def send_reset_password_email(
@@ -191,8 +194,14 @@ def send_reset_password_email(
     reset_url = f"{url_base.rstrip('/')}/reset-password.html?token={token}"
     subject = "Reset Your AI Recruiter Password"
 
-    text_content = f"Hello {name},\n\nReset your password here: {reset_url}\n"
-    html_content = f"<p>Hello {name},</p><p>Reset your password <a href='{reset_url}'>here</a>.</p>"
+    context = {"name": name, "reset_url": reset_url, "company_name": "AI Recruiter"}
+    html_content = render_template("reset_password.html", context)
+    text_content = (
+        f"Hello {name},\n\n"
+        f"We received a request to reset your password for your AI Recruiter account.\n"
+        f"Reset your password here: {reset_url}\n\n"
+        f"This link will expire in 2 hours.\n"
+    )
 
     EmailService.send_queued_email(
         to_email=to_email,

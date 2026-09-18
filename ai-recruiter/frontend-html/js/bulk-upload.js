@@ -240,6 +240,9 @@
           if (statusCount) statusCount.textContent = `${res.data.successful} stored (${res.data.duplicates || 0} duplicates linked), ${res.data.failed} failed`;
           currentResultsStore = res.data.results || [];
           renderResults(currentResultsStore, res.data.best_match);
+          if (typeof window.refreshRecruiterDashboardUploadedResumes === "function") {
+            window.refreshRecruiterDashboardUploadedResumes();
+          }
         } else {
           alert(res.message || "Bulk upload failed.");
         }
@@ -284,6 +287,39 @@
     resultsTableBody.innerHTML = results.map((r, index) => {
       const data = r.extracted_data || {};
       const score = Math.round(r.overall_match_score || 0);
+
+      // Matched Job Role logic
+      const matchedRole = r.matched_job_role || r.best_suited_role?.best_role_title || data.matched_job_role || data.current_role || data.headline || "Software Professional";
+      const roleScore = r.best_suited_role?.best_match_score || score;
+      const isActiveJob = r.best_suited_role?.is_active_job;
+      const activePill = isActiveJob ? `<span class="badge bg-success text-white small" style="font-size: 0.65rem;" title="Matches an open job opening you posted">🏢 Open Job</span>` : '';
+
+      // Secondary matched roles
+      const matchedRolesList = r.matched_roles || r.best_suited_role?.matched_roles || data.matched_roles || [];
+      const secondaryRoles = matchedRolesList
+        .filter(mr => mr.title && mr.title.toLowerCase() !== matchedRole.toLowerCase())
+        .slice(0, 2);
+
+      let secondaryRolesHtml = "";
+      if (secondaryRoles.length > 0) {
+        secondaryRolesHtml = `<div class="mt-1 d-flex flex-wrap gap-1 align-items-center">
+          <span class="text-muted" style="font-size: 0.7rem;">Also fits:</span>
+          ${secondaryRoles.map(sr => `<span class="badge bg-secondary-subtle text-dark border border-secondary-subtle" style="font-size: 0.7rem;" title="${escapeHtml(sr.explanation || '')}">${escapeHtml(sr.title)} (${sr.score}%)</span>`).join("")}
+        </div>`;
+      }
+
+      const roleBadge = `
+        <div class="d-flex flex-column align-items-start">
+          <div class="d-flex align-items-center gap-1 flex-wrap">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 fs-6 fw-bold shadow-sm d-inline-flex align-items-center gap-1" title="${escapeHtml(r.best_suited_role?.explanation || 'Best suited job position identified for candidate')}">
+              <span>🎯</span> ${escapeHtml(matchedRole)}
+            </span>
+            ${activePill}
+          </div>
+          <div class="small text-muted mt-1" style="font-size: 0.75rem;">Fit: <strong class="text-dark">${roleScore}% Match</strong></div>
+          ${secondaryRolesHtml}
+        </div>
+      `;
 
       // Rank Badge
       let rankBadge = `<span class="badge bg-secondary">#${r.rank || index + 1}</span>`;
@@ -339,6 +375,9 @@
             <div class="fw-bold text-dark mb-0 fs-6">${escapeHtml(data.name || r.filename)}</div>
             <div class="small text-muted"><a href="mailto:${escapeHtml(data.email || '')}" class="text-decoration-none text-muted">${escapeHtml(data.email || "—")}</a></div>
             <div class="small text-muted">${escapeHtml(data.phone || "—")}</div>
+          </td>
+          <td>
+            ${roleBadge}
           </td>
           <td>
             <div class="mb-1">${topSkillsBadges} ${remainingSkillsCount}</div>
@@ -412,6 +451,9 @@
     const skillsArr = Array.isArray(data.skills) ? data.skills : (data.skills ? String(data.skills).split(",") : []);
     const skillsBadges = skillsArr.map(s => `<span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 fs-6 me-1 mb-1">${escapeHtml(s.trim())}</span>`).join(" ");
 
+    const matchedRoleModal = item.matched_job_role || item.best_suited_role?.best_role_title || data.matched_job_role || data.current_role || data.headline || 'Candidate Profile';
+    const roleScoreModal = item.best_suited_role?.best_match_score || Math.round(item.overall_match_score || 0);
+
     modalBody.innerHTML = `
       <div class="row g-4">
         <!-- Candidate Overview Card -->
@@ -419,8 +461,8 @@
           <div class="text-center p-3 bg-light rounded-4 border mb-3">
             <div class="fs-1 mb-2">👤</div>
             <h4 class="fw-bold text-dark mb-1">${escapeHtml(data.name || item.filename)}</h4>
-            <p class="text-muted small mb-2">${escapeHtml(data.current_role || data.headline || 'Candidate Profile')}</p>
-            <span class="badge bg-success-subtle text-success border border-success px-3 py-1">ATS Score: ${Math.round(item.overall_match_score || 0)}%</span>
+            <div class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 mb-2">🎯 ${escapeHtml(matchedRoleModal)} (${roleScoreModal}% Fit)</div>
+            <div><span class="badge bg-success-subtle text-success border border-success px-3 py-1">ATS Score: ${Math.round(item.overall_match_score || 0)}%</span></div>
           </div>
 
           <div class="card border-0 bg-light rounded-3 p-3 mb-3">
@@ -472,7 +514,7 @@
             <div class="col-md-6">
               <h5 class="fw-bold text-dark mb-2">🎓 Education</h5>
               <div class="p-3 bg-light rounded-3 border text-secondary small">
-                ${escapeHtml(data.education || 'No education records.')}
+                ${escapeHtml((data.education || '').split(/\b(technical environment|technical skills|key skills)\b/i)[0].replace(/[\n\r,-]+$/, '').trim() || 'No education records.')}
               </div>
             </div>
             <div class="col-md-6">
@@ -533,6 +575,9 @@
         }
         currentResultsStore = currentResultsStore.filter(item => item.candidate_id !== candidateId);
         renderResults(currentResultsStore);
+        if (typeof window.refreshRecruiterDashboardUploadedResumes === "function") {
+          window.refreshRecruiterDashboardUploadedResumes();
+        }
       } else {
         alert(res.message || "Failed to delete candidate.");
       }
@@ -664,4 +709,8 @@
     if (!str) return "";
     return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
+
+  window.showBulkAtsModal = showAtsModal;
+  window.showBulkCandidateDetailsModal = showCandidateDetailsModal;
+  window.deleteBulkCandidate = deleteCandidate;
 })();

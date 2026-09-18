@@ -63,13 +63,46 @@
           </div>
         </form>
 
+        <!-- OTP Verification View (shown when login returns EMAIL_NOT_VERIFIED) -->
+        <div id="otp-verification-container" class="d-none">
+          <div class="alert alert-warning py-2 mb-3 small fw-semibold text-start" id="otp-info-alert">
+            📩 <strong>Email Not Verified:</strong> A 6-digit OTP code has been sent to your email.
+          </div>
+
+          <form id="login-otp-form" onsubmit="return false;">
+            <div class="mb-3 text-start">
+              <label class="form-label small text-muted fw-semibold mb-2">6-Digit Verification Code</label>
+              <div class="d-flex justify-content-between gap-2 login-otp-group mb-2">
+                <input type="text" maxlength="1" class="form-control text-center fw-bold fs-4 login-otp-box" style="height: 52px; border-radius: 10px;" data-index="0" inputmode="numeric" pattern="[0-9]*" autofocus />
+                <input type="text" maxlength="1" class="form-control text-center fw-bold fs-4 login-otp-box" style="height: 52px; border-radius: 10px;" data-index="1" inputmode="numeric" pattern="[0-9]*" />
+                <input type="text" maxlength="1" class="form-control text-center fw-bold fs-4 login-otp-box" style="height: 52px; border-radius: 10px;" data-index="2" inputmode="numeric" pattern="[0-9]*" />
+                <input type="text" maxlength="1" class="form-control text-center fw-bold fs-4 login-otp-box" style="height: 52px; border-radius: 10px;" data-index="3" inputmode="numeric" pattern="[0-9]*" />
+                <input type="text" maxlength="1" class="form-control text-center fw-bold fs-4 login-otp-box" style="height: 52px; border-radius: 10px;" data-index="4" inputmode="numeric" pattern="[0-9]*" />
+                <input type="text" maxlength="1" class="form-control text-center fw-bold fs-4 login-otp-box" style="height: 52px; border-radius: 10px;" data-index="5" inputmode="numeric" pattern="[0-9]*" />
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow-sm mb-3" id="verify-otp-submit">
+              <span id="verify-otp-btn-text">Verify &amp; Sign In &rarr;</span>
+              <span id="verify-otp-spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+            </button>
+          </form>
+
+          <div class="d-flex justify-content-between align-items-center pt-3 mt-2 border-top">
+            <button type="button" class="btn btn-link text-decoration-none btn-sm p-0 fw-semibold text-primary" id="resend-login-otp-btn" disabled>
+              Resend OTP <span id="resend-timer-span" class="text-muted fw-normal">(60s)</span>
+            </button>
+            <button type="button" class="btn btn-link text-decoration-none btn-sm p-0 fw-semibold text-secondary" id="change-email-btn">
+              ✏️ Change Email
+            </button>
+          </div>
+        </div>
+
         <div class="d-flex align-items-center my-4">
           <hr class="flex-grow-1 border-secondary-subtle my-0" />
           <span class="px-3 text-muted small fw-semibold">OR</span>
           <hr class="flex-grow-1 border-secondary-subtle my-0" />
         </div>
-
-        <div id="google-button-div" class="d-flex justify-content-center w-100 mb-2"></div>
 
         <button type="button" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2 py-2 fw-semibold shadow-sm bg-white" id="google-signin-btn">
           <svg width="18" height="18" viewBox="0 0 24 24">

@@ -98,10 +98,17 @@
       const res = await analyticsAPI.candidate();
       const data = res.data;
 
-      document.getElementById("stat-profile-completion").textContent = `${data.profile_completion}%`;
-      document.getElementById("stat-resume-status").textContent = resumeStatusLabel(data.resume_uploaded);
-      document.getElementById("stat-applications").textContent = data.applications_count;
-      document.getElementById("stat-interview-status").textContent = interviewStatusLabel(data.interview_status);
+      const elComp = document.getElementById("stat-profile-completion");
+      if (elComp) elComp.textContent = `${data.profile_completion}%`;
+      
+      const elStatus = document.getElementById("stat-resume-status");
+      if (elStatus) elStatus.textContent = resumeStatusLabel(data.resume_uploaded);
+      
+      const elApps = document.getElementById("stat-applications-count") || document.getElementById("stat-applications");
+      if (elApps) elApps.textContent = data.applications_count;
+      
+      const elInt = document.getElementById("stat-interviews-count") || document.getElementById("stat-interview-status");
+      if (elInt) elInt.textContent = interviewStatusLabel ? interviewStatusLabel(data.interview_status) : data.applications_count;
 
       renderProfileCompletionChart(data.profile_completion);
       renderApplicationsStatusChart(data.applications_by_status);
@@ -111,9 +118,12 @@
         if (bestCard) {
           bestCard.classList.remove("d-none");
           const bestTitle = data.best_suited_role.best_role_title || "Software Developer";
-          document.getElementById("dash-best-role-title").textContent = bestTitle;
-          document.getElementById("dash-best-role-score").textContent = `${data.best_suited_role.best_match_score}%`;
-          document.getElementById("dash-best-role-explanation").textContent = data.best_suited_role.explanation || "";
+          const elTitle = document.getElementById("dash-best-role-title");
+          if (elTitle) elTitle.textContent = bestTitle;
+          const elScore = document.getElementById("dash-best-role-score");
+          if (elScore) elScore.textContent = `${data.best_suited_role.best_match_score}%`;
+          const elExp = document.getElementById("dash-best-role-explanation");
+          if (elExp) elExp.textContent = data.best_suited_role.explanation || "";
 
           // Pre-select best suited role in Explorer dropdown
           const roleSelect = document.getElementById("dash-target-role");
@@ -124,26 +134,32 @@
       }
 
       if (data.latest_interview_score != null) {
-        document.getElementById("interview-score-display").textContent = `${Math.round(data.latest_interview_score)}%`;
-        document.getElementById("interview-score-caption").textContent = "Most recent completed interview";
+        const elDisp = document.getElementById("interview-score-display");
+        if (elDisp) elDisp.textContent = `${Math.round(data.latest_interview_score)}%`;
+        const elCapt = document.getElementById("interview-score-caption");
+        if (elCapt) elCapt.textContent = "Most recent completed interview";
       }
 
       const recommendedLine = document.getElementById("recommended-jobs-line");
-      if (!data.resume_uploaded) {
-        recommendedLine.textContent = "Upload your resume to identify your best suited position and get job recommendations.";
-      } else if (data.recommended_jobs_count > 0) {
-        recommendedLine.textContent = `Your resume matches ${data.best_suited_role?.best_role_title || "your target role"} best (${data.best_suited_role?.best_match_score}% fit). You're a strong match for ${data.recommended_jobs_count} open position${data.recommended_jobs_count === 1 ? "" : "s"}.`;
-      } else {
-        recommendedLine.textContent = `Your resume matches ${data.best_suited_role?.best_role_title || "your target role"} best (${data.best_suited_role?.best_match_score}% fit). Check back as new job postings are published.`;
+      if (recommendedLine) {
+        if (!data.resume_uploaded) {
+          recommendedLine.textContent = "Upload your resume to identify your best suited position and get job recommendations.";
+        } else if (data.recommended_jobs_count > 0) {
+          recommendedLine.textContent = `Your resume matches ${data.best_suited_role?.best_role_title || "your target role"} best (${data.best_suited_role?.best_match_score}% fit). You're a strong match for ${data.recommended_jobs_count} open position${data.recommended_jobs_count === 1 ? "" : "s"}.`;
+        } else {
+          recommendedLine.textContent = `Your resume matches ${data.best_suited_role?.best_role_title || "your target role"} best (${data.best_suited_role?.best_match_score}% fit). Check back as new job postings are published.`;
+        }
       }
 
       const skillsList = document.getElementById("skills-list");
-      if (data.skills && data.skills.length) {
-        skillsList.innerHTML = data.skills
-          .map((s) => `<span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 fs-6 shadow-sm me-1 mb-1">⚡ ${s}</span>`)
-          .join("");
-      } else {
-        skillsList.innerHTML = '<span class="text-muted-custom small">No skills added yet. Complete your profile details or upload a resume to see skills here.</span>';
+      if (skillsList) {
+        if (data.skills && data.skills.length) {
+          skillsList.innerHTML = data.skills
+            .map((s) => `<span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 fs-6 shadow-sm me-1 mb-1">⚡ ${s}</span>`)
+            .join("");
+        } else {
+          skillsList.innerHTML = '<span class="text-muted-custom small">No skills added yet. Complete your profile details or upload a resume to see skills here.</span>';
+        }
       }
 
       // Load Job Explorer list
@@ -297,55 +313,72 @@
       const p = res.data;
       const user = Session.getUser();
 
-      document.getElementById("cand-name-display").textContent = user ? user.name : "Candidate";
-      document.getElementById("cand-headline-display").textContent = p.headline || p.current_role || "Software Professional";
-      document.getElementById("cand-location-display").textContent = p.location ? `📍 ${p.location}` : "📍 Location Not Specified";
-      document.getElementById("cand-experience-display").textContent = `💼 ${p.experience_years || 0} Years Experience`;
+      const nameEl = document.getElementById("cand-name-display");
+      if (nameEl) nameEl.textContent = user ? user.name : "Candidate";
+      const headlineEl = document.getElementById("cand-headline-display");
+      if (headlineEl) headlineEl.textContent = p.headline || p.current_role || "Software Professional";
+      const locEl = document.getElementById("cand-location-display");
+      if (locEl) locEl.textContent = p.location ? `📍 ${p.location}` : "📍 Location Not Specified";
+      const expEl = document.getElementById("cand-experience-display");
+      if (expEl) expEl.textContent = `💼 ${p.experience_years || 0} Years Experience`;
 
-      if (p.profile_photo) {
-        document.getElementById("cand-profile-photo").src = p.profile_photo;
-      } else {
-        const name = encodeURIComponent(user ? user.name : "Candidate");
-        document.getElementById("cand-profile-photo").src = `https://ui-avatars.com/api/?name=${name}&background=2f5fff&color=fff&size=128`;
+      const photoEl = document.getElementById("cand-profile-photo");
+      if (photoEl) {
+        if (p.profile_photo) {
+          photoEl.src = p.profile_photo;
+        } else {
+          const name = encodeURIComponent(user ? user.name : "Candidate");
+          photoEl.src = `https://ui-avatars.com/api/?name=${name}&background=2f5fff&color=fff&size=128`;
+        }
       }
 
       // Social Links
       const btnIn = document.getElementById("cand-btn-linkedin");
-      if (p.linkedin_url) {
-        btnIn.href = p.linkedin_url;
-        btnIn.classList.remove("d-none");
-      } else {
-        btnIn.classList.add("d-none");
+      if (btnIn) {
+        if (p.linkedin_url) {
+          btnIn.href = p.linkedin_url;
+          btnIn.classList.remove("d-none");
+        } else {
+          btnIn.classList.add("d-none");
+        }
       }
 
       const btnGit = document.getElementById("cand-btn-github");
-      if (p.github_url) {
-        btnGit.href = p.github_url;
-        btnGit.classList.remove("d-none");
-      } else {
-        btnGit.classList.add("d-none");
+      if (btnGit) {
+        if (p.github_url) {
+          btnGit.href = p.github_url;
+          btnGit.classList.remove("d-none");
+        } else {
+          btnGit.classList.add("d-none");
+        }
       }
 
       const btnPort = document.getElementById("cand-btn-portfolio");
-      if (p.portfolio_url) {
-        btnPort.href = p.portfolio_url;
-        btnPort.classList.remove("d-none");
-      } else {
-        btnPort.classList.add("d-none");
+      if (btnPort) {
+        if (p.portfolio_url) {
+          btnPort.href = p.portfolio_url;
+          btnPort.classList.remove("d-none");
+        } else {
+          btnPort.classList.add("d-none");
+        }
       }
 
       // Populate Edit Form
-      document.getElementById("edit-cand-headline").value = p.headline || "";
-      document.getElementById("edit-cand-role").value = p.current_role || "";
-      document.getElementById("edit-cand-photo").value = p.profile_photo || "";
-      document.getElementById("edit-cand-location").value = p.location || "";
-      document.getElementById("edit-cand-summary").value = p.summary || "";
-      document.getElementById("edit-cand-phone").value = p.phone || "";
-      document.getElementById("edit-cand-exp").value = p.experience_years || "";
-      document.getElementById("edit-cand-certifications").value = p.certifications || "";
-      document.getElementById("edit-cand-linkedin").value = p.linkedin_url || "";
-      document.getElementById("edit-cand-github").value = p.github_url || "";
-      document.getElementById("edit-cand-portfolio").value = p.portfolio_url || "";
+      const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val || "";
+      };
+      setVal("edit-cand-headline", p.headline);
+      setVal("edit-cand-role", p.current_role);
+      setVal("edit-cand-photo", p.profile_photo);
+      setVal("edit-cand-location", p.location);
+      setVal("edit-cand-summary", p.summary);
+      setVal("edit-cand-phone", p.phone);
+      setVal("edit-cand-exp", p.experience_years);
+      setVal("edit-cand-certifications", p.certifications);
+      setVal("edit-cand-linkedin", p.linkedin_url);
+      setVal("edit-cand-github", p.github_url);
+      setVal("edit-cand-portfolio", p.portfolio_url);
     } catch (e) {
       // Ignore if resume not uploaded yet
     }
@@ -646,7 +679,10 @@
               <tbody>
                 ${res.data.map(item => `
                   <tr>
-                    <td class="fw-semibold">${item.title}</td>
+                    <td class="fw-semibold">
+                      ${item.title}
+                      <div class="small text-muted fw-normal">📋 ${item.questions_count || 30} Questions: <strong>25 Aptitude</strong> + <strong>5 Coding</strong></div>
+                    </td>
                     <td>${item.duration_minutes} Mins</td>
                     <td>${item.passing_score}%</td>
                     <td>

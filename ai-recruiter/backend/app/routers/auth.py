@@ -4,6 +4,7 @@ Authentication endpoints: register, login, refresh, and "who am I".
 import secrets
 import uuid
 from datetime import datetime, timedelta, timezone
+from typing import Optional, Dict, Any
 
 from fastapi import APIRouter, Depends, Query, Request, status
 from sqlalchemy.orm import Session
@@ -32,6 +33,8 @@ from app.schemas.user import (
     UserRegister,
     UserResponse,
     VerifyEmailRequest,
+    VerifyOTPRequest,
+    ResendOTPRequest,
 )
 
 from app.utils.audit import log_action
@@ -74,6 +77,20 @@ from app.services.fraud_service import detect_job_fraud
 from app.services.notification_service import create_notification
 
 
+def _extract_base_url_from_request(request: Request) -> Optional[str]:
+    referer = request.headers.get("referer")
+    if referer:
+        pos = referer.rfind('/')
+        if pos != -1 and not referer[:pos].endswith(":/") and not referer[:pos].endswith("://"):
+            return referer[:pos]
+    if getattr(settings, "FRONTEND_URL", None):
+        return settings.FRONTEND_URL.rstrip('/')
+    origin = request.headers.get("origin")
+    if origin:
+        return origin.rstrip('/')
+    return None
+
+
 @router.get("/check-email", response_model=APIResponse[dict])
 def check_email(email: str = Query(..., min_length=3), db: Session = Depends(get_db)):
     """Checks whether an email address is already registered in the database."""
@@ -109,8 +126,8 @@ def register(payload: UserRegister, request: Request, db: Session = Depends(get_
             ssl_ok, ssl_msg = verify_website_ssl(payload.company_website)
             v_reasons.append(f"SSL Security: {'Secure' if ssl_ok else 'Unverified/Failed'}")
 
-    v_token = secrets.token_urlsafe(32)
-    v_expires = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(hours=24)
+    v_otp = f"{secrets.randbelow(900000) + 100000}"
+    v_expires = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(minutes=10)
 
     user = User(
         name=payload.name,
@@ -119,7 +136,7 @@ def register(payload: UserRegister, request: Request, db: Session = Depends(get_
         role=payload.role,
         is_active=True,
         is_email_verified=False,
-        verification_token=v_token,
+        verification_token=v_otp,
         verification_token_expires_at=v_expires,
         verification_status="approved",
         verification_reasons=json.dumps(v_reasons) if v_reasons else None,
@@ -160,13 +177,13 @@ def register(payload: UserRegister, request: Request, db: Session = Depends(get_
     db.refresh(user)
 
     from app.services.email_service import send_verification_email
-    send_verification_email(user.email, user.name, v_token, db=db)
+    send_verification_email(user.email, user.name, v_otp, db=db)
 
     log_action(db, "user.register", user_id=user.id, details={"role": user.role.value, "verification_status": "approved"}, ip_address=client_ip)
 
     return APIResponse(
         success=True,
-        message="Registration successful. A verification email has been sent to your email address.",
+        message="Registration successful. A 6-digit verification code has been sent to your email.",
         data=_issue_tokens(user, db)
     )
 
@@ -194,8 +211,17 @@ def login(payload: UserLogin, request: Request, db: Session = Depends(get_db)):
 
     # Enforce mandatory email verification before login
     if not getattr(user, "is_email_verified", True):
+        # Generate 6-digit OTP and send via email (5-minute expiration)
+        otp_code = f"{secrets.randbelow(900000) + 100000}"
+        user.verification_token = otp_code
+        user.verification_token_expires_at = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(minutes=5)
+        db.commit()
+
+        from app.services.email_service import send_verification_email
+        send_verification_email(user.email, user.name, otp_code, db=db)
+
         raise AuthError(
-            "Access Denied: Please verify your email address before logging in. Check your inbox for the verification link.",
+            "Access Denied: Please verify your email address. A 6-digit OTP code has been sent to your email.",
             error_code="EMAIL_NOT_VERIFIED"
         )
 
@@ -368,8 +394,10 @@ def forgot_password(payload: ForgotPasswordRequest, request: Request, db: Sessio
     user.reset_token_expires_at = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(minutes=30)
     db.commit()
 
+    base_url = _extract_base_url_from_request(request)
+
     from app.services.email_service import send_reset_password_email
-    send_reset_password_email(user.email, user.name, token, db=db)
+    send_reset_password_email(user.email, user.name, token, db=db, base_url=base_url)
 
     log_action(db, "user.forgot_password_requested", user_id=user.id, ip_address=client_ip)
 
@@ -431,10 +459,13 @@ def verify_email_post(payload: VerifyEmailRequest, db: Session = Depends(get_db)
     user.verification_token_expires_at = None
     db.commit()
 
+    tokens = _issue_tokens(user, db)
+    token_dict = tokens.model_dump() if hasattr(tokens, "model_dump") else tokens.dict()
+
     return APIResponse(
         success=True,
-        message="Email verified successfully! You can now log in.",
-        data={"email": user.email, "role": user.role.value}
+        message="Email verified successfully!",
+        data=token_dict
     )
 
 
@@ -458,16 +489,96 @@ def verify_email_get(token: str = Query(..., min_length=1), db: Session = Depend
     user.verification_token_expires_at = None
     db.commit()
 
+    tokens = _issue_tokens(user, db)
+    token_dict = tokens.model_dump() if hasattr(tokens, "model_dump") else tokens.dict()
+
     return APIResponse(
         success=True,
-        message="Email verified successfully! You can now log in.",
-        data={"email": user.email, "role": user.role.value}
+        message="Email verified successfully!",
+        data=token_dict
+    )
+
+
+@router.post("/verify-otp", response_model=APIResponse[dict])
+def verify_otp(payload: VerifyOTPRequest, db: Session = Depends(get_db)):
+    """Verifies user email using 6-digit OTP code."""
+    clean_email = payload.email.strip().lower()
+    user = db.query(User).filter(User.email == clean_email).first()
+    if not user:
+        raise AuthError("No account found with this email address.")
+
+    if user.is_email_verified:
+        tokens = _issue_tokens(user, db)
+        token_dict = tokens.model_dump() if hasattr(tokens, "model_dump") else tokens.dict()
+        return APIResponse(
+            success=True,
+            message="This email address is already verified.",
+            data=token_dict
+        )
+
+    if not user.verification_token or user.verification_token.strip() != payload.otp.strip():
+        raise AuthError("Invalid OTP. Please try again.")
+
+    if user.verification_token_expires_at:
+        now_naive = datetime.now(timezone.utc).replace(tzinfo=None)
+        if user.verification_token_expires_at < now_naive:
+            raise AuthError("OTP has expired. Please click Resend OTP.")
+
+    user.is_email_verified = True
+    user.verification_token = None
+    user.verification_token_expires_at = None
+    db.commit()
+
+    tokens = _issue_tokens(user, db)
+    token_dict = tokens.model_dump() if hasattr(tokens, "model_dump") else tokens.dict()
+
+    return APIResponse(
+        success=True,
+        message="Email verified successfully! Welcome to AI Recruiter.",
+        data=token_dict
+    )
+
+
+@router.post("/resend-otp", response_model=APIResponse[dict])
+def resend_otp(payload: ResendOTPRequest, request: Request, db: Session = Depends(get_db)):
+    """Generates and dispatches a fresh 6-digit OTP verification code."""
+    client_ip = request.client.host if request.client else "unknown"
+    check_ip_rate_limit(f"resend_otp:{client_ip}")
+
+    clean_email = payload.email.strip().lower()
+    user = db.query(User).filter(User.email == clean_email).first()
+    if not user:
+        return APIResponse(
+            success=True,
+            message="If an account exists with this email, a verification code has been sent.",
+            data={}
+        )
+
+    if user.is_email_verified:
+        return APIResponse(
+            success=True,
+            message="This email address is already verified.",
+            data={"is_email_verified": True}
+        )
+
+    otp_code = f"{secrets.randbelow(900000) + 100000}"
+    user.verification_token = otp_code
+    user.verification_token_expires_at = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(minutes=5)
+    db.commit()
+
+    from app.services.email_service import send_verification_email
+    send_verification_email(user.email, user.name, otp_code, db=db)
+
+    return APIResponse(
+        success=True,
+        message="A new 6-digit verification code has been sent to your email.",
+        data={}
     )
 
 
 @router.post("/resend-verification", response_model=APIResponse[dict])
 def resend_verification(payload: ResendVerificationRequest, request: Request, db: Session = Depends(get_db)):
-    """Generates and dispatches a fresh email verification link."""
+    """Generates and dispatches a fresh 6-digit OTP verification code."""
     client_ip = request.client.host if request.client else "unknown"
     check_ip_rate_limit(f"resend_verification:{client_ip}")
 
@@ -486,17 +597,17 @@ def resend_verification(payload: ResendVerificationRequest, request: Request, db
             data={"is_email_verified": True}
         )
 
-    token = secrets.token_urlsafe(32)
-    user.verification_token = token
-    user.verification_token_expires_at = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(hours=24)
+    otp_code = f"{secrets.randbelow(900000) + 100000}"
+    user.verification_token = otp_code
+    user.verification_token_expires_at = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(minutes=10)
     db.commit()
 
     from app.services.email_service import send_verification_email
-    send_verification_email(user.email, user.name, token, db=db)
+    send_verification_email(user.email, user.name, otp_code, db=db)
 
     return APIResponse(
         success=True,
-        message="Verification email sent. Please check your inbox.",
+        message="A new 6-digit verification code has been sent to your email.",
         data={}
     )
 

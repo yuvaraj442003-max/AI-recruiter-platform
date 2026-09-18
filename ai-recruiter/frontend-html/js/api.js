@@ -63,7 +63,11 @@ const Session = {
     safeStorage.removeItem(TOKEN_KEYS.user);
   },
   isLoggedIn() {
-    return Boolean(this.getAccessToken());
+    const token = this.getAccessToken();
+    const user = this.getUser();
+    if (!token || !user) return false;
+    if (user.is_email_verified === false) return false;
+    return true;
   },
 };
 
@@ -85,7 +89,7 @@ class ApiError extends Error {
   }
 }
 
-async function request(path, { method = "GET", body, auth = true } = {}) {
+async function request(path, { method = "GET", body, auth = true, _isRetry = false } = {}) {
   const headers = { "Content-Type": "application/json" };
 
   if (auth) {
@@ -112,7 +116,27 @@ async function request(path, { method = "GET", body, auth = true } = {}) {
   }
 
   if (!response.ok) {
-    if (response.status === 401 && path !== "/auth/login" && path !== "/auth/google") {
+    if (response.status === 401 && path !== "/auth/login" && path !== "/auth/google" && path !== "/auth/refresh") {
+      const refreshToken = safeStorage.getItem(TOKEN_KEYS.refresh);
+      if (refreshToken && !_isRetry) {
+        try {
+          const refreshRes = await fetch(`${API_BASE_URL}/auth/refresh`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ refresh_token: refreshToken }),
+          });
+          if (refreshRes.ok) {
+            const refreshPayload = await refreshRes.json();
+            if (refreshPayload?.data) {
+              Session.save(refreshPayload.data);
+              return request(path, { method, body, auth, _isRetry: true });
+            }
+          }
+        } catch (e) {
+          // Token refresh failed, fall through to logout
+        }
+      }
+
       Session.clear();
       const currentPath = window.location.pathname.split("/").pop();
       if (currentPath && !["login.html", "register.html", "index.html"].includes(currentPath)) {
@@ -176,7 +200,9 @@ const authAPI = {
   forgotPassword: (email) => api.post("/auth/forgot-password", { email }, { auth: false }),
   resetPassword: (payload) => api.post("/auth/reset-password", payload, { auth: false }),
   verifyEmail: (token) => api.get(`/auth/verify-email?token=${encodeURIComponent(token)}`, { auth: false }),
+  verifyOTP: (email, otp) => api.post("/auth/verify-otp", { email, otp }, { auth: false }),
   resendVerification: (email) => api.post("/auth/resend-verification", { email }, { auth: false }),
+  resendOTP: (email) => api.post("/auth/resend-otp", { email }, { auth: false }),
   getConfig() {
     if (!_authConfigPromise) {
       _authConfigPromise = api.get("/auth/config", { auth: false });

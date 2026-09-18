@@ -136,8 +136,12 @@
       Session.save(res.data);
 
       alertBox.className = "alert alert-success py-3 mb-4";
-      alertBox.textContent = "Registration successful. A verification email has been sent to your email address.";
+      alertBox.textContent = "🎉 Registration successful! A 6-digit verification code has been sent to your email. Redirecting to verification...";
       alertBox.classList.remove("d-none");
+
+      setTimeout(() => {
+        window.location.href = `verify-email.html?email=${encodeURIComponent(payload.email)}`;
+      }, 1200);
     } catch (err) {
       showError(err.message || "Registration failed. Please try again.");
       setLoading(false);
@@ -177,18 +181,6 @@
           client_id: clientId,
           callback: window.handleGoogleCredentialResponse,
         });
-
-        const btnDiv = document.getElementById("google-button-div");
-        if (btnDiv) {
-          window.google.accounts.id.renderButton(btnDiv, {
-            theme: "outline",
-            size: "large",
-            width: "350",
-            text: "signup_with",
-          });
-          const customBtn = document.getElementById("google-register-btn");
-          if (customBtn) customBtn.classList.add("d-none");
-        }
       }
     } catch (e) {
       console.warn("Google Auth config init:", e);
@@ -199,9 +191,20 @@
   const googleBtn = document.getElementById("google-register-btn");
   if (googleBtn) {
     googleBtn.addEventListener("click", async () => {
-      const promptEmail = prompt("Continue with Google Account:\nEnter your Google Email (or press OK to sign in as yuvarajyuva442003@gmail.com):", "yuvarajyuva442003@gmail.com");
-      if (promptEmail && promptEmail.trim()) {
-        processGoogleAuth(promptEmail.trim());
+      if (window.google?.accounts?.id) {
+        window.google.accounts.id.prompt((notification) => {
+          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            const promptEmail = prompt("Continue with Google Account:\nEnter your Google Email (or press OK to sign in as yuvarajyuva442003@gmail.com):", "yuvarajyuva442003@gmail.com");
+            if (promptEmail && promptEmail.trim()) {
+              processGoogleAuth(promptEmail.trim());
+            }
+          }
+        });
+      } else {
+        const promptEmail = prompt("Continue with Google Account:\nEnter your Google Email (or press OK to sign in as yuvarajyuva442003@gmail.com):", "yuvarajyuva442003@gmail.com");
+        if (promptEmail && promptEmail.trim()) {
+          processGoogleAuth(promptEmail.trim());
+        }
       }
     });
   }

@@ -98,7 +98,7 @@ def _experience_match_score(
 from app.nlp.skill_extractor import extract_skills
 
 
-def compute_match(candidate: CandidateProfile, job: Job) -> MatchResult:
+def compute_match(candidate: CandidateProfile, job: Job, include_semantic: bool = False) -> MatchResult:
     candidate_skill_names = {cs.skill.skill_name for cs in candidate.candidate_skills}
 
     required_skills = {js.skill.skill_name for js in job.job_skills if js.required}
@@ -150,7 +150,13 @@ def compute_match(candidate: CandidateProfile, job: Job) -> MatchResult:
     resume_text = candidate.resume_text or candidate.summary or ""
     job_text = job.description or ""
     tfidf_match = tfidf_similarity(resume_text, job_text)
-    semantic_match = semantic_similarity(resume_text, job_text)
+    if include_semantic:
+        try:
+            semantic_match = semantic_similarity(resume_text, job_text)
+        except Exception:
+            semantic_match = tfidf_match
+    else:
+        semantic_match = tfidf_match
 
     raw_final_score = round(
         skill_match * WEIGHTS["skill_match"]

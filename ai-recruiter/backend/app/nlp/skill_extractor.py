@@ -318,6 +318,14 @@ def extract_experience_years(text: str) -> float | None:
     return 0.0 if is_fresher_or_student else None
 
 
+_SKILL_OR_ENV_BREAK_RE = re.compile(
+    r"^\s*(technical environment|environment|technical skills|key skills|skills|"
+    r"tech stack|technical stack|tools & technologies|tools and technologies|core competencies|"
+    r"areas of expertise|competencies|technologies)\b",
+    re.IGNORECASE,
+)
+
+
 def extract_education(text: str) -> str | None:
     """Extract education by first finding the EDUCATION section heading,
     then pulling the lines that follow it — until the next section heading.
@@ -331,24 +339,40 @@ def extract_education(text: str) -> str | None:
             stripped = line.strip()
             if not stripped:
                 continue
-            # Stop at the next recognizable section heading
-            if _NEXT_SECTION_RE.match(stripped):
+            # Stop at the next recognizable section heading or skill/environment block
+            if _NEXT_SECTION_RE.match(stripped) or _SKILL_OR_ENV_BREAK_RE.match(stripped):
                 break
+            
+            # If line has inline technical environment / skills break, keep only pre-break text
+            m_inline = re.search(r"\b(technical environment|technical skills|key skills|core competencies)\b", stripped, re.IGNORECASE)
+            if m_inline:
+                before_part = stripped[:m_inline.start()].strip()
+                if before_part:
+                    edu_lines.append(before_part)
+                break
+
             edu_lines.append(stripped)
         if edu_lines:
-            return "\n".join(edu_lines[:12])  # up to 12 lines of education detail
+            res = "\n".join(edu_lines[:12])
+            res = re.split(r"\b(technical environment|technical skills|key skills)\b", res, flags=re.IGNORECASE)[0]
+            clean_res = res.strip(" \t\n\r,;-")
+            return clean_res or None
 
     # --- Fallback: keyword scan (only if no EDUCATION heading found) ---
     lines = [l.strip() for l in text.splitlines() if l.strip()]
     hits = [
         line for line in lines
         if any(keyword in line.lower() for keyword in EDUCATION_KEYWORDS)
+        and not _SKILL_OR_ENV_BREAK_RE.match(line)
     ]
     return "\n".join(hits[:6]) if hits else None
 
 
 _SKILLS_HEADING_RE = re.compile(
-    r"^\s*(skills|technical skills|key skills|core competencies|competencies|technologies|tools & technologies|extracted skills|skills & expertise)\s*:?\s*$",
+    r"^\s*(skills|technical skills|key skills|core competencies|competencies|technologies|"
+    r"technical environment|environment|tech stack|technical stack|technical expertise|"
+    r"technical proficiencies|tools & technologies|tools and technologies|tools|"
+    r"extracted skills|skills & expertise|skills & competencies|areas of expertise)\s*:?\s*$",
     re.IGNORECASE | re.MULTILINE,
 )
 
@@ -373,7 +397,7 @@ def extract_skills(text: str) -> list[str]:
                     continue
             found.add(canonical)
 
-    # 2. Section Extraction (parsing lines under SKILLS / TECHNICAL SKILLS header)
+    # 2. Section Extraction (parsing lines under SKILLS / TECHNICAL SKILLS / TECHNICAL ENVIRONMENT header)
     heading_match = _SKILLS_HEADING_RE.search(text)
     if heading_match:
         after_heading = text[heading_match.end():]
@@ -399,7 +423,8 @@ def extract_skills(text: str) -> list[str]:
 
 
 SECTION_HEADING_RE = re.compile(
-    r"^\s*(skills|technical skills|education|experience|work experience|"
+    r"^\s*(skills|technical skills|technical environment|environment|tech stack|technical stack|"
+    r"tools & technologies|tools and technologies|education|experience|work experience|"
     r"projects|certifications|employment history|career objective|objective|"
     r"professional summary|personal details|languages|hobbies|interests|"
     r"achievements|awards|references|volunteer)\s*:?\s*$",
@@ -415,8 +440,10 @@ _EDUCATION_HEADING_RE = re.compile(
 # Stop collecting lines when we hit any other major section
 _NEXT_SECTION_RE = re.compile(
     r"^\s*(experience|work experience|employment|projects?|certifications?|"
-    r"skills|key skills|technical skills|languages|hobbies|interests|achievements|"
-    r"awards|references|volunteer|career objective|objective|personal details|education)\s*:?\s*$",
+    r"skills|key skills|technical skills|technical environment|environment|tech stack|"
+    r"technical stack|tools & technologies|tools and technologies|tools|"
+    r"languages|hobbies|interests|achievements|awards|references|volunteer|"
+    r"career objective|objective|personal details|education)\s*:?\s*$",
     re.IGNORECASE,
 )
 

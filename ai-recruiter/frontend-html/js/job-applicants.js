@@ -1285,6 +1285,29 @@
         </div>
       `;
 
+      // Helper to cleanly separate education text from technical environment/skills
+      let cleanEducation = (c.education || '').trim();
+      let envSkills = [];
+      const envMatch = cleanEducation.match(/\b(technical environment|technical skills|key skills|technologies|tools & technologies)\b[:\s-]*/i);
+      if (envMatch) {
+        const splitIdx = envMatch.index;
+        const eduPart = cleanEducation.substring(0, splitIdx).trim();
+        const skillsPart = cleanEducation.substring(splitIdx + envMatch[0].length).trim();
+        cleanEducation = eduPart.replace(/[\n\r,-]+$/, '').trim();
+        if (skillsPart) {
+          envSkills = skillsPart.split(/[,;\n\r•·|]+/).map(s => s.trim()).filter(s => s.length >= 2);
+        }
+      }
+
+      // Collect all candidate skills
+      const allCandSkills = new Set(Array.isArray(c.skills) ? c.skills : []);
+      envSkills.forEach(s => allCandSkills.add(s));
+      const candSkillsArray = Array.from(allCandSkills);
+
+      const candSkillsBadgesHtml = candSkillsArray.length > 0
+        ? candSkillsArray.map(s => `<span class="badge bg-primary-subtle text-primary border border-primary border-opacity-25 me-1 mb-1 px-2 py-1 fw-semibold">${escapeHtml(s)}</span>`).join('')
+        : '<span class="text-muted small">No specific skills listed.</span>';
+
       modalBody.innerHTML = `
         ${renderAssessmentHeaderBanner(session, app)}
 
@@ -1316,12 +1339,28 @@
               <h6 class="fw-bold text-dark mb-2">About / Candidate Summary</h6>
               <p class="text-secondary small mb-3">${c.summary || c.ai_summary || 'No summary details.'}</p>
 
-              <h6 class="fw-bold text-dark mb-2">Education &amp; Experience History</h6>
-              <div class="text-secondary small bg-light p-3 rounded mb-2">
-                <strong>Education:</strong> ${c.education || 'Not specified'}
+              <!-- Dedicated Education Section -->
+              <div class="mb-3">
+                <h6 class="fw-bold text-dark mb-2">🎓 Education</h6>
+                <div class="text-secondary small bg-light p-3 rounded border">
+                  ${cleanEducation ? escapeHtml(cleanEducation) : 'Not specified'}
+                </div>
               </div>
-              <div class="text-secondary small bg-light p-3 rounded">
-                <strong>Work History:</strong> ${c.work_experience || 'Not specified'}
+
+              <!-- Dedicated Skills & Technical Environment Section -->
+              <div class="mb-3">
+                <h6 class="fw-bold text-dark mb-2">🛠️ Candidate Skills &amp; Technical Environment</h6>
+                <div class="bg-light p-3 rounded border">
+                  ${candSkillsBadgesHtml}
+                </div>
+              </div>
+
+              <!-- Dedicated Work History Section -->
+              <div class="mb-2">
+                <h6 class="fw-bold text-dark mb-2">💼 Work Experience History</h6>
+                <div class="text-secondary small bg-light p-3 rounded border" style="white-space: pre-line;">
+                  ${c.work_experience ? escapeHtml(c.work_experience) : 'Not specified'}
+                </div>
               </div>
             </div>
           </div>

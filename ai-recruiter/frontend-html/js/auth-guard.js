@@ -20,9 +20,15 @@
     }
 
     const requiredRole = document.body.dataset.requiredRole;
-    if (requiredRole && user.role !== requiredRole) {
-      window.location.href = dashboardUrlForRole(user.role);
-      return;
+    if (requiredRole) {
+      const isRecruiterRole = (requiredRole === "recruiter" && (user.role === "recruiter" || user.role === "company_admin"));
+      const isCandidateRole = (requiredRole === "candidate" && user.role === "candidate");
+      const isAdminRole = (requiredRole === "admin" && (user.role === "admin" || user.role === "superadmin"));
+
+      if (!isRecruiterRole && !isCandidateRole && !isAdminRole && user.role !== requiredRole) {
+        window.location.href = dashboardUrlForRole(user.role);
+        return;
+      }
     }
 
     window.__AR_AUTH_READY = true;
@@ -30,10 +36,14 @@
     document.dispatchEvent(new CustomEvent("ar:auth-ready", { detail: { user } }));
 
   } catch (err) {
-    if (typeof Session !== "undefined" && Session.clear) {
-      Session.clear();
+    if (err?.status === 401) {
+      if (typeof Session !== "undefined" && Session.clear) {
+        Session.clear();
+      }
+      window.location.href = "login.html?expired=1";
+    } else {
+      console.warn("Auth guard warning:", err);
     }
-    window.location.href = "login.html";
   }
 })();
 

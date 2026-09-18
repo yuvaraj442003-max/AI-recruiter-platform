@@ -19,7 +19,7 @@ from app.core.exceptions import NotFoundError, AuthError, PermissionDeniedError,
 from app.core.security import decode_token
 from app.models.application import Application
 from app.models.candidate import CandidateProfile, CandidateSkill
-from app.models.job import Job
+from app.models.job import Job, JobStatus, JobSkill
 from app.models.user import User, UserRole
 from app.nlp.resume_parser import extract_resume_text
 from app.nlp.skill_extractor import parse_resume_fields
@@ -296,9 +296,29 @@ def _save_and_store_bulk_resume(
     db.commit()
     db.refresh(profile)
 
+    from app.nlp.best_role_evaluator import find_best_suited_position
+    best_role_res = find_best_suited_position(db, profile=profile)
+    best_role_dict = best_role_res.to_dict() if best_role_res else None
+    matched_job_role = best_role_dict.get("best_role_title") if best_role_dict else (fields.get("current_role") or "Software Professional")
+    matched_roles = best_role_dict.get("matched_roles", []) if best_role_dict else []
+    fields["matched_job_role"] = matched_job_role
+    fields["matched_roles"] = matched_roles
+    fields["best_suited_role"] = best_role_dict
+
+    # Persist matched role and headline into candidate profile
+    if matched_job_role:
+        profile.current_role = matched_job_role
+        if not profile.headline or "Specialist" in (profile.headline or ""):
+            profile.headline = matched_job_role
+        db.add(profile)
+        db.commit()
+        db.refresh(profile)
+
     overall_score = 0.0
-    if ats_res and isinstance(ats_res, dict):
+    if ats_res and isinstance(ats_res, dict) and ats_res.get("overall_ats_score"):
         overall_score = ats_res.get("overall_ats_score", 0.0)
+    elif best_role_dict and best_role_dict.get("best_match_score"):
+        overall_score = float(best_role_dict["best_match_score"])
     else:
         overall_score = float(fields.get("completeness_score", 0))
 
@@ -313,6 +333,9 @@ def _save_and_store_bulk_resume(
         "extracted_data": fields,
         "ats_analysis": ats_res,
         "overall_match_score": overall_score,
+        "matched_job_role": matched_job_role,
+        "matched_roles": matched_roles,
+        "best_suited_role": best_role_dict,
     }
 
 
@@ -1152,9 +1175,58 @@ def list_recruiter_uploaded_candidates(
         .all()
     )
     results = []
+    from app.nlp.best_role_evaluator import find_best_suited_position
+    published_jobs = (
+        db.query(Job)
+        .options(joinedload(Job.job_skills).joinedload(JobSkill.skill))
+        .filter(Job.status == JobStatus.published)
+        .all()
+    )
     for idx, p in enumerate(profiles):
         u = p.user
         skills_list = [cs.skill.skill_name for cs in p.candidate_skills if cs and cs.skill]
+        cached_data = None
+        if p.other_links and "matched_job_role" in p.other_links:
+            try:
+                cached_data = json.loads(p.other_links)
+            except Exception:
+                cached_data = None
+
+        if cached_data:
+            matched_job_role = cached_data.get("matched_job_role") or p.current_role or "Software Professional"
+            matched_roles = cached_data.get("matched_roles", [])
+            best_role_dict = cached_data.get("best_suited_role") or {
+                "best_role_title": matched_job_role,
+                "best_match_score": cached_data.get("best_match_score", 75),
+                "matched_roles": matched_roles,
+            }
+            effective_score = float(cached_data.get("best_match_score") or p.profile_score or 75.0)
+        else:
+            best_role_res = find_best_suited_position(db, profile=p, published_jobs=published_jobs)
+            best_role_dict = best_role_res.to_dict() if best_role_res else None
+            matched_job_role = best_role_dict.get("best_role_title") if best_role_dict else (p.current_role or "Software Professional")
+            matched_roles = best_role_dict.get("matched_roles", []) if best_role_dict else []
+            effective_score = float(best_role_dict.get("best_match_score") or p.profile_score or 75.0)
+
+            # Persist cache to profile
+            try:
+                p.other_links = json.dumps({
+                    "matched_job_role": matched_job_role,
+                    "best_match_score": effective_score,
+                    "matched_roles": matched_roles,
+                    "best_suited_role": best_role_dict,
+                })
+                db.add(p)
+            except Exception:
+                pass
+
+        # Auto-heal profile role if generic
+        if matched_job_role and (not p.current_role or "Specialist" in (p.current_role or "")):
+            p.current_role = matched_job_role
+            if not p.headline or "Specialist" in (p.headline or ""):
+                p.headline = matched_job_role
+            db.add(p)
+
         extracted_data = {
             "name": u.name if u else "Candidate",
             "email": u.email if u else None,
@@ -1170,9 +1242,13 @@ def list_recruiter_uploaded_candidates(
             "linkedin_url": p.linkedin_url,
             "github_url": p.github_url,
             "portfolio_url": p.portfolio_url,
-            "headline": p.headline,
-            "current_role": p.current_role,
+            "headline": p.headline or matched_job_role,
+            "current_role": p.current_role or matched_job_role,
+            "matched_job_role": matched_job_role,
+            "matched_roles": matched_roles,
+            "best_suited_role": best_role_dict,
         }
+        effective_score = float(best_role_dict.get("best_match_score") or p.profile_score or 75.0)
         results.append({
             "rank": idx + 1,
             "candidate_id": str(p.id),
@@ -1180,11 +1256,18 @@ def list_recruiter_uploaded_candidates(
             "filename": p.resume_original_filename or f"resume_{(u.name.lower().replace(' ', '_') if u and u.name else 'candidate')}.pdf",
             "status": "completed",
             "is_duplicate": False,
-            "overall_match_score": float(p.profile_score or 80.0),
+            "overall_match_score": effective_score,
             "extracted_data": extracted_data,
+            "matched_job_role": matched_job_role,
+            "matched_roles": matched_roles,
+            "best_suited_role": best_role_dict,
             "source": p.source or "recruiter_bulk_upload",
             "created_at": p.created_at.isoformat() if p.created_at else None,
         })
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
     return APIResponse(success=True, message=f"Retrieved {len(results)} candidate(s)", data=results)
 
 

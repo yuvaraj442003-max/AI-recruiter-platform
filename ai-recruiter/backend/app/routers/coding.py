@@ -111,34 +111,9 @@ def _seed_default_questions_if_empty(db: Session):
 
 
 def _seed_default_assessment_if_empty(db: Session) -> CodingAssessment:
-    """Seed initial questions and default 60-minute coding assessment if none exists."""
-    _seed_default_questions_if_empty(db)
-    assessment = db.scalar(select(CodingAssessment).order_by(CodingAssessment.created_at.asc()))
-    if not assessment:
-        questions = db.scalars(select(CodingQuestion).order_by(CodingQuestion.created_at.asc())).all()
-        assessment = CodingAssessment(
-            title="AI Developer Technical Coding Assessment",
-            description="Complete 3 algorithm and data structure problems within 60 minutes.",
-            duration_minutes=60,
-            passing_score=60.0,
-            total_score=100.0,
-            max_attempts=1,
-            allowed_languages=json.dumps(["python", "javascript", "java", "cpp", "csharp"]),
-        )
-        db.add(assessment)
-        db.flush()
-
-        for idx, q in enumerate(questions, 1):
-            aq = CodingAssessmentQuestion(
-                assessment_id=assessment.id,
-                question_id=q.id,
-                question_order=idx,
-                points=35 if idx < 3 else 30
-            )
-            db.add(aq)
-        db.commit()
-        db.refresh(assessment)
-    return assessment
+    """Seed initial 25 aptitude and 5 coding questions and 75-minute assessment."""
+    from app.services.assessment_bank_service import seed_full_assessment_bank
+    return seed_full_assessment_bank(db)
 
 
 
