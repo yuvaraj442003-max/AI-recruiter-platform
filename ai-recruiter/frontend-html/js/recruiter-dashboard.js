@@ -871,8 +871,11 @@
             </div>
             ${appId ? `
             <div class="d-flex flex-wrap gap-2">
-              <button type="button" class="btn btn-sm btn-success fw-bold px-3 shadow-sm" onclick="window.overrideCandidateStatus && window.overrideCandidateStatus('${appId}', 'shortlisted', 'Recruiter Override from Assessment Breakdown')">
-                ⭐ Save Recruiter Override &amp; Shortlist
+              <button type="button" class="btn btn-sm btn-info text-white fw-bold px-3 shadow-sm" onclick="window.overrideCandidateStatus && window.overrideCandidateStatus('${appId}', 'shortlisted', 'Recruiter Override from Assessment Breakdown')">
+                ⭐ Save Override &amp; Shortlist
+              </button>
+              <button type="button" class="btn btn-sm btn-success fw-bold px-3 shadow-sm" onclick="window.overrideCandidateStatus && window.overrideCandidateStatus('${appId}', 'selected', 'Recruiter Selection from Assessment Breakdown')">
+                🎉 Select Candidate (Offer)
               </button>
               <button type="button" class="btn btn-sm btn-outline-danger fw-semibold px-3" onclick="window.overrideCandidateStatus && window.overrideCandidateStatus('${appId}', 'rejected', 'Confirmed Rejection from Assessment Breakdown')">
                 ❌ Confirm Rejection
@@ -900,7 +903,7 @@
         <div class="card border-0 p-4 p-md-5 mb-4 shadow-sm" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; border-radius: 16px;">
           <div class="row align-items-center">
             <div class="col-lg-8">
-              <span class="badge bg-primary px-3 py-2 text-uppercase mb-3 fw-bold" style="letter-spacing: 0.05em; font-size: 0.75rem;">${channel}</span>
+              <span class="badge px-3 py-2 text-uppercase mb-3 fw-bold text-white shadow-sm" style="background: linear-gradient(135deg, #25d366 0%, #128c7e 100%); letter-spacing: 0.05em; font-size: 0.75rem; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: 0 2px 8px rgba(37, 211, 102, 0.35);">💬 ${channel}</span>
               <h2 class="fw-bold mb-1 text-white">${escapeHtml(candidateName)}</h2>
               <p class="text-light text-opacity-75 mb-3 fs-5">${escapeHtml(jobTitle)}</p>
               <div class="d-flex flex-wrap gap-3 text-sm text-light text-opacity-90">
@@ -1011,6 +1014,28 @@
             </div>
           </div>
         </div>
+
+        <!-- Recruiter Status Action Bar -->
+        ${appId ? `
+        <div class="card border-0 shadow-sm mb-3" style="border-radius: 12px; background: #f8fafc;">
+          <div class="card-body p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+              <span class="text-muted small fw-bold text-uppercase">Update Application Status:</span>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+              <button type="button" class="btn btn-sm btn-info text-white fw-bold px-3 shadow-sm" onclick="window.overrideCandidateStatus && window.overrideCandidateStatus('${appId}', 'shortlisted', 'Recruiter Shortlist')">
+                ⭐ Shortlist Candidate
+              </button>
+              <button type="button" class="btn btn-sm btn-success text-white fw-bold px-3 shadow-sm" onclick="window.overrideCandidateStatus && window.overrideCandidateStatus('${appId}', 'selected', 'Recruiter Selection')">
+                🎉 Select Candidate (Offer)
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-danger fw-semibold px-3" onclick="window.overrideCandidateStatus && window.overrideCandidateStatus('${appId}', 'rejected', 'Recruiter Rejection')">
+                ❌ Reject
+              </button>
+            </div>
+          </div>
+        </div>
+        ` : ''}
       </div>
     `;
   }

@@ -500,7 +500,50 @@
     }
   }
 
+  async function loadSystemStatus() {
+    const redisBadge = document.getElementById("redis-live-badge");
+    const dbBadge = document.getElementById("db-live-badge");
+    if (!redisBadge && !dbBadge) return;
+
+    try {
+      const res = await systemAPI.getStatus();
+      const info = res?.data || {};
+
+      if (redisBadge && info.redis_cache) {
+        const rc = info.redis_cache;
+        if (rc.is_live || rc.backend_type === "redis_live") {
+          redisBadge.className = "badge bg-success-subtle text-success border border-success-subtle px-2 py-1";
+          redisBadge.innerHTML = `🟢 Redis Live: ${rc.host}:${rc.port} (${rc.keys_cached || 0} keys)`;
+        } else if (rc.backend_type === "fakeredis_fallback") {
+          redisBadge.className = "badge bg-warning-subtle text-dark border border-warning-subtle px-2 py-1";
+          redisBadge.innerHTML = `🟡 Redis: Fallback (In-Memory)`;
+        } else {
+          redisBadge.className = "badge bg-secondary-subtle text-muted border px-2 py-1";
+          redisBadge.innerHTML = `Redis: ${rc.backend_type || "Disabled"}`;
+        }
+      }
+
+      if (dbBadge && info.databases) {
+        const db = info.databases;
+        const engineName = (db.active_engine || "unknown").toUpperCase();
+        if (db.connected) {
+          dbBadge.className = "badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1";
+          dbBadge.innerHTML = `🗄️ DB: ${engineName} (Connected)`;
+        } else {
+          dbBadge.className = "badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1";
+          dbBadge.innerHTML = `⚠️ DB: ${engineName} (Disconnected)`;
+        }
+      }
+    } catch (err) {
+      if (redisBadge) {
+        redisBadge.className = "badge bg-secondary-subtle text-secondary border px-2 py-1";
+        redisBadge.textContent = "Redis: Status Unavailable";
+      }
+    }
+  }
+
   document.addEventListener("ar:auth-ready", () => {
+    loadSystemStatus();
     loadStats();
     loadUsers();
   });

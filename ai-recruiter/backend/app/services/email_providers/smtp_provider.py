@@ -32,9 +32,16 @@ class SmtpEmailProvider(BaseEmailProvider):
 
         if not smtp_user or not smtp_password:
             logger.info("SMTP credentials missing; writing email output to dev console.")
-            print(f"\n==================== [DEV CONSOLE EMAIL] ====================")
-            print(f"To: {to_email}\nSubject: {subject}\n\n{text_content}")
-            print(f"===========================================================\n")
+            try:
+                print(f"\n==================== [DEV CONSOLE EMAIL] ====================")
+                print(f"To: {to_email}\nSubject: {subject}\n\n{text_content}")
+                print(f"===========================================================\n")
+            except Exception:
+                safe_subj = subject.encode('ascii', errors='backslashreplace').decode('ascii')
+                safe_text = text_content.encode('ascii', errors='backslashreplace').decode('ascii')
+                print(f"\n==================== [DEV CONSOLE EMAIL] ====================")
+                print(f"To: {to_email}\nSubject: {safe_subj}\n\n{safe_text}")
+                print(f"===========================================================\n")
             return {
                 "success": True,
                 "provider_message_id": f"dev_console_{uuid.uuid4()}",

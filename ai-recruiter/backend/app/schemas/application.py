@@ -87,6 +87,8 @@ class ApplicationResponse(BaseModel):
     candidate_name: Optional[str] = None
     candidate_email: Optional[str] = None
     job_title: Optional[str] = None
+    company_name: Optional[str] = None
+    job_location: Optional[str] = None
 
 
 class ApplicationDetailResponse(ApplicationResponse):

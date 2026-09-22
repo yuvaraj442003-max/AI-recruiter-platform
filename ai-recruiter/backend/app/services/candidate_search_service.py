@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import or_, and_, desc
 
-from app.models.application import Application
+from app.models.application import Application, ApplicationStatus
 from app.models.candidate import CandidateProfile, CandidateSkill
 from app.models.interview import Interview
 from app.models.job import Job
@@ -598,6 +598,25 @@ def shortlist_candidate(
         notes=notes or "Shortlisted from Recruiter Candidate Search."
     )
     db.add(shortlist)
+
+    # Sync with candidate's Application record so it shows on Candidate Dashboard
+    if job_id:
+        app = db.query(Application).filter(
+            Application.candidate_id == candidate_id,
+            Application.job_id == job_id,
+        ).first()
+        if app:
+            app.status = ApplicationStatus.shortlisted
+            app.is_shortlisted = True
+        else:
+            app = Application(
+                candidate_id=candidate_id,
+                job_id=job_id,
+                status=ApplicationStatus.shortlisted,
+                is_shortlisted=True,
+                source="recruiter_shortlist",
+            )
+            db.add(app)
 
     # Log Audit
     db.add(AuditLog(

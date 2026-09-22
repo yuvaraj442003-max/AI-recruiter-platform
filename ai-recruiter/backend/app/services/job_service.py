@@ -4,7 +4,10 @@ to a job (computing + persisting a match score), ranking a job's
 applicants, and recommending jobs to a candidate.
 """
 import json
+import logging
 import uuid
+
+logger = logging.getLogger("ai_recruiter.services.job_service")
 
 from sqlalchemy.orm import Session, joinedload
 
@@ -342,7 +345,7 @@ def apply_to_job(db: Session, candidate_user_id, job_id) -> Application:
                     db=db,
                 )
     except Exception as exc:
-        logging.warning(f"Failed to dispatch application confirmation email: {exc}")
+        logger.warning(f"Failed to dispatch application confirmation email: {exc}")
 
     return application
 

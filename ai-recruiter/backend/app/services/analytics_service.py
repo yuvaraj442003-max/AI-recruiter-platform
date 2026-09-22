@@ -267,6 +267,8 @@ def get_candidate_analytics(db: Session, candidate_user_id) -> dict:
             "interviews_count": 0,
             "interview_status": "no_resume",
             "latest_interview_score": None,
+            "shortlisted_count": 0,
+            "selected_count": 0,
             "recommended_jobs_count": 0,
         }
 
@@ -275,8 +277,17 @@ def get_candidate_analytics(db: Session, candidate_user_id) -> dict:
     completed = [i for i in interviews if i.status == InterviewStatus.completed]
 
     applications_by_status = {status.value: 0 for status in ApplicationStatus}
+    shortlisted_count = 0
+    selected_count = 0
+
     for a in applications:
-        applications_by_status[a.status.value] += 1
+        st_val = a.status.value if hasattr(a.status, "value") else str(a.status)
+        if st_val in applications_by_status:
+            applications_by_status[st_val] += 1
+        if st_val == "selected":
+            selected_count += 1
+        elif st_val == "shortlisted" or a.is_shortlisted:
+            shortlisted_count += 1
 
     if completed:
         latest = max(completed, key=lambda i: i.completed_at or i.created_at)
@@ -308,6 +319,8 @@ def get_candidate_analytics(db: Session, candidate_user_id) -> dict:
         "skills": sorted({cs.skill.skill_name for cs in profile.candidate_skills if cs and cs.skill}),
         "applications_count": len(applications),
         "applications_by_status": applications_by_status,
+        "shortlisted_count": shortlisted_count,
+        "selected_count": selected_count,
         "interviews_count": len(interviews),
         "interview_status": interview_status,
         "latest_interview_score": latest_interview_score,

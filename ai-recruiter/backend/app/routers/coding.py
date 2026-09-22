@@ -322,7 +322,8 @@ def candidate_list_assessments(
 
         role_type = classify_job_role(job.title if job else "")
         has_coding = any(q.question and q.question.category not in ("Aptitude", "Recruiter Aptitude") for q in a.questions)
-        assessment_type = "coding" if (role_type == "developer" or has_coding) else "aptitude"
+        is_dev = role_type in ("developer", "frontend_developer", "ai_developer") or has_coding
+        assessment_type = "coding" if is_dev else "aptitude"
 
         out.append({
             "id": str(a.id),
@@ -383,6 +384,24 @@ def start_assessment_attempt(
         attempt.started_at = now
         db.commit()
         db.refresh(attempt)
+    elif attempt.status == "Terminated":
+        # Assessment was already terminated
+        remaining_seconds = 0
+        resp_data = CandidateCodingAttemptResponse(
+            id=attempt.id,
+            candidate_id=attempt.candidate_id,
+            assessment_id=attempt.assessment_id,
+            status="Terminated",
+            started_at=attempt.started_at,
+            submitted_at=attempt.submitted_at,
+            score=attempt.score or 0.0,
+            percentage=attempt.percentage or 0.0,
+            passed=False,
+            time_taken=attempt.time_taken,
+            remaining_seconds=0,
+            assessment=_format_assessment_response(assessment, db)
+        )
+        return APIResponse(success=False, message="Assessment has been terminated due to policy violation.", data=resp_data)
 
     # Compute remaining time
     elapsed = int((datetime.now(timezone.utc) - attempt.started_at.replace(tzinfo=timezone.utc)).total_seconds()) if attempt.started_at else 0
@@ -496,6 +515,12 @@ def submit_candidate_assessment(
     assessment = db.scalar(select(CodingAssessment).where(CodingAssessment.id == attempt.assessment_id))
     if not assessment:
         raise NotFoundError("Assessment not found.")
+
+    if attempt.status == "Terminated":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Assessment has been terminated due to anti-cheat policy violation (unauthorized tab switch). Submission is disallowed."
+        )
 
     now = datetime.now(timezone.utc)
     started_at = attempt.started_at.replace(tzinfo=timezone.utc) if attempt.started_at else now
@@ -611,6 +636,110 @@ def submit_candidate_assessment(
             "score": avg_percentage,
             "passed": passed,
             "status": attempt.status
+        }
+    )
+
+
+@router.post("/candidate/attempts/{attempt_id}/terminate", response_model=APIResponse[Dict[str, Any]])
+def terminate_candidate_assessment(
+    attempt_id: uuid.UUID,
+    reason: str = Query("TAB_SWITCH", description="Reason for automatic termination"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.candidate))
+):
+    """
+    Candidate switched tabs or violated anti-cheat rules during proctored assessment.
+    Immediately terminates assessment, assigns score 0, and flags integrity report.
+    """
+    cand = db.scalar(select(CandidateProfile).where(CandidateProfile.user_id == current_user.id))
+    if not cand:
+        raise NotFoundError("Candidate profile not found.")
+
+    attempt = db.scalar(
+        select(CandidateCodingAttempt)
+        .where(CandidateCodingAttempt.id == attempt_id, CandidateCodingAttempt.candidate_id == cand.id)
+    )
+    if not attempt:
+        raise NotFoundError("Coding attempt not found.")
+
+    now = datetime.now(timezone.utc)
+    started_at = attempt.started_at.replace(tzinfo=timezone.utc) if attempt.started_at else now
+    time_taken_sec = int((now - started_at).total_seconds())
+
+    attempt.status = "Terminated"
+    attempt.score = 0.0
+    attempt.percentage = 0.0
+    attempt.passed = False
+    attempt.time_taken = time_taken_sec
+    attempt.submitted_at = now
+
+    # Record critical proctoring event
+    from app.models.proctoring import AssessmentEvent, EventSeverity, IntegrityResult, RiskLevel
+    event_reason = "Unauthorized browser tab switch or window blur detected." if reason == "TAB_SWITCH" else reason
+    ev = AssessmentEvent(
+        attempt_id=attempt.id,
+        candidate_id=cand.id,
+        event_type="TAB_SWITCH_TERMINATED",
+        severity=EventSeverity.critical,
+        confidence=1.0,
+        metadata_json=json.dumps({
+            "violation": reason,
+            "description": event_reason,
+            "terminated_at": now.isoformat(),
+            "final_score": 0.0
+        })
+    )
+    db.add(ev)
+
+    # Flag integrity report
+    integrity = db.scalar(select(IntegrityResult).where(IntegrityResult.attempt_id == attempt.id))
+    if not integrity:
+        integrity = IntegrityResult(
+            attempt_id=attempt.id,
+            browser_score=0.0,
+            webcam_score=100.0,
+            audio_score=100.0,
+            code_similarity_score=100.0,
+            behavior_score=0.0,
+            overall_integrity_score=0.0,
+            risk_level=RiskLevel.high_risk,
+            recruiter_decision="rejected",
+            ai_summary=f"DISQUALIFIED: {event_reason}"
+        )
+        db.add(integrity)
+    else:
+        integrity.browser_score = 0.0
+        integrity.overall_integrity_score = 0.0
+        integrity.risk_level = RiskLevel.high_risk
+        integrity.recruiter_decision = "rejected"
+        integrity.ai_summary = f"DISQUALIFIED: {event_reason}"
+
+    # Also update application status if present
+    assessment = db.scalar(select(CodingAssessment).where(CodingAssessment.id == attempt.assessment_id))
+    if assessment and assessment.job_id:
+        from app.models.application import Application, ApplicationStatus
+        app = db.scalar(
+            select(Application)
+            .where(Application.candidate_id == cand.id, Application.job_id == assessment.job_id)
+        )
+        if app:
+            app.coding_score = 0.0
+            app.status = ApplicationStatus.rejected
+            app.recommendation = f"Disqualified from assessment: {event_reason}"
+
+    db.commit()
+    db.refresh(attempt)
+
+    return APIResponse(
+        success=True,
+        message="Assessment has been terminated due to anti-cheat policy violation.",
+        data={
+            "attempt_id": str(attempt.id),
+            "status": "Terminated",
+            "score": 0.0,
+            "passed": False,
+            "reason": reason,
+            "message": "Assessment immediately terminated and disqualified due to unauthorized tab switch."
         }
     )
 

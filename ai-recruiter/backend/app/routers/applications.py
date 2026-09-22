@@ -31,6 +31,8 @@ from app.services.job_service import re_screen_application
 def _to_response(
     app: Application,
     job_title: str | None = None,
+    company_name: str | None = None,
+    job_location: str | None = None,
     coding_attempt_id: str | None = None,
     interview_id: str | None = None,
 ) -> ApplicationResponse:
@@ -40,6 +42,12 @@ def _to_response(
     missing_kw = json.loads(app.missing_keywords) if app.missing_keywords else []
 
     cand_user = app.candidate.user if (app.candidate and hasattr(app.candidate, "user")) else None
+
+    # Derive company name from job if not explicitly passed
+    if not company_name and app.job:
+        company_name = getattr(app.job, "company_name", None)
+    if not job_location and app.job:
+        job_location = getattr(app.job, "company_location", None) or getattr(app.job, "location", None)
 
     return ApplicationResponse(
         id=app.id,
@@ -70,7 +78,7 @@ def _to_response(
         recommendation=app.recommendation,
         screening_status=app.screening_status,
         is_eligible=app.is_eligible if app.is_eligible is not None else False,
-        is_shortlisted=app.is_shortlisted if app.is_shortlisted is not None else (app.status == ApplicationStatus.shortlisted),
+        is_shortlisted=app.is_shortlisted if app.is_shortlisted is not None else (app.status in [ApplicationStatus.shortlisted, ApplicationStatus.selected]),
         screened_at=app.screened_at,
         screening_version=app.screening_version or "v1.0",
         recruiter_override=app.recruiter_override if app.recruiter_override is not None else False,
@@ -79,7 +87,9 @@ def _to_response(
         uploaded_by_recruiter_id=str(app.uploaded_by_recruiter_id) if getattr(app, "uploaded_by_recruiter_id", None) else None,
         candidate_name=cand_user.name if cand_user else None,
         candidate_email=cand_user.email if cand_user else None,
-        job_title=job_title,
+        job_title=job_title or (app.job.title if app.job else None),
+        company_name=company_name,
+        job_location=job_location,
     )
 
 
@@ -99,10 +109,23 @@ def list_my_applications(
         .order_by(Application.applied_at.desc())
         .all()
     )
+    result_list = []
+    for a in applications:
+        comp_name = getattr(a.job, "company_name", None) if a.job else None
+        j_loc = (getattr(a.job, "company_location", None) or getattr(a.job, "location", None)) if a.job else None
+        result_list.append(
+            _to_response(
+                a,
+                job_title=a.job.title if a.job else None,
+                company_name=comp_name,
+                job_location=j_loc,
+            )
+        )
+
     return APIResponse(
         success=True,
         message="Applications",
-        data=[_to_response(a, job_title=a.job.title if a.job else None) for a in applications],
+        data=result_list,
     )
 
 
@@ -333,7 +356,7 @@ def update_application_status(
         application.recruiter_override = True
         application.override_reason = payload.override_reason or f"Manually shortlisted by recruiter despite ATS score ({current_ats}%) being below threshold ({min_ats}%)."
 
-    if new_status == "shortlisted":
+    if new_status in ["shortlisted", "selected"]:
         application.is_shortlisted = True
 
     note_text = f"Status changed by recruiter ({current_user.name})"
@@ -375,12 +398,16 @@ def update_application_status(
 
         # Send status update & shortlisted emails to candidate
         try:
-            from app.services.email_service import send_application_status_email, send_shortlisted_email
+            from app.services.email_service import (
+                send_application_status_email,
+                send_shortlisted_email,
+                send_selected_email,
+            )
             cand_user = application.candidate.user if application.candidate else None
             if cand_user and cand_user.email:
                 comp_name = (
-                    application.job.company.name if (application.job and getattr(application.job, "company", None))
-                    else f"{current_user.name}'s Company"
+                    getattr(application.job, "company_name", None)
+                    or f"{current_user.name}'s Company"
                 )
                 job_title = application.job.title if application.job else "Position"
 
@@ -395,6 +422,18 @@ def update_application_status(
                         recruiter_id=current_user.id,
                         db=db,
                     )
+                elif new_status == "selected":
+                    send_selected_email(
+                        to_email=cand_user.email,
+                        candidate_name=cand_user.name,
+                        job_title=job_title,
+                        company_name=comp_name,
+                        notes=getattr(payload, 'override_reason', None),
+                        candidate_id=application.candidate_id,
+                        job_id=application.job_id,
+                        recruiter_id=current_user.id,
+                        db=db,
+                    )
                 else:
                     send_application_status_email(
                         to_email=cand_user.email,
@@ -402,7 +441,7 @@ def update_application_status(
                         job_title=job_title,
                         company_name=comp_name,
                         new_status=new_status,
-                        notes=getattr(payload, 'notes', None),
+                        notes=getattr(payload, 'override_reason', None),
                         candidate_id=application.candidate_id,
                         job_id=application.job_id,
                         recruiter_id=current_user.id,

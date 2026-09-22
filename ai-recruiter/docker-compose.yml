@@ -17,6 +17,20 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: ai_recruiter_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     build: ./backend
     container_name: ai_recruiter_backend
@@ -25,8 +39,13 @@ services:
       - ./backend/.env
     environment:
       DATABASE_URL: postgresql+psycopg2://postgres:postgres234@db:5432/ai_recruiter
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_URL: redis://redis:6379/0
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     ports:
       - "8000:8000"
@@ -51,4 +70,5 @@ services:
 
 volumes:
   postgres_data:
+  redis_data:
 

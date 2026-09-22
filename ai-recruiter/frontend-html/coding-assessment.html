@@ -76,6 +76,33 @@
   </style>
 </head>
 <body>
+  <!-- Disqualification / Termination Fullscreen Overlay -->
+  <div id="assessment-terminated-overlay" class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="z-index: 999999; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(8px);">
+    <div class="card border border-danger shadow-lg text-center p-4 p-md-5" style="max-width: 580px; background-color: #1e1e2e; border-radius: 16px;">
+      <div class="mb-3">
+        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger bg-opacity-25 p-3 text-danger" style="width: 80px; height: 80px; font-size: 2.5rem;">
+          ⚠️
+        </div>
+      </div>
+      <h3 class="fw-bold text-white mb-2">Assessment Terminated</h3>
+      <div class="badge bg-danger text-uppercase px-3 py-2 mb-3 fs-6">Disqualified — Integrity Violation</div>
+      <p class="text-slate-300 mb-3 fs-6" id="termination-reason-text">
+        You switched browser tabs or navigated away from the assessment window.
+      </p>
+      <div class="alert alert-danger text-start small mb-4 bg-danger bg-opacity-10 border border-danger text-danger-emphasis">
+        <strong>Strict Proctoring Policy Enforced:</strong>
+        <ul class="mb-0 ps-3 mt-1">
+          <li>Switching browser tabs or opening external applications is strictly prohibited.</li>
+          <li>Your assessment session has been immediately terminated.</li>
+          <li>Your attempt score has been finalized as <strong>0%</strong> (Rejected).</li>
+        </ul>
+      </div>
+      <a href="candidate-dashboard.html" class="btn btn-danger btn-lg fw-bold w-100 shadow">
+        Return to Candidate Dashboard &rarr;
+      </a>
+    </div>
+  </div>
+
   <!-- Top Navigation Bar -->
   <div class="top-header d-flex align-items-center justify-content-between px-3 text-white">
     <div class="d-flex align-items-center">
@@ -85,7 +112,7 @@
     <div class="d-flex align-items-center gap-3">
       <div class="d-flex align-items-center gap-2 bg-dark px-3 py-1 rounded border border-secondary">
         <span class="text-slate-400 small fw-bold">TIME REMAINING:</span>
-        <span id="timer-display" class="badge timer-badge text-white">75:00</span>
+        <span id="timer-display" class="badge timer-badge text-white">60:00</span>
       </div>
       <button id="submit-assessment-btn" class="btn btn-sm btn-success fw-bold px-3 py-2 shadow-sm d-flex align-items-center gap-2">
         <span>🚀</span> Submit Final Assessment
@@ -236,9 +263,51 @@
     let consoleStore = {};   // qId -> { html, badgeText, badgeClass, passedAll }
     let autoAdvanceTimeout = null;
 
-    let remainingSeconds = 4500; // 75 minutes default
+    let remainingSeconds = 3600; // 60 minutes default
     let timerInterval = null;
     let forceEditorMode = false;
+    let isAssessmentTerminated = false;
+
+    function triggerAssessmentTermination(reason = "Unauthorized browser tab switch or window switch detected.") {
+      if (isAssessmentTerminated) return;
+      isAssessmentTerminated = true;
+
+      if (timerInterval) clearInterval(timerInterval);
+
+      const overlay = document.getElementById('assessment-terminated-overlay');
+      if (overlay) {
+        overlay.classList.remove('d-none');
+        overlay.classList.add('d-flex');
+      }
+      const reasonText = document.getElementById('termination-reason-text');
+      if (reasonText) {
+        reasonText.textContent = reason;
+      }
+
+      if (editor) {
+        try { editor.updateOptions({ readOnly: true }); } catch (e) {}
+      }
+
+      ['run-code-btn', 'submit-assessment-btn', 'prev-q-btn', 'next-q-btn', 'apt-next-btn', 'banner-next-btn', 'reset-code-btn'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.disabled = true;
+      });
+
+      if (attemptId) {
+        codingAPI.terminateAssessment(attemptId, "TAB_SWITCH").catch(err => {
+          console.error("Termination API call failed:", err);
+        });
+      }
+    }
+
+    window.triggerAssessmentTermination = triggerAssessmentTermination;
+
+    // Strict Tab-Switch Detection: immediately terminate assessment if tab loses visibility
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && attemptId && !isAssessmentTerminated) {
+        triggerAssessmentTermination("Unauthorized tab switch detected! You navigated away or switched to another tab.");
+      }
+    });
 
     document.addEventListener('DOMContentLoaded', async () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -273,10 +342,22 @@
           attemptId = attemptData.id;
           assessmentData = attemptData.assessment;
 
+          // Check if already terminated
+          if (attemptData.status === "Terminated") {
+            triggerAssessmentTermination("This assessment attempt was terminated due to an unauthorized tab switch.");
+            return;
+          }
+
+          if (attemptData.status === "Evaluated") {
+            alert("This assessment has already been evaluated and completed.");
+            window.location.href = `coding-report.html?attempt_id=${attemptData.id}`;
+            return;
+          }
+
           if (attemptData.remaining_seconds && attemptData.remaining_seconds > 0) {
             remainingSeconds = attemptData.remaining_seconds;
           } else {
-            remainingSeconds = (assessmentData.duration_minutes || 75) * 60;
+            remainingSeconds = (assessmentData.duration_minutes || 60) * 60;
           }
 
           document.getElementById('assessment-title-nav').textContent = assessmentData.title || 'Technical & Aptitude Assessment';
@@ -439,7 +520,12 @@
         if (codingSecBtn) codingSecBtn.classList.add('d-none');
       } else if (isPureCode) {
         if (codingSecBtn) {
-          codingSecBtn.innerHTML = `💻 Technical Coding Challenges (${codeCount} Challenges)`;
+          const roleLabel = assessmentData.role_type === 'frontend_developer'
+            ? '🎨 Frontend Developer Coding Challenges'
+            : (assessmentData.role_type === 'ai_developer'
+                ? '🤖 AI Developer Coding Challenges'
+                : '💻 Technical Coding Challenges');
+          codingSecBtn.innerHTML = `${roleLabel} (${codeCount} Challenges)`;
           codingSecBtn.className = "btn btn-sm btn-info text-dark flex-fill fw-bold py-1 shadow-sm";
           codingSecBtn.classList.remove('d-none');
         }
@@ -531,6 +617,12 @@
         if (q.category === 'Recruiter Aptitude') {
           secIndicator.textContent = "📝 Recruiter Aptitude";
           secIndicator.className = "badge bg-primary me-2";
+        } else if (q.category === 'Frontend Development') {
+          secIndicator.textContent = "🎨 Frontend Challenge";
+          secIndicator.className = "badge bg-warning text-dark me-2";
+        } else if (q.category === 'AI Engineering') {
+          secIndicator.textContent = "🤖 AI Challenge";
+          secIndicator.className = "badge bg-info text-dark me-2";
         } else if (isAptitude) {
           secIndicator.textContent = "📝 Role Aptitude";
           secIndicator.className = "badge bg-primary me-2";

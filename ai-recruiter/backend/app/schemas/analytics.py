@@ -57,6 +57,8 @@ class CandidateAnalytics(BaseModel):
     skills: list[str]
     applications_count: int
     applications_by_status: dict[str, int]
+    shortlisted_count: Optional[int] = 0
+    selected_count: Optional[int] = 0
     interviews_count: int
     interview_status: str
     latest_interview_score: Optional[float] = None

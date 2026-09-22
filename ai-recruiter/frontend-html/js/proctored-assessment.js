@@ -129,10 +129,18 @@ function initActiveMonitoring(attemptId) {
   if (badgeFs) { badgeFs.className = "badge bg-success"; badgeFs.innerHTML = '<i class="bi bi-fullscreen me-1"></i>Fullscreen'; }
 
   // 1. Tab Switching & Window Blur Event Listeners
-  document.addEventListener("visibilitychange", () => {
+  document.addEventListener("visibilitychange", async () => {
     if (document.hidden) {
-      recordProctoringEvent(attemptId, "TAB_SWITCH", "medium", 0.95, { hidden_at: new Date().toISOString() });
-      showIntegrityToast("⚠️ Tab switch detected! Please remain on the assessment page.");
+      await recordProctoringEvent(attemptId, "TAB_SWITCH", "high", 1.0, { hidden_at: new Date().toISOString() });
+      if (window.codingAPI && attemptId) {
+        try {
+          await codingAPI.terminateAssessment(attemptId, "TAB_SWITCH");
+        } catch (e) {
+          console.error("Termination failed", e);
+        }
+      }
+      alert("⚠️ Tab switch violation! Switching tabs during the assessment is strictly forbidden. Your assessment has been terminated and disqualified.");
+      window.location.href = "candidate-dashboard.html";
     }
   });
 

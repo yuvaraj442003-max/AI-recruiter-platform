@@ -251,6 +251,51 @@ def send_shortlisted_email(
     )
 
 
+def send_selected_email(
+    to_email: str,
+    candidate_name: str,
+    job_title: str,
+    company_name: str,
+    notes: Optional[str] = None,
+    candidate_id: Optional[Any] = None,
+    job_id: Optional[Any] = None,
+    recruiter_id: Optional[Any] = None,
+    db: Optional[Session] = None,
+) -> bool:
+    if db and recruiter_id:
+        if not EmailService.is_event_enabled_for_recruiter(db, recruiter_id, "candidate_selected"):
+            logger.info("Candidate selected email disabled in recruiter notification settings.")
+            return False
+
+    subject = f"🥳 Congratulations! You are selected for {job_title} at {company_name}"
+    context = {
+        "candidate_name": candidate_name,
+        "job_title": job_title,
+        "company_name": company_name,
+        "notes": notes,
+    }
+    html_content = render_template("selected.html", context)
+    text_content = (
+        f"Hello {candidate_name},\n\n"
+        f"Congratulations! We are thrilled to inform you that you have been officially selected "
+        f"for the position of {job_title} at {company_name}.\n\n"
+        f"Our recruitment team will contact you shortly with onboarding next steps.\n\n"
+        f"Thank you,\n{company_name} Recruitment Team"
+    )
+
+    idempotency = f"selected_{candidate_id}_{job_id}" if candidate_id and job_id else None
+    return EmailService.send_queued_email(
+        to_email=to_email,
+        subject=subject,
+        email_type="candidate_selected",
+        html_content=html_content,
+        text_content=text_content,
+        idempotency_key=idempotency,
+        candidate_id=candidate_id,
+        job_id=job_id,
+    )
+
+
 def send_interview_invitation_email(
     to_email: str,
     candidate_name: str,

@@ -108,28 +108,37 @@
           </div>
         </div>
 
+        <!-- Real-Time Selection & Shortlist Status Alert Banner -->
+        <div id="dash-status-alert-banner" class="alert d-none py-3 px-4 mb-4 border-0 shadow-sm" role="alert" style="border-radius: 16px;"></div>
+
         <div class="row g-3 mb-4">
-          <div class="col-6 col-lg-3">
-            <div class="card stat-card metric-card-indigo p-3 border-0 shadow-sm hover-lift rounded-4">
-              <div class="text-muted-custom small fw-semibold">Profile Completion</div>
+          <div class="col-6 col-xl-2 col-md-4">
+            <div class="card stat-card metric-card-indigo p-3 border-0 shadow-sm hover-lift rounded-4 h-100">
+              <div class="text-muted-custom small fw-semibold">Profile</div>
               <div class="stat-value text-gradient-indigo" id="stat-profile-completion">—</div>
             </div>
           </div>
-          <div class="col-6 col-lg-3">
-            <div class="card stat-card metric-card-emerald p-3 border-0 shadow-sm hover-lift rounded-4">
-              <div class="text-muted-custom small fw-semibold">Resume Status</div>
-              <div class="stat-value text-gradient-emerald" id="stat-resume-status" style="font-size: 1.35rem; font-weight: 700;">Not Uploaded</div>
-            </div>
-          </div>
-          <div class="col-6 col-lg-3">
-            <div class="card stat-card metric-card-purple p-3 border-0 shadow-sm hover-lift rounded-4">
-              <div class="text-muted-custom small fw-semibold">My Applications</div>
+          <div class="col-6 col-xl-2 col-md-4">
+            <div class="card stat-card metric-card-purple p-3 border-0 shadow-sm hover-lift rounded-4 h-100">
+              <div class="text-muted-custom small fw-semibold">Applications</div>
               <div class="stat-value text-gradient-violet" id="stat-applications-count">0</div>
             </div>
           </div>
-          <div class="col-6 col-lg-3">
-            <div class="card stat-card metric-card-amber p-3 border-0 shadow-sm hover-lift rounded-4">
-              <div class="text-muted-custom small fw-semibold">Interviews Completed</div>
+          <div class="col-6 col-xl-3 col-md-4">
+            <div class="card stat-card p-3 border-0 shadow-sm hover-lift rounded-4 h-100" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-left: 4px solid #3b82f6 !important;">
+              <div class="text-primary small fw-bold">⭐ Shortlisted</div>
+              <div class="stat-value text-primary fw-bold" id="stat-shortlisted-count">0</div>
+            </div>
+          </div>
+          <div class="col-6 col-xl-3 col-md-6">
+            <div class="card stat-card p-3 border-0 shadow-sm hover-lift rounded-4 h-100" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-left: 4px solid #10b981 !important;">
+              <div class="text-success small fw-bold">🎉 Selected / Offer</div>
+              <div class="stat-value text-success fw-bold" id="stat-selected-count">0</div>
+            </div>
+          </div>
+          <div class="col-12 col-xl-2 col-md-6">
+            <div class="card stat-card metric-card-amber p-3 border-0 shadow-sm hover-lift rounded-4 h-100">
+              <div class="text-muted-custom small fw-semibold">Interviews</div>
               <div class="stat-value" id="stat-interviews-count" style="color: #d97706;">0</div>
             </div>
           </div>
@@ -158,6 +167,32 @@
                   <div class="text-muted-custom small" id="interview-score-caption">No completed interviews yet.</div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- My Applications & Live Status Tracker Card -->
+        <div class="card p-4 mb-4 border-0 shadow-sm" style="border-radius: 16px; background: #ffffff;">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+              <div class="d-flex align-items-center gap-2">
+                <h5 class="fw-bold mb-0">📋 My Applications &amp; Live Status Tracker</h5>
+                <span id="dash-apps-badge" class="badge bg-primary-subtle text-primary border px-2 py-1 rounded-pill small">0 Applications</span>
+              </div>
+              <p class="text-muted small mb-0 mt-1">Real-time status updates from recruiters: Shortlisted ⭐, Selected 🎉, Interviewing, and Decisions.</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <button id="btn-refresh-my-apps" class="btn btn-sm btn-outline-primary fw-semibold d-flex align-items-center gap-1">
+                🔄 Refresh Status
+              </button>
+              <a href="my-applications.html" class="btn btn-sm btn-primary fw-semibold">View All &rarr;</a>
+            </div>
+          </div>
+
+          <div id="candidate-applications-container">
+            <div class="text-center py-4 text-muted">
+              <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div>
+              <div>Loading your applications...</div>
             </div>
           </div>
         </div>

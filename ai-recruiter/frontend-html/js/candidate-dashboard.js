@@ -48,6 +48,8 @@
     });
   }
 
+  let appsStatusChartInstance = null;
+
   function renderApplicationsStatusChart(byStatus) {
     const labels = Object.keys(byStatus);
     const values = Object.values(byStatus);
@@ -55,23 +57,38 @@
 
     const canvasEl = document.getElementById("chart-applications-status");
     const emptyEl = document.getElementById("chart-applications-status-empty");
+    if (!canvasEl) return;
 
     if (!hasData) {
       canvasEl.classList.add("d-none");
-      emptyEl.classList.remove("d-none");
+      if (emptyEl) emptyEl.classList.remove("d-none");
       return;
     }
     canvasEl.classList.remove("d-none");
-    emptyEl.classList.add("d-none");
+    if (emptyEl) emptyEl.classList.add("d-none");
 
-    new Chart(canvasEl, {
+    if (appsStatusChartInstance) {
+      appsStatusChartInstance.destroy();
+    }
+
+    const colorMap = {
+      applied: "#94a3ff",
+      under_review: "#f59e0b",
+      shortlisted: "#3b82f6",
+      interview: "#8b5cf6",
+      selected: "#10b981",
+      rejected: "#ef4444",
+    };
+    const bgColors = labels.map(l => colorMap[l.toLowerCase()] || "#64748b");
+
+    appsStatusChartInstance = new Chart(canvasEl, {
       type: "doughnut",
       data: {
-        labels: labels.map((l) => l.replace("_", " ")),
+        labels: labels.map((l) => l.replace("_", " ").toUpperCase()),
         datasets: [
           {
             data: values,
-            backgroundColor: ["#94a3ff", "#6f8bff", "#2f5fff", "#f5a623", "#2fbf71", "#e5484d"],
+            backgroundColor: bgColors,
           },
         ],
       },
@@ -107,11 +124,18 @@
       const elApps = document.getElementById("stat-applications-count") || document.getElementById("stat-applications");
       if (elApps) elApps.textContent = data.applications_count;
       
+      const elShortlisted = document.getElementById("stat-shortlisted-count");
+      if (elShortlisted) elShortlisted.textContent = data.shortlisted_count ?? (data.applications_by_status?.shortlisted || 0);
+
+      const elSelected = document.getElementById("stat-selected-count");
+      if (elSelected) elSelected.textContent = data.selected_count ?? (data.applications_by_status?.selected || 0);
+
       const elInt = document.getElementById("stat-interviews-count") || document.getElementById("stat-interview-status");
       if (elInt) elInt.textContent = interviewStatusLabel ? interviewStatusLabel(data.interview_status) : data.applications_count;
 
       renderProfileCompletionChart(data.profile_completion);
       renderApplicationsStatusChart(data.applications_by_status);
+      loadCandidateApplications();
 
       if (data.best_suited_role && data.resume_uploaded) {
         const bestCard = document.getElementById("dash-best-role-card");
@@ -678,16 +702,39 @@
               </thead>
               <tbody>
                 ${res.data.map(item => {
-                  const isDev = item.role_type === 'developer' || item.assessment_type === 'coding';
+                  const isFrontend = item.role_type === 'frontend_developer';
+                  const isAI = item.role_type === 'ai_developer';
+                  const isDev = item.role_type === 'developer' || isFrontend || isAI || item.assessment_type === 'coding';
                   const isRecruiter = item.role_type === 'recruiter';
-                  const typeLabel = isDev 
-                    ? `💻 <strong>Technical Coding Assessment</strong> (${item.questions_count} Coding Challenges)` 
-                    : (isRecruiter 
-                        ? `📝 <strong>Recruiter Aptitude & Evaluation</strong> (${item.questions_count} Questions)` 
-                        : `📝 <strong>Job Role Aptitude Assessment</strong> (${item.questions_count} Questions)`);
-                  const typeBadge = isDev 
-                    ? `<span class="badge bg-dark border border-info text-info me-1">💻 Coding</span>` 
-                    : `<span class="badge bg-dark border border-primary text-primary me-1">📝 Aptitude</span>`;
+                  const typeLabel = isFrontend
+                    ? `🎨 <strong>Frontend Developer Coding Assessment</strong> (${item.questions_count} Coding Challenges)`
+                    : (isAI
+                        ? `🤖 <strong>AI Developer Coding Assessment</strong> (${item.questions_count} Coding Challenges)`
+                        : (isDev 
+                            ? `💻 <strong>Technical Coding Assessment</strong> (${item.questions_count} Coding Challenges)` 
+                            : (isRecruiter 
+                                ? `📝 <strong>Recruiter Aptitude & Evaluation</strong> (${item.questions_count} Questions)` 
+                                : `📝 <strong>Job Role Aptitude Assessment</strong> (${item.questions_count} Questions)`)));
+                  const typeBadge = isFrontend
+                    ? `<span class="badge bg-dark border border-warning text-warning me-1">🎨 Frontend</span>`
+                    : (isAI
+                        ? `<span class="badge bg-dark border border-info text-info me-1">🤖 AI Dev</span>`
+                        : (isDev 
+                            ? `<span class="badge bg-dark border border-info text-info me-1">💻 Coding</span>` 
+                            : `<span class="badge bg-dark border border-primary text-primary me-1">📝 Aptitude</span>`));
+
+                  const isTerminated = item.status === 'Terminated';
+                  const statusBadge = isTerminated
+                    ? `<span class="badge bg-danger text-white"><i class="bi bi-x-circle me-1"></i>Disqualified (Tab Switch)</span>`
+                    : (item.status === 'Evaluated' 
+                        ? `<span class="badge bg-${item.passed ? 'success' : 'danger'}">${item.passed ? 'Passed ✓' : 'Failed ❌'}</span>`
+                        : `<span class="badge bg-${item.status === 'In Progress' ? 'warning' : 'secondary'}">${item.status}</span>`);
+
+                  const actionBtn = isTerminated
+                    ? `<button class="btn btn-sm btn-outline-danger" disabled title="Assessment terminated due to tab switch violation"><i class="bi bi-slash-circle me-1"></i>Disqualified</button>`
+                    : (item.status === 'Evaluated'
+                        ? `<a href="coding-report.html?attempt_id=${item.attempt_id}" class="btn btn-sm btn-outline-primary fw-semibold">View Result</a>`
+                        : `<a href="coding-assessment.html?assessment_id=${item.id}" class="btn btn-sm btn-primary fw-bold">Start Assessment &rarr;</a>`);
 
                   return `
                   <tr>
@@ -697,19 +744,9 @@
                     </td>
                     <td>${item.duration_minutes} Mins</td>
                     <td>${item.passing_score}%</td>
-                    <td>
-                      <span class="badge bg-${item.status === 'Evaluated' ? (item.passed ? 'success' : 'danger') : item.status === 'In Progress' ? 'warning' : 'secondary'}">
-                        ${item.status === 'Evaluated' ? (item.passed ? 'Passed ✓' : 'Failed ❌') : item.status}
-                      </span>
-                    </td>
-                    <td>${item.status === 'Evaluated' && item.score !== null && item.score !== undefined ? `${Math.round(item.score)}%` : '—'}</td>
-                    <td class="text-end">
-                      ${item.status === 'Evaluated' ? `
-                        <a href="coding-report.html?attempt_id=${item.attempt_id}" class="btn btn-sm btn-outline-primary fw-semibold">View Result</a>
-                      ` : `
-                        <a href="coding-assessment.html?assessment_id=${item.id}" class="btn btn-sm btn-primary fw-bold">Start Assessment &rarr;</a>
-                      `}
-                    </td>
+                    <td>${statusBadge}</td>
+                    <td>${item.status === 'Evaluated' && item.score !== null && item.score !== undefined ? `${Math.round(item.score)}%` : (isTerminated ? '<span class="text-danger fw-bold">0%</span>' : '—')}</td>
+                    <td class="text-end">${actionBtn}</td>
                   </tr>
                 `;
               }).join('')}
@@ -851,12 +888,223 @@
     }
   }
 
+  function safeEscape(str) {
+    if (!str) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  async function loadCandidateApplications() {
+    const container = document.getElementById("candidate-applications-container");
+    const banner = document.getElementById("dash-status-alert-banner");
+    const badge = document.getElementById("dash-apps-badge");
+    if (!container) return;
+
+    try {
+      const res = await applicationsAPI.mine();
+      const apps = res?.data || [];
+
+      if (badge) {
+        badge.textContent = `${apps.length} Application${apps.length === 1 ? '' : 's'}`;
+      }
+
+      // Update counters based on real-time applications
+      const selectedApps = apps.filter(a => {
+        const st = (a.status?.value || a.status || "").toLowerCase().trim();
+        return st === "selected";
+      });
+
+      const shortlistedApps = apps.filter(a => {
+        const st = (a.status?.value || a.status || "").toLowerCase().trim();
+        return st === "shortlisted" || (a.is_shortlisted && st !== "selected" && st !== "rejected");
+      });
+
+      const selectedCount = selectedApps.length;
+      const shortlistedCount = shortlistedApps.length;
+
+      const elShortlisted = document.getElementById("stat-shortlisted-count");
+      if (elShortlisted) elShortlisted.textContent = shortlistedCount;
+
+      const elSelected = document.getElementById("stat-selected-count");
+      if (elSelected) elSelected.textContent = selectedCount;
+
+      const elAppsCount = document.getElementById("stat-applications-count");
+      if (elAppsCount) elAppsCount.textContent = apps.length;
+
+      // Status Alert Celebration Banner
+      if (banner) {
+        if (selectedApps.length > 0) {
+          const topApp = selectedApps[0];
+          const compName = topApp.company_name || "the hiring team";
+          const moreSelected = selectedApps.length > 1 ? ` (and ${selectedApps.length - 1} other position)` : '';
+          banner.className = "alert alert-success d-flex align-items-center justify-content-between flex-wrap gap-3 py-3 px-4 mb-4 border-0 shadow-sm";
+          banner.style.background = "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)";
+          banner.style.borderLeft = "6px solid #10b981";
+          banner.innerHTML = `
+            <div class="d-flex align-items-center gap-3">
+              <span class="fs-1">🎉</span>
+              <div>
+                <h6 class="fw-bold text-success mb-1">Congratulations! You've been Officially Selected!</h6>
+                <p class="text-dark small mb-0">The recruiter has selected your application for <strong>${safeEscape(topApp.job_title || 'the role')}</strong> at <strong>${safeEscape(compName)}</strong>${moreSelected}. Look out for onboarding next steps.</p>
+                ${shortlistedCount > 0 ? `<div class="mt-1 small text-primary fw-semibold">⭐ You also have ${shortlistedCount} other active application(s) shortlisted by recruiters!</div>` : ''}
+              </div>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+              <button class="btn btn-sm btn-success fw-bold px-3 py-2 shadow-sm msg-rec-btn" data-job-id="${topApp.job_id}">💬 Chat with Recruiter</button>
+              <a href="my-applications.html" class="btn btn-sm btn-outline-success fw-semibold px-3 py-2">View Offer &amp; Details &rarr;</a>
+            </div>
+          `;
+          banner.classList.remove("d-none");
+        } else if (shortlistedApps.length > 0) {
+          const topApp = shortlistedApps[0];
+          const compName = topApp.company_name || "the hiring team";
+          const moreShortlisted = shortlistedApps.length > 1 ? ` (and ${shortlistedApps.length - 1} other position)` : '';
+          banner.className = "alert alert-primary d-flex align-items-center justify-content-between flex-wrap gap-3 py-3 px-4 mb-4 border-0 shadow-sm";
+          banner.style.background = "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)";
+          banner.style.borderLeft = "6px solid #3b82f6";
+          banner.innerHTML = `
+            <div class="d-flex align-items-center gap-3">
+              <span class="fs-1">⭐</span>
+              <div>
+                <h6 class="fw-bold text-primary mb-1">Great News! Your Application is Shortlisted!</h6>
+                <p class="text-dark small mb-0">The hiring team has shortlisted your application for <strong>${safeEscape(topApp.job_title || 'Position')}</strong> at <strong>${safeEscape(compName)}</strong>${moreShortlisted}.</p>
+              </div>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+              <a href="my-applications.html" class="btn btn-sm btn-primary fw-bold px-3 py-2 shadow-sm">View Status &amp; Next Steps &rarr;</a>
+            </div>
+          `;
+          banner.classList.remove("d-none");
+        } else {
+          banner.classList.add("d-none");
+        }
+      }
+
+      if (!apps.length) {
+        container.innerHTML = `
+          <div class="text-center py-4 text-muted">
+            <div class="fs-2 mb-2">📋</div>
+            <h6 class="fw-bold text-dark">No Job Applications Yet</h6>
+            <p class="small text-secondary mb-3">Apply to open job positions to track your recruiter shortlisting, interview invitations, and offers in real-time.</p>
+            <a href="jobs.html" class="btn btn-sm btn-primary fw-semibold px-3">Browse Open Jobs &rarr;</a>
+          </div>
+        `;
+        return;
+      }
+
+      const rowsHtml = apps.map(app => {
+        const rawStatus = (app.status?.value || app.status || "applied").toLowerCase().trim();
+        let statusBadgeHtml = "";
+
+        if (rawStatus === "selected") {
+          statusBadgeHtml = `<span class="badge bg-success text-white px-3 py-1.5 rounded-pill fw-bold shadow-sm" style="font-size: 0.8rem;">🎉 Selected / Offer</span>`;
+        } else if (rawStatus === "shortlisted" || (app.is_shortlisted && rawStatus !== "rejected")) {
+          statusBadgeHtml = `<span class="badge bg-primary text-white px-3 py-1.5 rounded-pill fw-bold shadow-sm" style="font-size: 0.8rem;">⭐ Shortlisted by Recruiter</span>`;
+        } else if (rawStatus === "interview") {
+          statusBadgeHtml = `<span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill fw-semibold" style="font-size: 0.8rem;">🎙️ Interview Scheduled</span>`;
+        } else if (rawStatus === "under_review") {
+          statusBadgeHtml = `<span class="badge bg-info text-dark px-3 py-1.5 rounded-pill fw-semibold" style="font-size: 0.8rem;">⏳ Under Review</span>`;
+        } else if (rawStatus === "rejected") {
+          statusBadgeHtml = `<span class="badge bg-danger text-white px-3 py-1.5 rounded-pill fw-semibold" style="font-size: 0.8rem;">❌ Not Selected</span>`;
+        } else {
+          statusBadgeHtml = `<span class="badge bg-secondary text-white px-3 py-1.5 rounded-pill fw-semibold" style="font-size: 0.8rem;">📝 Applied</span>`;
+        }
+
+        const atsScore = app.ats_score != null ? Math.round(app.ats_score) : (app.match_score != null ? Math.round(app.match_score) : null);
+        const atsBadge = atsScore != null ? `
+          <span class="badge ${atsScore >= 80 ? 'bg-success-subtle text-success border border-success' : atsScore >= 60 ? 'bg-primary-subtle text-primary border border-primary' : 'bg-secondary-subtle text-secondary border'} px-2.5 py-1 rounded-pill small fw-semibold">
+            ${atsScore}% ATS Match
+          </span>
+        ` : `<span class="text-muted small">—</span>`;
+
+        const appliedDate = app.applied_at ? new Date(app.applied_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Recent";
+        const compDisplay = app.company_name || "Direct Employer";
+
+        let actionBtn = "";
+        if (rawStatus === "selected") {
+          actionBtn = `<button class="btn btn-sm btn-success fw-bold px-3 shadow-sm msg-rec-btn" data-job-id="${app.job_id}">💬 Message Recruiter</button>`;
+        } else if (rawStatus === "shortlisted" || (app.is_shortlisted && rawStatus !== "rejected")) {
+          actionBtn = `<a href="my-applications.html" class="btn btn-sm btn-primary fw-semibold shadow-sm px-3">🚀 Next Steps</a>`;
+        } else if (rawStatus === "interview") {
+          actionBtn = `<a href="interview.html?job_id=${app.job_id}" class="btn btn-sm btn-warning text-dark fw-semibold shadow-sm px-3">🎙️ Join Interview</a>`;
+        } else {
+          actionBtn = `<a href="my-applications.html" class="btn btn-sm btn-outline-secondary fw-semibold px-2.5">Details &rarr;</a>`;
+        }
+
+        return `
+          <tr class="${rawStatus === 'selected' ? 'table-success bg-opacity-10' : (rawStatus === 'shortlisted' ? 'table-primary bg-opacity-10' : '')}">
+            <td class="ps-3 py-3">
+              <div class="fw-bold text-dark fs-6">${safeEscape(app.job_title || 'Position')}</div>
+              <div class="small text-muted d-flex align-items-center gap-1 mt-0.5">
+                🏢 ${safeEscape(compDisplay)} ${app.job_location ? `• 📍 ${safeEscape(app.job_location)}` : ''}
+              </div>
+              ${app.override_reason ? `<div class="small text-secondary fst-italic mt-1">📌 Recruiter Note: ${safeEscape(app.override_reason)}</div>` : ''}
+            </td>
+            <td class="py-3">${atsBadge}</td>
+            <td class="py-3">${statusBadgeHtml}</td>
+            <td class="py-3 small text-muted">${appliedDate}</td>
+            <td class="text-end pe-3 py-3">${actionBtn}</td>
+          </tr>
+        `;
+      }).join("");
+
+      container.innerHTML = `
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light fs-7 text-uppercase text-secondary">
+              <tr>
+                <th class="ps-3 py-2.5">Job Title &amp; Company</th>
+                <th class="py-2.5">ATS Match</th>
+                <th class="py-2.5">Recruiter Status</th>
+                <th class="py-2.5">Applied Date</th>
+                <th class="text-end pe-3 py-2.5">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      container.querySelectorAll(".msg-rec-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (window.openChatWithUser) {
+            window.openChatWithUser();
+          } else {
+            window.location.href = "messages.html";
+          }
+        });
+      });
+
+    } catch (err) {
+      container.innerHTML = `<div class="alert alert-danger py-2 small mb-0">Could not load applications: ${err.message}</div>`;
+    }
+  }
+
   const refreshVoiceBtn = document.getElementById("btn-refresh-voice-interviews");
   if (refreshVoiceBtn) {
     refreshVoiceBtn.addEventListener("click", loadCandidateVoiceInterviews);
   }
 
+  const btnRefreshApps = document.getElementById("btn-refresh-my-apps");
+  if (btnRefreshApps) {
+    btnRefreshApps.addEventListener("click", async () => {
+      btnRefreshApps.disabled = true;
+      btnRefreshApps.innerHTML = `<span class="spinner-border spinner-border-sm" role="status"></span> Refreshing…`;
+      await loadCandidateApplications();
+      await load();
+      btnRefreshApps.disabled = false;
+      btnRefreshApps.innerHTML = `🔄 Refresh Status`;
+    });
+  }
+
   // Load immediately on script execution
+  loadCandidateApplications();
   loadExplorerJobs();
   loadCandidateCodingAssessments();
   loadCandidateVoiceInterviews();
@@ -864,11 +1112,23 @@
 
   document.addEventListener("ar:auth-ready", () => {
     load();
+    loadCandidateApplications();
     loadCandidateProfileData();
     loadExplorerJobs();
     loadCandidateCodingAssessments();
     loadCandidateVoiceInterviews();
     loadCandidateScreeningStatus();
+  });
+
+  // Auto-sync status updates every 10 seconds so recruiter selection/shortlisting displays immediately
+  setInterval(() => {
+    loadCandidateApplications();
+  }, 10000);
+
+  // Sync immediately when candidate returns to dashboard tab
+  window.addEventListener("focus", () => {
+    loadCandidateApplications();
+    load();
   });
 })();
 

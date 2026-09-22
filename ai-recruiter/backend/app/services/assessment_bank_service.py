@@ -5,6 +5,7 @@ Provides seed and synchronization utilities for assigned candidate assessments.
 """
 import json
 import logging
+import uuid
 from typing import List, Dict, Any
 
 from sqlalchemy import select
@@ -540,6 +541,298 @@ CODING_QUESTIONS: List[Dict[str, Any]] = [
 ]
 
 
+# =====================================================================
+# 5 FRONTEND DEVELOPER SPECIFIC CODING CHALLENGES
+# =====================================================================
+FRONTEND_CODING_QUESTIONS: List[Dict[str, Any]] = [
+    {
+        "title": "Frontend Q1: Virtual DOM Keyed Node Reconciler",
+        "description": "In modern frontend frameworks (React, Vue), reconciliation compares old and new virtual DOM trees by key. Given a JSON object with two arrays `old_nodes` and `new_nodes`, return an object indicating which keys were `added`, which were `removed`, and which were `retained`. All output arrays must be sorted in ascending alphabetical order.\n\nExample:\nInput: {\"old_nodes\": [\"header\", \"nav\", \"sidebar\"], \"new_nodes\": [\"nav\", \"content\", \"footer\"]}\nOutput: {\"added\": [\"content\", \"footer\"], \"retained\": [\"nav\"], \"removed\": [\"header\", \"sidebar\"]}",
+        "difficulty": "Medium",
+        "category": "Frontend Algorithms",
+        "programming_languages": json.dumps(["javascript", "python"]),
+        "starter_code": json.dumps({
+            "javascript": "const fs = require('fs');\nconst data = JSON.parse(fs.readFileSync(0, 'utf-8').trim());\n\nfunction reconcileNodes(oldNodes, newNodes) {\n    const oldSet = new Set(oldNodes);\n    const newSet = new Set(newNodes);\n    const added = [...newSet].filter(x => !oldSet.has(x)).sort();\n    const removed = [...oldSet].filter(x => !newSet.has(x)).sort();\n    const retained = [...oldSet].filter(x => newSet.has(x)).sort();\n    return { added, retained, removed };\n}\n\nconsole.log(JSON.stringify(reconcileNodes(data.old_nodes, data.new_nodes)));\n",
+            "python": "import sys, json\n\ndef reconcile_nodes(old_nodes, new_nodes):\n    old_set = set(old_nodes)\n    new_set = set(new_nodes)\n    added = sorted(list(new_set - old_set))\n    removed = sorted(list(old_set - new_set))\n    retained = sorted(list(old_set & new_set))\n    return {\"added\": added, \"retained\": retained, \"removed\": removed}\n\ndata = json.loads(sys.stdin.read().strip())\nprint(json.dumps(reconcile_nodes(data['old_nodes'], data['new_nodes'])))\n"
+        }),
+        "expected_output": '{"added": ["content", "footer"], "retained": ["nav"], "removed": ["header", "sidebar"]}',
+        "constraints": "Keys are unique alphanumeric strings within each array.",
+        "explanation": "Use set difference and intersection to isolate added, removed, and retained node keys in O(N+M) time.",
+        "test_cases": [
+            {
+                "input_data": '{"old_nodes": ["header", "nav", "sidebar"], "new_nodes": ["nav", "content", "footer"]}',
+                "expected_output": '{"added": ["content", "footer"], "retained": ["nav"], "removed": ["header", "sidebar"]}',
+                "is_hidden": False,
+                "points": 10
+            },
+            {
+                "input_data": '{"old_nodes": ["card1", "card2"], "new_nodes": ["card1", "card2", "card3"]}',
+                "expected_output": '{"added": ["card3"], "retained": ["card1", "card2"], "removed": []}',
+                "is_hidden": True,
+                "points": 10
+            }
+        ]
+    },
+    {
+        "title": "Frontend Q2: Debounce Event Rate Limiter",
+        "description": "In UI search bars, rapid keystrokes are debounced so only the final keystroke after a quiet period of `delay` ms triggers the search API. Given a JSON object containing an array of `timestamps` (in ms, sorted ascending) and a `delay` threshold, return a JSON array of timestamps for the events that would actually trigger after the delay (i.e. events where the next event occurs strictly more than `delay` ms later, plus the last event).\n\nExample:\nInput: {\"timestamps\": [100, 200, 250, 600, 700], \"delay\": 200}\nOutput: [250, 700]",
+        "difficulty": "Medium",
+        "category": "Frontend Architecture",
+        "programming_languages": json.dumps(["javascript", "python"]),
+        "starter_code": json.dumps({
+            "javascript": "const fs = require('fs');\nconst data = JSON.parse(fs.readFileSync(0, 'utf-8').trim());\n\nfunction getDebouncedTriggers(timestamps, delay) {\n    if (!timestamps.length) return [];\n    const triggers = [];\n    for (let i = 0; i < timestamps.length - 1; i++) {\n        if (timestamps[i + 1] - timestamps[i] > delay) {\n            triggers.push(timestamps[i]);\n        }\n    }\n    triggers.push(timestamps[timestamps.length - 1]);\n    return triggers;\n}\n\nconsole.log(JSON.stringify(getDebouncedTriggers(data.timestamps, data.delay)));\n",
+            "python": "import sys, json\n\ndef get_debounced_triggers(timestamps, delay):\n    if not timestamps:\n        return []\n    triggers = []\n    for i in range(len(timestamps) - 1):\n        if timestamps[i + 1] - timestamps[i] > delay:\n            triggers.append(timestamps[i])\n    triggers.append(timestamps[-1])\n    return triggers\n\ndata = json.loads(sys.stdin.read().strip())\nprint(json.dumps(get_debounced_triggers(data['timestamps'], data['delay'])))\n"
+        }),
+        "expected_output": "[250, 700]",
+        "constraints": "1 <= timestamps.length <= 10^4, delay > 0",
+        "explanation": "Iterate through consecutive timestamps and select any timestamp whose subsequent event interval exceeds the debounce delay.",
+        "test_cases": [
+            {
+                "input_data": '{"timestamps": [100, 200, 250, 600, 700], "delay": 200}',
+                "expected_output": "[250, 700]",
+                "is_hidden": False,
+                "points": 10
+            },
+            {
+                "input_data": '{"timestamps": [50, 100, 150, 200], "delay": 100}',
+                "expected_output": "[200]",
+                "is_hidden": True,
+                "points": 10
+            }
+        ]
+    },
+    {
+        "title": "Frontend Q3: Nested Comment Tree Flattener with Indentation",
+        "description": "Given a JSON array of hierarchical nested comments, flatten the comment hierarchy into a single depth-first list of formatted strings. Each child comment must be indented with 2 spaces for each level of depth (depth 0 has no indent, depth 1 has 2 spaces, etc.).\n\nExample:\nInput: [{\"text\": \"Root 1\", \"children\": [{\"text\": \"Reply 1.1\", \"children\": []}]}, {\"text\": \"Root 2\", \"children\": []}]\nOutput: [\"Root 1\", \"  Reply 1.1\", \"Root 2\"]",
+        "difficulty": "Medium",
+        "category": "Frontend UI Trees",
+        "programming_languages": json.dumps(["javascript", "python"]),
+        "starter_code": json.dumps({
+            "javascript": "const fs = require('fs');\nconst comments = JSON.parse(fs.readFileSync(0, 'utf-8').trim());\n\nfunction flattenComments(nodes, depth = 0) {\n    let result = [];\n    for (const node of nodes) {\n        const indent = '  '.repeat(depth);\n        result.push(indent + node.text);\n        if (node.children && node.children.length) {\n            result = result.concat(flattenComments(node.children, depth + 1));\n        }\n    }\n    return result;\n}\n\nconsole.log(JSON.stringify(flattenComments(comments)));\n",
+            "python": "import sys, json\n\ndef flatten_comments(nodes, depth=0):\n    result = []\n    for node in nodes:\n        indent = '  ' * depth\n        result.append(indent + node['text'])\n        if node.get('children'):\n            result.extend(flatten_comments(node['children'], depth + 1))\n    return result\n\ncomments = json.loads(sys.stdin.read().strip())\nprint(json.dumps(flatten_comments(comments)))\n"
+        }),
+        "expected_output": '["Root 1", "  Reply 1.1", "Root 2"]',
+        "constraints": "Maximum nesting depth <= 10 levels.",
+        "explanation": "Traverse the tree using depth-first recursion, prefixing each text with (depth * 2) spaces.",
+        "test_cases": [
+            {
+                "input_data": '[{"text": "Root 1", "children": [{"text": "Reply 1.1", "children": []}]}, {"text": "Root 2", "children": []}]',
+                "expected_output": '["Root 1", "  Reply 1.1", "Root 2"]',
+                "is_hidden": False,
+                "points": 10
+            },
+            {
+                "input_data": '[{"text": "A", "children": [{"text": "B", "children": [{"text": "C", "children": []}]}]}]',
+                "expected_output": '["A", "  B", "    C"]',
+                "is_hidden": True,
+                "points": 10
+            }
+        ]
+    },
+    {
+        "title": "Frontend Q4: CSS Class Name Deduplicator and Normalizer",
+        "description": "In component styling, dynamic utility classes frequently accumulate duplicate class tokens and excessive whitespace. Given a string of CSS class names from standard input, normalize all whitespace and return a string containing only unique class names, preserving their order of first appearance.\n\nExample:\nInput: btn btn-primary  btn-lg  btn  shadow-sm btn-primary\nOutput: btn btn-primary btn-lg shadow-sm",
+        "difficulty": "Easy",
+        "category": "Frontend Utilities",
+        "programming_languages": json.dumps(["javascript", "python"]),
+        "starter_code": json.dumps({
+            "javascript": "const fs = require('fs');\nconst input = fs.readFileSync(0, 'utf-8').trim();\n\nfunction dedupeClasses(str) {\n    const tokens = str.split(/\\s+/).filter(Boolean);\n    const seen = new Set();\n    const result = [];\n    for (const t of tokens) {\n        if (!seen.has(t)) {\n            seen.add(t);\n            result.push(t);\n        }\n    }\n    return result.join(' ');\n}\n\nconsole.log(dedupeClasses(input));\n",
+            "python": "import sys\n\ns = sys.stdin.read().strip()\ntokens = s.split()\nseen = set()\nresult = []\nfor t in tokens:\n    if t not in seen:\n        seen.add(t)\n        result.append(t)\nprint(' '.join(result))\n"
+        }),
+        "expected_output": "btn btn-primary btn-lg shadow-sm",
+        "constraints": "1 <= input.length <= 10^4",
+        "explanation": "Split tokens by whitespace, track seen classes in a set, and preserve first-seen order.",
+        "test_cases": [
+            {
+                "input_data": "btn btn-primary  btn-lg  btn  shadow-sm btn-primary",
+                "expected_output": "btn btn-primary btn-lg shadow-sm",
+                "is_hidden": False,
+                "points": 10
+            },
+            {
+                "input_data": "p-4 m-2 text-white p-4 font-bold m-2",
+                "expected_output": "p-4 m-2 text-white font-bold",
+                "is_hidden": True,
+                "points": 10
+            }
+        ]
+    },
+    {
+        "title": "Frontend Q5: URL Query Parameter Builder and Encoder",
+        "description": "Given a JSON object representing query parameters, generate a sorted URL query string. Exclude any keys whose value is null, undefined, or empty string. Keys must be sorted in ascending alphabetical order and joined by '&'.\n\nExample:\nInput: {\"role\": \"frontend\", \"sort\": \"desc\", \"page\": 1, \"filter\": \"\"}\nOutput: page=1&role=frontend&sort=desc",
+        "difficulty": "Easy",
+        "category": "Frontend Utilities",
+        "programming_languages": json.dumps(["javascript", "python"]),
+        "starter_code": json.dumps({
+            "javascript": "const fs = require('fs');\nconst params = JSON.parse(fs.readFileSync(0, 'utf-8').trim());\n\nfunction buildQueryString(obj) {\n    const validKeys = Object.keys(obj).filter(k => obj[k] !== null && obj[k] !== undefined && obj[k] !== '').sort();\n    return validKeys.map(k => `${k}=${obj[k]}`).join('&');\n}\n\nconsole.log(buildQueryString(params));\n",
+            "python": "import sys, json\n\ndata = json.loads(sys.stdin.read().strip())\nvalid_items = [(k, str(v)) for k, v in data.items() if v is not None and v != '']\nvalid_items.sort(key=lambda x: x[0])\nprint('&'.join(f'{k}={v}' for k, v in valid_items))\n"
+        }),
+        "expected_output": "page=1&role=frontend&sort=desc",
+        "constraints": "Keys and values contain alphanumeric characters.",
+        "explanation": "Filter non-empty values, sort keys alphabetically, and serialize into key=value format.",
+        "test_cases": [
+            {
+                "input_data": '{"role": "frontend", "sort": "desc", "page": 1, "filter": ""}',
+                "expected_output": "page=1&role=frontend&sort=desc",
+                "is_hidden": False,
+                "points": 10
+            },
+            {
+                "input_data": '{"tab": "code", "debug": true, "empty": null}',
+                "expected_output": "debug=true&tab=code",
+                "is_hidden": True,
+                "points": 10
+            }
+        ]
+    }
+]
+
+
+# =====================================================================
+# 5 AI & MACHINE LEARNING DEVELOPER SPECIFIC CODING CHALLENGES
+# =====================================================================
+AI_CODING_QUESTIONS: List[Dict[str, Any]] = [
+    {
+        "title": "AI Q1: Vector Cosine Similarity and Top-1 Matcher",
+        "description": "In semantic search and RAG retrieval, vector embeddings are matched using Cosine Similarity: `cos_sim(A, B) = (A . B) / (||A|| * ||B||)`. Given a JSON object with a `query` vector and a list of `candidates` (each with `id` and `vector`), return the `id` of the candidate with the highest cosine similarity.\n\nExample:\nInput: {\"query\": [1, 2, 3], \"candidates\": [{\"id\": \"doc1\", \"vector\": [1, 2, 3]}, {\"id\": \"doc2\", \"vector\": [-1, -2, -3]}]}\nOutput: doc1",
+        "difficulty": "Medium",
+        "category": "Vector Search & Embeddings",
+        "programming_languages": json.dumps(["python", "javascript"]),
+        "starter_code": json.dumps({
+            "python": "import sys, json, math\n\ndef cosine_similarity(v1, v2):\n    dot = sum(a * b for a, b in zip(v1, v2))\n    norm1 = math.sqrt(sum(a * a for a in v1))\n    norm2 = math.sqrt(sum(b * b for b in v2))\n    if norm1 == 0 or norm2 == 0:\n        return 0.0\n    return dot / (norm1 * norm2)\n\ndata = json.loads(sys.stdin.read().strip())\nquery = data['query']\nbest_id = None\nbest_score = -float('inf')\nfor cand in data['candidates']:\n    score = cosine_similarity(query, cand['vector'])\n    if score > best_score:\n        best_score = score\n        best_id = cand['id']\nprint(best_id)\n",
+            "javascript": "const fs = require('fs');\nconst data = JSON.parse(fs.readFileSync(0, 'utf-8').trim());\n\nfunction cosineSim(v1, v2) {\n    let dot = 0, n1 = 0, n2 = 0;\n    for (let i = 0; i < v1.length; i++) {\n        dot += v1[i] * v2[i];\n        n1 += v1[i] * v1[i];\n        n2 += v2[i] * v2[i];\n    }\n    return dot / (Math.sqrt(n1) * Math.sqrt(n2));\n}\n\nlet bestId = null, bestScore = -Infinity;\nfor (const cand of data.candidates) {\n    const score = cosineSim(data.query, cand.vector);\n    if (score > bestScore) { bestScore = score; bestId = cand.id; }\n}\nconsole.log(bestId);\n"
+        }),
+        "expected_output": "doc1",
+        "constraints": "Vectors have identical lengths between 2 and 1000 dimensions.",
+        "explanation": "Calculate the normalized dot product between query and each candidate embedding, selecting the maximum similarity.",
+        "test_cases": [
+            {
+                "input_data": '{"query": [1, 2, 3], "candidates": [{"id": "doc1", "vector": [1, 2, 3]}, {"id": "doc2", "vector": [-1, -2, -3]}]}',
+                "expected_output": "doc1",
+                "is_hidden": False,
+                "points": 10
+            },
+            {
+                "input_data": '{"query": [0.5, 0.5], "candidates": [{"id": "itemA", "vector": [0.1, 0.9]}, {"id": "itemB", "vector": [0.5, 0.5]}]}',
+                "expected_output": "itemB",
+                "is_hidden": True,
+                "points": 10
+            }
+        ]
+    },
+    {
+        "title": "AI Q2: N-Gram Text Tokenizer and Feature Extractor",
+        "description": "In NLP tokenization, n-grams capture multi-word semantic context. Given a JSON object with a `text` string and an integer `n`, tokenize the string into lowercase alphanumeric words and return all contiguous word sequences of length `n` as a JSON array of strings.\n\nExample:\nInput: {\"text\": \"Machine learning enables autonomous AI recruiting\", \"n\": 2}\nOutput: [\"machine learning\", \"learning enables\", \"enables autonomous\", \"autonomous ai\", \"ai recruiting\"]",
+        "difficulty": "Easy",
+        "category": "NLP & Tokenization",
+        "programming_languages": json.dumps(["python", "javascript"]),
+        "starter_code": json.dumps({
+            "python": "import sys, json, re\n\ndata = json.loads(sys.stdin.read().strip())\ntext = data['text']\nn = data['n']\nwords = re.findall(r'[a-zA-Z0-9]+', text.lower())\nngrams = [' '.join(words[i:i+n]) for i in range(len(words) - n + 1)]\nprint(json.dumps(ngrams))\n",
+            "javascript": "const fs = require('fs');\nconst data = JSON.parse(fs.readFileSync(0, 'utf-8').trim());\nconst words = data.text.toLowerCase().match(/[a-zA-Z0-9]+/g) || [];\nconst ngrams = [];\nfor (let i = 0; i <= words.length - data.n; i++) {\n    ngrams.push(words.slice(i, i + data.n).join(' '));\n}\nconsole.log(JSON.stringify(ngrams));\n"
+        }),
+        "expected_output": '["machine learning", "learning enables", "enables autonomous", "autonomous ai", "ai recruiting"]',
+        "constraints": "1 <= text.length <= 10^5, n >= 1",
+        "explanation": "Clean text using regular expression tokenization and slice contiguous sliding windows of size n.",
+        "test_cases": [
+            {
+                "input_data": '{"text": "Machine learning enables autonomous AI recruiting", "n": 2}',
+                "expected_output": '["machine learning", "learning enables", "enables autonomous", "autonomous ai", "ai recruiting"]',
+                "is_hidden": False,
+                "points": 10
+            },
+            {
+                "input_data": '{"text": "Artificial Intelligence in Tech", "n": 3}',
+                "expected_output": '["artificial intelligence in", "intelligence in tech"]',
+                "is_hidden": True,
+                "points": 10
+            }
+        ]
+    },
+    {
+        "title": "AI Q3: Precision, Recall, and F1-Score Classification Metrics",
+        "description": "Given a JSON object containing binary classification confusion matrix values `tp` (True Positives), `fp` (False Positives), `fn` (False Negatives), and `tn` (True Negatives), calculate Precision, Recall, and F1-score rounded to 2 decimal places. Return a JSON object with keys `precision`, `recall`, and `f1`.\n\nFormulas:\nPrecision = TP / (TP + FP)\nRecall = TP / (TP + FN)\nF1 = 2 * (Precision * Recall) / (Precision + Recall)\n\nExample:\nInput: {\"tp\": 80, \"fp\": 20, \"fn\": 10, \"tn\": 90}\nOutput: {\"f1\": 0.84, \"precision\": 0.8, \"recall\": 0.89}",
+        "difficulty": "Easy",
+        "category": "Model Evaluation",
+        "programming_languages": json.dumps(["python", "javascript"]),
+        "starter_code": json.dumps({
+            "python": "import sys, json\n\ndata = json.loads(sys.stdin.read().strip())\ntp = data['tp']\nfp = data['fp']\nfn = data['fn']\n\nprecision = tp / (tp + fp) if (tp + fp) > 0 else 0.0\nrecall = tp / (tp + fn) if (tp + fn) > 0 else 0.0\nf1 = (2 * precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0\n\nout = {\n    \"f1\": round(f1, 2),\n    \"precision\": round(precision, 2),\n    \"recall\": round(recall, 2)\n}\nprint(json.dumps(out, sort_keys=True))\n",
+            "javascript": "const fs = require('fs');\nconst data = JSON.parse(fs.readFileSync(0, 'utf-8').trim());\nconst tp = data.tp, fp = data.fp, fn = data.fn;\nconst prec = (tp + fp) > 0 ? tp / (tp + fp) : 0;\nconst rec = (tp + fn) > 0 ? tp / (tp + fn) : 0;\nconst f1 = (prec + rec) > 0 ? (2 * prec * rec) / (prec + rec) : 0;\nconst out = {\n    f1: Number(f1.toFixed(2)),\n    precision: Number(prec.toFixed(2)),\n    recall: Number(rec.toFixed(2))\n};\nconsole.log(JSON.stringify(out));\n"
+        }),
+        "expected_output": '{"f1": 0.84, "precision": 0.8, "recall": 0.89}',
+        "constraints": "tp, fp, fn, tn >= 0",
+        "explanation": "Compute ratios based on standard statistical formulas and round to 2 decimal places.",
+        "test_cases": [
+            {
+                "input_data": '{"tp": 80, "fp": 20, "fn": 10, "tn": 90}',
+                "expected_output": '{"f1": 0.84, "precision": 0.8, "recall": 0.89}',
+                "is_hidden": False,
+                "points": 10
+            },
+            {
+                "input_data": '{"tp": 50, "fp": 50, "fn": 50, "tn": 50}',
+                "expected_output": '{"f1": 0.5, "precision": 0.5, "recall": 0.5}',
+                "is_hidden": True,
+                "points": 10
+            }
+        ]
+    },
+    {
+        "title": "AI Q4: Softmax Probability Distribution and Argmax",
+        "description": "Given a JSON array of model logits `[z0, z1, ..., zk]`, compute the Softmax probability distribution: `P(i) = exp(z_i) / sum(exp(z_j))` for all j. Return a JSON object with `probabilities` rounded to 3 decimal places and `predicted_class` as the integer index of the maximum logit.\n\nExample:\nInput: [2.0, 1.0, 0.1]\nOutput: {\"predicted_class\": 0, \"probabilities\": [0.659, 0.242, 0.098]}",
+        "difficulty": "Medium",
+        "category": "Deep Learning Mathematics",
+        "programming_languages": json.dumps(["python", "javascript"]),
+        "starter_code": json.dumps({
+            "python": "import sys, json, math\n\nlogits = json.loads(sys.stdin.read().strip())\nmax_l = max(logits)\nexps = [math.exp(x - max_l) for x in logits]\nsum_exps = sum(exps)\nprobs = [round(x / sum_exps, 3) for x in exps]\npred = logits.index(max(logits))\nprint(json.dumps({\"predicted_class\": pred, \"probabilities\": probs}))\n",
+            "javascript": "const fs = require('fs');\nconst logits = JSON.parse(fs.readFileSync(0, 'utf-8').trim());\nconst maxL = Math.max(...logits);\nconst exps = logits.map(x => Math.exp(x - maxL));\nconst sumExps = exps.reduce((a, b) => a + b, 0);\nconst probs = exps.map(x => Number((x / sumExps).toFixed(3)));\nconst pred = logits.indexOf(maxL);\nconsole.log(JSON.stringify({ predicted_class: pred, probabilities: probs }));\n"
+        }),
+        "expected_output": '{"predicted_class": 0, "probabilities": [0.659, 0.242, 0.098]}',
+        "constraints": "1 <= logits.length <= 100",
+        "explanation": "Subtract max logit for numerical stability before computing exponent and dividing by sum.",
+        "test_cases": [
+            {
+                "input_data": "[2.0, 1.0, 0.1]",
+                "expected_output": '{"predicted_class": 0, "probabilities": [0.659, 0.242, 0.098]}',
+                "is_hidden": False,
+                "points": 10
+            },
+            {
+                "input_data": "[0.0, 3.0]",
+                "expected_output": '{"predicted_class": 1, "probabilities": [0.047, 0.953]}',
+                "is_hidden": True,
+                "points": 10
+            }
+        ]
+    },
+    {
+        "title": "AI Q5: Exponential Moving Average (EMA) Loss Smoother",
+        "description": "In training deep learning neural nets, loss curves fluctuate. Given a JSON object containing an array of `losses` and a smoothing factor `alpha` (0 < alpha <= 1), calculate the Exponential Moving Average:\nEMA_0 = loss_0\nEMA_t = alpha * loss_t + (1 - alpha) * EMA_{t-1}\nReturn a JSON array of smoothed losses rounded to 2 decimal places.\n\nExample:\nInput: {\"losses\": [1.0, 0.8, 0.6, 0.5, 0.4], \"alpha\": 0.5}\nOutput: [1.0, 0.9, 0.75, 0.62, 0.51]",
+        "difficulty": "Easy",
+        "category": "ML Optimization",
+        "programming_languages": json.dumps(["python", "javascript"]),
+        "starter_code": json.dumps({
+            "python": "import sys, json\n\ndata = json.loads(sys.stdin.read().strip())\nlosses = data['losses']\nalpha = data['alpha']\n\nif not losses:\n    print(json.dumps([]))\n    sys.exit(0)\n\nema = [losses[0]]\nfor x in losses[1:]:\n    ema.append(alpha * x + (1 - alpha) * ema[-1])\n\nprint(json.dumps([round(x, 2) for x in ema]))\n",
+            "javascript": "const fs = require('fs');\nconst data = JSON.parse(fs.readFileSync(0, 'utf-8').trim());\nconst losses = data.losses;\nconst alpha = data.alpha;\n\nif (!losses.length) { console.log('[]'); process.exit(0); }\nconst ema = [losses[0]];\nfor (let i = 1; i < losses.length; i++) {\n    ema.push(alpha * losses[i] + (1 - alpha) * ema[i - 1]);\n}\nconsole.log(JSON.stringify(ema.map(x => Number(x.toFixed(2)))));\n"
+        }),
+        "expected_output": "[1.0, 0.9, 0.75, 0.62, 0.51]",
+        "constraints": "1 <= losses.length <= 10^4, 0 < alpha <= 1.0",
+        "explanation": "Iteratively apply the recurrent EMA formula and round results to two decimal places.",
+        "test_cases": [
+            {
+                "input_data": '{"losses": [1.0, 0.8, 0.6, 0.5, 0.4], "alpha": 0.5}',
+                "expected_output": "[1.0, 0.9, 0.75, 0.62, 0.51]",
+                "is_hidden": False,
+                "points": 10
+            },
+            {
+                "input_data": '{"losses": [2.0, 2.0, 2.0], "alpha": 0.8}',
+                "expected_output": "[2.0, 2.0, 2.0]",
+                "is_hidden": True,
+                "points": 10
+            }
+        ]
+    }
+]
 
 
 # 25 RECRUITER & TALENT ACQUISITION APTITUDE QUESTIONS
@@ -925,8 +1218,10 @@ RECRUITER_APTITUDE_QUESTIONS: List[Dict[str, Any]] = [
 def classify_job_role(title: str, skills: list = None) -> str:
     """
     Classifies a job into:
-    - 'developer': software engineering, coding, web dev, AI/ML, data science, devops, etc.
-    - 'recruiter': HR, recruiter, talent acquisition, people operations, sourcing, etc.
+    - 'frontend_developer': frontend, react, vue, angular, web dev, ui/ux, javascript, typescript, html/css
+    - 'ai_developer': ai, ml, machine learning, data science, deep learning, nlp, llm, prompt, pytorch, tensorflow
+    - 'developer': backend, software engineer, fullstack, devops, general software engineering
+    - 'recruiter': HR, recruiter, talent acquisition, people operations, sourcing
     - 'non_developer': design, product, sales, marketing, operations, business, general.
     """
     if not title:
@@ -949,13 +1244,46 @@ def classify_job_role(title: str, skills: list = None) -> str:
     if re.search(r'\bhr\b', t):
         return "recruiter"
 
-    # 2. Developer / Technical keywords
+    # 2. Frontend Developer keywords (check before general developer)
+    frontend_keywords = [
+        "frontend", "front-end", "front end", "ui developer", "ui/ux developer",
+        "react", "vue", "angular", "web developer", "javascript developer",
+        "typescript developer", "css", "html", "nextjs", "next.js", "frontend develoer"
+    ]
+    for kw in frontend_keywords:
+        if kw in t:
+            return "frontend_developer"
+
+    # 3. AI / Machine Learning Developer keywords (check before general developer)
+    ai_keywords = [
+        "ai developer", "ai engineer", "machine learning", "ml engineer",
+        "artificial intelligence", "data scientist", "data science",
+        "deep learning", "nlp", "llm", "genai", "computer vision",
+        "pytorch", "tensorflow", "prompt engineer", "ai/ml", "ai researcher"
+    ]
+    for kw in ai_keywords:
+        if kw in t:
+            return "ai_developer"
+
+    if re.search(r'\b(ai|ml)\b', t):
+        return "ai_developer"
+
+    # Check skills if provided
+    if skills:
+        skills_str = " ".join([str(s).lower() for s in skills])
+        for kw in frontend_keywords:
+            if kw in skills_str:
+                return "frontend_developer"
+        for kw in ai_keywords:
+            if kw in skills_str or re.search(r'\b(ai|ml)\b', skills_str):
+                return "ai_developer"
+
+    # 4. General Developer / Backend / Software Engineer keywords
     developer_keywords = [
         "developer", "engineer", "software", "programmer", "coding", "coder",
-        "frontend", "front-end", "backend", "back-end", "fullstack", "full-stack",
-        "ai", "ml", "machine learning", "data scientist", "data engineer",
-        "devops", "cloud", "architect", "android", "ios", "python", "java",
-        "react", "angular", "node", "golang", "c++", "c#", ".net", "web dev",
+        "backend", "back-end", "fullstack", "full-stack",
+        "data engineer", "devops", "cloud", "architect", "android", "ios",
+        "python", "java", "node", "golang", "c++", "c#", ".net",
         "qa engineer", "sre", "database administrator", "dba"
     ]
     for kw in developer_keywords:
@@ -968,7 +1296,7 @@ def classify_job_role(title: str, skills: list = None) -> str:
             if kw in skills_str:
                 return "developer"
 
-    # 3. Default to non-developer role
+    # 5. Default to non-developer role
     return "non_developer"
 
 
@@ -1022,24 +1350,20 @@ def _upsert_questions_list(db: Session, questions_data: List[Dict[str, Any]], fo
     return result
 
 
-def get_or_create_assessment_for_job(db: Session, job: Any) -> CodingAssessment:
+def get_or_create_assessment_for_job(db: Session, job: Any, force_refresh: bool = False) -> CodingAssessment:
     """
     Returns an existing assessment for the job, or dynamically provisions a role-tailored assessment:
-    - Developer -> Technical Coding Assessment (5 Coding Challenges)
+    - Frontend Developer -> Frontend Technical Coding Assessment (5 Frontend Challenges)
+    - AI Developer -> AI / Machine Learning Coding Assessment (5 AI/ML Challenges)
+    - Developer -> Technical Coding Assessment (5 Algorithmic Challenges)
     - Recruiter -> Recruiter Aptitude & Talent Evaluation Assessment (25 Recruiter Questions)
     - Non-Developer -> Role Aptitude & Critical Thinking Assessment (25 General Aptitude Questions)
     """
+    if isinstance(job, (uuid.UUID, str)):
+        from app.models.job import Job
+        job = db.scalar(select(Job).where(Job.id == job))
     if not job:
         return seed_full_assessment_bank(db)
-
-    # 1. Check if job already has an assessment with questions
-    existing = db.scalar(
-        select(CodingAssessment)
-        .where(CodingAssessment.job_id == job.id)
-        .order_by(CodingAssessment.created_at.desc())
-    )
-    if existing and existing.questions and len(existing.questions) > 0:
-        return existing
 
     skills_list = []
     if hasattr(job, "job_skills") and job.job_skills:
@@ -1052,30 +1376,60 @@ def get_or_create_assessment_for_job(db: Session, job: Any) -> CodingAssessment:
 
     role_type = classify_job_role(job.title, skills_list)
 
-    if role_type == "developer":
-        # Ensure coding questions exist
-        q_objs = _upsert_questions_list(db, CODING_QUESTIONS)
-        title = f"{job.title} - Coding Assessment"
-        desc = "Complete hands-on algorithmic and coding challenges within 60 minutes."
+    # 1. Check if job already has an assessment with questions
+    existing = db.scalar(
+        select(CodingAssessment)
+        .where(CodingAssessment.job_id == job.id)
+        .order_by(CodingAssessment.created_at.desc())
+    )
+    if existing and existing.questions and len(existing.questions) > 0 and not force_refresh:
+        # Verify if existing assessment matches the classified role_type
+        is_frontend_ass = "frontend" in existing.title.lower()
+        is_ai_ass = "ai" in existing.title.lower() or "machine learning" in existing.title.lower()
+        if (role_type == "frontend_developer" and is_frontend_ass) or \
+           (role_type == "ai_developer" and is_ai_ass) or \
+           (role_type == "developer" and not is_frontend_ass and not is_ai_ass) or \
+           (role_type in ("recruiter", "non_developer")):
+            return existing
+
+    apt_objs = _upsert_questions_list(db, APTITUDE_QUESTIONS, force_refresh=force_refresh)
+
+    if role_type == "frontend_developer":
+        code_objs = _upsert_questions_list(db, FRONTEND_CODING_QUESTIONS, force_refresh=force_refresh)
+        q_objs = apt_objs + code_objs
+        title = f"{job.title} - Frontend Technical & Aptitude Assessment"
+        desc = "Complete 25 Aptitude questions followed by 5 hands-on Frontend engineering challenges within 60 minutes."
+        duration = 60
+        allowed_langs = ["javascript", "python"]
+    elif role_type == "ai_developer":
+        code_objs = _upsert_questions_list(db, AI_CODING_QUESTIONS, force_refresh=force_refresh)
+        q_objs = apt_objs + code_objs
+        title = f"{job.title} - AI / Machine Learning Technical & Aptitude Assessment"
+        desc = "Complete 25 Aptitude questions followed by 5 hands-on AI/ML coding challenges within 60 minutes."
+        duration = 60
+        allowed_langs = ["python", "javascript"]
+    elif role_type == "developer":
+        # General Software Engineer / Backend Developer
+        code_objs = _upsert_questions_list(db, CODING_QUESTIONS, force_refresh=force_refresh)
+        q_objs = apt_objs + code_objs
+        title = f"{job.title} - Technical Coding & Aptitude Assessment"
+        desc = "Complete 25 Aptitude questions followed by 5 hands-on algorithmic coding challenges within 60 minutes."
         duration = 60
         allowed_langs = ["python", "javascript", "java", "cpp", "csharp"]
-        pts_per_q = 20.0
     elif role_type == "recruiter":
         # Ensure recruiter aptitude questions exist
-        q_objs = _upsert_questions_list(db, RECRUITER_APTITUDE_QUESTIONS)
+        q_objs = _upsert_questions_list(db, RECRUITER_APTITUDE_QUESTIONS, force_refresh=force_refresh)
         title = f"{job.title} - Recruiter Aptitude & Talent Evaluation Assessment"
         desc = "Complete 25 Recruiter Aptitude questions covering candidate sourcing, screening, behavioral evaluation, hiring metrics, and compliance within 45 minutes."
         duration = 45
         allowed_langs = ["python", "javascript"]
-        pts_per_q = 4.0
     else:
         # Non-developer / general role
-        q_objs = _upsert_questions_list(db, APTITUDE_QUESTIONS)
+        q_objs = apt_objs
         title = f"{job.title} - Role Aptitude & Critical Thinking Assessment"
         desc = "Complete 25 General Aptitude, logical reasoning, and situational judgment questions matched to your role within 45 minutes."
         duration = 45
         allowed_langs = ["python", "javascript"]
-        pts_per_q = 4.0
 
     if not existing:
         existing = CodingAssessment(
@@ -1099,11 +1453,15 @@ def get_or_create_assessment_for_job(db: Session, job: Any) -> CodingAssessment:
     # Synchronize questions
     db.query(CodingAssessmentQuestion).filter(CodingAssessmentQuestion.assessment_id == existing.id).delete()
     for idx, q_obj in enumerate(q_objs, 1):
+        if len(q_objs) == 30:
+            pts = 2.0 if idx <= 25 else 10.0
+        else:
+            pts = 4.0
         aq = CodingAssessmentQuestion(
             assessment_id=existing.id,
             question_id=q_obj.id,
             question_order=idx,
-            points=pts_per_q
+            points=pts
         )
         db.add(aq)
 
@@ -1115,20 +1473,23 @@ def get_or_create_assessment_for_job(db: Session, job: Any) -> CodingAssessment:
 
 def seed_full_assessment_bank(db: Session, force_refresh: bool = False) -> CodingAssessment:
     """
-    Seeds all questions (General Aptitude, Recruiter Aptitude, and Coding Challenges)
+    Seeds all questions (General Aptitude, Recruiter Aptitude, Frontend Coding, AI Coding, and General Coding Challenges)
     and ensures role-tailored assessments for all active jobs in the database.
     """
     # 1. Upsert all question banks
-    _upsert_questions_list(db, APTITUDE_QUESTIONS, force_refresh=force_refresh)
+    created_aptitude = _upsert_questions_list(db, APTITUDE_QUESTIONS, force_refresh=force_refresh)
     _upsert_questions_list(db, RECRUITER_APTITUDE_QUESTIONS, force_refresh=force_refresh)
+    _upsert_questions_list(db, FRONTEND_CODING_QUESTIONS, force_refresh=force_refresh)
+    _upsert_questions_list(db, AI_CODING_QUESTIONS, force_refresh=force_refresh)
     created_coding = _upsert_questions_list(db, CODING_QUESTIONS, force_refresh=force_refresh)
 
-    # 2. Maintain primary default developer coding assessment
+    # 2. Maintain primary default developer coding assessment (30 questions: 25 Aptitude + 5 Coding)
     assessment = db.scalar(select(CodingAssessment).where(CodingAssessment.job_id == None).order_by(CodingAssessment.created_at.asc()))
+    default_q_objs = created_aptitude + created_coding
     if not assessment:
         assessment = CodingAssessment(
-            title="Technical Coding Assessment (5 Challenges)",
-            description="Complete 5 hands-on programming and algorithmic challenges within 60 minutes.",
+            title="Technical & Aptitude Assessment (30 Questions)",
+            description="Complete 25 Aptitude questions followed by 5 hands-on programming challenges within 60 minutes.",
             duration_minutes=60,
             passing_score=60.0,
             total_score=100.0,
@@ -1138,18 +1499,19 @@ def seed_full_assessment_bank(db: Session, force_refresh: bool = False) -> Codin
         db.add(assessment)
         db.flush()
     else:
-        assessment.title = "Technical Coding Assessment (5 Challenges)"
-        assessment.description = "Complete 5 hands-on programming and algorithmic challenges within 60 minutes."
+        assessment.title = "Technical & Aptitude Assessment (30 Questions)"
+        assessment.description = "Complete 25 Aptitude questions followed by 5 hands-on programming challenges within 60 minutes."
         assessment.duration_minutes = 60
         assessment.total_score = 100.0
 
     db.query(CodingAssessmentQuestion).filter(CodingAssessmentQuestion.assessment_id == assessment.id).delete()
-    for idx, q_obj in enumerate(created_coding, 1):
+    for idx, q_obj in enumerate(default_q_objs, 1):
+        pts = 2.0 if idx <= 25 else 10.0
         aq = CodingAssessmentQuestion(
             assessment_id=assessment.id,
             question_id=q_obj.id,
             question_order=idx,
-            points=20.0
+            points=pts
         )
         db.add(aq)
 
@@ -1161,7 +1523,7 @@ def seed_full_assessment_bank(db: Session, force_refresh: bool = False) -> Codin
     jobs = db.scalars(select(Job)).all()
     for j in jobs:
         try:
-            get_or_create_assessment_for_job(db, j)
+            get_or_create_assessment_for_job(db, j, force_refresh=True)
         except Exception as e:
             logger.warning(f"Error provisioning assessment for job {j.title}: {e}")
 

@@ -6,7 +6,9 @@ and LLM response caching. Uses real Redis if available, or fakeredis fallback.
 import json
 import logging
 import socket
+import time
 from typing import Any, Optional
+from urllib.parse import urlparse
 
 import fakeredis
 import redis
@@ -17,10 +19,14 @@ logger = logging.getLogger("ai_recruiter.redis")
 
 _redis_client: Optional[redis.Redis] = None
 _backend_type: str = "none"
+_connected_host: str = ""
+_connected_port: int = 6379
+_is_tls: bool = False
+_last_error: Optional[str] = None
 
 
-def _is_redis_port_open(host: str, port: int, timeout: float = 0.05) -> bool:
-    """Fast non-blocking socket check to verify if Redis port is open before attempting client connection."""
+def _is_redis_port_open(host: str, port: int, timeout: float = 0.5) -> bool:
+    """Fast socket check to verify if Redis port is open before attempting client connection."""
     try:
         with socket.create_connection((host, port), timeout=timeout):
             return True
@@ -41,15 +47,37 @@ def _try_autostart_redis(host: str, port: int) -> bool:
 
         logger.info("Attempting to auto-start local redis-server process...")
         subprocess.Popen(["redis-server"], **kwargs)
-        return _is_redis_port_open(host, port, timeout=0.1)
+        # Give the process up to 2 seconds to bind to port on Windows
+        for _ in range(20):
+            time.sleep(0.1)
+            if _is_redis_port_open(host, port, timeout=0.1):
+                logger.info("Local redis-server started successfully.")
+                return True
+        return False
     except Exception as e:
         logger.debug(f"Auto-start redis-server attempt failed: {e}")
         return False
 
 
+def reset_redis_client():
+    """Resets the singleton Redis client instance (useful for reconnections and testing)."""
+    global _redis_client, _backend_type, _connected_host, _connected_port, _is_tls, _last_error
+    if _redis_client is not None:
+        try:
+            _redis_client.close()
+        except Exception:
+            pass
+    _redis_client = None
+    _backend_type = "none"
+    _connected_host = ""
+    _connected_port = 6379
+    _is_tls = False
+    _last_error = None
+
+
 def init_redis_client() -> redis.Redis:
-    """Initializes the Redis client (Real Redis or FakeRedis in-memory fallback)."""
-    global _redis_client, _backend_type
+    """Initializes the Redis client (Live Redis server or FakeRedis fallback)."""
+    global _redis_client, _backend_type, _connected_host, _connected_port, _is_tls, _last_error
 
     if _redis_client is not None:
         return _redis_client
@@ -58,49 +86,87 @@ def init_redis_client() -> redis.Redis:
         logger.info("Redis is disabled in settings. Initializing in-memory FakeRedis.")
         _redis_client = fakeredis.FakeRedis(decode_responses=True)
         _backend_type = "fakeredis_disabled"
+        _connected_host = "in-memory"
+        _connected_port = 0
         return _redis_client
 
-    host = settings.REDIS_HOST or "localhost"
-    port = settings.REDIS_PORT or 6379
+    # Resolve target host, port, and TLS status
+    is_tls = False
+    target_host = settings.REDIS_HOST or "localhost"
+    target_port = settings.REDIS_PORT or 6379
 
-    # Fast pre-check: test socket connection to Redis port, try auto-starting if closed
-    if not _is_redis_port_open(host, port, timeout=0.1):
-        _try_autostart_redis(host, port)
-
-    if _is_redis_port_open(host, port, timeout=0.2):
+    if settings.REDIS_URL:
         try:
-            if settings.REDIS_URL:
-                client = redis.Redis.from_url(settings.REDIS_URL, decode_responses=True, socket_timeout=1.0)
-            else:
-                client = redis.Redis(
-                    host=host,
-                    port=port,
-                    password=settings.REDIS_PASSWORD or None,
-                    db=settings.REDIS_DB,
-                    decode_responses=True,
-                    socket_timeout=1.0,
-                )
-            try:
+            parsed = urlparse(settings.REDIS_URL)
+            if parsed.hostname:
+                target_host = parsed.hostname
+            if parsed.port:
+                target_port = parsed.port
+            if parsed.scheme == "rediss":
+                is_tls = True
+        except Exception as e:
+            logger.warning(f"Could not parse REDIS_URL '{settings.REDIS_URL}': {e}")
+
+    is_local = target_host in ("localhost", "127.0.0.1", "0.0.0.0", "::1")
+
+    # If running locally and port is closed, attempt auto-starting redis-server
+    if is_local and not _is_redis_port_open(target_host, target_port, timeout=0.15):
+        _try_autostart_redis(target_host, target_port)
+
+    # Attempt connection to live Redis server
+    try:
+        if settings.REDIS_URL:
+            client = redis.Redis.from_url(
+                settings.REDIS_URL,
+                decode_responses=True,
+                socket_timeout=5.0,
+                socket_connect_timeout=5.0,
+                retry_on_timeout=True,
+            )
+        else:
+            client = redis.Redis(
+                host=target_host,
+                port=target_port,
+                password=settings.REDIS_PASSWORD or None,
+                db=settings.REDIS_DB,
+                decode_responses=True,
+                socket_timeout=5.0,
+                socket_connect_timeout=5.0,
+                retry_on_timeout=True,
+            )
+
+        try:
+            client.ping()
+        except redis.exceptions.ResponseError as r_err:
+            if "MISCONF" in str(r_err):
+                client.config_set("stop-writes-on-bgsave-error", "no")
                 client.ping()
-            except redis.exceptions.ResponseError as r_err:
-                if "MISCONF" in str(r_err):
-                    client.config_set("stop-writes-on-bgsave-error", "no")
-                    client.ping()
-                else:
-                    raise r_err
-            _redis_client = client
-            _backend_type = "redis_live"
-            logger.info(f"Connected to live Redis server at {host}:{port}")
-            print(f"[REDIS CONNECTED] High-performance caching layer active via Redis ({host}:{port})")
-            return _redis_client
-        except Exception as err:
-            logger.warning(f"Could not connect to live Redis ({err}). Falling back to in-memory FakeRedis.")
+            else:
+                raise r_err
+
+        _redis_client = client
+        _backend_type = "redis_live"
+        _connected_host = target_host
+        _connected_port = target_port
+        _is_tls = is_tls
+        _last_error = None
+
+        logger.info(f"Connected to live Redis server at {target_host}:{target_port} (TLS={is_tls})")
+        print(f"[REDIS CONNECTED] High-performance caching layer active via Live Redis ({target_host}:{target_port})")
+        return _redis_client
+
+    except Exception as err:
+        _last_error = str(err)
+        logger.warning(f"Could not connect to live Redis at {target_host}:{target_port} ({err}). Falling back to in-memory FakeRedis.")
 
     # Fallback to FakeRedis in-memory caching layer
     logger.info("Live Redis server not reached. Using in-memory FakeRedis caching layer.")
-    print("[REDIS FALLBACK] Live Redis not reached. Using in-memory FakeRedis layer.")
+    print(f"[REDIS FALLBACK] Live Redis not reached ({_last_error}). Using in-memory FakeRedis layer.")
     _redis_client = fakeredis.FakeRedis(decode_responses=True)
     _backend_type = "fakeredis_fallback"
+    _connected_host = target_host
+    _connected_port = target_port
+    _is_tls = False
     return _redis_client
 
 
@@ -192,21 +258,30 @@ def get_redis_status() -> dict:
     try:
         client = get_redis_client()
         ping_ok = client.ping()
-        keys_count = len(client.keys("*"))
+        try:
+            keys_count = client.dbsize()
+        except Exception:
+            keys_count = len(client.keys("*"))
+
         return {
             "enabled": settings.REDIS_ENABLED,
             "connected": bool(ping_ok),
             "backend_type": _backend_type,
+            "is_live": _backend_type == "redis_live",
             "keys_cached": keys_count,
-            "host": settings.REDIS_HOST,
-            "port": settings.REDIS_PORT,
+            "host": _connected_host or settings.REDIS_HOST,
+            "port": _connected_port or settings.REDIS_PORT,
+            "is_tls": _is_tls,
+            "error": _last_error,
         }
     except Exception as err:
         return {
             "enabled": settings.REDIS_ENABLED,
             "connected": False,
             "backend_type": _backend_type,
+            "is_live": False,
             "error": str(err),
-            "host": settings.REDIS_HOST,
-            "port": settings.REDIS_PORT,
+            "host": _connected_host or settings.REDIS_HOST,
+            "port": _connected_port or settings.REDIS_PORT,
+            "is_tls": _is_tls,
         }

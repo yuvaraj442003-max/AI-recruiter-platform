@@ -47,11 +47,11 @@
   function getStatusBadge(status) {
     const s = (status || "applied").toLowerCase();
     if (s === "applied") return `<span class="badge bg-primary-subtle text-primary border border-primary border-opacity-25 px-3 py-1 rounded-pill">Applied</span>`;
-    if (s === "shortlisted") return `<span class="badge bg-info-subtle text-info border border-info border-opacity-25 px-3 py-1 rounded-pill">Shortlisted</span>`;
+    if (s === "shortlisted") return `<span class="badge bg-primary text-white border px-3 py-1 rounded-pill fw-bold shadow-sm">⭐ Shortlisted</span>`;
     if (s === "under_review") return `<span class="badge bg-warning-subtle text-dark border border-warning border-opacity-25 px-3 py-1 rounded-pill">Under Review</span>`;
-    if (s === "interview") return `<span class="badge bg-purple-subtle text-dark border border-purple border-opacity-25 px-3 py-1 rounded-pill">Interview Scheduled</span>`;
-    if (s === "selected") return `<span class="badge bg-success-subtle text-success border border-success border-opacity-25 px-3 py-1 rounded-pill">Selected</span>`;
-    if (s === "rejected") return `<span class="badge bg-danger-subtle text-danger border border-danger border-opacity-25 px-3 py-1 rounded-pill">Rejected</span>`;
+    if (s === "interview") return `<span class="badge bg-purple-subtle text-dark border border-purple border-opacity-25 px-3 py-1 rounded-pill">🎙️ Interview</span>`;
+    if (s === "selected") return `<span class="badge bg-success text-white border px-3 py-1 rounded-pill fw-bold shadow-sm">🎉 Selected</span>`;
+    if (s === "rejected") return `<span class="badge bg-danger-subtle text-danger border border-danger border-opacity-25 px-3 py-1 rounded-pill">❌ Rejected</span>`;
     return `<span class="badge bg-secondary px-3 py-1 rounded-pill">${s}</span>`;
   }
 
@@ -134,11 +134,23 @@
       const currentQ = session?.current_question_index ?? session?.questions_answered ?? app?.questions_answered ?? 0;
       const totalQ = session?.total_questions ?? app?.total_questions ?? 5;
 
-      let rawStatus = session?.status || app?.screening_status || app?.status || "Applied";
-      if (["applied", "under_review", "pending", "shortlisted"].includes(rawStatus.toLowerCase())) {
-        rawStatus = "WAITING_FOR_ANSWER";
+      let rawStatus = (app?.status || session?.status || app?.screening_status || "Applied").toLowerCase();
+      let statusStr = "APPLIED";
+      if (rawStatus === "shortlisted" || app?.is_shortlisted) {
+        statusStr = "⭐ SHORTLISTED";
+      } else if (rawStatus === "selected") {
+        statusStr = "🎉 SELECTED";
+      } else if (rawStatus === "interview") {
+        statusStr = "🎙️ INTERVIEW";
+      } else if (rawStatus === "rejected") {
+        statusStr = "REJECTED";
+      } else if (session?.status) {
+        statusStr = session.status.toUpperCase();
+      } else if (["applied", "under_review", "pending"].includes(rawStatus)) {
+        statusStr = "WAITING_FOR_ANSWER";
+      } else {
+        statusStr = rawStatus.toUpperCase();
       }
-      const statusStr = rawStatus.toUpperCase();
 
       const dateStr = session?.completed_at || session?.created_at || app?.applied_at;
       const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString("en-US") : "9/9/2026";
@@ -173,8 +185,8 @@
             <div class="row align-items-center g-3">
               <div class="col-lg-8 col-md-7">
                 <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                  <span class="badge bg-primary px-3 py-1 text-uppercase fw-bold" style="letter-spacing: 0.05em; font-size: 0.75rem; border-radius: 20px;">
-                    ${channel}
+                  <span class="badge px-3 py-1.5 text-uppercase fw-bold text-white shadow-sm" style="background: linear-gradient(135deg, #25d366 0%, #128c7e 100%); letter-spacing: 0.05em; font-size: 0.75rem; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: 0 2px 8px rgba(37, 211, 102, 0.35);">
+                    💬 ${channel}
                   </span>
                   ${app.recruiter_override ? `<span class="badge bg-warning text-dark px-2 py-1 small">⚠️ Recruiter Override</span>` : ''}
                 </div>
@@ -209,6 +221,12 @@
               </div>
 
               <div class="d-flex flex-wrap gap-2 align-items-center">
+                <button class="btn btn-sm btn-info text-white fw-bold quick-status-btn shadow-sm" data-app-id="${app.id}" data-status="shortlisted" title="Quick Shortlist this candidate">
+                  ⭐ Shortlist
+                </button>
+                <button class="btn btn-sm btn-success text-white fw-bold quick-status-btn shadow-sm" data-app-id="${app.id}" data-status="selected" title="Mark candidate as Selected / Offer">
+                  🎉 Select
+                </button>
                 <button class="btn btn-sm btn-outline-light fw-semibold open-applicant-profile-link" data-app-id="${app.id}">
                   🤖 AI Screening
                 </button>
@@ -309,6 +327,9 @@
                 ⚡ Actions
               </button>
               <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius: 10px; z-index: 1050;">
+                <li><button class="dropdown-item d-flex align-items-center gap-2 text-primary fw-bold quick-status-btn" data-app-id="${app.id}" data-status="shortlisted"><span>⭐</span> Shortlist Candidate</button></li>
+                <li><button class="dropdown-item d-flex align-items-center gap-2 text-success fw-bold quick-status-btn" data-app-id="${app.id}" data-status="selected"><span>🎉</span> Select Candidate</button></li>
+                <li><hr class="dropdown-divider"></li>
                 <li><button class="dropdown-item d-flex align-items-center gap-2 open-applicant-profile-link" data-app-id="${app.id}"><span>🤖</span> AI Screening</button></li>
                 <li><button class="dropdown-item d-flex align-items-center gap-2 download-resume-btn" data-candidate-id="${candId}"><span>📄</span> Download Resume</button></li>
                 <li><button class="dropdown-item d-flex align-items-center gap-2 msg-applicant-btn" data-user-id="${candidateProfile.user_id || ''}" data-name="${escapeHtml(candidateName)}"><span>💬</span> Send Message</button></li>
@@ -429,6 +450,24 @@
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
         openFeedbackModal(btn.dataset.appId, btn.dataset.name);
+      });
+    });
+
+    container.querySelectorAll(".quick-status-btn").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        const appId = btn.dataset.appId;
+        const newStatus = btn.dataset.status;
+        if (!appId || !newStatus) return;
+        btn.disabled = true;
+        try {
+          await applicationsAPI.updateStatus(appId, newStatus, `Recruiter one-click ${newStatus}`);
+          showAlert(`Candidate marked as ${newStatus.toUpperCase()}!`, "success");
+          loadJobAndApplicants();
+        } catch (err) {
+          showAlert(`Failed to update status: ${err.message}`, "danger");
+          btn.disabled = false;
+        }
       });
     });
   }
@@ -869,11 +908,23 @@
     const currentQ = session?.current_question_index ?? session?.questions_answered ?? app?.questions_answered ?? 0;
     const totalQ = session?.total_questions ?? app?.total_questions ?? 5;
 
-    let rawStatus = session?.status || app?.screening_status || app?.status || "Pending";
-    if (["applied", "under_review", "pending", "shortlisted"].includes(rawStatus.toLowerCase())) {
-      rawStatus = "WAITING_FOR_ANSWER";
+    let rawStatus = (app?.status || session?.status || app?.screening_status || "Pending").toLowerCase();
+    let statusStr = "PENDING";
+    if (rawStatus === "shortlisted" || app?.is_shortlisted) {
+      statusStr = "⭐ SHORTLISTED";
+    } else if (rawStatus === "selected") {
+      statusStr = "🎉 SELECTED";
+    } else if (rawStatus === "interview") {
+      statusStr = "🎙️ INTERVIEW";
+    } else if (rawStatus === "rejected") {
+      statusStr = "REJECTED";
+    } else if (session?.status) {
+      statusStr = session.status.toUpperCase();
+    } else if (["applied", "under_review", "pending"].includes(rawStatus)) {
+      statusStr = "WAITING_FOR_ANSWER";
+    } else {
+      statusStr = rawStatus.toUpperCase();
     }
-    const statusStr = rawStatus.toUpperCase();
 
     const dateStr = session?.completed_at || session?.created_at || app?.applied_at;
     const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString("en-US") : "9/10/2026";
@@ -961,7 +1012,7 @@
         <div class="card border-0 p-4 p-md-5 mb-4 shadow-sm" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; border-radius: 16px;">
           <div class="row align-items-center">
             <div class="col-lg-8">
-              <span class="badge bg-primary px-3 py-2 text-uppercase mb-3 fw-bold" style="letter-spacing: 0.05em; font-size: 0.75rem;">${channel}</span>
+              <span class="badge px-3 py-2 text-uppercase mb-3 fw-bold text-white shadow-sm" style="background: linear-gradient(135deg, #25d366 0%, #128c7e 100%); letter-spacing: 0.05em; font-size: 0.75rem; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: 0 2px 8px rgba(37, 211, 102, 0.35);">💬 ${channel}</span>
               <h2 class="fw-bold mb-1 text-white">${escapeHtml(candidateName)}</h2>
               <p class="text-light text-opacity-75 mb-3 fs-5">${escapeHtml(jobTitle)}</p>
               <div class="d-flex flex-wrap gap-3 text-sm text-light text-opacity-90">
@@ -1631,6 +1682,25 @@
       }
     });
   }
+
+  window.overrideCandidateStatus = async function (appId, newStatus, reason = "") {
+    if (!appId) {
+      alert("Application ID is missing.");
+      return;
+    }
+    try {
+      await applicationsAPI.updateStatus(appId, newStatus, reason);
+      showAlert(`Candidate status updated to '${newStatus.toUpperCase()}'!`, "success");
+      const modalEl = document.getElementById("applicantDetailModal");
+      if (modalEl && window.bootstrap) {
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+      }
+      loadJobAndApplicants();
+    } catch (err) {
+      alert("Failed to update status: " + (err?.message || String(err)));
+    }
+  };
 
   document.addEventListener("ar:auth-ready", () => {
     loadJobAndApplicants();

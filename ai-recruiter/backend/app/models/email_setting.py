@@ -20,6 +20,7 @@ class RecruiterEmailSetting(Base, TimestampMixin):
 
     app_received: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     candidate_shortlisted: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    candidate_selected: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     interview_invited: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     interview_reminder: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     interview_rescheduled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)

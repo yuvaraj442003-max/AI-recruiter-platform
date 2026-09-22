@@ -649,6 +649,7 @@ const codingAPI = {
   startAssessment: (id) => api.post(`/coding/candidate/assessments/${id}/start`),
   runCode: (attemptId, payload) => api.post(`/coding/candidate/attempts/${attemptId}/run`, payload),
   submitAssessment: (attemptId, submissions) => api.post(`/coding/candidate/attempts/${attemptId}/submit`, submissions),
+  terminateAssessment: (attemptId, reason = "TAB_SWITCH") => api.post(`/coding/candidate/attempts/${attemptId}/terminate?reason=${encodeURIComponent(reason)}`),
   getAttemptResult: (attemptId) => api.get(`/coding/candidate/attempts/${attemptId}/result`),
 };
 
@@ -750,15 +751,21 @@ const feedbackAPI = {
     api.post("/recruiter/feedback/bulk-generate", { application_ids: applicationIds, auto_approve: autoApprove, regeneration_prompt: prompt }),
 };
 
+const systemAPI = {
+  getStatus: () => api.get("/system/status"),
+};
+
 window.candidateSearchAPI = candidateSearchAPI;
 window.screeningAPI = screeningAPI;
 window.proctoringAPI = proctoringAPI;
 window.interviewScorecardAPI = interviewScorecardAPI;
 window.talentRediscoveryAPI = talentRediscoveryAPI;
 window.feedbackAPI = feedbackAPI;
+window.systemAPI = systemAPI;
 
 // Attach sub-namespaces directly to api object so API.interviews, API.jobs, etc. work seamlessly
 Object.assign(api, {
+  system: systemAPI,
   auth: authAPI,
   ats: atsAPI,
   comparison: comparisonAPI,

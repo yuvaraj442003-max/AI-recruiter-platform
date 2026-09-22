@@ -123,6 +123,66 @@ def update_recruiter_decision(
     scorecard.reviewed_at = datetime.now(timezone.utc)
     scorecard.reviewed_by_user_id = recruiter_user_id
 
+    # Synchronize Application status based on recruiter decision
+    interview = db.query(Interview).filter(Interview.id == scorecard.interview_id).first()
+    if interview:
+        from app.models.application import Application, ApplicationStatus
+        app = db.query(Application).filter(
+            Application.candidate_id == interview.candidate_id,
+            Application.job_id == interview.job_id,
+        ).first()
+        if app:
+            if decision in ["Strong Candidate", "Selected"]:
+                app.status = ApplicationStatus.selected
+                app.is_shortlisted = True
+                app.recruiter_override = True
+                app.override_reason = notes or "Selected by recruiter following interview scorecard review."
+                try:
+                    from app.services.email_service import send_selected_email
+                    cand_user = interview.candidate.user if (interview.candidate and hasattr(interview.candidate, "user")) else None
+                    if cand_user and cand_user.email:
+                        comp_name = getattr(interview.job, "company_name", None) if interview.job else "Recruiter Company"
+                        job_title = interview.job.title if interview.job else "Position"
+                        send_selected_email(
+                            to_email=cand_user.email,
+                            candidate_name=cand_user.name,
+                            job_title=job_title,
+                            company_name=comp_name,
+                            notes=notes,
+                            candidate_id=interview.candidate_id,
+                            job_id=interview.job_id,
+                            recruiter_id=recruiter_user_id,
+                            db=db,
+                        )
+                except Exception as err:
+                    logger.warning(f"Failed to dispatch selected email from scorecard: {err}")
+            elif decision == "Shortlist":
+                app.status = ApplicationStatus.shortlisted
+                app.is_shortlisted = True
+                app.recruiter_override = True
+                app.override_reason = notes or "Shortlisted by recruiter following interview scorecard review."
+                try:
+                    from app.services.email_service import send_shortlisted_email
+                    cand_user = interview.candidate.user if (interview.candidate and hasattr(interview.candidate, "user")) else None
+                    if cand_user and cand_user.email:
+                        comp_name = getattr(interview.job, "company_name", None) if interview.job else "Recruiter Company"
+                        job_title = interview.job.title if interview.job else "Position"
+                        send_shortlisted_email(
+                            to_email=cand_user.email,
+                            candidate_name=cand_user.name,
+                            job_title=job_title,
+                            company_name=comp_name,
+                            candidate_id=interview.candidate_id,
+                            job_id=interview.job_id,
+                            recruiter_id=recruiter_user_id,
+                            db=db,
+                        )
+                except Exception as err:
+                    logger.warning(f"Failed to dispatch shortlisted email from scorecard: {err}")
+            elif decision == "Reject":
+                app.status = ApplicationStatus.rejected
+                app.override_reason = notes or "Rejected following interview scorecard review."
+
     db.commit()
     return get_scorecard_by_interview_id(db, scorecard.interview_id)
 
