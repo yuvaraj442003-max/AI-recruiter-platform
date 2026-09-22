@@ -14,12 +14,23 @@
   let contactsCache = [];
   let pollInterval = null;
 
+  // Audio recording state
+  let mediaRecorder = null;
+  let audioChunks = [];
+  let recordingTimerInterval = null;
+  let recordingSeconds = 0;
+
   // DOM Elements
   const sidebarListContainer = document.getElementById("sidebar-list-container");
   const chatThreadContainer = document.getElementById("chat-thread-container");
   const chatTextInput = document.getElementById("chat-text-input");
   const chatSendBtn = document.getElementById("chat-send-submit-btn");
   const chatMessageForm = document.getElementById("chat-message-form");
+  const micRecordBtn = document.getElementById("mic-record-btn");
+  const audioRecordingBar = document.getElementById("audio-recording-bar");
+  const recordingTimer = document.getElementById("recording-timer");
+  const cancelRecordingBtn = document.getElementById("cancel-recording-btn");
+  const sendAudioRecordingBtn = document.getElementById("send-audio-recording-btn");
   const searchInput = document.getElementById("contact-search-input");
   const tabConvosBtn = document.getElementById("tab-btn-conversations");
   const tabContactsBtn = document.getElementById("tab-btn-contacts");
@@ -134,6 +145,45 @@
       });
     }
 
+    if (micRecordBtn) {
+      micRecordBtn.addEventListener("click", startAudioRecording);
+    }
+
+    if (cancelRecordingBtn) {
+      cancelRecordingBtn.addEventListener("click", cancelAudioRecording);
+    }
+
+    if (sendAudioRecordingBtn) {
+      sendAudioRecordingBtn.addEventListener("click", sendAudioRecording);
+    }
+
+    const saveEditBtn = document.getElementById("save-edit-message-btn");
+    if (saveEditBtn) {
+      saveEditBtn.addEventListener("click", async () => {
+        const msgId = document.getElementById("edit-message-id")?.value;
+        const newText = document.getElementById("edit-message-text")?.value;
+        if (!msgId) return;
+
+        saveEditBtn.disabled = true;
+        try {
+          const res = await API.messages.update(msgId, newText);
+          if (res && res.success) {
+            const modalEl = document.getElementById("editMessageModal");
+            const modalInst = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            if (modalInst) modalInst.hide();
+            await loadThread(activePartnerId, true);
+            await refreshSidebarQuietly();
+          } else {
+            showChatError(res?.message || "Failed to update message");
+          }
+        } catch (err) {
+          showChatError(err?.message || "Failed to update message");
+        } finally {
+          saveEditBtn.disabled = false;
+        }
+      });
+    }
+
     const backBtn = document.getElementById("back-to-sidebar-btn");
     if (backBtn) {
       backBtn.addEventListener("click", () => {
@@ -144,6 +194,149 @@
           mainPane.classList.add("d-none", "d-md-flex");
         }
       });
+    }
+  }
+
+  function openEditModal(msgId, currentText) {
+    const modalEl = document.getElementById("editMessageModal");
+    const editMsgIdInput = document.getElementById("edit-message-id");
+    const editMsgTextInput = document.getElementById("edit-message-text");
+
+    if (!modalEl || !editMsgIdInput || !editMsgTextInput) return;
+    editMsgIdInput.value = msgId;
+    editMsgTextInput.value = currentText;
+
+    const bsModal = new bootstrap.Modal(modalEl);
+    bsModal.show();
+  }
+
+  async function startAudioRecording() {
+    if (!activePartnerId) return;
+    hideChatError();
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      showChatError("Microphone recording is not supported in your browser.");
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunks = [];
+
+      let options = {};
+      if (typeof MediaRecorder.isTypeSupported === "function") {
+        if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
+          options = { mimeType: "audio/webm;codecs=opus" };
+        } else if (MediaRecorder.isTypeSupported("audio/webm")) {
+          options = { mimeType: "audio/webm" };
+        }
+      }
+
+      mediaRecorder = new MediaRecorder(stream, options);
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) {
+          audioChunks.push(e.data);
+        }
+      };
+
+      // Collect audio data chunks every 250ms continuously to capture 100% of speech stream
+      mediaRecorder.start(250);
+
+      if (chatMessageForm) chatMessageForm.classList.add("d-none");
+      if (audioRecordingBar) {
+        audioRecordingBar.classList.remove("d-none");
+        audioRecordingBar.classList.add("d-flex");
+      }
+
+      recordingSeconds = 0;
+      updateTimerDisplay();
+      clearInterval(recordingTimerInterval);
+      recordingTimerInterval = setInterval(() => {
+        recordingSeconds++;
+        updateTimerDisplay();
+      }, 1000);
+    } catch (err) {
+      console.error("Microphone access error:", err);
+      showChatError("Microphone access denied or unavailable.");
+    }
+  }
+
+  function updateTimerDisplay() {
+    if (!recordingTimer) return;
+    const mins = String(Math.floor(recordingSeconds / 60)).padStart(2, "0");
+    const secs = String(recordingSeconds % 60).padStart(2, "0");
+    recordingTimer.textContent = `${mins}:${secs}`;
+  }
+
+  function cancelAudioRecording() {
+    clearInterval(recordingTimerInterval);
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+      mediaRecorder.onstop = () => {
+        audioChunks = [];
+      };
+      mediaRecorder.stop();
+      if (mediaRecorder.stream) {
+        mediaRecorder.stream.getTracks().forEach(t => t.stop());
+      }
+    }
+    if (audioRecordingBar) {
+      audioRecordingBar.classList.add("d-none");
+      audioRecordingBar.classList.remove("d-flex");
+    }
+    if (chatMessageForm) chatMessageForm.classList.remove("d-none");
+  }
+
+  async function sendAudioRecording() {
+    clearInterval(recordingTimerInterval);
+    if (!mediaRecorder || mediaRecorder.state === "inactive") return;
+
+    if (sendAudioRecordingBtn) sendAudioRecordingBtn.disabled = true;
+
+    mediaRecorder.onstop = async () => {
+      try {
+        if (mediaRecorder.stream) {
+          mediaRecorder.stream.getTracks().forEach(t => t.stop());
+        }
+
+        const mimeType = mediaRecorder.mimeType || "audio/webm";
+        const audioBlob = new Blob(audioChunks, { type: mimeType });
+        if (audioBlob.size < 100) {
+          showChatError("Audio recording was too short.");
+          return;
+        }
+
+        const res = await API.messages.sendAudio(
+          audioBlob,
+          activePartnerId,
+          activePartnerInfo?.application_id || null
+        );
+
+        if (res && res.success) {
+          await loadThread(activePartnerId, true);
+          await refreshSidebarQuietly();
+          loadUnreadCount();
+        } else {
+          showChatError(res?.message || "Failed to send voice message");
+        }
+      } catch (err) {
+        console.error("Audio upload error:", err);
+        showChatError(err?.message || "Error uploading voice message. Please try again.");
+      } finally {
+        if (sendAudioRecordingBtn) sendAudioRecordingBtn.disabled = false;
+        if (audioRecordingBar) {
+          audioRecordingBar.classList.add("d-none");
+          audioRecordingBar.classList.remove("d-flex");
+        }
+        if (chatMessageForm) chatMessageForm.classList.remove("d-none");
+      }
+    };
+
+    if (mediaRecorder.state === "recording") {
+      try {
+        mediaRecorder.requestData();
+      } catch (e) {}
+      mediaRecorder.stop();
     }
   }
 
@@ -195,6 +388,7 @@
             chatTextInput.placeholder = "Select a contact or candidate from the sidebar...";
           }
           if (chatSendBtn) chatSendBtn.disabled = true;
+          if (micRecordBtn) micRecordBtn.disabled = true;
         }
       }
 
@@ -261,6 +455,7 @@
         const isSelected = activePartnerId === c.other_user_id;
         const initial = (c.other_user_name || "U")[0].toUpperCase();
         const unreadBadge = c.unread_count > 0 ? `<span class="badge bg-danger rounded-pill">${c.unread_count}</span>` : "";
+        const previewMsg = c.last_message_is_audio ? "🎙️ Voice Message" : (c.last_message || "");
 
         return `
           <div class="card border-0 mb-1 rounded-3 sidebar-contact-item cursor-pointer ${isSelected ? "bg-primary-subtle text-primary border-start border-4 border-primary" : "bg-body hover-bg-light"}"
@@ -275,7 +470,7 @@
                   <small class="text-muted opacity-75" style="font-size: 0.75rem;">${formatTimeShort(c.last_message_at)}</small>
                 </div>
                 <div class="d-flex align-items-center justify-content-between mt-1">
-                  <p class="mb-0 small text-muted text-truncate" style="max-width: 170px;">${escapeHtml(c.last_message || "")}</p>
+                  <p class="mb-0 small text-muted text-truncate" style="max-width: 170px;">${escapeHtml(previewMsg)}</p>
                   ${unreadBadge}
                 </div>
               </div>
@@ -356,13 +551,16 @@
 
     if (chatTextInput) {
       chatTextInput.disabled = false;
-      chatTextInput.placeholder = "Type your message...";
+      chatTextInput.placeholder = "Type a message or click 🎙️ to record audio...";
     }
     if (chatSendBtn) chatSendBtn.disabled = false;
+    if (micRecordBtn) micRecordBtn.disabled = false;
 
     renderSidebar();
     await loadThread(partnerId, true);
   }
+
+  let currentThreadSignature = "";
 
   async function loadThread(partnerId, scrollToBottom = false) {
     try {
@@ -370,12 +568,29 @@
       if (!res.success || !Array.isArray(res.data)) return;
 
       const messages = res.data;
+
+      // Compute unique signature of current message thread state
+      const newSignature = `${partnerId}:${messages.length}:${messages.map(m => m.id).join(",")}`;
+
+      // Check if any audio element in the thread is currently playing or being listened to
+      const isAudioActive = Array.from(chatThreadContainer.querySelectorAll("audio")).some(a => !a.paused || a.currentTime > 0);
+
+      // If this is background polling and thread content hasn't changed or audio is playing, skip DOM re-render!
+      if (!scrollToBottom && newSignature === currentThreadSignature) {
+        return;
+      }
+      if (!scrollToBottom && isAudioActive) {
+        return;
+      }
+
+      currentThreadSignature = newSignature;
+
       if (messages.length === 0) {
         chatThreadContainer.innerHTML = `
           <div class="h-100 d-flex align-items-center justify-content-center text-muted flex-column gap-2 my-auto">
             <span class="fs-1">👋</span>
             <h6 class="fw-bold mb-0">Start the conversation!</h6>
-            <p class="small text-muted mb-0">Send a greeting message to start chatting.</p>
+            <p class="small text-muted mb-0">Send a text or voice message to start chatting.</p>
           </div>`;
         return;
       }
@@ -384,11 +599,32 @@
 
       chatThreadContainer.innerHTML = messages.map(msg => {
         const isSelf = msg.sender_id === currentUser.id;
+        const isAudio = msg.is_audio || !!msg.audio_url;
+
+        const bodyHtml = isAudio
+          ? `
+            <div class="d-flex align-items-center gap-2 mb-1 fw-semibold" style="font-size: 0.9rem;">
+              <span>🎙️</span> Voice Message
+            </div>
+            <audio controls src="${escapeHtml(formatAudioUrl(msg.audio_url))}" preload="auto" class="w-100 mt-1 voice-audio-player" style="max-width: 270px; height: 38px; border-radius: 20px; outline: none;"></audio>
+            ${msg.content && msg.content !== "🎙️ Voice Message" && msg.content !== "🎙️ Audio Message" ? `<div class="small mt-1 opacity-75 text-break">${escapeHtml(msg.content)}</div>` : ""}
+          `
+          : `<div class="text-break">${escapeHtml(msg.content)}</div>`;
+
         return `
-          <div class="d-flex flex-column ${isSelf ? "align-items-end" : "align-items-start"} mb-2">
-            <div class="p-3 shadow-sm rounded-4 ${isSelf ? "bg-primary text-white me-2" : "bg-body border text-body ms-2"}"
-                 style="max-width: 75%; font-size: 0.95rem; border-bottom-${isSelf ? "right" : "left"}-radius: 4px !important;">
-              <div class="text-break">${escapeHtml(msg.content)}</div>
+          <div class="d-flex flex-column ${isSelf ? "align-items-end" : "align-items-start"} mb-2 msg-bubble-wrapper">
+            <div class="p-3 shadow-sm rounded-4 position-relative ${isSelf ? "bg-primary text-white me-2" : "bg-body border text-body ms-2"}"
+                 style="max-width: 78%; font-size: 0.95rem; border-bottom-${isSelf ? "right" : "left"}-radius: 4px !important;">
+              ${bodyHtml}
+              ${isSelf ? `
+                <div class="d-flex align-items-center justify-content-end gap-2 mt-2 pt-1 border-top border-white-50" style="font-size: 0.76rem;">
+                  ${!isAudio ? `
+                    <button type="button" class="btn btn-link btn-sm p-0 text-white-50 hover-text-white text-decoration-none edit-msg-btn" data-msg-id="${msg.id}" data-msg-content="${escapeHtml(msg.content || '')}">✏️ Edit</button>
+                    <span class="opacity-50">•</span>
+                  ` : ''}
+                  <button type="button" class="btn btn-link btn-sm p-0 text-white-50 hover-text-white text-decoration-none delete-msg-btn" data-msg-id="${msg.id}">🗑️ Delete</button>
+                </div>
+              ` : ''}
             </div>
             <small class="text-muted opacity-75 px-3 mt-1" style="font-size: 0.72rem;">
               ${formatTimeFull(msg.created_at)}
@@ -396,6 +632,43 @@
           </div>
         `;
       }).join("");
+
+      // Apply WebM duration fix to all rendered voice audio players
+      chatThreadContainer.querySelectorAll(".voice-audio-player").forEach(audioEl => {
+        fixWebmAudioDuration(audioEl);
+      });
+
+      // Attach Edit button listeners
+      chatThreadContainer.querySelectorAll(".edit-msg-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const msgId = btn.getAttribute("data-msg-id");
+          const content = btn.getAttribute("data-msg-content") || "";
+          openEditModal(msgId, content);
+        });
+      });
+
+      // Attach Delete button listeners
+      chatThreadContainer.querySelectorAll(".delete-msg-btn").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          const msgId = btn.getAttribute("data-msg-id");
+          if (confirm("Are you sure you want to delete this message?")) {
+            try {
+              const res = await API.messages.delete(msgId);
+              if (res && res.success) {
+                await loadThread(activePartnerId, true);
+                await refreshSidebarQuietly();
+                loadUnreadCount();
+              } else {
+                showChatError(res?.message || "Failed to delete message");
+              }
+            } catch (err) {
+              showChatError(err?.message || "Error deleting message");
+            }
+          }
+        });
+      });
 
       if (scrollToBottom || isScrolledToBottom) {
         requestAnimationFrame(() => {
@@ -465,6 +738,38 @@
       return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
     return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  }
+
+  function formatAudioUrl(url) {
+    if (!url) return "";
+    if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("blob:")) {
+      return url;
+    }
+    const origin = (typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "http://localhost:8000/api/v1").replace(/\/api\/v1\/?$/, "");
+    const cleanPath = url.startsWith("/") ? url : "/" + url;
+    return origin + cleanPath;
+  }
+
+  function fixWebmAudioDuration(audioEl) {
+    if (!audioEl) return;
+
+    const applyFix = () => {
+      try {
+        if (audioEl.duration === Infinity || isNaN(audioEl.duration) || audioEl.duration <= 5) {
+          audioEl.currentTime = 1e101;
+          audioEl.ontimeupdate = function () {
+            audioEl.ontimeupdate = null;
+            audioEl.currentTime = 0;
+          };
+        }
+      } catch (e) {}
+    };
+
+    if (audioEl.readyState >= 1) {
+      applyFix();
+    } else {
+      audioEl.addEventListener("loadedmetadata", applyFix, { once: true });
+    }
   }
 
   function formatTimeFull(dateStr) {

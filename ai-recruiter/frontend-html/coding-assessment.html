@@ -200,22 +200,22 @@
         <!-- Console / Test Results Drawer -->
         <div class="console-drawer p-3">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <h6 class="mb-0 text-secondary text-uppercase fs-7 fw-bold">Execution Console &amp; Test Cases</h6>
+            <h6 class="mb-0 text-secondary text-uppercase fs-7 fw-bold">Execution Console</h6>
             <span id="run-status-badge" class="badge bg-secondary">Idle</span>
           </div>
 
           <!-- Alert / Next Question Banner -->
-          <div id="passed-banner" class="alert alert-success d-none mb-3 py-2 d-flex justify-content-between align-items-center">
+          <div id="passed-banner" class="alert alert-primary d-none mb-3 py-2 d-flex justify-content-between align-items-center">
             <div>
-              <strong>🎉 Correct Solution!</strong> Test cases passed.
+              <span id="banner-text"><strong>💾 Response Saved!</strong> Solution recorded.</span>
             </div>
-            <button id="banner-next-btn" class="btn btn-sm btn-success fw-bold px-3">
+            <button id="banner-next-btn" class="btn btn-sm btn-primary fw-bold px-3">
               Proceed to Next Question ➔
             </button>
           </div>
 
           <div id="console-output-container">
-            <pre id="console-output" class="text-secondary small font-monospace mb-0">Select an answer or click "Run & Test Code" to verify against test cases...</pre>
+            <pre id="console-output" class="text-secondary small font-monospace mb-0">Select an answer or click "Run &amp; Test Code" to execute code. Note: Scores and results will be displayed after final submission.</pre>
           </div>
         </div>
       </div>
@@ -384,48 +384,77 @@
     function jumpToSection(sec) {
       if (!assessmentData || !assessmentData.questions) return;
       if (sec === 'aptitude') {
-        switchQuestion(0);
+        const firstApt = assessmentData.questions.findIndex(q => q.category === 'Aptitude' || q.category === 'Recruiter Aptitude');
+        switchQuestion(firstApt >= 0 ? firstApt : 0);
       } else if (sec === 'coding') {
-        switchQuestion(Math.min(25, assessmentData.questions.length - 1));
+        const firstCode = assessmentData.questions.findIndex(q => q.category !== 'Aptitude' && q.category !== 'Recruiter Aptitude');
+        switchQuestion(firstCode >= 0 ? firstCode : Math.min(25, assessmentData.questions.length - 1));
       }
+    }
+
+    function isQuestionAnswered(qId) {
+      if (!codeStore[qId]) return false;
+      if (codeStore[qId].selectedOption) return true;
+      const c = (codeStore[qId].code || '').trim();
+      return c.length > 0 && !c.startsWith('# Write your code') && !c.startsWith('# Solution for');
     }
 
     function renderQuestionTabs() {
       const tabs = document.getElementById('question-tabs');
       if (!assessmentData || !assessmentData.questions) return;
 
-      tabs.innerHTML = assessmentData.questions.map((q, idx) => {
-        const store = consoleStore[q.id];
-        let statusBadge = '';
-        if (store && store.passedAll) {
-          statusBadge = '<span class="tab-status-icon text-success">🟢</span>';
-        } else if (store && store.passedAll === false) {
-          statusBadge = '<span class="tab-status-icon text-danger">🔴</span>';
-        }
+      const aptCount = assessmentData.questions.filter(q => q.category === 'Aptitude' || q.category === 'Recruiter Aptitude').length;
+      const codeCount = assessmentData.questions.length - aptCount;
+      const isPureApt = (codeCount === 0) || (assessmentData.assessment_type === 'aptitude');
+      const isPureCode = (aptCount === 0) || (assessmentData.assessment_type === 'coding' && codeCount === assessmentData.questions.length);
 
-        const isApt = idx < 25;
-        const activeClass = idx === currentQuestionIndex ? 'btn-primary active text-white' : 'btn-dark text-light';
+      tabs.innerHTML = assessmentData.questions.map((q, idx) => {
+        const answered = isQuestionAnswered(q.id);
+        const statusBadge = answered ? '<span class="tab-status-icon text-info">✓</span>' : '';
+
+        const isApt = q.category === 'Aptitude' || q.category === 'Recruiter Aptitude';
+        const isCurrent = idx === currentQuestionIndex;
+        const activeClass = isCurrent ? 'btn-primary active text-white' : (answered ? 'btn-secondary text-light' : 'btn-dark text-light');
         const borderClass = isApt ? 'border-secondary' : 'border-info';
-        const label = isApt ? `${idx + 1}` : `💻 ${idx + 1}`;
+        const label = isPureApt ? `${idx + 1}` : (isApt ? `${idx + 1}` : `💻 ${idx + 1}`);
 
         return `
-          <button class="btn btn-sm ${activeClass} ${borderClass} q-pill-btn d-inline-flex align-items-center justify-content-center" onclick="switchQuestion(${idx})" title="${escapeHtml(q.title)}">
+          <button class="btn btn-sm ${activeClass} ${borderClass} q-pill-btn d-inline-flex align-items-center justify-content-center" onclick="switchQuestion(${idx})" title="${escapeHtml(q.title)}${answered ? ' (Answered)' : ''}">
             ${label} ${statusBadge}
           </button>
         `;
       }).join('');
 
       // Update Section Tabs Active Styling
-      const isAptActive = currentQuestionIndex < 25;
       const aptSecBtn = document.getElementById('nav-sec-aptitude');
       const codingSecBtn = document.getElementById('nav-sec-coding');
-      if (aptSecBtn && codingSecBtn) {
-        if (isAptActive) {
+
+      if (isPureApt) {
+        if (aptSecBtn) {
+          const isRecruiter = assessmentData.role_type === 'recruiter' || (assessmentData.title || '').toLowerCase().includes('recruiter');
+          aptSecBtn.innerHTML = isRecruiter ? '📝 Recruiter Aptitude &amp; Evaluation' : '📝 Role-Matched Aptitude Assessment';
           aptSecBtn.className = "btn btn-sm btn-primary flex-fill fw-bold py-1 shadow-sm";
-          codingSecBtn.className = "btn btn-sm btn-outline-info flex-fill fw-bold py-1 shadow-sm";
-        } else {
-          aptSecBtn.className = "btn btn-sm btn-outline-primary flex-fill fw-bold py-1 shadow-sm";
+          aptSecBtn.classList.remove('d-none');
+        }
+        if (codingSecBtn) codingSecBtn.classList.add('d-none');
+      } else if (isPureCode) {
+        if (codingSecBtn) {
+          codingSecBtn.innerHTML = `💻 Technical Coding Challenges (${codeCount} Challenges)`;
           codingSecBtn.className = "btn btn-sm btn-info text-dark flex-fill fw-bold py-1 shadow-sm";
+          codingSecBtn.classList.remove('d-none');
+        }
+        if (aptSecBtn) aptSecBtn.classList.add('d-none');
+      } else {
+        const isCurrentApt = currentQuestionIndex < aptCount;
+        if (aptSecBtn) {
+          aptSecBtn.classList.remove('d-none');
+          aptSecBtn.innerHTML = `📝 Section 1: Aptitude (Q1 - ${aptCount})`;
+          aptSecBtn.className = isCurrentApt ? "btn btn-sm btn-primary flex-fill fw-bold py-1 shadow-sm" : "btn btn-sm btn-outline-primary flex-fill fw-bold py-1 shadow-sm";
+        }
+        if (codingSecBtn) {
+          codingSecBtn.classList.remove('d-none');
+          codingSecBtn.innerHTML = `💻 Section 2: Coding (Q${aptCount + 1} - ${assessmentData.questions.length})`;
+          codingSecBtn.className = !isCurrentApt ? "btn btn-sm btn-info text-dark flex-fill fw-bold py-1 shadow-sm" : "btn btn-sm btn-outline-info flex-fill fw-bold py-1 shadow-sm";
         }
       }
     }
@@ -444,12 +473,10 @@
         const statusBadge = document.getElementById('run-status-badge');
         const passedBanner = document.getElementById('passed-banner');
 
-        const prevConsole = consoleStore[qId] || {};
         consoleStore[qId] = {
           html: consoleOutput,
           badgeText: statusBadge.textContent,
           badgeClass: statusBadge.className,
-          passedAll: prevConsole.passedAll,
           bannerVisible: !passedBanner.classList.contains('d-none')
         };
       }
@@ -487,7 +514,10 @@
       const q = assessmentData.questions[index];
       if (!q) return;
 
-      const isAptitude = (q.category === 'Aptitude') || (index < 25);
+      const aptCount = assessmentData.questions.filter(item => item.category === 'Aptitude' || item.category === 'Recruiter Aptitude').length;
+      const isPureApt = (aptCount === assessmentData.questions.length) || (assessmentData.assessment_type === 'aptitude');
+      const options = extractOptionsFromDescription(q.description);
+      const isAptitude = (q.category === 'Aptitude') || (q.category === 'Recruiter Aptitude') || isPureApt || (options.length >= 2 && !q.starter_code);
 
       // Update Header & Details
       document.getElementById('q-title').textContent = q.title;
@@ -495,11 +525,19 @@
       document.getElementById('q-category').textContent = q.category;
       document.getElementById('q-description').textContent = q.description;
       document.getElementById('q-constraints').textContent = q.constraints || 'None specified.';
-      
+
       const secIndicator = document.getElementById('q-section-indicator');
       if (secIndicator) {
-        secIndicator.textContent = isAptitude ? "📝 Section 1: Aptitude" : "💻 Section 2: Coding Challenge";
-        secIndicator.className = isAptitude ? "badge bg-primary me-2" : "badge bg-info text-dark me-2";
+        if (q.category === 'Recruiter Aptitude') {
+          secIndicator.textContent = "📝 Recruiter Aptitude";
+          secIndicator.className = "badge bg-primary me-2";
+        } else if (isAptitude) {
+          secIndicator.textContent = "📝 Role Aptitude";
+          secIndicator.className = "badge bg-primary me-2";
+        } else {
+          secIndicator.textContent = "💻 Coding Challenge";
+          secIndicator.className = "badge bg-info text-dark me-2";
+        }
       }
 
       // Nav Counter
@@ -511,13 +549,16 @@
       const aptContainer = document.getElementById('aptitude-options-container');
       const codingBar = document.getElementById('coding-control-bar');
       const editorElem = document.getElementById('editor-container');
-
-      const options = extractOptionsFromDescription(q.description);
+      const toggleEditorBtn = document.getElementById('toggle-editor-btn');
 
       if (isAptitude && options.length >= 2 && !forceEditorMode) {
         aptContainer.classList.remove('d-none');
         codingBar.classList.add('d-none');
         editorElem.classList.add('d-none');
+
+        if (toggleEditorBtn) {
+          toggleEditorBtn.style.display = isPureApt ? 'none' : 'inline-block';
+        }
 
         const savedAns = codeStore[q.id]?.selectedOption;
         const optsContainer = document.getElementById('aptitude-options-list');
@@ -556,32 +597,31 @@
       const banner = document.getElementById('passed-banner');
       const container = document.getElementById('console-output-container');
       const qStatus = document.getElementById('q-status-badge');
+      const answered = isQuestionAnswered(q.id);
 
       if (storedConsole) {
         container.innerHTML = storedConsole.html;
         badge.textContent = storedConsole.badgeText;
         badge.className = storedConsole.badgeClass;
 
-        if (storedConsole.passedAll) {
+        if (storedConsole.bannerVisible) {
           banner.classList.remove('d-none');
-          qStatus.className = 'badge bg-success';
-          qStatus.textContent = 'Passed ✓';
-        } else if (storedConsole.passedAll === false) {
-          banner.classList.add('d-none');
-          qStatus.className = 'badge bg-danger';
-          qStatus.textContent = 'Needs Review';
         } else {
           banner.classList.add('d-none');
-          qStatus.className = 'badge bg-secondary';
-          qStatus.textContent = 'Not Started';
         }
       } else {
-        container.innerHTML = `<pre id="console-output" class="text-secondary small font-monospace mb-0">Select an option or click "Run & Test Code" to verify...</pre>`;
+        container.innerHTML = `<pre id="console-output" class="text-secondary small font-monospace mb-0">Select an option or click "Run &amp; Test Code" to execute code. Note: Scores and results will be displayed after final submission.</pre>`;
         badge.className = 'badge bg-secondary';
         badge.textContent = 'Idle';
         banner.classList.add('d-none');
+      }
+
+      if (answered) {
+        qStatus.className = 'badge bg-success';
+        qStatus.textContent = 'Answered ✓';
+      } else {
         qStatus.className = 'badge bg-secondary';
-        qStatus.textContent = 'Not Started';
+        qStatus.textContent = 'In Progress';
       }
 
       // Update banner button text if last question
@@ -593,7 +633,7 @@
       }
     }
 
-    async function selectAptitudeOption(letter) {
+    function selectAptitudeOption(letter) {
       const q = assessmentData.questions[currentQuestionIndex];
       if (!q) return;
 
@@ -601,7 +641,7 @@
         card.classList.toggle('selected', card.querySelector('.option-letter-badge').textContent.trim() === letter);
       });
 
-      document.getElementById('apt-selected-status').innerHTML = `Selected: <strong>Option ${letter}</strong> (Saved)`;
+      document.getElementById('apt-selected-status').innerHTML = `Selected: <strong>Option ${letter}</strong> (Saved ✓)`;
 
       const codeStr = `print("${letter}")\n`;
       codeStore[q.id] = {
@@ -614,8 +654,40 @@
         editor.setValue(codeStr);
       }
 
-      // Auto test against test case to mark status
-      await executeAndTestCode();
+      const qStatus = document.getElementById('q-status-badge');
+      if (qStatus) {
+        qStatus.className = 'badge bg-success';
+        qStatus.textContent = 'Answered ✓';
+      }
+
+      const container = document.getElementById('console-output-container');
+      if (container) {
+        container.innerHTML = `<div class="text-info small font-monospace">✓ Option ${letter} recorded.<br><span class="text-muted small">🔒 Note: Score and correctness will be displayed after the entire assessment is submitted.</span></div>`;
+      }
+
+      const badge = document.getElementById('run-status-badge');
+      if (badge) {
+        badge.className = 'badge bg-info text-dark';
+        badge.textContent = 'Saved';
+      }
+
+      const banner = document.getElementById('passed-banner');
+      if (banner) {
+        banner.classList.remove('d-none');
+        const bText = document.getElementById('banner-text');
+        if (bText) {
+          bText.innerHTML = `<strong>💾 Option ${letter} Saved!</strong> Click Next to continue.`;
+        }
+      }
+
+      consoleStore[q.id] = {
+        html: container ? container.innerHTML : '',
+        badgeText: 'Saved',
+        badgeClass: 'badge bg-info text-dark',
+        bannerVisible: true
+      };
+
+      renderQuestionTabs();
     }
 
     async function executeAndTestCode() {
@@ -627,12 +699,13 @@
       const badge = document.getElementById('run-status-badge');
       const container = document.getElementById('console-output-container');
       const banner = document.getElementById('passed-banner');
+      const bannerText = document.getElementById('banner-text');
       const qStatus = document.getElementById('q-status-badge');
 
       badge.className = 'badge bg-warning text-dark';
-      badge.textContent = 'Running...';
+      badge.textContent = 'Executing...';
       banner.classList.add('d-none');
-      container.innerHTML = `<div class="text-warning small font-monospace">⏳ Verifying solution against test cases...</div>`;
+      container.innerHTML = `<div class="text-warning small font-monospace">⏳ Running code in secure sandbox...</div>`;
 
       try {
         const res = await codingAPI.runCode(attemptId, {
@@ -643,60 +716,44 @@
 
         if (res.success) {
           const data = res.data;
-          const passedAll = (data.passed === data.total);
+          const isErr = (data.status === 'error');
 
-          if (passedAll) {
-            badge.className = 'badge bg-success';
-            badge.textContent = `Passed ${data.passed}/${data.total}`;
-            qStatus.className = 'badge bg-success';
-            qStatus.textContent = 'Passed ✓';
-            banner.classList.remove('d-none');
-
-            if (currentQuestionIndex < assessmentData.questions.length - 1) {
-              const nextNum = currentQuestionIndex + 2;
-              banner.querySelector('strong').textContent = `🎉 Correct Answer! Auto-advancing to Question ${nextNum}...`;
-              document.getElementById('banner-next-btn').textContent = `Proceeding to Question ${nextNum} ➔`;
-
-              if (autoAdvanceTimeout) clearTimeout(autoAdvanceTimeout);
-              autoAdvanceTimeout = setTimeout(() => {
-                if (currentQuestionIndex < assessmentData.questions.length - 1) {
-                  switchQuestion(currentQuestionIndex + 1);
-                }
-              }, 1400);
-            } else {
-              banner.querySelector('strong').textContent = `🎉 Correct! All assessment questions completed.`;
-              document.getElementById('banner-next-btn').textContent = '🚀 Review & Submit Final Assessment';
-            }
-          } else {
+          if (isErr) {
             badge.className = 'badge bg-danger';
-            badge.textContent = `Failed ${data.passed}/${data.total}`;
-            qStatus.className = 'badge bg-danger';
-            qStatus.textContent = 'Needs Review';
-            banner.classList.add('d-none');
+            badge.textContent = 'Execution Error';
+            qStatus.className = 'badge bg-warning text-dark';
+            qStatus.textContent = 'Error in Code';
+          } else {
+            badge.className = 'badge bg-success';
+            badge.textContent = 'Executed ✓';
+            qStatus.className = 'badge bg-success';
+            qStatus.textContent = 'Answered ✓';
           }
 
-          let detailsHtml = `<pre class="text-light small font-monospace border p-2 bg-dark rounded mb-2">${JSON.stringify(data.test_case_details, null, 2)}</pre>`;
+          banner.classList.remove('d-none');
+          if (bannerText) {
+            bannerText.innerHTML = `<strong>💾 Code Executed &amp; Saved!</strong> Solution recorded. Final evaluation and score will be shown upon completing the assessment.`;
+          }
+
+          let detailsHtml = `<pre class="text-light small font-monospace border p-2 bg-dark rounded mb-2">${escapeHtml(data.output || 'Code executed successfully.')}</pre>`;
           container.innerHTML = detailsHtml;
 
           consoleStore[q.id] = {
             html: detailsHtml,
             badgeText: badge.textContent,
             badgeClass: badge.className,
-            passedAll: passedAll,
-            bannerVisible: passedAll
+            bannerVisible: true
           };
 
           renderQuestionTabs();
-
         } else {
           badge.className = 'badge bg-danger';
           badge.textContent = 'Execution Error';
-          container.innerHTML = `<div class="text-danger small font-monospace">${res.message}</div>`;
+          container.innerHTML = `<div class="text-danger small font-monospace">${escapeHtml(res.message || 'Error executing code.')}</div>`;
           consoleStore[q.id] = {
             html: container.innerHTML,
             badgeText: 'Execution Error',
             badgeClass: 'badge bg-danger',
-            passedAll: false,
             bannerVisible: false
           };
           renderQuestionTabs();
@@ -704,7 +761,7 @@
       } catch (err) {
         badge.className = 'badge bg-danger';
         badge.textContent = 'Error';
-        container.innerHTML = `<div class="text-danger small font-monospace">${err.message || 'Execution error.'}</div>`;
+        container.innerHTML = `<div class="text-danger small font-monospace">${escapeHtml(err.message || 'Execution error.')}</div>`;
       }
     }
 

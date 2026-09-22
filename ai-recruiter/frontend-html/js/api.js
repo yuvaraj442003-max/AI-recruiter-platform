@@ -479,10 +479,33 @@ const adminAPI = {
 
 const messagesAPI = {
   send: (payload) => api.post("/messages/send", payload),
+  sendAudio: async (audioBlobOrFile, receiverId, applicationId = null) => {
+    const token = Session.getAccessToken();
+    const formData = new FormData();
+    formData.append("file", audioBlobOrFile, audioBlobOrFile.name || "voice-message.webm");
+    formData.append("receiver_id", receiverId);
+    if (applicationId) formData.append("application_id", applicationId);
+
+    const response = await fetch(`${API_BASE_URL}/messages/send-audio`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new ApiError(payload?.message || "Failed to send audio message", payload?.error_code, response.status);
+    }
+    return payload;
+  },
   getThread: (otherUserId) => api.get(`/messages/thread/${otherUserId}`),
   getConversations: () => api.get("/messages/conversations"),
   getContacts: () => api.get("/messages/contacts"),
   getUnreadCount: () => api.get("/messages/unread-count"),
+  delete: (messageId) => api.delete(`/messages/${messageId}`),
+  update: (messageId, content) => api.put(`/messages/${messageId}`, { content }),
 };
 api.messages = messagesAPI;
 

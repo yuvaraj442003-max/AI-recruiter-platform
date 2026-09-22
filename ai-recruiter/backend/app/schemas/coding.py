@@ -92,6 +92,8 @@ class CodingAssessmentResponse(BaseModel):
     allowed_languages: List[str] = []
     questions: List[Dict[str, Any]] = []
     created_at: Optional[datetime] = None
+    assessment_type: Optional[str] = "coding"
+    role_type: Optional[str] = "developer"
 
     class Config:
         from_attributes = True
@@ -159,3 +161,5 @@ class CodingResultReportResponse(BaseModel):
     interview_score: Optional[float] = None
     overall_score: Optional[float] = None
     submissions: List[Dict[str, Any]] = []
+    assessment_type: Optional[str] = "coding"
+    role_type: Optional[str] = "developer"

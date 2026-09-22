@@ -24,7 +24,9 @@ class ChatMessage(Base, TimestampMixin):
         GUID(), ForeignKey("applications.id", ondelete="SET NULL"), nullable=True
     )
 
-    content: Mapped[str] = mapped_column(Text, nullable=False)
+    content: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    is_audio: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    audio_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     is_read: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     sender: Mapped["User"] = relationship("User", foreign_keys=[sender_id])
@@ -32,4 +34,4 @@ class ChatMessage(Base, TimestampMixin):
     application: Mapped[Optional["Application"]] = relationship("Application")
 
     def __repr__(self) -> str:
-        return f"<ChatMessage sender={self.sender_id} receiver={self.receiver_id} read={self.is_read}>"
+        return f"<ChatMessage sender={self.sender_id} receiver={self.receiver_id} audio={self.is_audio} read={self.is_read}>"

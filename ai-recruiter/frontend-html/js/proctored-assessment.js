@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (btnRunCode) {
     btnRunCode.addEventListener("click", () => {
       consoleOutput.classList.remove("d-none");
-      consoleOutput.textContent = "Running test cases...\nTest Case 1: Passed ✓\nTest Case 2: Passed ✓";
+      consoleOutput.textContent = "Executing code in sandbox...\nCode executed successfully. Response recorded.\n\n🔒 Note: Scores and answer correctness will be displayed after final submission.";
     });
   }
 

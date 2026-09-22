@@ -291,42 +291,57 @@ def candidate_list_assessments(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.candidate))
 ):
-    """List coding assessments assigned to candidate applications."""
+    """List role-specific assessments assigned to candidate applications."""
     cand = db.scalar(select(CandidateProfile).where(CandidateProfile.user_id == current_user.id))
     if not cand:
         return APIResponse(success=True, message="No candidate profile.", data=[])
 
-    # Find applications with coding assessments
-    apps = db.scalars(select(Application).where(Application.candidate_id == cand.id)).all()
-    job_ids = [app.job_id for app in apps]
+    from app.services.assessment_bank_service import get_or_create_assessment_for_job, classify_job_role
 
-    assessments = db.scalars(select(CodingAssessment).where(CodingAssessment.job_id.in_(job_ids))).all() if job_ids else []
-    if not assessments:
+    # Find applications with assessments
+    apps = db.scalars(select(Application).where(Application.candidate_id == cand.id)).all()
+    assessments_map = {}  # assessment.id -> (assessment, job)
+
+    for app in apps:
+        if app.job:
+            ass = get_or_create_assessment_for_job(db, app.job)
+            if ass and ass.id not in assessments_map:
+                assessments_map[ass.id] = (ass, app.job)
+
+    if not assessments_map:
         def_assessment = _seed_default_assessment_if_empty(db)
-        assessments = [def_assessment]
+        assessments_map[def_assessment.id] = (def_assessment, None)
 
     out = []
-    for a in assessments:
+    for ass_id, (a, job) in assessments_map.items():
         # Check attempts
         attempt = db.scalar(
             select(CandidateCodingAttempt)
             .where(CandidateCodingAttempt.candidate_id == cand.id, CandidateCodingAttempt.assessment_id == a.id)
         )
+
+        role_type = classify_job_role(job.title if job else "")
+        has_coding = any(q.question and q.question.category not in ("Aptitude", "Recruiter Aptitude") for q in a.questions)
+        assessment_type = "coding" if (role_type == "developer" or has_coding) else "aptitude"
+
         out.append({
             "id": str(a.id),
             "job_id": str(a.job_id) if a.job_id else None,
+            "job_title": job.title if job else None,
             "title": a.title,
             "description": a.description,
             "duration_minutes": a.duration_minutes,
             "passing_score": a.passing_score,
             "questions_count": len(a.questions),
+            "assessment_type": assessment_type,
+            "role_type": role_type,
             "status": attempt.status if attempt else "Not Started",
             "attempt_id": str(attempt.id) if attempt else None,
             "score": attempt.score if attempt else None,
             "passed": attempt.passed if attempt else False,
         })
 
-    return APIResponse(success=True, message="Candidate coding assessments retrieved.", data=out)
+    return APIResponse(success=True, message="Candidate assessments retrieved.", data=out)
 
 
 @router.post("/candidate/assessments/{assessment_id}/start", response_model=APIResponse[CandidateCodingAttemptResponse])
@@ -435,16 +450,30 @@ def run_candidate_code(
         run_only_public=True
     )
 
+    # During the assessment, candidate should not see test case scores or correctness
+    has_error = any(tc.get("error") for tc in res.get("test_case_details", []))
+    status = "error" if has_error else "success"
+
+    output_lines = []
+    for tc in res.get("test_case_details", []):
+        if tc.get("error"):
+            output_lines.append(f"Error: {tc['error']}")
+        elif tc.get("actual_output"):
+            output_lines.append(f"Output: {tc['actual_output']}")
+
+    clean_output = "\n".join(output_lines) if output_lines else "Code executed successfully without runtime errors."
+    clean_output += "\n\n🔒 Note: Scores and answer correctness are hidden during the assessment. Your final score and detailed report will be displayed after complete submission."
+
     return APIResponse(
         success=True,
         message="Code run executed.",
         data=RunCodeResponse(
-            status="success",
-            passed=res["passed"],
-            total=res["total"],
+            status=status,
+            passed=0,
+            total=0,
             execution_time=res["execution_time"],
-            output=f"Passed {res['passed']}/{res['total']} public test cases.",
-            test_case_details=res["test_case_details"]
+            output=clean_output,
+            test_case_details=[]
         )
     )
 
@@ -558,14 +587,18 @@ def submit_candidate_assessment(
             coding = avg_percentage
             interview = app.interview_score or 70.0
             app.overall_score = round((ats * 0.40) + (coding * 0.35) + (interview * 0.25), 2)
+            from app.services.assessment_bank_service import classify_job_role
+            role_type = classify_job_role(app.job.title if app.job else "")
+            has_coding = any(q.question and q.question.category not in ("Aptitude", "Recruiter Aptitude") for q in assessment.questions)
+            assessment_label = "Coding Assessment" if (role_type == "developer" or has_coding) else "Aptitude Assessment"
 
             if not passed:
                 app.status = ApplicationStatus.rejected
-                app.recommendation = f"Failed Coding Assessment ({round(avg_percentage, 1)}% < {assessment.passing_score}%)"
+                app.recommendation = f"Failed {assessment_label} ({round(avg_percentage, 1)}% < {assessment.passing_score}%)"
             else:
                 if app.status in (ApplicationStatus.applied, ApplicationStatus.under_review):
                     app.status = ApplicationStatus.shortlisted
-                app.recommendation = f"Passed Coding Assessment ({round(avg_percentage, 1)}%)"
+                app.recommendation = f"Passed {assessment_label} ({round(avg_percentage, 1)}%)"
 
     db.commit()
     db.refresh(attempt)
@@ -595,27 +628,25 @@ def get_candidate_attempt_report(
         .where(CandidateCodingAttempt.id == attempt_id)
     )
     if not attempt:
-        raise NotFoundError("Attempt report not found.")
+        raise NotFoundError("Attempt not found.")
 
     assessment = db.scalar(select(CodingAssessment).where(CodingAssessment.id == attempt.assessment_id))
-
-    submissions_detail = []
-    for sub in attempt.submissions:
-        question = db.scalar(select(CodingQuestion).where(CodingQuestion.id == sub.question_id))
-        submissions_detail.append({
-            "question_title": question.title if question else "Question",
-            "language": sub.language,
-            "source_code": sub.source_code,
-            "test_cases_passed": sub.test_cases_passed,
-            "test_cases_total": sub.test_cases_total,
-            "functional_score": sub.functional_score,
-            "quality_score": sub.quality_score,
-            "time_complexity": sub.time_complexity,
-            "space_complexity": sub.space_complexity,
-            "ai_review": json.loads(sub.ai_review) if sub.ai_review else {}
+    submissions_resp = []
+    for s in attempt.submissions:
+        q = db.scalar(select(CodingQuestion).where(CodingQuestion.id == s.question_id))
+        submissions_resp.append({
+            "question_title": q.title if q else "Question",
+            "language": s.language,
+            "source_code": s.source_code,
+            "test_cases_passed": s.test_cases_passed,
+            "test_cases_total": s.test_cases_total,
+            "functional_score": s.functional_score,
+            "quality_score": s.quality_score,
+            "time_complexity": s.time_complexity,
+            "space_complexity": s.space_complexity,
+            "ai_review": json.loads(s.ai_review) if s.ai_review else {}
         })
 
-    # Fetch app score
     app = None
     if assessment and assessment.job_id:
         app = db.scalar(
@@ -623,7 +654,15 @@ def get_candidate_attempt_report(
             .where(Application.candidate_id == attempt.candidate_id, Application.job_id == assessment.job_id)
         )
 
-    cand_name = current_user.full_name if attempt.candidate_id == current_user.id else "Candidate"
+    cand_name = "Candidate"
+    if attempt.candidate:
+        cand_name = f"{attempt.candidate.first_name} {attempt.candidate.last_name}".strip() or "Candidate"
+
+    from app.services.assessment_bank_service import classify_job_role
+    job = assessment.job if assessment else None
+    role_type = classify_job_role(job.title if job else "")
+    has_coding = any(s.question and s.question.category not in ("Aptitude", "Recruiter Aptitude") for s in attempt.submissions)
+    assessment_type = "coding" if (role_type == "developer" or has_coding) else "aptitude"
 
     report = CodingResultReportResponse(
         attempt_id=attempt.id,
@@ -645,28 +684,28 @@ def get_candidate_attempt_report(
         coding_score=app.coding_score if app else attempt.percentage,
         interview_score=app.interview_score if app else None,
         overall_score=app.overall_score if app else None,
-        submissions=submissions_detail
+        submissions=submissions_resp,
+        assessment_type=assessment_type,
+        role_type=role_type
     )
 
-    return APIResponse(success=True, message="Report generated.", data=report)
+    return APIResponse(success=True, message="Attempt result loaded.", data=report)
 
 
 # --- HELPER FORMATTERS ---
 
 def _format_question_response(q: CodingQuestion, is_candidate: bool = False) -> CodingQuestionResponse:
-    tc_responses = []
-    for tc in q.test_cases:
-        tc_responses.append(
-            CodingTestCaseResponse(
-                id=tc.id,
-                question_id=tc.question_id,
-                input_data=None if (is_candidate and tc.is_hidden) else tc.input_data,
-                expected_output=None if (is_candidate and tc.is_hidden) else tc.expected_output,
-                is_hidden=tc.is_hidden,
-                points=tc.points
-            )
+    tc_responses = [
+        CodingTestCaseResponse(
+            id=tc.id,
+            question_id=tc.question_id,
+            input_data=None if (is_candidate and tc.is_hidden) else tc.input_data,
+            expected_output=None if (is_candidate and tc.is_hidden) else tc.expected_output,
+            is_hidden=tc.is_hidden,
+            points=tc.points
         )
-
+        for tc in q.test_cases
+    ]
     return CodingQuestionResponse(
         id=q.id,
         title=q.title,
@@ -685,9 +724,12 @@ def _format_question_response(q: CodingQuestion, is_candidate: bool = False) -> 
 
 def _format_assessment_response(a: CodingAssessment, db: Session) -> CodingAssessmentResponse:
     q_items = []
+    has_coding = False
     for aq in a.questions:
         q = db.scalar(select(CodingQuestion).where(CodingQuestion.id == aq.question_id))
         if q:
+            if q.category not in ("Aptitude", "Recruiter Aptitude"):
+                has_coding = True
             q_items.append({
                 "id": str(q.id),
                 "title": q.title,
@@ -698,6 +740,11 @@ def _format_assessment_response(a: CodingAssessment, db: Session) -> CodingAsses
                 "programming_languages": json.loads(q.programming_languages) if q.programming_languages else [],
                 "points": aq.points
             })
+
+    from app.services.assessment_bank_service import classify_job_role
+    job = a.job
+    role_type = classify_job_role(job.title if job else "") if job else ("developer" if has_coding else "non_developer")
+    assessment_type = "coding" if (role_type == "developer" or has_coding) else "aptitude"
 
     return CodingAssessmentResponse(
         id=a.id,
@@ -710,5 +757,7 @@ def _format_assessment_response(a: CodingAssessment, db: Session) -> CodingAsses
         max_attempts=a.max_attempts,
         allowed_languages=json.loads(a.allowed_languages) if a.allowed_languages else [],
         questions=q_items,
-        created_at=a.created_at
+        created_at=a.created_at,
+        assessment_type=assessment_type,
+        role_type=role_type
     )

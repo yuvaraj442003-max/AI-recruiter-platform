@@ -54,6 +54,9 @@ def _auto_migrate_db(target_engine=None):
     active_engine = target_engine or engine
     Base.metadata.create_all(bind=active_engine)
 
+    is_pg = active_engine.dialect.name == "postgresql"
+    uuid_type = "UUID" if is_pg else "VARCHAR(36)"
+
     # Helper to add column to database table if missing
     columns_to_ensure = [
         # (table_name, column_name, col_type)
@@ -78,6 +81,9 @@ def _auto_migrate_db(target_engine=None):
         ("jobs", "fraud_risk_score", "FLOAT DEFAULT 0.0"),
         ("jobs", "fraud_risk_level", "VARCHAR(20) DEFAULT 'LOW'"),
         ("jobs", "fraud_reasons", "TEXT"),
+        ("jobs", "status", "VARCHAR(50) DEFAULT 'DRAFT'"),
+        ("jobs", "anti_cheat_rules", "TEXT"),
+        ("jobs", "anti_cheat_score", "INTEGER DEFAULT 0"),
 
         ("companies", "ssl_details", "TEXT"),
         ("companies", "verification_notes", "TEXT"),
@@ -85,12 +91,15 @@ def _auto_migrate_db(target_engine=None):
         ("candidate_profiles", "profile_photo", "VARCHAR(500)"),
         ("candidate_profiles", "headline", "VARCHAR(255)"),
         ("candidate_profiles", "current_role", "VARCHAR(255)"),
+        ("candidate_profiles", "skills", "TEXT"),
+        ("candidate_profiles", "experience_years", "INTEGER DEFAULT 0"),
+        ("candidate_profiles", "status", "VARCHAR(50) DEFAULT 'ACTIVE'"),
         ("candidate_profiles", "certifications", "TEXT"),
         ("candidate_profiles", "portfolio_url", "VARCHAR(255)"),
         ("candidate_profiles", "linkedin_url", "VARCHAR(255)"),
         ("candidate_profiles", "github_url", "VARCHAR(255)"),
         ("candidate_profiles", "other_links", "TEXT"),
-        ("candidate_profiles", "created_by_recruiter_id", "VARCHAR(36)"),
+        ("candidate_profiles", "created_by_recruiter_id", uuid_type),
         ("candidate_profiles", "source", "VARCHAR(100) DEFAULT 'direct_candidate'"),
 
         # ATS Screening & Composite Scores for applications
@@ -117,7 +126,7 @@ def _auto_migrate_db(target_engine=None):
         ("applications", "screening_version", "VARCHAR(50) DEFAULT 'v1.0'"),
         ("applications", "recruiter_override", "BOOLEAN DEFAULT FALSE"),
         ("applications", "override_reason", "TEXT"),
-        ("applications", "uploaded_by_recruiter_id", "VARCHAR(36)"),
+        ("applications", "uploaded_by_recruiter_id", uuid_type),
         ("applications", "source", "VARCHAR(100) DEFAULT 'direct_candidate'"),
 
         # Live Interview fields
@@ -131,9 +140,9 @@ def _auto_migrate_db(target_engine=None):
         ("email_logs", "provider_message_id", "VARCHAR(255)"),
         ("email_logs", "idempotency_key", "VARCHAR(255)"),
         ("email_logs", "retry_count", "INTEGER DEFAULT 0"),
-        ("email_logs", "candidate_id", "VARCHAR(36)"),
-        ("email_logs", "job_id", "VARCHAR(36)"),
-        ("email_logs", "interview_id", "VARCHAR(36)"),
+        ("email_logs", "candidate_id", uuid_type),
+        ("email_logs", "job_id", uuid_type),
+        ("email_logs", "interview_id", uuid_type),
         ("email_logs", "failed_at", "TIMESTAMP"),
 
         # Coding Assessments proctoring & monitoring fields
@@ -145,7 +154,7 @@ def _auto_migrate_db(target_engine=None):
         ("coding_assessments", "clipboard_policy", "VARCHAR(20) DEFAULT 'monitor'"),
 
         # Scheduled Interviews extended fields
-        ("scheduled_interviews", "application_id", "VARCHAR(36)"),
+        ("scheduled_interviews", "application_id", uuid_type),
         ("scheduled_interviews", "meeting_room_id", "VARCHAR(255)"),
         ("scheduled_interviews", "join_url", "TEXT"),
         ("scheduled_interviews", "recruiter_joined_at", "TIMESTAMP"),
@@ -161,7 +170,11 @@ def _auto_migrate_db(target_engine=None):
         ("scheduled_interviews", "calendar_synced", "BOOLEAN DEFAULT FALSE"),
         ("scheduled_interviews", "cancelled_at", "TIMESTAMP"),
         ("scheduled_interviews", "cancellation_reason", "TEXT"),
-        ("scheduled_interviews", "rescheduled_from_id", "VARCHAR(36)"),
+        ("scheduled_interviews", "rescheduled_from_id", uuid_type),
+
+        # Chat Audio Messages
+        ("chat_messages", "is_audio", "BOOLEAN DEFAULT FALSE"),
+        ("chat_messages", "audio_url", "VARCHAR(500)"),
     ]
 
     with active_engine.begin() as conn:
@@ -169,10 +182,15 @@ def _auto_migrate_db(target_engine=None):
         for table, col, col_type in columns_to_ensure:
             try:
                 if inspector.has_table(table):
-                    existing_cols = [r["name"] for r in inspector.get_columns(table)]
-                    if col not in existing_cols:
+                    cols_info = {r["name"]: r for r in inspector.get_columns(table)}
+                    if col not in cols_info:
                         conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} {col_type}"))
                         logging.info(f"Auto-migrated: Added {col} to {table}")
+                    elif is_pg and col_type == "UUID":
+                        current_type = str(cols_info[col]["type"]).lower()
+                        if "varchar" in current_type or "char" in current_type:
+                            conn.execute(text(f"ALTER TABLE {table} ALTER COLUMN {col} TYPE UUID USING (NULLIF({col}, '')::UUID)"))
+                            logging.info(f"Auto-migrated: Converted {table}.{col} to UUID")
             except Exception as e:
                 logging.warning(f"Auto-migration check for {table}.{col} skipped: {e}")
 
@@ -270,6 +288,12 @@ if _frontend_dir.exists():
         raise HTTPException(status_code=404, detail="Page not found")
 
     app.mount("/static-frontend", StaticFiles(directory=str(_frontend_dir), html=True), name="frontend-html")
+
+# Serve uploaded files (e.g. audio messages, resumes, logos)
+_uploads_dir = Path(__file__).parent.parent / "uploads"
+_uploads_dir.mkdir(parents=True, exist_ok=True)
+(_uploads_dir / "audio_messages").mkdir(parents=True, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=str(_uploads_dir)), name="uploads")
 
 def root():
     return {"success": True, "message": f"{settings.APP_NAME} API is running", "data": {"version": "0.1.0"}}

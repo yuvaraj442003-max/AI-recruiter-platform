@@ -677,11 +677,23 @@
                 </tr>
               </thead>
               <tbody>
-                ${res.data.map(item => `
+                ${res.data.map(item => {
+                  const isDev = item.role_type === 'developer' || item.assessment_type === 'coding';
+                  const isRecruiter = item.role_type === 'recruiter';
+                  const typeLabel = isDev 
+                    ? `💻 <strong>Technical Coding Assessment</strong> (${item.questions_count} Coding Challenges)` 
+                    : (isRecruiter 
+                        ? `📝 <strong>Recruiter Aptitude & Evaluation</strong> (${item.questions_count} Questions)` 
+                        : `📝 <strong>Job Role Aptitude Assessment</strong> (${item.questions_count} Questions)`);
+                  const typeBadge = isDev 
+                    ? `<span class="badge bg-dark border border-info text-info me-1">💻 Coding</span>` 
+                    : `<span class="badge bg-dark border border-primary text-primary me-1">📝 Aptitude</span>`;
+
+                  return `
                   <tr>
                     <td class="fw-semibold">
-                      ${item.title}
-                      <div class="small text-muted fw-normal">📋 ${item.questions_count || 30} Questions: <strong>25 Aptitude</strong> + <strong>5 Coding</strong></div>
+                      ${typeBadge} ${item.title}
+                      <div class="small text-muted fw-normal mt-1">${typeLabel}</div>
                     </td>
                     <td>${item.duration_minutes} Mins</td>
                     <td>${item.passing_score}%</td>
@@ -690,7 +702,7 @@
                         ${item.status === 'Evaluated' ? (item.passed ? 'Passed ✓' : 'Failed ❌') : item.status}
                       </span>
                     </td>
-                    <td>${item.score !== null && item.score !== undefined ? `${Math.round(item.score)}%` : '—'}</td>
+                    <td>${item.status === 'Evaluated' && item.score !== null && item.score !== undefined ? `${Math.round(item.score)}%` : '—'}</td>
                     <td class="text-end">
                       ${item.status === 'Evaluated' ? `
                         <a href="coding-report.html?attempt_id=${item.attempt_id}" class="btn btn-sm btn-outline-primary fw-semibold">View Result</a>
@@ -699,7 +711,8 @@
                       `}
                     </td>
                   </tr>
-                `).join('')}
+                `;
+              }).join('')}
               </tbody>
             </table>
           </div>

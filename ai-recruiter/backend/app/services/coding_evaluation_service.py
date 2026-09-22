@@ -154,8 +154,14 @@ def evaluate_question_submission(
 
         passed = (exec_res["status"] == "Success") and (norm_actual == norm_expected)
         if not passed and norm_expected.upper() in ["A", "B", "C", "D"]:
+            import re
             cleaned_source = source_code.strip().strip("'\"").strip().upper()
-            if cleaned_source == norm_expected.upper() or norm_actual.strip().upper() == norm_expected.upper():
+            found_letter = None
+            # Check for print("X"), console.log("X"), Option X, or just X
+            m = re.search(r'(?:print|console\.log|option|answer|\b)\s*\(?[\'"]?([A-D])[\'"]?\)?\b', cleaned_source, re.IGNORECASE)
+            if m:
+                found_letter = m.group(1).upper()
+            if cleaned_source == norm_expected.upper() or norm_actual.strip().upper() == norm_expected.upper() or found_letter == norm_expected.upper():
                 passed = True
 
         if passed:

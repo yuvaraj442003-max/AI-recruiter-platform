@@ -2,8 +2,9 @@
 Messaging & Chat endpoints for Recruiter <-> Candidate communication.
 """
 import uuid
-from typing import List
-from fastapi import APIRouter, Depends, status
+from pathlib import Path
+from typing import List, Optional
+from fastapi import APIRouter, Depends, File, Form, UploadFile, status
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_, desc, func
 
@@ -22,6 +23,7 @@ from app.schemas.message import (
     ConversationResponse,
     MessageCreate,
     MessageResponse,
+    MessageUpdate,
     UnreadCountResponse,
 )
 from app.services.notification_service import create_notification
@@ -51,7 +53,8 @@ def send_message(
     db: Session = Depends(get_db),
 ):
     """Sends a chat message to another candidate or recruiter."""
-    if not payload.content or not payload.content.strip():
+    is_audio_msg = bool(payload.is_audio)
+    if not is_audio_msg and (not payload.content or not payload.content.strip()):
         raise BadRequestError("Message content cannot be empty")
 
     receiver = db.get(User, payload.receiver_id)
@@ -65,7 +68,9 @@ def send_message(
         sender_id=current_user.id,
         receiver_id=receiver.id,
         application_id=payload.application_id,
-        content=payload.content.strip(),
+        content=(payload.content or "").strip() if payload.content else ("🎙️ Audio Message" if is_audio_msg else ""),
+        is_audio=is_audio_msg,
+        audio_url=payload.audio_url,
         is_read=False,
     )
     db.add(msg)
@@ -73,16 +78,17 @@ def send_message(
     db.refresh(msg)
 
     # Notify recipient
+    msg_preview = "🎙️ Audio Message" if is_audio_msg else (msg.content[:100] + ("..." if len(msg.content) > 100 else ""))
     create_notification(
         db=db,
         user_id=receiver.id,
-        title=f"New Message from {current_user.name}",
-        message=msg.content[:100] + ("..." if len(msg.content) > 100 else ""),
+        title=f"New {'Voice ' if is_audio_msg else ''}Message from {current_user.name}",
+        message=msg_preview,
         notification_type="info",
         link="/candidate-dashboard.html" if receiver.role == UserRole.candidate else "/recruiter-dashboard.html",
     )
 
-    log_action(db, "message.send", user_id=current_user.id, details={"receiver_id": str(receiver.id)})
+    log_action(db, "message.send", user_id=current_user.id, details={"receiver_id": str(receiver.id), "is_audio": is_audio_msg})
 
     resp = MessageResponse(
         id=msg.id,
@@ -94,10 +100,92 @@ def send_message(
         receiver_role=receiver.role.value,
         application_id=msg.application_id,
         content=msg.content,
+        is_audio=msg.is_audio,
+        audio_url=msg.audio_url,
         is_read=msg.is_read,
         created_at=msg.created_at,
     )
     return APIResponse(success=True, message="Message sent successfully", data=resp)
+
+
+@router.post("/send-audio", response_model=APIResponse[MessageResponse], status_code=status.HTTP_201_CREATED)
+async def send_audio_message(
+    file: UploadFile = File(...),
+    receiver_id: uuid.UUID = Form(...),
+    application_id: Optional[uuid.UUID] = Form(None),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Uploads an audio recording and sends it as a voice message."""
+    receiver = db.get(User, receiver_id)
+    if not receiver:
+        raise NotFoundError("Recipient user not found")
+
+    if receiver.id == current_user.id:
+        raise BadRequestError("You cannot send a message to yourself")
+
+    # Create audio storage directory
+    audio_dir = Path(__file__).parent.parent.parent / "uploads" / "audio_messages"
+    audio_dir.mkdir(parents=True, exist_ok=True)
+
+    # Determine safe filename
+    ext = Path(file.filename).suffix.lower() if file.filename else ".webm"
+    if ext not in [".webm", ".mp3", ".wav", ".m4a", ".ogg"]:
+        ext = ".webm"
+
+    filename = f"{uuid.uuid4().hex}{ext}"
+    filepath = audio_dir / filename
+
+    content_bytes = await file.read()
+    if not content_bytes or len(content_bytes) < 10:
+        raise BadRequestError("Audio recording payload is empty or invalid")
+
+    with open(filepath, "wb") as f:
+        f.write(content_bytes)
+
+    rel_audio_url = f"/uploads/audio_messages/{filename}"
+
+    msg = ChatMessage(
+        sender_id=current_user.id,
+        receiver_id=receiver.id,
+        application_id=application_id,
+        content="🎙️ Voice Message",
+        is_audio=True,
+        audio_url=rel_audio_url,
+        is_read=False,
+    )
+    db.add(msg)
+    db.commit()
+    db.refresh(msg)
+
+    # Notify recipient
+    create_notification(
+        db=db,
+        user_id=receiver.id,
+        title=f"New Voice Message from {current_user.name}",
+        message="🎙️ Sent you a voice message",
+        notification_type="info",
+        link="/messages.html",
+    )
+
+    log_action(db, "message.send_audio", user_id=current_user.id, details={"receiver_id": str(receiver.id), "audio_url": rel_audio_url})
+
+    resp = MessageResponse(
+        id=msg.id,
+        sender_id=msg.sender_id,
+        sender_name=current_user.name,
+        sender_role=current_user.role.value,
+        receiver_id=msg.receiver_id,
+        receiver_name=receiver.name,
+        receiver_role=receiver.role.value,
+        application_id=msg.application_id,
+        content=msg.content,
+        is_audio=msg.is_audio,
+        audio_url=msg.audio_url,
+        is_read=msg.is_read,
+        created_at=msg.created_at,
+    )
+    return APIResponse(success=True, message="Voice message sent successfully", data=resp)
 
 
 @router.get("/thread/{other_user_id}", response_model=APIResponse[List[MessageResponse]])
@@ -158,6 +246,8 @@ def get_message_thread(
                 receiver_role=r_role,
                 application_id=m.application_id,
                 content=m.content,
+                is_audio=m.is_audio,
+                audio_url=m.audio_url,
                 is_read=m.is_read,
                 created_at=m.created_at,
             )
@@ -212,6 +302,8 @@ def get_conversations(
 
         company_or_hl = _get_user_headline_or_company(db, partner)
 
+        last_text = last_msg.content or ("🎙️ Voice Message" if last_msg.is_audio else "")
+
         conversations.append(
             ConversationResponse(
                 other_user_id=partner.id,
@@ -219,7 +311,8 @@ def get_conversations(
                 other_user_role=partner.role.value,
                 other_user_email=partner.email,
                 company_or_headline=company_or_hl,
-                last_message=last_msg.content,
+                last_message=last_text,
+                last_message_is_audio=last_msg.is_audio,
                 last_message_at=last_msg.created_at,
                 unread_count=unread,
                 application_id=last_msg.application_id,
@@ -353,3 +446,82 @@ def get_unread_count(
         or 0
     )
     return APIResponse(success=True, message="Unread count", data=UnreadCountResponse(unread_count=unread))
+
+
+@router.delete("/{message_id}", response_model=APIResponse[dict])
+def delete_message(
+    message_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Deletes a chat message (text or audio). Sender or Admin only."""
+    msg = db.get(ChatMessage, message_id)
+    if not msg:
+        raise NotFoundError("Message not found")
+
+    is_admin = current_user.role in [UserRole.admin, UserRole.superadmin]
+    if msg.sender_id != current_user.id and not is_admin:
+        raise BadRequestError("You can only delete messages sent by you")
+
+    # If it's an audio message, delete file from disk if present
+    if msg.is_audio and msg.audio_url:
+        try:
+            rel_path = msg.audio_url.lstrip("/")
+            file_path = Path(__file__).parent.parent.parent / rel_path
+            if file_path.exists():
+                file_path.unlink()
+        except Exception:
+            pass
+
+    db.delete(msg)
+    db.commit()
+
+    log_action(db, "message.delete", user_id=current_user.id, details={"message_id": str(message_id)})
+    return APIResponse(success=True, message="Message deleted successfully", data={"message_id": str(message_id)})
+
+
+@router.put("/{message_id}", response_model=APIResponse[MessageResponse])
+def update_message(
+    message_id: uuid.UUID,
+    payload: MessageUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Edits content/caption of a message sent by current user."""
+    msg = db.get(ChatMessage, message_id)
+    if not msg:
+        raise NotFoundError("Message not found")
+
+    if msg.sender_id != current_user.id:
+        raise BadRequestError("You can only edit messages sent by you")
+
+    if msg.is_audio:
+        raise BadRequestError("Audio messages cannot be edited. You can delete and re-record instead.")
+
+    if payload.content is not None:
+        msg.content = payload.content.strip()
+
+    db.commit()
+    db.refresh(msg)
+
+    sender = db.get(User, msg.sender_id)
+    receiver = db.get(User, msg.receiver_id)
+
+    log_action(db, "message.update", user_id=current_user.id, details={"message_id": str(message_id)})
+
+    resp = MessageResponse(
+        id=msg.id,
+        sender_id=msg.sender_id,
+        sender_name=sender.name if sender else "User",
+        sender_role=sender.role.value if sender else "user",
+        receiver_id=msg.receiver_id,
+        receiver_name=receiver.name if receiver else "User",
+        receiver_role=receiver.role.value if receiver else "user",
+        application_id=msg.application_id,
+        content=msg.content,
+        is_audio=msg.is_audio,
+        audio_url=msg.audio_url,
+        is_read=msg.is_read,
+        created_at=msg.created_at,
+    )
+    return APIResponse(success=True, message="Message updated successfully", data=resp)

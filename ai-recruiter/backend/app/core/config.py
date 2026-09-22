@@ -16,9 +16,9 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
 
-    # --- Database (Dual PostgreSQL + SQLite Support) ---
+    # --- Database (PostgreSQL is Primary) ---
     DATABASE_URL: str = "postgresql+psycopg2://postgres:postgres234@localhost:5432/ai_recruiter"
-    SQLITE_DATABASE_URL: str = "sqlite:///./ai_recruiter.db"
+    SQLITE_DATABASE_URL: str = ""
     POSTGRES_DATABASE_URL: str = "postgresql+psycopg2://postgres:postgres234@localhost:5432/ai_recruiter"
 
     # --- Redis & Caching Layer ---

@@ -9,8 +9,14 @@ from pydantic import BaseModel, ConfigDict
 
 class MessageCreate(BaseModel):
     receiver_id: uuid.UUID
-    content: str
+    content: Optional[str] = None
     application_id: Optional[uuid.UUID] = None
+    is_audio: Optional[bool] = False
+    audio_url: Optional[str] = None
+
+
+class MessageUpdate(BaseModel):
+    content: Optional[str] = None
 
 
 class MessageResponse(BaseModel):
@@ -22,7 +28,9 @@ class MessageResponse(BaseModel):
     receiver_name: str
     receiver_role: str
     application_id: Optional[uuid.UUID] = None
-    content: str
+    content: Optional[str] = None
+    is_audio: bool = False
+    audio_url: Optional[str] = None
     is_read: bool
     created_at: datetime
 
@@ -45,7 +53,8 @@ class ConversationResponse(BaseModel):
     other_user_role: str
     other_user_email: str
     company_or_headline: Optional[str] = None
-    last_message: str
+    last_message: Optional[str] = None
+    last_message_is_audio: bool = False
     last_message_at: datetime
     unread_count: int
     application_id: Optional[uuid.UUID] = None
