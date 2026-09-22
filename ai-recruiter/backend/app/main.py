@@ -175,6 +175,9 @@ def _auto_migrate_db(target_engine=None):
         # Chat Audio Messages
         ("chat_messages", "is_audio", "BOOLEAN DEFAULT FALSE"),
         ("chat_messages", "audio_url", "VARCHAR(500)"),
+
+        # Email Settings
+        ("recruiter_email_settings", "candidate_selected", "BOOLEAN DEFAULT TRUE"),
     ]
 
     with active_engine.begin() as conn:

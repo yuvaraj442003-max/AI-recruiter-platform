@@ -76,10 +76,14 @@ class EmailService:
     def is_event_enabled_for_recruiter(db: Session, recruiter_id: Optional[Any], event_key: str) -> bool:
         if not recruiter_id:
             return True
-        setting = db.scalar(select(RecruiterEmailSetting).where(RecruiterEmailSetting.recruiter_id == recruiter_id))
-        if not setting:
-            return True # default enabled
-        return getattr(setting, event_key, True)
+        try:
+            setting = db.scalar(select(RecruiterEmailSetting).where(RecruiterEmailSetting.recruiter_id == recruiter_id))
+            if not setting:
+                return True # default enabled
+            return getattr(setting, event_key, True)
+        except Exception as err:
+            logger.warning(f"Failed to query recruiter_email_settings: {err}")
+            return True
 
     @classmethod
     def send_queued_email(

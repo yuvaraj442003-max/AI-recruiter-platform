@@ -335,7 +335,10 @@ def update_application_status(
 
     application = (
         db.query(Application)
-        .options(joinedload(Application.job), joinedload(Application.candidate))
+        .options(
+            joinedload(Application.job),
+            joinedload(Application.candidate).joinedload(CandidateProfile.user),
+        )
         .filter(Application.id == parsed_id)
         .first()
     )
@@ -403,7 +406,12 @@ def update_application_status(
                 send_shortlisted_email,
                 send_selected_email,
             )
-            cand_user = application.candidate.user if application.candidate else None
+            cand_user = application.candidate.user if (application.candidate and application.candidate.user) else None
+            if not cand_user and application.candidate_id:
+                cp = db.query(CandidateProfile).options(joinedload(CandidateProfile.user)).filter(CandidateProfile.id == application.candidate_id).first()
+                if cp and cp.user:
+                    cand_user = cp.user
+
             if cand_user and cand_user.email:
                 comp_name = (
                     getattr(application.job, "company_name", None)
