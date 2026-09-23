@@ -14,11 +14,16 @@ class AssessmentConsentRequest(BaseModel):
     microphone_consent: bool = True
     browser_consent: bool = True
     clipboard_consent: bool = True
+    attempt_id: Optional[uuid.UUID] = None
+    interview_id: Optional[uuid.UUID] = None
+    assessment_id: Optional[uuid.UUID] = None
+    identity_reference_image: Optional[str] = None
 
 
 class AssessmentConsentResponse(BaseModel):
     id: uuid.UUID
-    attempt_id: uuid.UUID
+    attempt_id: Optional[uuid.UUID] = None
+    interview_id: Optional[uuid.UUID] = None
     candidate_id: uuid.UUID
     consent_given: bool
     camera_consent: bool
@@ -33,21 +38,36 @@ class AssessmentConsentResponse(BaseModel):
 
 
 class ProctoringEventCreate(BaseModel):
-    event_type: str = Field(..., description="e.g., TAB_SWITCH, FULLSCREEN_EXIT, NO_FACE, MULTIPLE_FACES, PASTE")
+    event_type: str = Field(..., description="e.g., TAB_SWITCH, TAB_RETURN, NO_FACE_DETECTED, MULTIPLE_FACES_DETECTED, COPY_ATTEMPT, PASTE_ATTEMPT")
+    attempt_id: Optional[uuid.UUID] = None
+    interview_id: Optional[uuid.UUID] = None
+    assessment_id: Optional[uuid.UUID] = None
     question_id: Optional[uuid.UUID] = None
     severity: str = "low"  # info, low, medium, high, critical
     confidence: float = 1.0
+    duration_seconds: Optional[float] = None
     metadata_json: Optional[Dict[str, Any]] = None
+    occurred_at: Optional[datetime] = None
+
+
+class ProctoringEventBatchCreate(BaseModel):
+    events: List[ProctoringEventCreate]
+    attempt_id: Optional[uuid.UUID] = None
+    interview_id: Optional[uuid.UUID] = None
+    assessment_id: Optional[uuid.UUID] = None
 
 
 class ProctoringEventResponse(BaseModel):
     id: uuid.UUID
-    attempt_id: uuid.UUID
+    attempt_id: Optional[uuid.UUID] = None
+    interview_id: Optional[uuid.UUID] = None
+    assessment_id: Optional[uuid.UUID] = None
     candidate_id: uuid.UUID
     question_id: Optional[uuid.UUID] = None
     event_type: str
     severity: str
     confidence: float
+    duration_seconds: Optional[float] = None
     metadata_json: Optional[str] = None
     occurred_at: datetime
 
@@ -71,7 +91,9 @@ class CodeSimilarityResultResponse(BaseModel):
 
 class IntegrityResultResponse(BaseModel):
     id: uuid.UUID
-    attempt_id: uuid.UUID
+    attempt_id: Optional[uuid.UUID] = None
+    interview_id: Optional[uuid.UUID] = None
+    assessment_id: Optional[uuid.UUID] = None
     browser_score: float
     webcam_score: float
     audio_score: float
@@ -91,3 +113,21 @@ class IntegrityResultResponse(BaseModel):
 class RecruiterDecisionRequest(BaseModel):
     decision: str = Field(..., description="accepted, flagged, rejected")
     notes: Optional[str] = Field(None, description="Explanation for recruiter decision")
+
+
+class IdentityVerificationRequest(BaseModel):
+    attempt_id: Optional[uuid.UUID] = None
+    interview_id: Optional[uuid.UUID] = None
+    snapshot_image: str = Field(..., description="Base64 encoded frame from webcam")
+
+
+class IdentityVerificationResponse(BaseModel):
+    verified: bool
+    confidence: float
+    message: str
+
+
+class TranscriptTurnCreate(BaseModel):
+    speaker: str = "Candidate"
+    text: str
+    timestamp: Optional[str] = None

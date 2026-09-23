@@ -252,11 +252,14 @@
   <!-- Monaco Editor CDN Script -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
   <script src="js/api.js"></script>
+  <script src="js/proctoring-detector.js"></script>
+  <script src="js/proctoring-manager.js"></script>
   <script>
     let editor = null;
     let attemptId = null;
     let assessmentData = null;
     let currentQuestionIndex = 0;
+    let proctorMgr = null;
 
     // Per-question state stores
     let codeStore = {};      // qId -> { lang, code, selectedOption }
@@ -268,11 +271,12 @@
     let forceEditorMode = false;
     let isAssessmentTerminated = false;
 
-    function triggerAssessmentTermination(reason = "Unauthorized browser tab switch or window switch detected.") {
+    function triggerAssessmentTermination(reason = "Proctoring flags recorded during session.") {
       if (isAssessmentTerminated) return;
       isAssessmentTerminated = true;
 
       if (timerInterval) clearInterval(timerInterval);
+      if (proctorMgr) proctorMgr.stopMonitors();
 
       const overlay = document.getElementById('assessment-terminated-overlay');
       if (overlay) {
@@ -302,13 +306,6 @@
 
     window.triggerAssessmentTermination = triggerAssessmentTermination;
 
-    // Strict Tab-Switch Detection: immediately terminate assessment if tab loses visibility
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden && attemptId && !isAssessmentTerminated) {
-        triggerAssessmentTermination("Unauthorized tab switch detected! You navigated away or switched to another tab.");
-      }
-    });
-
     document.addEventListener('DOMContentLoaded', async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const assessmentId = urlParams.get('assessment_id');
@@ -331,6 +328,32 @@
           fontSize: 14,
           minimap: { enabled: false }
         });
+
+        // Track copy/paste inside Monaco editor
+        if (editor) {
+          editor.onKeyDown((e) => {
+            if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KeyV) {
+              if (proctorMgr) {
+                proctorMgr.copyPasteCount++;
+                proctorMgr.updateHudCounters();
+                proctorMgr.logEvent("PASTE_ATTEMPT", "medium", { editor: "monaco" });
+                proctorMgr.showToast("ℹ️ Clipboard Logged", "Clipboard paste action recorded in proctoring audit.", "info");
+              }
+            } else if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KeyC) {
+              if (proctorMgr) {
+                proctorMgr.copyPasteCount++;
+                proctorMgr.updateHudCounters();
+                proctorMgr.logEvent("COPY_ATTEMPT", "low", { editor: "monaco" });
+              }
+            } else if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KeyX) {
+              if (proctorMgr) {
+                proctorMgr.copyPasteCount++;
+                proctorMgr.updateHudCounters();
+                proctorMgr.logEvent("CUT_ATTEMPT", "low", { editor: "monaco" });
+              }
+            }
+          });
+        }
       });
 
       // Start Attempt or fetch session
@@ -342,9 +365,14 @@
           attemptId = attemptData.id;
           assessmentData = attemptData.assessment;
 
-          // Check if already terminated
-          if (attemptData.status === "Terminated") {
-            triggerAssessmentTermination("This assessment attempt was terminated due to an unauthorized tab switch.");
+          // Check if attempt time expired or already evaluated
+          if (attemptData.status === "Expired" || (attemptData.remaining_seconds !== undefined && attemptData.remaining_seconds <= 0)) {
+            triggerAssessmentTermination("The assessment time limit has elapsed.");
+            return;
+          }
+
+          if (attemptData.status === "Terminated" && (attemptData.remaining_seconds === 0)) {
+            triggerAssessmentTermination("The assessment session has expired.");
             return;
           }
 
@@ -354,10 +382,31 @@
             return;
           }
 
-          if (attemptData.remaining_seconds && attemptData.remaining_seconds > 0) {
-            remainingSeconds = attemptData.remaining_seconds;
+          // Launch Proctoring Permission & Pre-Check
+          try {
+            proctorMgr = new ProctoringManager({
+              mode: "assessment",
+              attemptId: attemptId,
+              assessmentId: assessmentId,
+              maxTabWarnings: 3
+            });
+            await proctorMgr.showPreCheckModal();
+          } catch (pErr) {
+            console.warn("Proctoring pre-check modal exception:", pErr);
+          }
+
+          const maxAllowedSeconds = (assessmentData && assessmentData.duration_minutes ? assessmentData.duration_minutes : 60) * 60;
+          if (attemptData.remaining_seconds !== undefined && attemptData.remaining_seconds !== null && attemptData.remaining_seconds >= 0) {
+            remainingSeconds = Math.min(maxAllowedSeconds, attemptData.remaining_seconds);
           } else {
-            remainingSeconds = (assessmentData.duration_minutes || 60) * 60;
+            remainingSeconds = maxAllowedSeconds;
+          }
+
+          const initMins = Math.floor(remainingSeconds / 60);
+          const initSecs = remainingSeconds % 60;
+          const timerEl = document.getElementById('timer-display');
+          if (timerEl) {
+            timerEl.textContent = `${initMins.toString().padStart(2, '0')}:${initSecs.toString().padStart(2, '0')}`;
           }
 
           document.getElementById('assessment-title-nav').textContent = assessmentData.title || 'Technical & Aptitude Assessment';
@@ -446,19 +495,28 @@
       };
     });
 
+    function updateTimerDisplay() {
+      const mins = Math.floor(Math.max(0, remainingSeconds) / 60);
+      const secs = Math.max(0, remainingSeconds) % 60;
+      const el = document.getElementById('timer-display');
+      if (el) {
+        el.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      }
+    }
+
     function startTimer() {
       if (timerInterval) clearInterval(timerInterval);
+      updateTimerDisplay();
       timerInterval = setInterval(() => {
         remainingSeconds--;
         if (remainingSeconds <= 0) {
           clearInterval(timerInterval);
+          updateTimerDisplay();
           alert('Time expired! Auto-submitting your assessment...');
           submitAssessment();
           return;
         }
-        const mins = Math.floor(remainingSeconds / 60);
-        const secs = remainingSeconds % 60;
-        document.getElementById('timer-display').textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        updateTimerDisplay();
       }, 1000);
     }
 
@@ -870,6 +928,7 @@
       });
 
       try {
+        if (proctorMgr) proctorMgr.stopMonitors();
         const res = await codingAPI.submitAssessment(attemptId, submissions);
         if (res.success) {
           window.location.href = `coding-report.html?attempt_id=${attemptId}`;

@@ -125,18 +125,71 @@
         </div>
       </div>
 
+      <!-- Proctoring Event Summary Counters -->
+      <h4 class="fw-bold mb-3"><i class="bi bi-shield-exclamation me-2 text-primary"></i>Observed Activity Breakdown</h4>
+      <div class="row g-3 mb-4 text-center">
+        <div class="col">
+          <div class="card border-0 shadow-sm p-3 bg-white rounded-3">
+            <div class="fs-4 fw-bold text-dark" id="cnt-no-face">0</div>
+            <div class="small text-muted">Face Absences</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card border-0 shadow-sm p-3 bg-white rounded-3">
+            <div class="fs-4 fw-bold text-dark" id="cnt-multi-face">0</div>
+            <div class="small text-muted">Multiple Faces</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card border-0 shadow-sm p-3 bg-white rounded-3">
+            <div class="fs-4 fw-bold text-dark" id="cnt-tab-switch">0</div>
+            <div class="small text-muted">Tab Switches</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card border-0 shadow-sm p-3 bg-white rounded-3">
+            <div class="fs-4 fw-bold text-dark" id="cnt-clipboard">0</div>
+            <div class="small text-muted">Clipboard Events</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card border-0 shadow-sm p-3 bg-white rounded-3">
+            <div class="fs-4 fw-bold text-dark" id="cnt-audio-spike">0</div>
+            <div class="small text-muted">Audio Spikes</div>
+          </div>
+        </div>
+      </div>
+
       <!-- AI Evidence Summary Card -->
       <div class="card border-0 shadow-sm mb-4">
         <div class="card-body p-4">
           <h5 class="fw-bold mb-3"><i class="bi bi-body-text me-2 text-primary"></i>AI Evidence Summary</h5>
-          <div id="evidence-summary-text" class="text-secondary style-line-height font-monospace small bg-light p-3 rounded">
+          <div id="evidence-summary-text" class="text-secondary style-line-height font-monospace small bg-light p-3 rounded" style="white-space: pre-wrap;">
             Loading evidence summary...
           </div>
         </div>
       </div>
 
+      <!-- Interview Dialogue Transcript Section (Visible for interviews) -->
+      <div id="transcript-section" class="card border-0 shadow-sm mb-4 d-none">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-3"><i class="bi bi-chat-left-quote me-2 text-primary"></i>Recorded Interview Speech Transcript</h5>
+          <div id="dialogue-transcript-container" class="p-3 bg-light rounded" style="max-height: 350px; overflow-y: auto;">
+            <!-- Dialogue turns dynamically injected here -->
+          </div>
+        </div>
+      </div>
+
       <!-- Chronological Evidence Timeline -->
-      <h4 class="fw-bold mb-3"><i class="bi bi-list-stars me-2 text-primary"></i>Evidence Timeline</h4>
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h4 class="fw-bold mb-0"><i class="bi bi-list-stars me-2 text-primary"></i>Evidence Timeline</h4>
+        <div class="btn-group btn-group-sm" role="group" id="timeline-filters">
+          <button type="button" class="btn btn-outline-primary active" data-filter="all">All Events</button>
+          <button type="button" class="btn btn-outline-primary" data-filter="camera">Camera</button>
+          <button type="button" class="btn btn-outline-primary" data-filter="browser">Browser</button>
+          <button type="button" class="btn btn-outline-primary" data-filter="audio">Audio</button>
+        </div>
+      </div>
       <div class="card border-0 shadow-sm p-4 mb-4">
         <div id="timeline-container">
           <!-- Dynamic Timeline Items -->

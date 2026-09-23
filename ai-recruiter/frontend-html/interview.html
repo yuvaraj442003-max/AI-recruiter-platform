@@ -44,12 +44,22 @@
       <div class="container p-4" style="max-width: 780px;">
         <div id="interview-alert" class="alert d-none py-2" role="alert"></div>
 
-        <div id="progress-wrapper" class="mb-3 d-none">
-          <div class="d-flex justify-content-between small text-muted-custom mb-1">
-            <span id="progress-label">Question 1 of N</span>
+        <div class="row mb-3 align-items-center">
+          <div class="col-md-9">
+            <div id="progress-wrapper" class="d-none">
+              <div class="d-flex justify-content-between small text-muted-custom mb-1">
+                <span id="progress-label">Question 1 of N</span>
+              </div>
+              <div class="progress" style="height: 6px;">
+                <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+              </div>
+            </div>
           </div>
-          <div class="progress" style="height: 6px;">
-            <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+          <div class="col-md-3 text-end">
+            <div style="width: 130px; height: 95px; border-radius: 10px; overflow: hidden; background: #0f172a; display: inline-block; position: relative; border: 1px solid #cbd5e1; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+              <video id="proctor-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1);"></video>
+              <div id="cam-status-badge" class="badge bg-secondary position-absolute bottom-0 end-0 m-1" style="font-size: 0.65rem;">Camera</div>
+            </div>
           </div>
         </div>
 
@@ -94,6 +104,7 @@
   <script src="js/auth-guard.js"></script>
   <script src="js/dashboard.js"></script>
   <script src="js/proctoring-detector.js"></script>
+  <script src="js/proctoring-manager.js"></script>
   <script src="js/interview.js"></script>
 </body>
 </html>

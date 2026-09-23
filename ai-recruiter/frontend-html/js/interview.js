@@ -88,11 +88,14 @@
     });
   }
 
+  let proctorMgr = null;
+
   function renderQuestion(interview) {
     stopSpeech();
     const unanswered = interview.questions.find((q) => !q.answered);
 
     if (!unanswered) {
+      if (proctorMgr) proctorMgr.stopMonitors();
       questionCard.classList.add("d-none");
       progressWrapper.classList.add("d-none");
       completedCard.classList.remove("d-none");
@@ -186,19 +189,15 @@
       if (cameraDetector) cameraDetector.stop();
       cameraDetector = new window.ProctorCameraDetector(proctorVideo, {
         intervalMs: 1000,
-        onFaceUpdate: ({ count, state, message }) => {
+        onFaceUpdate: ({ count, state }) => {
           const antiCheatingBadge = document.getElementById("anti-cheating-badge");
           if (state === "MULTIPLE_FACES") {
-            camBadge.className = "badge bg-danger text-white";
-            camBadge.textContent = `⚠️ ${count} Persons Detected!`;
-            showAlert(message, "danger");
-            if (antiCheatingBadge) {
-              antiCheatingBadge.className = "badge bg-danger text-white px-3 py-2 fw-bold";
-              antiCheatingBadge.textContent = `⚠️ Flagged: ${count} Persons`;
-            }
+            camBadge.className = "badge bg-warning text-dark";
+            camBadge.textContent = `⚠️ Multiple Faces (${count})`;
+            showAlert("Multiple faces detected. Please ensure that only you are visible in the camera.", "warning");
             if (window.proctoringAPI && interviewId) {
               window.proctoringAPI.recordEvent(interviewId, {
-                event_type: "MULTIPLE_FACES",
+                event_type: "MULTIPLE_FACES_DETECTED",
                 severity: "high",
                 confidence: 0.95,
                 metadata_json: { face_count: count }
@@ -206,15 +205,35 @@
             }
           } else if (state === "NO_FACE") {
             camBadge.className = "badge bg-warning text-dark";
-            camBadge.textContent = "⚠️ Face Lost";
-            showAlert(message, "warning");
+            camBadge.textContent = "⚠️ Face Not Detected";
           } else {
             camBadge.className = "badge bg-success";
             camBadge.textContent = "Camera Active ✓";
-            if (antiCheatingBadge && !antiCheatingBadge.textContent.includes("Flagged")) {
-              antiCheatingBadge.className = "badge bg-warning text-dark px-3 py-2 fw-bold";
-              antiCheatingBadge.textContent = "🔒 Anti-Cheating Active";
+            if (antiCheatingBadge) {
+              antiCheatingBadge.className = "badge bg-success px-3 py-2 fw-bold";
+              antiCheatingBadge.textContent = "🔒 Proctoring Active";
             }
+          }
+        },
+        onNoFaceFlagged: (ev) => {
+          showAlert("⚠️ Face absence detected: Candidate not visible in camera frame.", "warning");
+          if (window.proctoringAPI && interviewId) {
+            window.proctoringAPI.recordEvent(interviewId, {
+              event_type: "NO_FACE_DETECTED",
+              severity: "medium",
+              confidence: 0.90,
+              metadata_json: { duration_seconds: ev.duration_seconds }
+            }).catch(() => {});
+          }
+        },
+        onFaceReturned: (ev) => {
+          if (window.proctoringAPI && interviewId) {
+            window.proctoringAPI.recordEvent(interviewId, {
+              event_type: "FACE_DETECTED_AGAIN",
+              severity: "info",
+              confidence: 1.0,
+              metadata_json: { duration_seconds: ev.duration_seconds }
+            }).catch(() => {});
           }
         }
       });
@@ -225,28 +244,19 @@
       if (audioDetector) audioDetector.stop();
       const audioStatusBadge = document.getElementById("audio-status-badge");
       audioDetector = new window.ProctorAudioDetector({
-        noiseThresholdDb: 18,
-        onAudioStateChange: ({ decibels, delta }) => {
-          if (audioStatusBadge && !audioStatusBadge.textContent.includes("Spike")) {
+        noiseThresholdDb: 32,
+        onAudioStateChange: ({ decibels }) => {
+          if (audioStatusBadge) {
             audioStatusBadge.textContent = `🎙️ Mic: Active (${decibels} dB)`;
           }
         },
-        onNoiseDetected: ({ decibels, delta, message }) => {
-          showAlert(message, "danger");
-          const antiCheatingBadge = document.getElementById("anti-cheating-badge");
-          if (antiCheatingBadge) {
-            antiCheatingBadge.className = "badge bg-danger text-white px-3 py-2 fw-bold";
-            antiCheatingBadge.textContent = `⚠️ Flagged: Background Noise (${decibels} dB)`;
-          }
-          if (audioStatusBadge) {
-            audioStatusBadge.className = "small text-danger mt-1 fw-bold";
-            audioStatusBadge.textContent = `🎙️ Noise Spike: ${decibels} dB (+${delta} dB)`;
-          }
+        onNoiseDetected: ({ decibels, delta }) => {
+          // Log audio telemetry for audit without interrupting the candidate
           if (window.proctoringAPI && interviewId) {
             window.proctoringAPI.recordEvent(interviewId, {
-              event_type: "SUSPICIOUS_AUDIO",
-              severity: "medium",
-              confidence: 0.90,
+              event_type: "AUDIO_ACTIVITY",
+              severity: "low",
+              confidence: 0.85,
               metadata_json: { decibels, delta_over_baseline: delta }
             }).catch(() => {});
           }
@@ -320,19 +330,61 @@
   }
 
   async function loadInterview() {
-    initCameraFeed();
-    start30MinTimer();
-
     if (!interviewId) {
       showAlert("No interview specified.", "danger");
       return;
     }
     try {
       const res = await API.interviews.get(interviewId);
-      renderQuestion(res.data);
+      const interviewData = res.data;
+
+      // Launch Proctoring Pre-Check if not completed
+      const unanswered = interviewData.questions && interviewData.questions.find((q) => !q.answered);
+      if (unanswered && !proctorMgr && window.ProctoringManager) {
+        proctorMgr = new ProctoringManager({
+          mode: "interview",
+          interviewId: interviewId,
+          videoElement: document.getElementById("proctor-video"),
+          maxTabWarnings: 3
+        });
+        try {
+          await proctorMgr.showPreCheckModal();
+        } catch (err) {
+          console.warn("Precheck modal exception:", err);
+        }
+      }
+
+      start30MinTimer();
+      renderQuestion(interviewData);
     } catch (err) {
       showAlert(err.message, "danger");
     }
+  }
+
+  // Hook clipboard events on answer textarea
+  if (answerText) {
+    answerText.addEventListener("paste", (e) => {
+      if (proctorMgr) {
+        proctorMgr.copyPasteCount++;
+        proctorMgr.updateHudCounters();
+        proctorMgr.logEvent("PASTE_ATTEMPT", "medium", { target: "interview_answer" });
+        proctorMgr.showToast("ℹ️ Clipboard Logged", "Clipboard paste action recorded in proctoring audit.", "info");
+      }
+    });
+    answerText.addEventListener("copy", () => {
+      if (proctorMgr) {
+        proctorMgr.copyPasteCount++;
+        proctorMgr.updateHudCounters();
+        proctorMgr.logEvent("COPY_ATTEMPT", "low", { target: "interview_answer" });
+      }
+    });
+    answerText.addEventListener("cut", () => {
+      if (proctorMgr) {
+        proctorMgr.copyPasteCount++;
+        proctorMgr.updateHudCounters();
+        proctorMgr.logEvent("CUT_ATTEMPT", "low", { target: "interview_answer" });
+      }
+    });
   }
 
   submitBtn.addEventListener("click", async () => {
@@ -347,6 +399,15 @@
     submitBtn.disabled = true;
     submitSpinner.classList.remove("d-none");
     submitBtnText.textContent = "Submitting...";
+
+    // Log dialogue speech turn to Interview.live_transcript
+    if (proctorMgr) {
+      proctorMgr.handleSpeechTurn({
+        speaker: "Candidate",
+        text: text,
+        timestamp: new Date().toTimeString().split(" ")[0]
+      });
+    }
 
     try {
       await API.interviews.answer(interviewId, currentQuestion.id, text);

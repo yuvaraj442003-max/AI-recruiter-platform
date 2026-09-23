@@ -178,6 +178,14 @@ def _auto_migrate_db(target_engine=None):
 
         # Email Settings
         ("recruiter_email_settings", "candidate_selected", "BOOLEAN DEFAULT TRUE"),
+
+        # Proctoring & Integrity monitoring extended fields
+        ("assessment_events", "interview_id", uuid_type),
+        ("assessment_events", "assessment_id", uuid_type),
+        ("assessment_events", "duration_seconds", "FLOAT"),
+        ("assessment_consents", "interview_id", uuid_type),
+        ("integrity_results", "interview_id", uuid_type),
+        ("integrity_results", "assessment_id", uuid_type),
     ]
 
     with active_engine.begin() as conn:
@@ -196,6 +204,15 @@ def _auto_migrate_db(target_engine=None):
                             logging.info(f"Auto-migrated: Converted {table}.{col} to UUID")
             except Exception as e:
                 logging.warning(f"Auto-migration check for {table}.{col} skipped: {e}")
+
+        # Relax attempt_id NOT NULL for proctoring tables so interview events can be stored without an attempt_id
+        if is_pg:
+            for p_table in ["assessment_events", "assessment_consents", "integrity_results"]:
+                try:
+                    if inspector.has_table(p_table):
+                        conn.execute(text(f"ALTER TABLE {p_table} ALTER COLUMN attempt_id DROP NOT NULL"))
+                except Exception as e:
+                    logging.warning(f"Could not drop NOT NULL on {p_table}.attempt_id: {e}")
 
 
 @asynccontextmanager

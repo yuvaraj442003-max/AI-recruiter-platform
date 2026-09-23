@@ -712,12 +712,33 @@ const screeningAPI = {
 };
 
 const proctoringAPI = {
-  submitConsent: (attemptId, payload) => api.post(`/proctoring/attempts/${attemptId}/consent`, payload),
-  recordEvent: (attemptId, payload) => api.post(`/proctoring/attempts/${attemptId}/events`, payload),
+  submitUnifiedConsent: (payload) => api.post("/proctoring/consent", payload),
+  submitConsent: (attemptId, payload) => {
+    if (attemptId) return api.post(`/proctoring/attempts/${attemptId}/consent`, payload);
+    return api.post("/proctoring/consent", payload);
+  },
+  recordEvent: (payload) => {
+    // If called with (attemptId, payload) legacy signature
+    if (typeof payload !== "object" || Array.isArray(payload)) {
+      const attemptId = arguments[0];
+      const eventData = arguments[1] || {};
+      eventData.attempt_id = attemptId;
+      return api.post("/proctoring/events", eventData);
+    }
+    return api.post("/proctoring/events", payload);
+  },
+  recordLegacyEvent: (attemptId, payload) => api.post(`/proctoring/attempts/${attemptId}/events`, payload),
+  recordBatchEvents: (payload) => api.post("/proctoring/events/batch", payload),
+  verifyIdentity: (payload) => api.post("/proctoring/identity/verify", payload),
+  appendTranscript: (interviewId, turn) => api.post(`/proctoring/interview/${interviewId}/transcript`, turn),
   getEvents: (attemptId) => api.get(`/proctoring/attempts/${attemptId}/events`),
+  getInterviewEvents: (interviewId) => api.get(`/proctoring/interview/${interviewId}/events`),
   getIntegrity: (attemptId) => api.get(`/proctoring/attempts/${attemptId}/integrity`),
+  getInterviewIntegrity: (interviewId) => api.get(`/proctoring/interview/${interviewId}/integrity`),
+  getReport: (sessionId) => api.get(`/proctoring/report/${sessionId}`),
   analyzeSimilarity: (attemptId, submissionId) => api.post(`/proctoring/attempts/${attemptId}/code-similarity?submission_id=${submissionId}`),
   saveDecision: (attemptId, payload) => api.post(`/proctoring/attempts/${attemptId}/recruiter-decision`, payload),
+  saveInterviewDecision: (interviewId, payload) => api.post(`/proctoring/interview/${interviewId}/recruiter-decision`, payload),
 };
 
 const interviewScorecardAPI = {

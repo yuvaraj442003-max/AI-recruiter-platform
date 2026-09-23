@@ -128,24 +128,42 @@ function initActiveMonitoring(attemptId) {
   if (badgeMic) { badgeMic.className = "badge bg-success"; badgeMic.innerHTML = '<i class="bi bi-mic me-1"></i>Mic Active'; }
   if (badgeFs) { badgeFs.className = "badge bg-success"; badgeFs.innerHTML = '<i class="bi bi-fullscreen me-1"></i>Fullscreen'; }
 
-  // 1. Tab Switching & Window Blur Event Listeners
+  // 1. Tab Switching & Window Blur Event Listeners (Configurable warnings, NO immediate termination)
+  let tabSwitchCount = 0;
+  const maxTabWarnings = 3;
+  let tabHiddenStartTime = null;
+
   document.addEventListener("visibilitychange", async () => {
     if (document.hidden) {
-      await recordProctoringEvent(attemptId, "TAB_SWITCH", "high", 1.0, { hidden_at: new Date().toISOString() });
-      if (window.codingAPI && attemptId) {
-        try {
-          await codingAPI.terminateAssessment(attemptId, "TAB_SWITCH");
-        } catch (e) {
-          console.error("Termination failed", e);
-        }
+      tabSwitchCount++;
+      tabHiddenStartTime = Date.now();
+      await recordProctoringEvent(attemptId, "TAB_SWITCH", tabSwitchCount <= maxTabWarnings ? "medium" : "high", 1.0, {
+        switch_count: tabSwitchCount,
+        max_warnings: maxTabWarnings,
+        hidden_at: new Date().toISOString()
+      });
+
+      if (tabSwitchCount <= maxTabWarnings) {
+        showIntegrityToast(`⚠️ Warning (${tabSwitchCount}/${maxTabWarnings}): You left the assessment window. This activity has been recorded.`);
+      } else {
+        showIntegrityToast(`⚠️ Window focus lost (Recorded: ${tabSwitchCount} times). Please stay on this page.`);
       }
-      alert("⚠️ Tab switch violation! Switching tabs during the assessment is strictly forbidden. Your assessment has been terminated and disqualified.");
-      window.location.href = "candidate-dashboard.html";
+    } else {
+      const awayDuration = tabHiddenStartTime ? Math.round((Date.now() - tabHiddenStartTime) / 1000) : 0;
+      tabHiddenStartTime = null;
+      await recordProctoringEvent(attemptId, "TAB_RETURN", "info", 1.0, {
+        away_seconds: awayDuration,
+        returned_at: new Date().toISOString()
+      });
     }
   });
 
   window.addEventListener("blur", () => {
     recordProctoringEvent(attemptId, "WINDOW_BLUR", "low", 0.90, { blur_at: new Date().toISOString() });
+  });
+
+  window.addEventListener("focus", () => {
+    recordProctoringEvent(attemptId, "WINDOW_FOCUS", "info", 1.0, { focused_at: new Date().toISOString() });
   });
 
   // 2. Fullscreen Exit Detector
@@ -160,31 +178,41 @@ function initActiveMonitoring(attemptId) {
   const codeEditor = document.getElementById("code-editor");
   if (codeEditor) {
     codeEditor.addEventListener("copy", () => {
-      recordProctoringEvent(attemptId, "COPY", "info", 1.0, { field: "code-editor" });
+      recordProctoringEvent(attemptId, "COPY_ATTEMPT", "low", 1.0, { field: "code-editor" });
     });
 
     codeEditor.addEventListener("paste", (e) => {
-      const pastedText = (e.clipboardData || window.clipboardData).getData("text");
-      recordProctoringEvent(attemptId, "PASTE", "low", 0.95, { length: pastedText.length });
+      const pastedText = (e.clipboardData || window.clipboardData).getData("text") || "";
+      recordProctoringEvent(attemptId, "PASTE_ATTEMPT", "medium", 1.0, { length: pastedText.length });
+    });
+
+    codeEditor.addEventListener("cut", () => {
+      recordProctoringEvent(attemptId, "CUT_ATTEMPT", "low", 1.0, { field: "code-editor" });
     });
   }
 
-  // 4. Multi-Person Camera Detector & Background Noise Audio Detector
+  // 4. Multi-Person Camera Detector & Ambient Noise Audio Detector
   const videoEl = document.getElementById("webcam-feed");
   if (window.ProctorCameraDetector && videoEl) {
     const camDetector = new window.ProctorCameraDetector(videoEl, {
       intervalMs: 1000,
       onFaceUpdate: ({ count, state }) => {
         if (state === "MULTIPLE_FACES") {
-          if (badgeCam) { badgeCam.className = "badge bg-danger"; badgeCam.innerHTML = `<i class="bi bi-person-x me-1"></i>${count} Persons`; }
-          showIntegrityToast(`⚠️ Multiple persons (${count}) detected on camera feed!`);
-          recordProctoringEvent(attemptId, "MULTIPLE_FACES", "high", 0.95, { count });
+          if (badgeCam) { badgeCam.className = "badge bg-warning text-dark"; badgeCam.innerHTML = `<i class="bi bi-people me-1"></i>${count} Faces`; }
+          showIntegrityToast("⚠️ Multiple faces detected. Please ensure that only you are visible in the camera.");
+          recordProctoringEvent(attemptId, "MULTIPLE_FACES_DETECTED", "high", 0.95, { count });
         } else if (state === "NO_FACE") {
           if (badgeCam) { badgeCam.className = "badge bg-warning text-dark"; badgeCam.innerHTML = '<i class="bi bi-person-slash me-1"></i>Face Lost'; }
-          recordProctoringEvent(attemptId, "NO_FACE", "medium", 0.90, {});
         } else {
           if (badgeCam) { badgeCam.className = "badge bg-success"; badgeCam.innerHTML = '<i class="bi bi-camera-video me-1"></i>Camera Active'; }
         }
+      },
+      onNoFaceFlagged: (ev) => {
+        recordProctoringEvent(attemptId, "NO_FACE_DETECTED", "medium", 0.90, { duration_seconds: ev.duration_seconds });
+        showIntegrityToast("⚠️ Face absence detected: Candidate not visible in camera frame.");
+      },
+      onFaceReturned: (ev) => {
+        recordProctoringEvent(attemptId, "FACE_DETECTED_AGAIN", "info", 1.0, { duration_seconds: ev.duration_seconds });
       }
     });
     camDetector.start();
@@ -192,11 +220,16 @@ function initActiveMonitoring(attemptId) {
 
   if (window.ProctorAudioDetector && activeProctorStream) {
     const audioDetector = new window.ProctorAudioDetector({
-      noiseThresholdDb: 18,
+      noiseThresholdDb: 32,
+      onAudioStateChange: ({ decibels }) => {
+        if (badgeMic) {
+          badgeMic.className = "badge bg-success";
+          badgeMic.innerHTML = `<i class="bi bi-mic me-1"></i>Mic Active (${decibels}dB)`;
+        }
+      },
       onNoiseDetected: ({ decibels, delta }) => {
-        if (badgeMic) { badgeMic.className = "badge bg-danger"; badgeMic.innerHTML = `<i class="bi bi-mic-fill me-1"></i>Noise ${decibels}dB`; }
-        showIntegrityToast(`⚠️ Background noise detected: ${decibels} dB (+${delta} dB)`);
-        recordProctoringEvent(attemptId, "SUSPICIOUS_AUDIO", "medium", 0.90, { decibels, delta });
+        // Log silently to integrity signals without interrupting candidate with alerts
+        recordProctoringEvent(attemptId, "AUDIO_ACTIVITY", "low", 0.85, { decibels, delta });
       }
     });
     audioDetector.start(activeProctorStream);

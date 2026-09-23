@@ -34,8 +34,11 @@ class AssessmentConsent(Base, TimestampMixin):
     __tablename__ = "assessment_consents"
 
     id: Mapped[uuid.UUID] = mapped_column(GUID(), primary_key=True, default=uuid.uuid4)
-    attempt_id: Mapped[uuid.UUID] = mapped_column(
-        GUID(), ForeignKey("candidate_coding_attempts.id", ondelete="CASCADE"), nullable=False, unique=True
+    attempt_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        GUID(), ForeignKey("candidate_coding_attempts.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    interview_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        GUID(), ForeignKey("interviews.id", ondelete="CASCADE"), nullable=True, index=True
     )
     candidate_id: Mapped[uuid.UUID] = mapped_column(
         GUID(), ForeignKey("candidate_profiles.id", ondelete="CASCADE"), nullable=False
@@ -52,34 +55,45 @@ class AssessmentConsent(Base, TimestampMixin):
     ip_address: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     user_agent: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    attempt: Mapped["CandidateCodingAttempt"] = relationship("CandidateCodingAttempt")
+    attempt: Mapped[Optional["CandidateCodingAttempt"]] = relationship("CandidateCodingAttempt")
 
 
 class AssessmentEvent(Base):
     __tablename__ = "assessment_events"
 
     id: Mapped[uuid.UUID] = mapped_column(GUID(), primary_key=True, default=uuid.uuid4)
-    attempt_id: Mapped[uuid.UUID] = mapped_column(
-        GUID(), ForeignKey("candidate_coding_attempts.id", ondelete="CASCADE"), nullable=False
+    attempt_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        GUID(), ForeignKey("candidate_coding_attempts.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    interview_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        GUID(), ForeignKey("interviews.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    assessment_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        GUID(), ForeignKey("coding_assessments.id", ondelete="CASCADE"), nullable=True, index=True
     )
     candidate_id: Mapped[uuid.UUID] = mapped_column(
-        GUID(), ForeignKey("candidate_profiles.id", ondelete="CASCADE"), nullable=False
+        GUID(), ForeignKey("candidate_profiles.id", ondelete="CASCADE"), nullable=False, index=True
     )
     question_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         GUID(), ForeignKey("coding_questions.id", ondelete="SET NULL"), nullable=True
     )
 
     event_type: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
-    # TAB_SWITCH, WINDOW_BLUR, FULLSCREEN_EXIT, COPY, PASTE, CUT, NO_FACE, MULTIPLE_FACES, FACE_LOST, ADDITIONAL_VOICE, SUSPICIOUS_AUDIO, CODE_SIMILARITY
+    # TAB_SWITCH, TAB_RETURN, WINDOW_BLUR, WINDOW_FOCUS, COPY_ATTEMPT, PASTE_ATTEMPT, CUT_ATTEMPT, NO_FACE_DETECTED, FACE_DETECTED_AGAIN, MULTIPLE_FACES_DETECTED, AUDIO_ACTIVITY, AUDIO_DETECTED, MICROPHONE_DISCONNECTED, CAMERA_DISCONNECTED
 
     severity: Mapped[EventSeverity] = mapped_column(
         Enum(EventSeverity, name="event_severity_enum"), default=EventSeverity.low, nullable=False
     )
     confidence: Mapped[float] = mapped_column(Float, default=1.0, nullable=False)
-    metadata_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON details e.g. {"duration_seconds": 8, "face_count": 2}
+    duration_seconds: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    metadata_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON details e.g. {"duration_seconds": 8, "face_count": 2, "question": "Two Sum"}
     occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
 
-    attempt: Mapped["CandidateCodingAttempt"] = relationship("CandidateCodingAttempt")
+    attempt: Mapped[Optional["CandidateCodingAttempt"]] = relationship("CandidateCodingAttempt")
+
+
+# Alias for generalized proctoring across assessments and interviews
+ProctoringEvent = AssessmentEvent
 
 
 class CodeSimilarityResult(Base, TimestampMixin):
@@ -109,8 +123,14 @@ class IntegrityResult(Base, TimestampMixin):
     __tablename__ = "integrity_results"
 
     id: Mapped[uuid.UUID] = mapped_column(GUID(), primary_key=True, default=uuid.uuid4)
-    attempt_id: Mapped[uuid.UUID] = mapped_column(
-        GUID(), ForeignKey("candidate_coding_attempts.id", ondelete="CASCADE"), nullable=False, unique=True
+    attempt_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        GUID(), ForeignKey("candidate_coding_attempts.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    interview_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        GUID(), ForeignKey("interviews.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    assessment_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        GUID(), ForeignKey("coding_assessments.id", ondelete="CASCADE"), nullable=True, index=True
     )
 
     browser_score: Mapped[float] = mapped_column(Float, default=100.0, nullable=False)
@@ -134,7 +154,8 @@ class IntegrityResult(Base, TimestampMixin):
         GUID(), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
 
-    attempt: Mapped["CandidateCodingAttempt"] = relationship("CandidateCodingAttempt")
+    attempt: Mapped[Optional["CandidateCodingAttempt"]] = relationship("CandidateCodingAttempt")
 
     def __repr__(self) -> str:
         return f"<IntegrityResult score={self.overall_integrity_score} risk={self.risk_level}>"
+

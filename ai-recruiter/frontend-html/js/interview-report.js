@@ -63,7 +63,14 @@
       return;
     }
 
-    // Show PDF & Print buttons
+    // Show PDF, Print & Proctoring Audit buttons
+    const proctorBtn = document.getElementById("btn-proctoring-report");
+    if (proctorBtn && interviewId) {
+      proctorBtn.href = `integrity-report.html?interview_id=${interviewId}`;
+      proctorBtn.classList.remove("d-none");
+      proctorBtn.classList.add("d-inline-flex");
+    }
+
     if (pdfBtn) {
       pdfBtn.classList.remove("d-none");
       pdfBtn.classList.add("d-inline-flex");

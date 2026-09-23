@@ -4,7 +4,10 @@ own application list, a single application's detail, and status
 updates by the owning recruiter (shortlist, reject, etc.).
 """
 import json
+import logging
 import uuid
+
+logger = logging.getLogger("ai_recruiter.applications")
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session, joinedload
@@ -375,8 +378,33 @@ def update_application_status(
     )
     db.add(history)
 
-    # 2. Notify Candidate
-    if application.candidate and application.candidate.user_id:
+    # 2. Resolve Candidate & User Information
+    cand_user = None
+    cand_user_id = None
+    cand_profile = application.candidate
+
+    if cand_profile:
+        cand_user = cand_profile.user
+        cand_user_id = getattr(cand_profile, "user_id", None)
+
+    if not cand_user and application.candidate_id:
+        cand_profile = (
+            db.query(CandidateProfile)
+            .options(joinedload(CandidateProfile.user))
+            .filter(CandidateProfile.id == application.candidate_id)
+            .first()
+        )
+        if cand_profile:
+            if not cand_user_id:
+                cand_user_id = cand_profile.user_id
+            if cand_profile.user:
+                cand_user = cand_profile.user
+
+    if not cand_user and cand_user_id:
+        cand_user = db.query(User).filter(User.id == cand_user_id).first()
+
+    # 3. Create In-App Notification
+    if cand_user_id:
         title_map = {
             "under_review": "Application Under Review",
             "shortlisted": "Application Shortlisted!",
@@ -392,71 +420,74 @@ def update_application_status(
         }
         create_notification(
             db=db,
-            user_id=application.candidate.user_id,
+            user_id=cand_user_id,
             title=title_map.get(new_status, "Application Status Updated"),
-            message=f"Your application for '{application.job.title}' is now: {new_status.replace('_', ' ').title()}.",
+            message=f"Your application for '{application.job.title if application.job else 'Position'}' is now: {new_status.replace('_', ' ').title()}.",
             notification_type=type_map.get(new_status, "info"),
             link="/my-applications.html",
         )
 
-        # Send status update & shortlisted emails to candidate
+    # 4. Dispatch Automated Email Notification to Candidate's Registered Email
+    target_email = getattr(cand_user, "email", None) or getattr(cand_profile, "email", None)
+    candidate_name = getattr(cand_user, "name", None) or getattr(cand_profile, "full_name", None) or "Candidate"
+
+    if target_email:
         try:
             from app.services.email_service import (
                 send_application_status_email,
                 send_shortlisted_email,
                 send_selected_email,
             )
-            cand_user = application.candidate.user if (application.candidate and application.candidate.user) else None
-            if not cand_user and application.candidate_id:
-                cp = db.query(CandidateProfile).options(joinedload(CandidateProfile.user)).filter(CandidateProfile.id == application.candidate_id).first()
-                if cp and cp.user:
-                    cand_user = cp.user
+            comp_name = (
+                getattr(application.job, "company_name", None)
+                or getattr(current_user, "company_name", None)
+                or f"{current_user.name}'s Company"
+            )
+            job_title = application.job.title if application.job else "Position"
 
-            if cand_user and cand_user.email:
-                comp_name = (
-                    getattr(application.job, "company_name", None)
-                    or f"{current_user.name}'s Company"
+            if new_status == "shortlisted":
+                send_shortlisted_email(
+                    to_email=target_email,
+                    candidate_name=candidate_name,
+                    job_title=job_title,
+                    company_name=comp_name,
+                    candidate_id=application.candidate_id,
+                    job_id=application.job_id,
+                    recruiter_id=current_user.id,
+                    db=db,
                 )
-                job_title = application.job.title if application.job else "Position"
-
-                if new_status == "shortlisted":
-                    send_shortlisted_email(
-                        to_email=cand_user.email,
-                        candidate_name=cand_user.name,
-                        job_title=job_title,
-                        company_name=comp_name,
-                        candidate_id=application.candidate_id,
-                        job_id=application.job_id,
-                        recruiter_id=current_user.id,
-                        db=db,
-                    )
-                elif new_status == "selected":
-                    send_selected_email(
-                        to_email=cand_user.email,
-                        candidate_name=cand_user.name,
-                        job_title=job_title,
-                        company_name=comp_name,
-                        notes=getattr(payload, 'override_reason', None),
-                        candidate_id=application.candidate_id,
-                        job_id=application.job_id,
-                        recruiter_id=current_user.id,
-                        db=db,
-                    )
-                else:
-                    send_application_status_email(
-                        to_email=cand_user.email,
-                        candidate_name=cand_user.name,
-                        job_title=job_title,
-                        company_name=comp_name,
-                        new_status=new_status,
-                        notes=getattr(payload, 'override_reason', None),
-                        candidate_id=application.candidate_id,
-                        job_id=application.job_id,
-                        recruiter_id=current_user.id,
-                        db=db,
-                    )
+                logger.info(f"Queued shortlisted email to {target_email} for '{job_title}'")
+            elif new_status == "selected":
+                send_selected_email(
+                    to_email=target_email,
+                    candidate_name=candidate_name,
+                    job_title=job_title,
+                    company_name=comp_name,
+                    notes=getattr(payload, 'override_reason', None),
+                    candidate_id=application.candidate_id,
+                    job_id=application.job_id,
+                    recruiter_id=current_user.id,
+                    db=db,
+                )
+                logger.info(f"Queued candidate selected congratulations email to {target_email} for '{job_title}' at {comp_name}")
+            else:
+                send_application_status_email(
+                    to_email=target_email,
+                    candidate_name=candidate_name,
+                    job_title=job_title,
+                    company_name=comp_name,
+                    new_status=new_status,
+                    notes=getattr(payload, 'override_reason', None),
+                    candidate_id=application.candidate_id,
+                    job_id=application.job_id,
+                    recruiter_id=current_user.id,
+                    db=db,
+                )
+                logger.info(f"Queued status update ({new_status}) email to {target_email} for '{job_title}'")
         except Exception as err:
-            print(f"Warning: Failed to dispatch status update email: {err}")
+            logger.error(f"Failed to dispatch status update email: {err}", exc_info=True)
+    else:
+        logger.warning(f"Cannot dispatch status email for application {application.id}: candidate email not found.")
 
     db.commit()
     db.refresh(application)

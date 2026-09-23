@@ -4,8 +4,10 @@ smtp_provider.py — Standard SMTP Email Provider.
 import logging
 import smtplib
 import uuid
+from email.header import Header
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.utils import formataddr
 from typing import Dict, Any, Optional
 
 from app.core.config import settings
@@ -50,12 +52,12 @@ class SmtpEmailProvider(BaseEmailProvider):
 
         try:
             msg = MIMEMultipart("alternative")
-            msg["Subject"] = subject
-            msg["From"] = f"{sender_label} <{sender_addr}>"
+            msg["Subject"] = Header(subject, "utf-8")
+            msg["From"] = formataddr((str(Header(sender_label, "utf-8")), sender_addr))
             msg["To"] = to_email
 
-            part1 = MIMEText(text_content, "plain")
-            part2 = MIMEText(html_content, "html")
+            part1 = MIMEText(text_content, "plain", "utf-8")
+            part2 = MIMEText(html_content, "html", "utf-8")
             msg.attach(part1)
             msg.attach(part2)
 

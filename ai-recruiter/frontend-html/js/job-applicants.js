@@ -242,6 +242,9 @@
                 <button class="btn btn-sm btn-outline-secondary text-light border-secondary fw-semibold feedback-btn" data-app-id="${app.id}" data-name="${escapeHtml(candidateName)}">
                   💬 Feedback
                 </button>
+                <a href="integrity-report.html?application_id=${app.id}" target="_blank" class="btn btn-sm btn-outline-info text-info border-info fw-semibold" title="View AI Proctoring & Integrity Audit Report">
+                  🛡️ Integrity
+                </a>
                 <button class="btn btn-sm btn-primary fw-bold open-applicant-profile-link px-3 shadow-sm" data-app-id="${app.id}">
                   👤 Profile &amp; ATS &rarr;
                 </button>
@@ -335,6 +338,7 @@
                 <li><button class="dropdown-item d-flex align-items-center gap-2 msg-applicant-btn" data-user-id="${candidateProfile.user_id || ''}" data-name="${escapeHtml(candidateName)}"><span>💬</span> Send Message</button></li>
                 <li><button class="dropdown-item d-flex align-items-center gap-2 schedule-applicant-btn" data-app-id="${app.id}" data-candidate-id="${candId}" data-candidate-name="${escapeHtml(candidateName)}"><span>📅</span> Schedule Interview</button></li>
                 <li><button class="dropdown-item d-flex align-items-center gap-2 feedback-btn" data-app-id="${app.id}" data-name="${escapeHtml(candidateName)}"><span>💬</span> Candidate Feedback</button></li>
+                <li><a class="dropdown-item d-flex align-items-center gap-2 text-info fw-bold" href="integrity-report.html?application_id=${app.id}" target="_blank"><span>🛡️</span> View Integrity Audit Report</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><button class="dropdown-item d-flex align-items-center gap-2 text-primary fw-bold open-applicant-profile-link" data-app-id="${app.id}"><span>👤</span> View Profile &amp; ATS &rarr;</button></li>
               </ul>
@@ -462,7 +466,10 @@
         btn.disabled = true;
         try {
           await applicationsAPI.updateStatus(appId, newStatus, `Recruiter one-click ${newStatus}`);
-          showAlert(`Candidate marked as ${newStatus.toUpperCase()}!`, "success");
+          const emailNotice = (newStatus === "selected" || newStatus === "shortlisted") 
+            ? " An email notification has been sent to the candidate's registered email." 
+            : "";
+          showAlert(`Candidate successfully marked as ${newStatus.replace('_', ' ').toUpperCase()}!${emailNotice}`, "success");
           loadJobAndApplicants();
         } catch (err) {
           showAlert(`Failed to update status: ${err.message}`, "danger");
@@ -1530,7 +1537,10 @@
 
           try {
             await applicationsAPI.updateStatus(appId, newStatus, overrideReason);
-            showAlert(`Candidate status updated to ${newStatus.replace('_', ' ').toUpperCase()}.`, "success");
+            const emailNotice = (newStatus === "selected" || newStatus === "shortlisted") 
+              ? " An email notification has been dispatched to the candidate's registered email." 
+              : "";
+            showAlert(`Candidate status updated to ${newStatus.replace('_', ' ').toUpperCase()}!${emailNotice}`, "success");
             openApplicantDetail(appId);
             loadJobAndApplicants();
           } catch (err) {

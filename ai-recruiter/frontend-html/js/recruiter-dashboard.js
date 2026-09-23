@@ -1088,7 +1088,10 @@
     }
     try {
       await applicationsAPI.updateStatus(appId, newStatus, reason);
-      alert(`Candidate application status successfully updated to '${newStatus.toUpperCase()}'!`);
+      const emailNotice = (newStatus === "selected" || newStatus === "shortlisted") 
+        ? " An automated email notification has been dispatched to the candidate's registered email." 
+        : "";
+      alert(`Candidate application status successfully updated to '${newStatus.toUpperCase()}'!${emailNotice}`);
       const modalEl = document.getElementById("recruiterAssessmentModal") || document.getElementById("applicantDetailModal");
       if (modalEl && window.bootstrap) {
         const modal = bootstrap.Modal.getInstance(modalEl);

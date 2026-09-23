@@ -26,6 +26,12 @@ from app.services.email_providers.smtp_provider import SmtpEmailProvider
 from app.services.email_providers.sendgrid_provider import SendGridEmailProvider
 from app.services.email_providers.ses_provider import SesEmailProvider
 
+try:
+    import jinja2
+except ImportError:
+    jinja2 = None
+import re
+
 logger = logging.getLogger("ai_recruiter.email")
 
 _executor = ThreadPoolExecutor(max_workers=4)
@@ -66,9 +72,18 @@ def render_template(template_name: str, context: Dict[str, Any]) -> str:
         return "<p>" + "<br>".join([f"<strong>{k}:</strong> {v}" for k, v in context.items()]) + "</p>"
 
     html = template_path.read_text(encoding="utf-8")
+    if jinja2:
+        try:
+            return jinja2.Template(html).render(**context)
+        except Exception as err:
+            logger.warning(f"Jinja2 template render failed for {template_name}: {err}")
+
     for key, val in context.items():
         html = html.replace(f"{{{{{key}}}}}", str(val if val is not None else ""))
+    # Clean up any unhandled Jinja block tags if jinja2 is not available
+    html = re.sub(r'\{%.*?%\}', '', html, flags=re.DOTALL)
     return html
+
 
 
 class EmailService:
@@ -106,26 +121,43 @@ class EmailService:
         def _bg_task():
             db: Session = SessionLocal()
             try:
-                # Idempotency / Duplicate send prevention
+                # Idempotency / Duplicate send prevention & retry reuse
+                email_log = None
                 if idempotency_key:
                     existing = db.scalar(select(EmailLog).where(EmailLog.idempotency_key == idempotency_key))
-                    if existing and existing.status == "Sent":
-                        logger.info(f"Duplicate email prevented by idempotency_key '{idempotency_key}'")
-                        return
+                    if existing:
+                        is_real_sent = (
+                            existing.status == "Sent"
+                            and existing.provider_message_id
+                            and not str(existing.provider_message_id).startswith("dev_console_")
+                        )
+                        if is_real_sent:
+                            logger.info(f"Duplicate email prevented by idempotency_key '{idempotency_key}' (already sent via {existing.provider_message_id})")
+                            return
 
-                email_log = EmailLog(
-                    to_email=to_email,
-                    subject=subject,
-                    email_type=email_type,
-                    status="Pending",
-                    idempotency_key=idempotency_key or f"{email_type}_{uuid.uuid4().hex[:12]}",
-                    candidate_id=candidate_id,
-                    job_id=job_id,
-                    interview_id=interview_id,
-                )
-                db.add(email_log)
-                db.commit()
-                db.refresh(email_log)
+                        # Reuse existing record to prevent unique constraint crash
+                        email_log = existing
+                        email_log.status = "Pending"
+                        email_log.to_email = to_email
+                        email_log.subject = subject
+                        email_log.retry_count = 0
+                        email_log.error_message = None
+                        db.commit()
+
+                if not email_log:
+                    email_log = EmailLog(
+                        to_email=to_email,
+                        subject=subject,
+                        email_type=email_type,
+                        status="Pending",
+                        idempotency_key=idempotency_key or f"{email_type}_{uuid.uuid4().hex[:12]}",
+                        candidate_id=candidate_id,
+                        job_id=job_id,
+                        interview_id=interview_id,
+                    )
+                    db.add(email_log)
+                    db.commit()
+                    db.refresh(email_log)
 
                 provider = get_email_provider()
                 attempt = 0
@@ -271,7 +303,7 @@ def send_selected_email(
             logger.info("Candidate selected email disabled in recruiter notification settings.")
             return False
 
-    subject = f"🥳 Congratulations! You are selected for {job_title} at {company_name}"
+    subject = f"Congratulations! You have been selected for {job_title} at {company_name}"
     context = {
         "candidate_name": candidate_name,
         "job_title": job_title,
@@ -287,7 +319,7 @@ def send_selected_email(
         f"Thank you,\n{company_name} Recruitment Team"
     )
 
-    idempotency = f"selected_{candidate_id}_{job_id}" if candidate_id and job_id else None
+    idempotency = f"selected_{candidate_id}_{job_id}_{int(time.time())}" if (candidate_id and job_id) else None
     return EmailService.send_queued_email(
         to_email=to_email,
         subject=subject,

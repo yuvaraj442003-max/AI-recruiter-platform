@@ -195,41 +195,57 @@ def recruiter_override_recommendation(
                 app.status = ApplicationStatus.rejected
 
             # Trigger email notification if selected or shortlisted
-            if rec_low in ("selected", "select", "hire") and app.candidate and app.candidate.user:
-                try:
-                    from app.services.email_service import send_selected_email
-                    comp_name = getattr(app.job, "company_name", None) or f"{current_user.name}'s Company"
-                    job_title = app.job.title if app.job else "Position"
-                    send_selected_email(
-                        to_email=app.candidate.user.email,
-                        candidate_name=app.candidate.user.name,
-                        job_title=job_title,
-                        company_name=comp_name,
-                        notes=reason,
-                        candidate_id=app.candidate_id,
-                        job_id=app.job_id,
-                        recruiter_id=current_user.id,
-                        db=db,
-                    )
-                except Exception as err:
-                    logger.warning(f"Failed to send selected email on screening override: {err}")
-            elif rec_low in ("shortlisted", "shortlist") and app.candidate and app.candidate.user:
-                try:
-                    from app.services.email_service import send_shortlisted_email
-                    comp_name = getattr(app.job, "company_name", None) or f"{current_user.name}'s Company"
-                    job_title = app.job.title if app.job else "Position"
-                    send_shortlisted_email(
-                        to_email=app.candidate.user.email,
-                        candidate_name=app.candidate.user.name,
-                        job_title=job_title,
-                        company_name=comp_name,
-                        candidate_id=app.candidate_id,
-                        job_id=app.job_id,
-                        recruiter_id=current_user.id,
-                        db=db,
-                    )
-                except Exception as err:
-                    logger.warning(f"Failed to send shortlisted email on screening override: {err}")
+            cand_u = None
+            cand_prof = app.candidate
+            if cand_prof:
+                cand_u = cand_prof.user
+            if not cand_u and app.candidate_id:
+                cand_prof = db.query(CandidateProfile).options(joinedload(CandidateProfile.user)).filter(CandidateProfile.id == app.candidate_id).first()
+                if cand_prof and cand_prof.user:
+                    cand_u = cand_prof.user
+            if not cand_u and cand_prof and getattr(cand_prof, "user_id", None):
+                cand_u = db.query(User).filter(User.id == cand_prof.user_id).first()
+
+            cand_email = getattr(cand_u, "email", None) or getattr(cand_prof, "email", None)
+            cand_name = getattr(cand_u, "name", None) or getattr(cand_prof, "full_name", None) or "Candidate"
+
+            if cand_email:
+                comp_name = getattr(app.job, "company_name", None) or getattr(current_user, "company_name", None) or f"{current_user.name}'s Company"
+                job_title = app.job.title if app.job else "Position"
+
+                if rec_low in ("selected", "select", "hire"):
+                    try:
+                        from app.services.email_service import send_selected_email
+                        send_selected_email(
+                            to_email=cand_email,
+                            candidate_name=cand_name,
+                            job_title=job_title,
+                            company_name=comp_name,
+                            notes=reason,
+                            candidate_id=app.candidate_id,
+                            job_id=app.job_id,
+                            recruiter_id=current_user.id,
+                            db=db,
+                        )
+                        logger.info(f"Screening override: dispatched selected email to {cand_email} for '{job_title}'")
+                    except Exception as err:
+                        logger.warning(f"Failed to send selected email on screening override: {err}")
+                elif rec_low in ("shortlisted", "shortlist"):
+                    try:
+                        from app.services.email_service import send_shortlisted_email
+                        send_shortlisted_email(
+                            to_email=cand_email,
+                            candidate_name=cand_name,
+                            job_title=job_title,
+                            company_name=comp_name,
+                            candidate_id=app.candidate_id,
+                            job_id=app.job_id,
+                            recruiter_id=current_user.id,
+                            db=db,
+                        )
+                        logger.info(f"Screening override: dispatched shortlisted email to {cand_email} for '{job_title}'")
+                    except Exception as err:
+                        logger.warning(f"Failed to send shortlisted email on screening override: {err}")
 
     db.commit()
     db.refresh(result)

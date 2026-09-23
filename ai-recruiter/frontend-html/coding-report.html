@@ -31,6 +31,11 @@
           <div class="text-end">
             <span id="final-status-badge" class="badge bg-secondary fs-6 px-3 py-2">--</span>
             <div class="mt-2 text-muted small" id="report-date">Date: --</div>
+            <div class="mt-2">
+              <a id="integrity-report-btn" href="#" class="btn btn-sm btn-outline-primary fw-semibold">
+                🛡️ View Proctoring Audit Report
+              </a>
+            </div>
           </div>
         </div>
 
@@ -142,6 +147,8 @@
           document.getElementById('assessment-title').textContent = data.assessment_title;
           document.getElementById('candidate-name').textContent = `Candidate: ${data.candidate_name}`;
           document.getElementById('report-date').textContent = `Submitted: ${data.submitted_at ? new Date(data.submitted_at).toLocaleDateString() : 'N/A'}`;
+          const integrityBtn = document.getElementById('integrity-report-btn');
+          if (integrityBtn) integrityBtn.href = `integrity-report.html?attempt_id=${attemptId}`;
 
           const statusBadge = document.getElementById('final-status-badge');
           statusBadge.className = data.passed ? 'badge bg-success fs-6 px-3 py-2' : 'badge bg-danger fs-6 px-3 py-2';

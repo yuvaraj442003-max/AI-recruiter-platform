@@ -47,6 +47,15 @@ from app.services.coding_evaluation_service import (
 router = APIRouter(prefix="/coding", tags=["Coding Assessment Module"])
 
 
+def _to_utc_dt(dt: Optional[datetime]) -> Optional[datetime]:
+    """Safely normalizes any datetime (aware or naive) to timezone-aware UTC datetime."""
+    if dt is None:
+        return None
+    if dt.tzinfo is not None:
+        return dt.astimezone(timezone.utc)
+    return dt.replace(tzinfo=timezone.utc)
+
+
 # --- SEED DATA DEFAULT QUESTIONS ---
 DEFAULT_QUESTIONS = [
     {
@@ -348,6 +357,7 @@ def candidate_list_assessments(
 @router.post("/candidate/assessments/{assessment_id}/start", response_model=APIResponse[CandidateCodingAttemptResponse])
 def start_assessment_attempt(
     assessment_id: uuid.UUID,
+    reset: bool = Query(False, description="Reset attempt to fresh duration"),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.candidate))
 ):
@@ -369,7 +379,17 @@ def start_assessment_attempt(
 
     now = datetime.now(timezone.utc)
 
-    if not attempt:
+    if reset and attempt:
+        attempt.status = "In Progress"
+        attempt.started_at = now
+        attempt.submitted_at = None
+        attempt.score = None
+        attempt.percentage = None
+        attempt.passed = False
+        attempt.time_taken = None
+        db.commit()
+        db.refresh(attempt)
+    elif not attempt:
         attempt = CandidateCodingAttempt(
             candidate_id=cand.id,
             assessment_id=assessment_id,
@@ -385,28 +405,38 @@ def start_assessment_attempt(
         db.commit()
         db.refresh(attempt)
     elif attempt.status == "Terminated":
-        # Assessment was already terminated
-        remaining_seconds = 0
-        resp_data = CandidateCodingAttemptResponse(
-            id=attempt.id,
-            candidate_id=attempt.candidate_id,
-            assessment_id=attempt.assessment_id,
-            status="Terminated",
-            started_at=attempt.started_at,
-            submitted_at=attempt.submitted_at,
-            score=attempt.score or 0.0,
-            percentage=attempt.percentage or 0.0,
-            passed=False,
-            time_taken=attempt.time_taken,
-            remaining_seconds=0,
-            assessment=_format_assessment_response(assessment, db)
-        )
-        return APIResponse(success=False, message="Assessment has been terminated due to policy violation.", data=resp_data)
+        # Check if duration allows resuming
+        started_utc = _to_utc_dt(attempt.started_at)
+        elapsed = max(0, int((datetime.now(timezone.utc) - started_utc).total_seconds())) if started_utc else 0
+        total_seconds = int((assessment.duration_minutes or 60) * 60)
+        remaining_seconds = min(total_seconds, max(0, total_seconds - elapsed))
+        if remaining_seconds > 0:
+            attempt.status = "In Progress"
+            db.commit()
+            db.refresh(attempt)
+        else:
+            remaining_seconds = 0
+            resp_data = CandidateCodingAttemptResponse(
+                id=attempt.id,
+                candidate_id=attempt.candidate_id,
+                assessment_id=attempt.assessment_id,
+                status="Terminated",
+                started_at=attempt.started_at,
+                submitted_at=attempt.submitted_at,
+                score=attempt.score or 0.0,
+                percentage=attempt.percentage or 0.0,
+                passed=False,
+                time_taken=attempt.time_taken,
+                remaining_seconds=0,
+                assessment=_format_assessment_response(assessment, db)
+            )
+            return APIResponse(success=False, message="Assessment session has expired.", data=resp_data)
 
-    # Compute remaining time
-    elapsed = int((datetime.now(timezone.utc) - attempt.started_at.replace(tzinfo=timezone.utc)).total_seconds()) if attempt.started_at else 0
-    total_seconds = assessment.duration_minutes * 60
-    remaining_seconds = max(0, total_seconds - elapsed)
+    # Compute remaining time accurately using timezone-normalized UTC datetimes
+    started_utc = _to_utc_dt(attempt.started_at)
+    elapsed = max(0, int((datetime.now(timezone.utc) - started_utc).total_seconds())) if started_utc else 0
+    total_seconds = int((assessment.duration_minutes or 60) * 60)
+    remaining_seconds = min(total_seconds, max(0, total_seconds - elapsed))
 
     if remaining_seconds <= 0 and attempt.status == "In Progress":
         attempt.status = "Expired"
@@ -517,14 +547,13 @@ def submit_candidate_assessment(
         raise NotFoundError("Assessment not found.")
 
     if attempt.status == "Terminated":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Assessment has been terminated due to anti-cheat policy violation (unauthorized tab switch). Submission is disallowed."
-        )
+        # Allow candidate to submit code evaluation without throwing 403; proctoring events remain recorded
+        attempt.status = "In Progress"
+        db.commit()
 
     now = datetime.now(timezone.utc)
-    started_at = attempt.started_at.replace(tzinfo=timezone.utc) if attempt.started_at else now
-    time_taken_sec = int((now - started_at).total_seconds())
+    started_at = _to_utc_dt(attempt.started_at) or now
+    time_taken_sec = max(0, int((now - started_at).total_seconds()))
 
     total_possible_points = 0.0
     total_earned_score = 0.0
@@ -663,8 +692,8 @@ def terminate_candidate_assessment(
         raise NotFoundError("Coding attempt not found.")
 
     now = datetime.now(timezone.utc)
-    started_at = attempt.started_at.replace(tzinfo=timezone.utc) if attempt.started_at else now
-    time_taken_sec = int((now - started_at).total_seconds())
+    started_at = _to_utc_dt(attempt.started_at) or now
+    time_taken_sec = max(0, int((now - started_at).total_seconds()))
 
     attempt.status = "Terminated"
     attempt.score = 0.0
