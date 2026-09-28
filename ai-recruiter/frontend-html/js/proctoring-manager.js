@@ -218,17 +218,26 @@ class ProctoringManager {
           faceBadge.style.display = "block";
           const preCheckFaceDetector = new ProctorCameraDetector(videoEl, {
             intervalMs: 600,
+            multiFaceDebounceCount: 2,
             onFaceUpdate: (f) => {
               const faceIcon = modalWrapper.querySelector("#chk-face-icon");
               const faceStatus = modalWrapper.querySelector("#chk-face-status");
-              if (f.count >= 1) {
+              if (f.count === 1 && !f.multipleFaces) {
                 faceDetected = true;
                 faceIcon.textContent = "✅";
                 faceStatus.textContent = "Face visible ✓";
                 faceStatus.style.color = "#16a34a";
                 faceBadge.textContent = "✓ Face Detected";
                 faceBadge.style.background = "rgba(16, 185, 129, 0.8)";
+              } else if (f.count > 1 || f.multipleFaces) {
+                faceDetected = false;
+                faceIcon.textContent = "⚠️";
+                faceStatus.textContent = `Multiple faces (${f.count || 2}) detected! Only 1 person permitted.`;
+                faceStatus.style.color = "#ef4444";
+                faceBadge.textContent = `⚠️ Multiple Faces (${f.count || 2})`;
+                faceBadge.style.background = "rgba(239, 68, 68, 0.85)";
               } else {
+                faceDetected = false;
                 faceIcon.textContent = "⚠️";
                 faceStatus.textContent = "Face not detected";
                 faceStatus.style.color = "#ea580c";
@@ -336,6 +345,7 @@ class ProctoringManager {
     if (activeVid) {
       this.cameraDetector = new ProctorCameraDetector(activeVid, {
         intervalMs: 1000,
+        multiFaceDebounceCount: 2,
         noFaceDebounceMs: 5000,
         onFaceUpdate: (f) => this.updateHudFaceStatus(f),
         onNoFaceFlagged: (ev) => {
@@ -348,7 +358,10 @@ class ProctoringManager {
         },
         onMultipleFaces: (ev) => {
           this.logEvent("MULTIPLE_FACES_DETECTED", "high", { face_count: ev.count });
-          this.showToast("⚠️ Multiple Faces Detected", "Multiple faces detected. Please ensure that only you are visible in the camera.", "warning");
+          this.showToast("⚠️ Multiple Faces Detected", `Multiple faces (${ev.count}) detected. Please ensure that only you are visible in the camera.`, "warning");
+        },
+        onMultipleFacesCleared: (ev) => {
+          this.showToast("✓ Face Status Restored", "Only single candidate detected in camera view.", "info");
         },
       });
       this.cameraDetector.start();
@@ -652,9 +665,9 @@ class ProctoringManager {
     if (face.noFaceFlagged) {
       faceIndicator.style.color = "#f97316";
       faceText.textContent = "No Face";
-    } else if (face.multipleFaces) {
+    } else if (face.multipleFaces || (face.count && face.count > 1)) {
       faceIndicator.style.color = "#ef4444";
-      faceText.textContent = `Multiple (${face.count})`;
+      faceText.textContent = `Multiple (${face.count || 2})`;
     } else {
       faceIndicator.style.color = "#10b981";
       faceText.textContent = "Active";

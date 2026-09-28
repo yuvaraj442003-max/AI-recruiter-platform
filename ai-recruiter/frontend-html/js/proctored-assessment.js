@@ -196,16 +196,31 @@ function initActiveMonitoring(attemptId) {
   if (window.ProctorCameraDetector && videoEl) {
     const camDetector = new window.ProctorCameraDetector(videoEl, {
       intervalMs: 1000,
+      multiFaceDebounceCount: 2,
       onFaceUpdate: ({ count, state }) => {
         if (state === "MULTIPLE_FACES") {
-          if (badgeCam) { badgeCam.className = "badge bg-warning text-dark"; badgeCam.innerHTML = `<i class="bi bi-people me-1"></i>${count} Faces`; }
-          showIntegrityToast("⚠️ Multiple faces detected. Please ensure that only you are visible in the camera.");
-          recordProctoringEvent(attemptId, "MULTIPLE_FACES_DETECTED", "high", 0.95, { count });
+          if (badgeCam) {
+            badgeCam.className = "badge bg-warning text-dark";
+            badgeCam.innerHTML = `<i class="bi bi-people me-1"></i>${count} Faces`;
+          }
         } else if (state === "NO_FACE") {
-          if (badgeCam) { badgeCam.className = "badge bg-warning text-dark"; badgeCam.innerHTML = '<i class="bi bi-person-slash me-1"></i>Face Lost'; }
+          if (badgeCam) {
+            badgeCam.className = "badge bg-warning text-dark";
+            badgeCam.innerHTML = '<i class="bi bi-person-slash me-1"></i>Face Lost';
+          }
         } else {
-          if (badgeCam) { badgeCam.className = "badge bg-success"; badgeCam.innerHTML = '<i class="bi bi-camera-video me-1"></i>Camera Active'; }
+          if (badgeCam) {
+            badgeCam.className = "badge bg-success";
+            badgeCam.innerHTML = '<i class="bi bi-camera-video me-1"></i>Camera Active';
+          }
         }
+      },
+      onMultipleFaces: (ev) => {
+        showIntegrityToast(`⚠️ Multiple faces (${ev.count}) detected. Please ensure that only you are visible in the camera.`);
+        recordProctoringEvent(attemptId, "MULTIPLE_FACES_DETECTED", "high", 0.95, { count: ev.count });
+      },
+      onMultipleFacesCleared: (ev) => {
+        showIntegrityToast("✓ Multiple persons cleared: Only single candidate detected.");
       },
       onNoFaceFlagged: (ev) => {
         recordProctoringEvent(attemptId, "NO_FACE_DETECTED", "medium", 0.90, { duration_seconds: ev.duration_seconds });

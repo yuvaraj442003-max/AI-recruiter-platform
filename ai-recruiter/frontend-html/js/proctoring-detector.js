@@ -9,10 +9,12 @@ class ProctorCameraDetector {
     this.videoEl = videoElement;
     this.intervalMs = options.intervalMs || 1000;
     this.noFaceDebounceMs = options.noFaceDebounceMs || 5000; // 5-second debounce before flagging NO_FACE
+    this.multiFaceDebounceCount = options.multiFaceDebounceCount || 2; // 2 consecutive detections (~2s)
     this.onFaceUpdate = options.onFaceUpdate || (() => {});
     this.onNoFaceFlagged = options.onNoFaceFlagged || (() => {});
     this.onFaceReturned = options.onFaceReturned || (() => {});
     this.onMultipleFaces = options.onMultipleFaces || (() => {});
+    this.onMultipleFacesCleared = options.onMultipleFacesCleared || (() => {});
 
     this.timer = null;
     this.faceDetector = null;
@@ -82,10 +84,10 @@ class ProctorCameraDetector {
 
     const now = Date.now();
 
-    // 1. Multiple Faces Handling (requires 5 consecutive seconds of 2+ separate faces)
+    // 1. Multiple Faces Handling (Debounced: requires multiFaceDebounceCount consecutive positive detections)
     if (detectedCount > 1) {
-      this.consecutiveMultiCount++;
-      if (this.consecutiveMultiCount >= 5 && !this.multipleFacesFlagged) {
+      this.consecutiveMultiCount = Math.min(this.multiFaceDebounceCount, this.consecutiveMultiCount + 1);
+      if (this.consecutiveMultiCount >= this.multiFaceDebounceCount && !this.multipleFacesFlagged) {
         this.multipleFacesFlagged = true;
         this.onMultipleFaces({
           count: detectedCount,
@@ -96,8 +98,14 @@ class ProctorCameraDetector {
       }
     } else {
       this.consecutiveMultiCount = Math.max(0, this.consecutiveMultiCount - 1);
-      if (this.consecutiveMultiCount === 0) {
+      if (this.consecutiveMultiCount === 0 && this.multipleFacesFlagged) {
         this.multipleFacesFlagged = false;
+        this.onMultipleFacesCleared({
+          count: detectedCount,
+          event_type: "MULTIPLE_FACES_CLEARED",
+          severity: "info",
+          message: "✓ Multiple faces resolved: Only single candidate detected.",
+        });
       }
     }
 
@@ -135,7 +143,7 @@ class ProctorCameraDetector {
     this.currentFaceCount = detectedCount;
 
     let state = "FACE_DETECTED";
-    if (this.multipleFacesFlagged) {
+    if (this.multipleFacesFlagged || (detectedCount > 1 && this.consecutiveMultiCount >= this.multiFaceDebounceCount)) {
       state = "MULTIPLE_FACES";
     } else if (this.noFaceFlagged) {
       state = "NO_FACE";
@@ -145,8 +153,8 @@ class ProctorCameraDetector {
       count: detectedCount,
       state: state,
       noFaceFlagged: this.noFaceFlagged,
-      multipleFaces: this.multipleFacesFlagged,
-      message: this.multipleFacesFlagged
+      multipleFaces: state === "MULTIPLE_FACES",
+      message: state === "MULTIPLE_FACES"
         ? `Multiple faces (${detectedCount}) detected in camera view!`
         : (this.noFaceFlagged ? "Face not detected" : "Camera Active ✓")
     });
@@ -163,9 +171,9 @@ class ProctorCameraDetector {
       const imgData = this.ctx.getImageData(0, 0, width, height);
       const data = imgData.data;
 
-      // 32 columns x 24 rows grid
-      const gridCols = 32;
-      const gridRows = 24;
+      // 40 columns x 30 rows grid (each cell is 4x4 px)
+      const gridCols = 40;
+      const gridRows = 30;
       const cellW = width / gridCols;
       const cellH = height / gridRows;
       const skinGrid = Array.from({ length: gridRows }, () => Array(gridCols).fill(0));
@@ -176,7 +184,6 @@ class ProctorCameraDetector {
           const startX = Math.floor(c * cellW);
           const startY = Math.floor(r * cellH);
           let skinPixels = 0;
-          const totalSamples = 16;
 
           for (let sy = 0; sy < 4; sy++) {
             for (let sx = 0; sx < 4; sx++) {
@@ -187,18 +194,26 @@ class ProctorCameraDetector {
               const green = data[idx + 1];
               const blue = data[idx + 2];
 
-              // Robust human skin color detector across varied skin tones
-              const isSkin =
-                red > 70 &&
-                green > 40 &&
-                blue > 25 &&
-                red > green &&
-                red > blue &&
-                (red - green) >= 12 &&
-                Math.abs(red - green) <= 130 &&
-                (Math.max(red, green, blue) - Math.min(red, green, blue)) >= 15;
+              // Multi-space skin detection:
+              // 1. Standard YCrCb chromaticity
+              const Y = 0.299 * red + 0.587 * green + 0.114 * blue;
+              const Cr = 0.5 * red - 0.418688 * green - 0.081312 * blue + 128;
+              const Cb = -0.168736 * red - 0.331264 * green + 0.5 * blue + 128;
+              const isSkinYCrCb = (Cr >= 132 && Cr <= 175 && Cb >= 75 && Cb <= 130 && Y >= 25);
 
-              if (isSkin) skinPixels++;
+              // 2. Normalized RGB (inclusive of varied lighting & darker/olive/fair skin tones)
+              const maxRGB = Math.max(red, green, blue);
+              const minRGB = Math.min(red, green, blue);
+              const isSkinRGB = (
+                red > 38 && green > 28 && blue > 20 &&
+                red >= green && (red - minRGB) >= 8 &&
+                (maxRGB - minRGB) >= 10 &&
+                Math.abs(red - green) <= 125
+              );
+
+              if (isSkinYCrCb || isSkinRGB) {
+                skinPixels++;
+              }
             }
           }
 
@@ -210,13 +225,13 @@ class ProctorCameraDetector {
       }
 
       // If virtually no skin detected anywhere in frame
-      if (totalSkinCells < 15) {
+      if (totalSkinCells < 14) {
         return 0;
       }
 
       // 2D Connected Component Analysis (BFS flood-fill)
       const visited = Array.from({ length: gridRows }, () => Array(gridCols).fill(false));
-      const blobs = [];
+      const rawBlobs = [];
 
       for (let r = 0; r < gridRows; r++) {
         for (let c = 0; c < gridCols; c++) {
@@ -253,13 +268,14 @@ class ProctorCameraDetector {
             const blobHeight = maxR - minR + 1;
             const aspectRatio = blobHeight / Math.max(1, blobWidth);
 
-            // Keep blobs that have substantial size and head-like aspect ratio
-            if (cells >= 20 && aspectRatio >= 0.6 && aspectRatio <= 2.8) {
-              blobs.push({
+            // Filter out tiny noise (less than 8 cells)
+            if (cells >= 8) {
+              rawBlobs.push({
                 cells,
                 minC, maxC, minR, maxR,
                 width: blobWidth,
                 height: blobHeight,
+                aspectRatio,
                 centerC: (minC + maxC) / 2,
                 centerR: (minR + maxR) / 2,
               });
@@ -268,32 +284,97 @@ class ProctorCameraDetector {
         }
       }
 
-      // If no well-formed blob was extracted, but skin cells exist, treat as 1 face (candidate)
-      if (blobs.length === 0) {
-        return totalSkinCells >= 20 ? 1 : 0;
+      if (rawBlobs.length === 0) {
+        return totalSkinCells >= 14 ? 1 : 0;
       }
 
-      // If only 1 major blob, candidate is alone
-      if (blobs.length === 1) {
+      // Check if any single large blob contains two merged heads (people leaning close together)
+      // When 2 heads merge, width >= 14 cols (35% screen) and cells >= 40, with a central valley
+      let mergedHeadBonus = 0;
+      for (const b of rawBlobs) {
+        if (b.width >= 14 && b.cells >= 40 && b.aspectRatio <= 1.0) {
+          // Check column histogram within this blob
+          const colCounts = new Array(b.width).fill(0);
+          for (let r = b.minR; r <= b.maxR; r++) {
+            for (let c = b.minC; c <= b.maxC; c++) {
+              if (skinGrid[r][c] === 1) {
+                colCounts[c - b.minC]++;
+              }
+            }
+          }
+          // Find if there are two peaks separated by a valley in skin projection
+          let peaks = 0;
+          for (let i = 2; i < colCounts.length - 2; i++) {
+            if (colCounts[i] > colCounts[i - 1] && colCounts[i] >= colCounts[i + 1] && colCounts[i] >= 4) {
+              peaks++;
+              i += 2; // skip immediate neighbor
+            }
+          }
+          if (peaks >= 2) {
+            mergedHeadBonus++;
+          }
+        }
+      }
+
+      // Sort candidate blobs by size descending
+      rawBlobs.sort((a, b) => b.cells - a.cells);
+
+      // Identify distinct heads vs candidate's own neck/torso/hands
+      const distinctHeads = [];
+
+      for (const blob of rawBlobs) {
+        // Exclude horizontal bottom-edge strips (hands resting on keyboard / desk at bottom 22% of screen)
+        if (blob.minR >= Math.floor(gridRows * 0.78) && blob.aspectRatio < 0.6) {
+          continue;
+        }
+
+        // Check if this blob is vertically stacked directly below an existing head (neck/chest)
+        let isPartOfExistingPerson = false;
+        for (const head of distinctHeads) {
+          const colDiff = Math.abs(blob.centerC - head.centerC);
+          const isDirectlyBelow = blob.minR >= head.minR + 3 && colDiff <= Math.max(head.width, blob.width) * 0.65;
+          const isCloseVertical = Math.hypot(blob.centerC - head.centerC, blob.centerR - head.centerR) < 4.0;
+          if (isDirectlyBelow || isCloseVertical) {
+            isPartOfExistingPerson = true;
+            break;
+          }
+        }
+
+        if (isPartOfExistingPerson) {
+          continue;
+        }
+
+        // To qualify as a distinct head:
+        // Must have reasonable aspect ratio and minimum size
+        if (blob.cells >= 8 && blob.aspectRatio >= 0.45 && blob.aspectRatio <= 3.0) {
+          // Must have spatial separation from all existing heads (at least 3.5 columns horizontally or Euclidean >= 4.5)
+          let hasSufficientSeparation = true;
+          for (const head of distinctHeads) {
+            const hDist = Math.abs(blob.centerC - head.centerC);
+            const eDist = Math.hypot(blob.centerC - head.centerC, blob.centerR - head.centerR);
+            if (hDist < 3.5 && eDist < 4.5) {
+              hasSufficientSeparation = false;
+              break;
+            }
+          }
+
+          if (hasSufficientSeparation) {
+            distinctHeads.push(blob);
+          }
+        }
+      }
+
+      const totalDistinct = distinctHeads.length + mergedHeadBonus;
+
+      if (totalDistinct > 1) {
+        return totalDistinct;
+      }
+
+      if (totalDistinct === 1 || rawBlobs.length > 0 || totalSkinCells >= 14) {
         return 1;
       }
 
-      // Sort by size descending
-      blobs.sort((a, b) => b.cells - a.cells);
-      const b1 = blobs[0];
-      const b2 = blobs[1];
-
-      // To qualify as MULTIPLE FACES:
-      // Both blobs must be large, distinct heads separated horizontally by at least 32% of screen width
-      const centerDistC = Math.abs(b1.centerC - b2.centerC);
-      const minRequiredSeparation = gridCols * 0.32; // ~10 grid columns
-      const bothAreLarge = b1.cells >= 28 && b2.cells >= 28;
-
-      if (bothAreLarge && centerDistC >= minRequiredSeparation) {
-        return 2;
-      }
-
-      return 1;
+      return 0;
     } catch (e) {
       return 1;
     }

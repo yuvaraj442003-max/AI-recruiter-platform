@@ -189,23 +189,23 @@
       if (cameraDetector) cameraDetector.stop();
       cameraDetector = new window.ProctorCameraDetector(proctorVideo, {
         intervalMs: 1000,
+        multiFaceDebounceCount: 2,
         onFaceUpdate: ({ count, state }) => {
           const antiCheatingBadge = document.getElementById("anti-cheating-badge");
           if (state === "MULTIPLE_FACES") {
             camBadge.className = "badge bg-warning text-dark";
             camBadge.textContent = `⚠️ Multiple Faces (${count})`;
-            showAlert("Multiple faces detected. Please ensure that only you are visible in the camera.", "warning");
-            if (window.proctoringAPI && interviewId) {
-              window.proctoringAPI.recordEvent(interviewId, {
-                event_type: "MULTIPLE_FACES_DETECTED",
-                severity: "high",
-                confidence: 0.95,
-                metadata_json: { face_count: count }
-              }).catch(() => {});
+            if (antiCheatingBadge) {
+              antiCheatingBadge.className = "badge bg-warning text-dark px-3 py-2 fw-bold";
+              antiCheatingBadge.textContent = `⚠️ Multiple Persons (${count})`;
             }
           } else if (state === "NO_FACE") {
             camBadge.className = "badge bg-warning text-dark";
             camBadge.textContent = "⚠️ Face Not Detected";
+            if (antiCheatingBadge) {
+              antiCheatingBadge.className = "badge bg-warning text-dark px-3 py-2 fw-bold";
+              antiCheatingBadge.textContent = "⚠️ Candidate Not Visible";
+            }
           } else {
             camBadge.className = "badge bg-success";
             camBadge.textContent = "Camera Active ✓";
@@ -214,6 +214,20 @@
               antiCheatingBadge.textContent = "🔒 Proctoring Active";
             }
           }
+        },
+        onMultipleFaces: (ev) => {
+          showAlert(`⚠️ Multiple faces (${ev.count}) detected. Please ensure that only you are visible in the camera.`, "warning");
+          if (window.proctoringAPI && interviewId) {
+            window.proctoringAPI.recordEvent(interviewId, {
+              event_type: "MULTIPLE_FACES_DETECTED",
+              severity: "high",
+              confidence: 0.95,
+              metadata_json: { face_count: ev.count }
+            }).catch(() => {});
+          }
+        },
+        onMultipleFacesCleared: (ev) => {
+          showAlert("✓ Multiple persons cleared: Only single candidate detected.", "info");
         },
         onNoFaceFlagged: (ev) => {
           showAlert("⚠️ Face absence detected: Candidate not visible in camera frame.", "warning");
