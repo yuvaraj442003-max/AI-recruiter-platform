@@ -325,8 +325,18 @@ _uploads_dir.mkdir(parents=True, exist_ok=True)
 (_uploads_dir / "audio_messages").mkdir(parents=True, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=str(_uploads_dir)), name="uploads")
 
+@app.get("/", tags=["Root"])
 def root():
-    return {"success": True, "message": f"{settings.APP_NAME} API is running", "data": {"version": "0.1.0"}}
+    return {
+        "success": True,
+        "message": f"{settings.APP_NAME} API is running live",
+        "data": {
+            "version": "1.0.0",
+            "documentation": "/docs",
+            "health_check": "/health",
+            "system_status": "/api/v1/system/status"
+        }
+    }
 
 
 @app.get("/health", tags=["Health"])
