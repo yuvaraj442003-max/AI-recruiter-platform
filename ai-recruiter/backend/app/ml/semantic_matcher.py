@@ -53,14 +53,14 @@ def _get_spacy_md():
     try:
         import spacy
         try:
-            _SPACY_MD = spacy.load("en_core_web_md")
+            _SPACY_MD = spacy.load("en_core_web_sm")
         except OSError:
-            import en_core_web_md
-            _SPACY_MD = en_core_web_md.load()
-        logger.info("Semantic matcher: using spaCy en_core_web_md word vectors.")
+            import en_core_web_sm
+            _SPACY_MD = en_core_web_sm.load()
+        logger.info("Semantic matcher: using spaCy en_core_web_sm pipeline.")
     except Exception as exc:
         _SPACY_MD_FAILED = True
-        logger.warning("Semantic matcher: en_core_web_md unavailable (%s). Falling back to TF-IDF.", exc)
+        logger.warning("Semantic matcher: spaCy unavailable (%s). Falling back to TF-IDF.", exc)
     return _SPACY_MD
 
 
