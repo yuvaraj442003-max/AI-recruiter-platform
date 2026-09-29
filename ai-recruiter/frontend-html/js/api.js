@@ -6,7 +6,7 @@
 const API_BASE_URL = window.API_BASE_URL || (
   window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
     ? "http://localhost:8000/api/v1"
-    : "https://ai-recruiter-backend.onrender.com/api/v1" // Replace with your live backend URL
+    : "https://ai-recruiter-platform-production.up.railway.app/api/v1"
 );
 
 const TOKEN_KEYS = {
