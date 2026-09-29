@@ -35,7 +35,10 @@ from app.services.resume_service import (
     seed_skills,
 )
 from app.utils.file_validation import secure_filename
-from xhtml2pdf import pisa
+try:
+    from xhtml2pdf import pisa
+except ImportError:
+    pisa = None
 
 router = APIRouter(prefix="/resumes", tags=["Resumes"])
 

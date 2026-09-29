@@ -45,3 +45,8 @@ httpx==0.27.2  # also used at runtime by app/ai/llm_service.py to call the LLM p
 redis==8.1.0
 fakeredis==2.37.1
 
+# --- PDF Export & Cloud Utilities ---
+xhtml2pdf>=0.2.15
+boto3>=1.34.0
+
+

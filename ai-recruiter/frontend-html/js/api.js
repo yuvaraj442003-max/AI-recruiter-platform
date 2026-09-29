@@ -3,7 +3,11 @@
  * Handles the base URL, attaching the JWT, and normalizing errors
  * so every page can call `await api.post(...)` the same way.
  */
-const API_BASE_URL = "http://localhost:8000/api/v1";
+const API_BASE_URL = window.API_BASE_URL || (
+  window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://localhost:8000/api/v1"
+    : "https://ai-recruiter-backend.onrender.com/api/v1" // Replace with your live backend URL
+);
 
 const TOKEN_KEYS = {
   access: "ar_access_token",

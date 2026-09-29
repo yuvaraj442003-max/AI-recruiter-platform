@@ -45,8 +45,10 @@ def _create_database_engine(url: str):
         )
 
 
+DEFAULT_SQLITE_URL = "sqlite:///./ai_recruiter.db"
+
 # Initialize primary engine based on DATABASE_URL setting
-target_url = settings.DATABASE_URL or settings.POSTGRES_DATABASE_URL or settings.SQLITE_DATABASE_URL
+target_url = (settings.DATABASE_URL or settings.POSTGRES_DATABASE_URL or settings.SQLITE_DATABASE_URL or DEFAULT_SQLITE_URL).strip()
 active_url = target_url
 
 try:
@@ -56,8 +58,9 @@ try:
         conn.execute(text("SELECT 1"))
     logger.info(f"Database connected successfully using: {target_url.split('@')[-1] if '@' in target_url else target_url}")
 except Exception as err:
-    logger.warning(f"Failed to connect to primary database ({target_url}): {err}. Falling back to SQLite database ({settings.SQLITE_DATABASE_URL}).")
-    active_url = settings.SQLITE_DATABASE_URL
+    fallback_url = settings.SQLITE_DATABASE_URL.strip() if settings.SQLITE_DATABASE_URL and settings.SQLITE_DATABASE_URL.strip() else DEFAULT_SQLITE_URL
+    logger.warning(f"Failed to connect to primary database ({target_url}): {err}. Falling back to SQLite database ({fallback_url}).")
+    active_url = fallback_url
     engine = _create_database_engine(active_url)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, future=True)
