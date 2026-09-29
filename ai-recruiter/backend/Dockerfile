@@ -28,6 +28,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir \
     https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl \
     https://github.com/explosion/spacy-models/releases/download/en_core_web_md-3.8.0/en_core_web_md-3.8.0-py3-none-any.whl
+RUN python -m spacy link en_core_web_sm en_core_web_sm --force || true
+RUN python -m spacy link en_core_web_md en_core_web_md --force || true
 
 # Pre-fetch NLTK data at build time so the first request isn't slow/offline-dependent.
 RUN python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab'); nltk.download('stopwords')"

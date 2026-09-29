@@ -35,9 +35,13 @@ def _ensure_nltk_data() -> None:
 
 try:
     NLP = spacy.load("en_core_web_sm")
-except OSError:  # pragma: no cover - model not installed
-    logger.warning("spaCy model 'en_core_web_sm' not found; falling back to a blank English pipeline.")
-    NLP = spacy.blank("en")
+except OSError:
+    try:
+        import en_core_web_sm
+        NLP = en_core_web_sm.load()
+    except Exception:
+        logger.warning("spaCy model 'en_core_web_sm' not found; falling back to a blank English pipeline.")
+        NLP = spacy.blank("en")
 
 _WHITESPACE_RE = re.compile(r"[ \t]+")
 _MULTI_NEWLINE_RE = re.compile(r"\n{3,}")

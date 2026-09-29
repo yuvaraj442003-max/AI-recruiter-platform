@@ -52,8 +52,11 @@ def _get_spacy_md():
         return _SPACY_MD
     try:
         import spacy
-
-        _SPACY_MD = spacy.load("en_core_web_md")
+        try:
+            _SPACY_MD = spacy.load("en_core_web_md")
+        except OSError:
+            import en_core_web_md
+            _SPACY_MD = en_core_web_md.load()
         logger.info("Semantic matcher: using spaCy en_core_web_md word vectors.")
     except Exception as exc:
         _SPACY_MD_FAILED = True
