@@ -387,22 +387,26 @@
         }
       }
 
-      // Populate Edit Form
-      const setVal = (id, val) => {
-        const el = document.getElementById(id);
-        if (el) el.value = val || "";
-      };
-      setVal("edit-cand-headline", p.headline);
-      setVal("edit-cand-role", p.current_role);
-      setVal("edit-cand-photo", p.profile_photo);
-      setVal("edit-cand-location", p.location);
-      setVal("edit-cand-summary", p.summary);
-      setVal("edit-cand-phone", p.phone);
-      setVal("edit-cand-exp", p.experience_years);
-      setVal("edit-cand-certifications", p.certifications);
-      setVal("edit-cand-linkedin", p.linkedin_url);
-      setVal("edit-cand-github", p.github_url);
-      setVal("edit-cand-portfolio", p.portfolio_url);
+      // Populate Edit Form (do not overwrite if candidate is actively editing/typing)
+      const editModal = document.getElementById("editCandProfileModal");
+      const isEditing = editModal && editModal.classList.contains("show");
+      if (!isEditing) {
+        const setVal = (id, val) => {
+          const el = document.getElementById(id);
+          if (el && document.activeElement !== el) el.value = val || "";
+        };
+        setVal("edit-cand-headline", p.headline);
+        setVal("edit-cand-role", p.current_role);
+        setVal("edit-cand-photo", p.profile_photo);
+        setVal("edit-cand-location", p.location);
+        setVal("edit-cand-summary", p.summary);
+        setVal("edit-cand-phone", p.phone);
+        setVal("edit-cand-exp", p.experience_years);
+        setVal("edit-cand-certifications", p.certifications);
+        setVal("edit-cand-linkedin", p.linkedin_url);
+        setVal("edit-cand-github", p.github_url);
+        setVal("edit-cand-portfolio", p.portfolio_url);
+      }
     } catch (e) {
       // Ignore if resume not uploaded yet
     }

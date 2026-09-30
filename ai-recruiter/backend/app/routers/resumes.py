@@ -500,7 +500,23 @@ def update_my_profile(
         .first()
     )
     if not profile:
-        raise NotFoundError("No resume uploaded yet")
+        profile = CandidateProfile(
+            user_id=current_user.id,
+            headline=body.headline or "Candidate",
+            current_role=body.current_role or "Software Professional",
+            location=body.location,
+            phone=body.phone,
+            summary=body.summary,
+            experience_years=body.experience_years or 0,
+            certifications=body.certifications,
+            linkedin_url=body.linkedin_url,
+            github_url=body.github_url,
+            portfolio_url=body.portfolio_url,
+            profile_photo=body.profile_photo,
+        )
+        db.add(profile)
+        db.commit()
+        db.refresh(profile)
 
     update_dict = body.model_dump(exclude_unset=True)
     profile = update_candidate_profile(
