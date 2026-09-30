@@ -80,4 +80,15 @@ class SmtpEmailProvider(BaseEmailProvider):
         except Exception as exc:
             err_str = str(exc)
             logger.error(f"SMTP delivery failed to {to_email}: {err_str}")
+            # Fallback console print so OTP code is never lost if network or SMTP server is unreachable
+            try:
+                print(f"\n==================== [FALLBACK CONSOLE EMAIL (SMTP DELIVERY FAILED)] ====================")
+                print(f"To: {to_email}\nSubject: {subject}\n\n{text_content}")
+                print(f"========================================================================================\n")
+            except Exception:
+                safe_subj = subject.encode('ascii', errors='backslashreplace').decode('ascii')
+                safe_text = text_content.encode('ascii', errors='backslashreplace').decode('ascii')
+                print(f"\n==================== [FALLBACK CONSOLE EMAIL (SMTP DELIVERY FAILED)] ====================")
+                print(f"To: {to_email}\nSubject: {safe_subj}\n\n{safe_text}")
+                print(f"========================================================================================\n")
             return {"success": False, "provider_message_id": None, "error": err_str}
