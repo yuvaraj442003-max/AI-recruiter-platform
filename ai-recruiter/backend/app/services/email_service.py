@@ -25,6 +25,7 @@ from app.services.email_providers.base import BaseEmailProvider
 from app.services.email_providers.smtp_provider import SmtpEmailProvider
 from app.services.email_providers.sendgrid_provider import SendGridEmailProvider
 from app.services.email_providers.ses_provider import SesEmailProvider
+from app.services.email_providers.resend_provider import ResendEmailProvider
 
 try:
     import jinja2
@@ -62,6 +63,8 @@ def get_email_provider() -> BaseEmailProvider:
         return SendGridEmailProvider()
     elif provider_name in ("ses", "aws_ses"):
         return SesEmailProvider()
+    elif provider_name == "resend":
+        return ResendEmailProvider()
     return SmtpEmailProvider()
 
 
