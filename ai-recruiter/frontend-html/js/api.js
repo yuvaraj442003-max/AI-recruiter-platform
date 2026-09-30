@@ -142,8 +142,9 @@ async function request(path, { method = "GET", body, auth = true, _isRetry = fal
       }
 
       Session.clear();
-      const currentPath = window.location.pathname.split("/").pop();
-      if (currentPath && !["login.html", "register.html", "index.html"].includes(currentPath)) {
+      const currentPath = (window.location.pathname.split("/").pop() || "").toLowerCase();
+      const cleanPath = currentPath.replace(/\.html$/, "");
+      if (cleanPath && !["login", "register", "index", ""].includes(cleanPath)) {
         window.location.href = "login.html?expired=1";
       }
     }
@@ -547,16 +548,18 @@ function dashboardUrlForRole(role) {
     const userRole = user?.role || "candidate";
 
     if (reqRole === "candidate" && userRole === "candidate") {
-      const currentFile = window.location.pathname.split("/").pop();
-      if (user?.is_profile_complete === false && currentFile !== "complete-registration.html") {
+      const rawFile = (window.location.pathname.split("/").pop() || "").toLowerCase();
+      const currentClean = rawFile.replace(/\.html$/, "");
+      if (user?.is_profile_complete === false && currentClean !== "complete-registration") {
         window.location.href = "complete-registration.html?onboarding=required";
       }
     } else if (reqRole === "candidate" && userRole !== "candidate") {
       alert("Access Denied: This area is restricted to Candidate accounts. Redirecting to your Recruiter Portal...");
       window.location.href = dashboardUrlForRole(userRole);
     } else if (reqRole === "recruiter" && (userRole === "recruiter" || userRole === "company_admin")) {
-      const currentFile = window.location.pathname.split("/").pop();
-      if (user?.is_profile_complete === false && currentFile !== "recruiter-profile.html") {
+      const rawFile = (window.location.pathname.split("/").pop() || "").toLowerCase();
+      const currentClean = rawFile.replace(/\.html$/, "");
+      if (user?.is_profile_complete === false && currentClean !== "recruiter-profile") {
         window.location.href = "recruiter-profile.html?onboarding=required";
       }
     } else if (reqRole === "recruiter" && userRole !== "recruiter" && userRole !== "company_admin") {
