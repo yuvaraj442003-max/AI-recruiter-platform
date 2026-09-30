@@ -469,7 +469,7 @@ async def bulk_upload_resumes(
     )
 
 
-@router.get("/me", response_model=APIResponse[CandidateProfileResponse])
+@router.get("/me", response_model=APIResponse[Optional[CandidateProfileResponse]])
 def get_my_profile(
     current_user: User = Depends(require_role(UserRole.candidate)),
     db: Session = Depends(get_db),
@@ -481,7 +481,7 @@ def get_my_profile(
         .first()
     )
     if not profile:
-        raise NotFoundError("No resume uploaded yet")
+        return APIResponse(success=True, message="No resume uploaded yet", data=None)
 
     return APIResponse(success=True, message="Candidate profile", data=CandidateProfileResponse.from_profile(profile))
 

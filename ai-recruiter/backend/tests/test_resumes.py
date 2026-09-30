@@ -136,11 +136,11 @@ def test_get_my_profile_after_upload(client):
     assert "Python" in res.json()["data"]["skills"]
 
 
-def test_get_my_profile_without_upload_returns_404(client):
+def test_get_my_profile_without_upload_returns_200_null(client):
     token = _register_candidate(client, "candidate.noresume@example.com")
     res = client.get("/api/v1/resumes/me", headers={"Authorization": f"Bearer {token}"})
-    assert res.status_code == 404
-    assert res.json()["error_code"] == "NOT_FOUND"
+    assert res.status_code == 200
+    assert res.json()["data"] is None
 
 
 def test_recruiter_can_view_candidate_profile_by_id(client):
