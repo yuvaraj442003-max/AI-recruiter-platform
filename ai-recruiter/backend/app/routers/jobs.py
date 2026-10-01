@@ -6,9 +6,10 @@ import uuid
 from typing import Optional
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Query
-from sqlalchemy import or_
+from sqlalchemy import or_, not_
 from sqlalchemy.orm import Session, joinedload
 
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.deps import get_current_user, require_role
 from app.core.exceptions import NotFoundError, PermissionDeniedError
@@ -118,9 +119,23 @@ def list_jobs(
     current_user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
-    query = db.query(Job).options(
-        joinedload(Job.job_skills).joinedload(JobSkill.skill),
-        joinedload(Job.applications),
+    recruiter_filters = [
+        User.is_active == True,
+        User.role.in_([UserRole.recruiter, UserRole.company_admin, UserRole.admin, UserRole.superadmin]),
+        not_(User.email.in_(settings.DEMO_ACCOUNT_EMAILS)),
+    ]
+    if getattr(settings, "ENVIRONMENT", "").lower() == "production":
+        recruiter_filters.append(not_(User.email.ilike("%@example.com")))
+        recruiter_filters.append(not_(User.email.ilike("%@test.com")))
+
+    query = (
+        db.query(Job)
+        .join(User, Job.recruiter_id == User.id)
+        .options(
+            joinedload(Job.job_skills).joinedload(JobSkill.skill),
+            joinedload(Job.applications),
+        )
+        .filter(*recruiter_filters)
     )
 
     if current_user and current_user.role in [UserRole.recruiter, UserRole.admin, UserRole.superadmin]:
@@ -128,7 +143,7 @@ def list_jobs(
     else:
         query = query.filter(Job.status == JobStatus.published)
 
-    if title:
+    if title and isinstance(title, str):
         raw_tokens = [t.strip() for t in title.replace("/", " ").replace("(", " ").replace(")", " ").replace("-", " ").split() if len(t.strip()) > 1]
         tokens = [t for t in raw_tokens if t.lower() not in {"and", "or", "for", "the"}]
         if tokens:
@@ -143,21 +158,21 @@ def list_jobs(
             pattern = f"%{title}%"
             query = query.filter(or_(Job.title.ilike(pattern), Job.description.ilike(pattern), Job.company_name.ilike(pattern)))
 
-    if location:
+    if location and isinstance(location, str):
         query = query.filter(Job.location.ilike(f"%{location}%"))
-    if employment_type:
+    if employment_type and isinstance(employment_type, str):
         query = query.filter(Job.employment_type == employment_type)
-    if work_mode:
+    if work_mode and isinstance(work_mode, str):
         query = query.filter(Job.description.ilike(f"%{work_mode}%"))
 
-    if skills:
+    if skills and isinstance(skills, str):
         skill_list = [s.strip().lower() for s in skills.split(",") if s.strip()]
         if skill_list:
             query = query.join(Job.job_skills).join(JobSkill.skill).filter(
                 or_(*[JobSkill.skill.has(skill_name=s) for s in skill_list])
             )
 
-    if verified_only:
+    if verified_only and isinstance(verified_only, bool) and verified_only:
         verified_companies = db.query(Company.name).filter(Company.verification_status.in_(["domain_verified", "government_verified"])).all()
         v_names = [c[0] for c in verified_companies if c[0]]
         if v_names:

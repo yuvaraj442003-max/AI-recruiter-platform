@@ -9,7 +9,10 @@ import uuid
 
 logger = logging.getLogger("ai_recruiter.services.job_service")
 
+from sqlalchemy import not_
 from sqlalchemy.orm import Session, joinedload
+
+from app.core.config import settings
 
 from app.core.exceptions import AppError, ConflictError, NotFoundError
 from app.ml.ranking import compute_match
@@ -397,10 +400,21 @@ def recommend_jobs_for_candidate(db: Session, candidate_user_id, limit: int = 10
     if not profile:
         return []
 
+    recruiter_filters = [
+        Job.status == JobStatus.published,
+        User.is_active == True,
+        User.role.in_([UserRole.recruiter, UserRole.company_admin, UserRole.admin, UserRole.superadmin]),
+        not_(User.email.in_(settings.DEMO_ACCOUNT_EMAILS)),
+    ]
+    if getattr(settings, "ENVIRONMENT", "").lower() == "production":
+        recruiter_filters.append(not_(User.email.ilike("%@example.com")))
+        recruiter_filters.append(not_(User.email.ilike("%@test.com")))
+
     jobs = (
         db.query(Job)
+        .join(User, Job.recruiter_id == User.id)
         .options(joinedload(Job.job_skills).joinedload(JobSkill.skill))
-        .filter(Job.status == JobStatus.published)
+        .filter(*recruiter_filters)
         .all()
     )
 

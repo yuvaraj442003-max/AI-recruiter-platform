@@ -333,7 +333,7 @@
       const items = res.data;
       if (!items || !items.length) {
         recommendedListEl.innerHTML =
-          '<div class="col-12"><div class="p-3 text-center border rounded bg-white text-secondary small">No recommendations available yet. <a href="upload-resume.html">Upload your resume</a> to unlock AI-matched job recommendations.</div></div>';
+          '<div class="col-12"><div class="card p-4 text-center border-0 shadow-sm rounded-4 bg-white"><div class="fs-1 mb-2">🎯</div><h6 class="fw-bold text-dark mb-1">No Recommended Jobs Available</h6><p class="text-secondary small mb-0">No recruiter-created jobs currently match your target role or resume skills. As recruiters post new job openings, personalized recommendations will appear here automatically.</p></div></div>';
         return;
       }
 
@@ -352,7 +352,7 @@
       attachCardHandlers(recommendedListEl);
     } catch (err) {
       recommendedListEl.innerHTML =
-        '<div class="col-12"><div class="p-3 text-center border rounded bg-white text-secondary small">Upload your resume to unlock AI-matched job recommendations. <a href="upload-resume.html">Upload Resume →</a></div></div>';
+        '<div class="col-12"><div class="card p-4 text-center border-0 shadow-sm rounded-4 bg-white"><div class="fs-1 mb-2">📄</div><h6 class="fw-bold text-dark mb-1">Upload Resume for Role Recommendations</h6><p class="text-secondary small mb-3">Upload your resume to get matched against active recruiter job postings based on your verified skills and experience.</p><a href="upload-resume.html" class="btn btn-sm btn-primary fw-semibold px-3 py-2 align-self-center">Upload Resume Now &rarr;</a></div></div>';
     }
   }
 
@@ -364,9 +364,9 @@
 
     if (!totalCount) {
       jobListEl.innerHTML =
-        '<div class="col-12"><div class="card p-4 text-center border shadow-sm bg-white"><div class="fs-2 mb-2">💼</div><h6 class="fw-bold text-dark mb-1">No Jobs Found</h6><p class="text-secondary small mb-0">No active job postings are available right now. Please check back soon or try another search role/keyword!</p></div></div>';
+        '<div class="col-12"><div class="card p-5 text-center border-0 shadow-sm bg-white rounded-4"><div class="fs-1 mb-2">💼</div><h5 class="fw-bold text-dark mb-1">No Recruiter Jobs Found</h5><p class="text-secondary small mb-0">There are currently no active job postings created by recruiters matching your search criteria. Only real jobs posted and published by recruiters will appear here.</p></div></div>';
       if (offcanvasJobListEl) {
-        offcanvasJobListEl.innerHTML = '<div class="text-muted py-3 text-center small">No job postings available.</div>';
+        offcanvasJobListEl.innerHTML = '<div class="text-muted py-4 text-center small"><div class="fs-3 mb-1">💼</div>No recruiter job postings available.</div>';
       }
       if (jobsDisplayInfo) jobsDisplayInfo.textContent = "Showing 0 jobs";
       if (hamburgerToggleRemainingBtn) hamburgerToggleRemainingBtn.classList.add("d-none");
