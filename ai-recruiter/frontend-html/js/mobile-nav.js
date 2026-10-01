@@ -10,8 +10,26 @@ document.addEventListener("DOMContentLoaded", () => {
   initResponsiveTables();
   initResponsiveMessages();
   initResponsiveModals();
+  handleResize();
+  window.addEventListener("resize", handleResize);
 });
 
+/**
+ * Handle window resize — reset sidebar state when transitioning to desktop
+ */
+function handleResize() {
+  if (window.innerWidth >= 768) {
+    const sidebar = document.querySelector("nav.d-none.d-md-flex, nav#unified-messages-sidebar, nav[class*='sidebar']");
+    const backdrop = document.querySelector(".mobile-sidebar-backdrop");
+    if (sidebar) sidebar.classList.remove("mobile-sidebar-open");
+    if (backdrop) backdrop.classList.remove("show");
+    document.body.classList.remove("mobile-sidebar-active");
+  }
+}
+
+/**
+ * Initialize mobile sidebar drawer with backdrop, close button, and toggle
+ */
 function initMobileSidebar() {
   const sidebar = document.querySelector("nav.d-none.d-md-flex, nav#unified-messages-sidebar, nav[class*='sidebar']");
   if (!sidebar) return;
@@ -24,28 +42,45 @@ function initMobileSidebar() {
     document.body.appendChild(backdrop);
   }
 
-  // Ensure sidebar has a mobile close button inside if missing
+  // Add a close button inside the sidebar if missing
   if (!sidebar.querySelector(".mobile-sidebar-close")) {
     const closeBtn = document.createElement("button");
     closeBtn.type = "button";
-    closeBtn.className = "btn-close d-md-none mobile-sidebar-close p-2 border rounded-circle bg-light ms-auto";
+    closeBtn.className = "btn-close d-md-none mobile-sidebar-close";
     closeBtn.setAttribute("aria-label", "Close navigation drawer");
-    
-    // Insert at top of sidebar
-    const firstChild = sidebar.firstElementChild;
-    if (firstChild) {
-      if (firstChild.classList.contains("navbar-brand") || firstChild.classList.contains("d-flex")) {
-        firstChild.classList.add("justify-content-between");
-        firstChild.appendChild(closeBtn);
-      } else {
-        const topHeader = document.createElement("div");
-        topHeader.className = "d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom d-md-none";
-        topHeader.innerHTML = `<span class="fw-bold fs-6 text-dark">Menu Navigation</span>`;
-        topHeader.appendChild(closeBtn);
-        sidebar.insertBefore(topHeader, firstChild);
-      }
+
+    // Find existing brand element in sidebar
+    const brand = sidebar.querySelector(".navbar-brand");
+    if (brand) {
+      // Make the brand row a flex container with close button
+      brand.classList.add("justify-content-between", "w-100");
+      brand.style.position = "relative";
+      // Wrap existing brand content and append close button as sibling
+      const brandWrapper = document.createElement("div");
+      brandWrapper.className = "d-flex align-items-center justify-content-between w-100 mb-2 pb-2 border-bottom d-md-none";
+      brandWrapper.style.cssText = "min-height: 36px;";
+      
+      const brandLabel = document.createElement("span");
+      brandLabel.className = "fw-bold text-dark";
+      brandLabel.style.cssText = "font-size: 0.95rem;";
+      brandLabel.textContent = brand.textContent.trim();
+      
+      brandWrapper.appendChild(brandLabel);
+      brandWrapper.appendChild(closeBtn);
+      sidebar.insertBefore(brandWrapper, sidebar.firstChild);
+    } else {
+      // No brand — create a standalone header with close button
+      const topHeader = document.createElement("div");
+      topHeader.className = "d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom d-md-none";
+      topHeader.style.cssText = "min-height: 36px;";
+      const menuLabel = document.createElement("span");
+      menuLabel.className = "fw-bold small text-dark";
+      menuLabel.textContent = "Navigation";
+      topHeader.appendChild(menuLabel);
+      topHeader.appendChild(closeBtn);
+      sidebar.insertBefore(topHeader, sidebar.firstChild);
     }
-    
+
     closeBtn.addEventListener("click", closeMobileSidebar);
   }
 
@@ -53,12 +88,20 @@ function initMobileSidebar() {
   backdrop.addEventListener("click", closeMobileSidebar);
 
   // Close sidebar when any nav link inside sidebar is clicked on mobile
-  sidebar.querySelectorAll(".nav-link, a").forEach(link => {
+  sidebar.querySelectorAll(".nav-link, a[href]").forEach(link => {
     link.addEventListener("click", () => {
       if (window.innerWidth < 768) {
-        closeMobileSidebar();
+        // Small delay so the click registers before closing
+        setTimeout(closeMobileSidebar, 100);
       }
     });
+  });
+
+  // Close on Escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && sidebar.classList.contains("mobile-sidebar-open")) {
+      closeMobileSidebar();
+    }
   });
 
   function closeMobileSidebar() {
@@ -68,6 +111,9 @@ function initMobileSidebar() {
   }
 }
 
+/**
+ * Add mobile hamburger menu toggle button to the header
+ */
 function initResponsiveHeader() {
   const header = document.querySelector("main header, .flex-grow-1 > header, .interview-header, .top-header");
   const sidebar = document.querySelector("nav.d-none.d-md-flex, nav#unified-messages-sidebar, nav[class*='sidebar']");
@@ -80,9 +126,10 @@ function initResponsiveHeader() {
   if (sidebar && !header.querySelector(".mobile-sidebar-toggler")) {
     const toggleBtn = document.createElement("button");
     toggleBtn.type = "button";
-    toggleBtn.className = "btn btn-sm btn-outline-secondary d-md-none mobile-sidebar-toggler me-2 flex-shrink-0 d-inline-flex align-items-center gap-1 shadow-sm";
-    toggleBtn.innerHTML = `<span>☰</span> <span class="fw-semibold">Menu</span>`;
+    toggleBtn.className = "btn btn-sm btn-outline-secondary d-md-none mobile-sidebar-toggler d-inline-flex align-items-center gap-1 shadow-sm";
+    toggleBtn.innerHTML = `<span style="font-size: 1.1rem; line-height: 1;">☰</span> <span class="fw-semibold">Menu</span>`;
     toggleBtn.setAttribute("aria-label", "Toggle navigation menu");
+    toggleBtn.style.cssText = "border-radius: 8px; border-color: #cbd5e1; color: #475569;";
 
     // Insert toggle button at top left of header
     header.insertBefore(toggleBtn, header.firstChild);

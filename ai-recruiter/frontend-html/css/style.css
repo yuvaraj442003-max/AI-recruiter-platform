@@ -1190,63 +1190,109 @@ nav.sticky-top {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
+  pointer-events: none;
 }
 
 .mobile-sidebar-backdrop.show {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
 body.mobile-sidebar-active {
   overflow: hidden !important;
 }
 
+/* Mobile sidebar close button styling */
+.mobile-sidebar-close {
+  width: 32px;
+  height: 32px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50% !important;
+  background: rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  font-size: 0.7rem !important;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.mobile-sidebar-close:hover {
+  background: rgba(0, 0, 0, 0.12) !important;
+}
+
+/* =====================
+   MOBILE (< 768px)
+   ===================== */
 @media (max-width: 767.98px) {
-  /* Mobile Header Bar Optimization */
+  /* ---- Mobile Header Bar ---- */
   main header,
   .flex-grow-1 > header,
   .mobile-header-bar {
-    padding: 0.65rem 0.85rem !important;
+    padding: 0.5rem 0.75rem !important;
     flex-wrap: wrap !important;
-    gap: 0.5rem !important;
+    gap: 0.4rem !important;
     align-items: center !important;
+  }
+
+  /* Header inner flex containers should wrap and space properly */
+  main header > div,
+  .flex-grow-1 > header > div {
+    flex-wrap: wrap !important;
+    gap: 0.35rem !important;
   }
 
   main header .h5,
   main header h1,
   header h1.h5,
   header .h5 {
-    font-size: 1.15rem !important;
+    font-size: 1rem !important;
     font-weight: 700 !important;
     line-height: 1.3 !important;
     margin-bottom: 0 !important;
     word-break: normal !important;
     overflow-wrap: break-word !important;
-    width: 100% !important;
-    flex: 1 1 100% !important;
     white-space: normal !important;
-    margin-top: 0.25rem !important;
+    margin-top: 0 !important;
+    order: 2;
   }
 
-  main header #user-greeting {
+  /* Hide greeting text on mobile */
+  main header #user-greeting,
+  header #user-greeting {
     display: none !important;
   }
 
+  /* Header badges */
+  main header .badge,
+  header .badge.bg-primary-subtle,
+  header .badge.bg-success-subtle {
+    font-size: 0.65rem !important;
+    padding: 0.2rem 0.5rem !important;
+    order: 1;
+  }
+
+  /* Header buttons */
   header .btn,
   header a.btn {
     height: auto !important;
     align-self: center !important;
     white-space: nowrap !important;
-    padding: 0.4rem 0.75rem !important;
-    font-size: 0.825rem !important;
+    padding: 0.3rem 0.6rem !important;
+    font-size: 0.78rem !important;
+    flex-shrink: 0;
   }
 
+  /* Mobile sidebar toggle */
   header .mobile-sidebar-toggler {
-    font-size: 0.85rem !important;
-    padding: 0.35rem 0.65rem !important;
+    font-size: 0.8rem !important;
+    padding: 0.3rem 0.55rem !important;
+    order: 0;
+    flex-shrink: 0;
   }
 
-  /* Mobile Sidebar Offcanvas Transformation */
+  /* ---- Mobile Sidebar Offcanvas ---- */
   nav.d-none.d-md-flex,
   nav#unified-messages-sidebar,
   nav[class*="sidebar"] {
@@ -1254,138 +1300,418 @@ body.mobile-sidebar-active {
     top: 0 !important;
     left: 0 !important;
     height: 100vh !important;
-    width: 290px !important;
-    max-width: 85vw !important;
+    height: 100dvh !important;
+    width: 280px !important;
+    max-width: 82vw !important;
     z-index: 1050 !important;
-    background: var(--ar-card-bg) !important;
+    background: #ffffff !important;
     transform: translateX(-100%);
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 0 35px rgba(0, 0, 0, 0.35) !important;
+    box-shadow: 4px 0 30px rgba(0, 0, 0, 0.25) !important;
     display: flex !important;
     flex-direction: column !important;
-    padding: 1.25rem 1rem !important;
+    padding: 1rem 0.85rem !important;
     overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
   }
 
   nav.mobile-sidebar-open {
     transform: translateX(0) !important;
   }
 
+  /* Sidebar nav links */
   .nav-pills .nav-link {
-    padding: 0.75rem 1rem !important;
-    font-size: 0.925rem !important;
+    padding: 0.65rem 0.85rem !important;
+    font-size: 0.875rem !important;
     font-weight: 600 !important;
-    border-radius: 0.75rem !important;
+    border-radius: 0.65rem !important;
     display: flex !important;
     align-items: center !important;
-    gap: 0.75rem !important;
+    gap: 0.6rem !important;
     white-space: nowrap !important;
   }
 
-  /* Card & Banner Padding Fixes */
-  .card,
-  .glass-card,
-  .glass-card-v2,
-  .glass-card-v3,
-  .hero-section,
-  #overview-section {
-    padding: 1.15rem !important;
-    border-radius: 16px !important;
+  .nav-pills .nav-item {
+    width: 100%;
   }
 
-  .card h1, .card h2, .card h3, .card h4,
-  #overview-section h2, #overview-section h3 {
-    font-size: 1.3rem !important;
-    line-height: 1.35 !important;
-    white-space: normal !important;
-    word-break: normal !important;
-    overflow-wrap: break-word !important;
+  /* Sidebar brand */
+  nav .navbar-brand {
+    font-size: 1rem !important;
+    margin-bottom: 0.75rem !important;
+    padding: 0.25rem 0.5rem !important;
   }
 
-  .card p, #overview-section p {
-    font-size: 0.875rem !important;
-    line-height: 1.5 !important;
+  nav .navbar-brand .fs-4 {
+    font-size: 1.2rem !important;
   }
 
-  /* Action buttons inside banners stack cleanly */
-  #overview-section .d-flex.flex-wrap,
-  .card-body .d-flex.flex-wrap {
-    flex-direction: column !important;
-    width: 100% !important;
-    gap: 0.5rem !important;
+  nav .navbar-brand .fs-5 {
+    font-size: 0.95rem !important;
   }
 
-  #overview-section .btn,
-  .card-body .btn {
-    width: 100% !important;
-    text-align: center !important;
-    justify-content: center !important;
+  /* Sidebar logout button */
+  nav .mt-auto {
+    margin-top: auto !important;
+    padding-top: 0.75rem !important;
   }
 
-  /* Quick Jump Navigation Bar */
-  .card.sticky-top {
-    top: 60px !important;
+  nav .mt-auto .btn {
+    font-size: 0.85rem !important;
+    padding: 0.5rem 0.75rem !important;
   }
 
-  /* Metric Cards & Stat Grids */
-  .stat-card, .metric-card-indigo, .metric-card-emerald, .metric-card-amber, .metric-card-purple {
-    padding: 0.75rem 0.85rem !important;
+  /* ---- Main Content Area ---- */
+  .container-fluid {
+    padding: 0.75rem !important;
+  }
+
+  .container-fluid.p-4 {
+    padding: 0.75rem !important;
+  }
+
+  /* ---- Cards & Panels ---- */
+  .card {
     border-radius: 14px !important;
   }
 
+  .card.p-4,
+  .card.p-3 {
+    padding: 0.85rem !important;
+  }
+
+  .card-body {
+    padding: 0.85rem !important;
+  }
+
+  .card-body.p-4 {
+    padding: 0.85rem !important;
+  }
+
+  .glass-card,
+  .glass-card-v2,
+  .glass-card-v3 {
+    border-radius: 14px !important;
+    padding: 0.85rem !important;
+  }
+
+  /* ---- Card Headings ---- */
+  .card h1, .card h2, .card .display-6 {
+    font-size: 1.15rem !important;
+    line-height: 1.35 !important;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .card h3, .card h4, .card h5 {
+    font-size: 0.95rem !important;
+    line-height: 1.35 !important;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .card h6 {
+    font-size: 0.85rem !important;
+  }
+
+  .card p {
+    font-size: 0.82rem !important;
+    line-height: 1.5 !important;
+  }
+
+  /* ---- Hero/Overview Welcome Banner ---- */
+  #overview-section,
+  .card[style*="linear-gradient"][style*="border-radius: 24px"] {
+    border-radius: 16px !important;
+  }
+
+  #overview-section .card-body,
+  #overview-section .card-body.p-4,
+  #overview-section .card-body.p-md-5 {
+    padding: 1rem !important;
+  }
+
+  #overview-section h2,
+  #overview-section .display-6 {
+    font-size: 1.15rem !important;
+    line-height: 1.3 !important;
+  }
+
+  #overview-section p {
+    font-size: 0.82rem !important;
+    line-height: 1.5 !important;
+  }
+
+  #overview-section .badge {
+    font-size: 0.7rem !important;
+    padding: 0.25rem 0.6rem !important;
+  }
+
+  /* Action button rows in banners - stack vertically */
+  #overview-section .d-flex.flex-wrap,
+  .card-body .d-flex.flex-wrap.gap-3,
+  .card-body .d-flex.flex-wrap.gap-2 {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 0.45rem !important;
+  }
+
+  #overview-section .d-flex.flex-wrap .btn,
+  #overview-section .d-flex.flex-wrap a.btn {
+    width: 100% !important;
+    text-align: center !important;
+    justify-content: center !important;
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.82rem !important;
+  }
+
+  /* ---- Profile Banner Card ---- */
+  .card .d-flex.justify-content-between.align-items-end {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.75rem !important;
+  }
+
+  .card .d-flex.align-items-end.gap-3 {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center;
+    width: 100%;
+  }
+
+  /* Profile photo */
+  .avatar-glow-indigo,
+  .avatar-glow-emerald {
+    width: 72px !important;
+    height: 72px !important;
+    margin-top: -36px !important;
+  }
+
+  /* Profile name/headline area */
+  .card .d-flex.align-items-end.gap-3 > div {
+    text-align: center;
+    width: 100%;
+  }
+
+  .card .d-flex.align-items-end.gap-3 h3 {
+    font-size: 1.1rem !important;
+  }
+
+  .card .d-flex.align-items-end.gap-3 p {
+    font-size: 0.8rem !important;
+  }
+
+  /* Profile action buttons */
+  .card .d-flex.gap-2:has(> a.btn, > button.btn) {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 0.4rem !important;
+  }
+
+  .card .d-flex.gap-2 > a.btn,
+  .card .d-flex.gap-2 > button.btn {
+    width: 100% !important;
+    text-align: center !important;
+    justify-content: center !important;
+    font-size: 0.82rem !important;
+  }
+
+  /* Social links row */
+  .card .d-flex.flex-wrap.gap-2.pt-3 {
+    justify-content: center !important;
+  }
+
+  /* ---- Header flex rows inside cards ---- */
+  .card .d-flex.justify-content-between.align-items-center {
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+  }
+
+  .card .d-flex.justify-content-between.align-items-center > div {
+    width: 100% !important;
+    flex-shrink: 1 !important;
+  }
+
+  .card .d-flex.justify-content-between.align-items-center > .d-flex.align-items-center.gap-2 {
+    flex-wrap: wrap !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+
+  /* ---- Quick Jump Navigation Bar ---- */
+  .card.sticky-top {
+    top: 52px !important;
+    padding: 0.6rem !important;
+  }
+
+  .card.sticky-top .d-flex.overflow-auto {
+    gap: 0.35rem !important;
+    padding-bottom: 0.25rem !important;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .card.sticky-top .d-flex.overflow-auto::-webkit-scrollbar {
+    display: none;
+  }
+
+  .card.sticky-top .fw-bold.small {
+    font-size: 0.7rem !important;
+    white-space: nowrap;
+  }
+
+  .card.sticky-top .btn-sm {
+    font-size: 0.68rem !important;
+    padding: 0.25rem 0.5rem !important;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ---- Stat Cards / Metric Cards ---- */
+  .stat-card,
+  .metric-card-indigo,
+  .metric-card-emerald,
+  .metric-card-amber,
+  .metric-card-purple {
+    padding: 0.65rem !important;
+    border-radius: 12px !important;
+  }
+
   .stat-value {
-    font-size: 1.35rem !important;
+    font-size: 1.2rem !important;
   }
 
-  .text-muted-custom, .stat-card .small {
-    font-size: 0.75rem !important;
+  .text-muted-custom,
+  .stat-card .small,
+  .stat-card .fw-medium.small {
+    font-size: 0.7rem !important;
   }
 
-  /* Table Responsive Scrolling & Touch Fixes */
+  .stat-card .fs-4 {
+    font-size: 1.1rem !important;
+  }
+
+  .stat-card .d-flex.align-items-center.gap-2 {
+    gap: 0.35rem !important;
+  }
+
+  /* ---- ATS Funnel Header ---- */
+  .d-flex.align-items-center.justify-content-between {
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+  }
+
+  .d-flex.align-items-center.justify-content-between > h4 {
+    width: 100% !important;
+    font-size: 0.95rem !important;
+  }
+
+  .d-flex.align-items-center.justify-content-between > .d-flex.align-items-center.gap-2 {
+    flex-wrap: wrap !important;
+    width: 100% !important;
+    gap: 0.4rem !important;
+  }
+
+  /* ---- Banner gradient height ---- */
+  .card > div[style*="height: 150px"] {
+    height: 100px !important;
+  }
+
+  /* ---- Charts ---- */
+  canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* ---- Best Suited Job Card ---- */
+  #dash-best-role-card .d-flex.justify-content-between {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+  }
+
+  #dash-best-role-card .text-end {
+    text-align: left !important;
+    width: 100%;
+  }
+
+  #dash-best-role-card .display-6 {
+    font-size: 1.5rem !important;
+  }
+
+  #dash-best-role-card .fs-1 {
+    font-size: 1.5rem !important;
+  }
+
+  /* ---- ATS Analysis Card ---- */
+  #dash-ats-analysis-card .col-lg-5,
+  #dash-ats-analysis-card .col-lg-7 {
+    border-right: none !important;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #dash-ats-analysis-card .col-lg-7 {
+    border-bottom: none;
+  }
+
+  #dash-ats-analysis-card .display-4 {
+    font-size: 1.8rem !important;
+  }
+
+  /* ---- Table Responsive ---- */
   .table-responsive {
     -webkit-overflow-scrolling: touch;
     border-radius: var(--ar-radius-sm);
+    margin: 0 -0.5rem;
+    padding: 0 0.5rem;
   }
 
+  table.table td,
+  table.table th,
   .table-custom td,
   .table-custom th {
-    padding: 0.65rem 0.75rem !important;
-    font-size: 0.825rem !important;
+    padding: 0.5rem 0.6rem !important;
+    font-size: 0.78rem !important;
+    white-space: nowrap;
   }
 
-  /* Modals Full Mobile Compatibility */
+  table.table thead th {
+    font-size: 0.7rem !important;
+  }
+
+  /* ---- Modals ---- */
   .modal-dialog {
-    margin: 0.5rem !important;
-    max-width: calc(100% - 1rem) !important;
+    margin: 0.35rem !important;
+    max-width: calc(100% - 0.7rem) !important;
   }
 
   .modal-body,
   .modal-header,
   .modal-footer {
-    padding: 1rem !important;
+    padding: 0.85rem !important;
   }
 
-  /* Code Editors & Assessment Panels */
+  .modal-title {
+    font-size: 1rem !important;
+  }
+
+  /* ---- Code Editors / Assessment Panels ---- */
   .main-workspace {
     height: auto !important;
     min-height: calc(100vh - 56px);
+    flex-direction: column !important;
   }
 
   .left-panel,
   .right-panel {
     height: auto !important;
     max-height: none !important;
+    width: 100% !important;
   }
 
-  /* Candidate Profile Banners */
-  .avatar-glow-indigo,
-  .avatar-glow-emerald {
-    width: 80px !important;
-    height: 80px !important;
-    margin-top: -40px !important;
-  }
-
-  /* Search & Filter Containers */
+  /* ---- Search & Filter Containers ---- */
   .input-group {
     flex-wrap: wrap !important;
   }
@@ -1393,68 +1719,461 @@ body.mobile-sidebar-active {
   .input-group > .btn {
     flex: 1 1 auto !important;
   }
+
+  /* ---- Filter bar row (recruiter dashboard) ---- */
+  .card .row.g-3 .col-md-4 {
+    margin-bottom: 0.25rem;
+  }
+
+  /* ---- Buttons Global ---- */
+  .btn {
+    padding: 0.4rem 0.7rem !important;
+    font-size: 0.82rem !important;
+  }
+
+  .btn-lg {
+    padding: 0.5rem 0.85rem !important;
+    font-size: 0.88rem !important;
+  }
+
+  .btn-sm {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* ---- Badges Global ---- */
+  .badge {
+    font-size: 0.68rem !important;
+    padding: 0.2rem 0.45rem !important;
+  }
+
+  /* ---- Form elements ---- */
+  .form-select,
+  .form-control {
+    font-size: 0.85rem !important;
+    padding: 0.4rem 0.6rem !important;
+  }
+
+  .form-label {
+    font-size: 0.8rem !important;
+  }
+
+  /* ---- Row/column gap overrides ---- */
+  .row.g-3 {
+    --bs-gutter-x: 0.5rem;
+    --bs-gutter-y: 0.5rem;
+  }
+
+  .row.g-4 {
+    --bs-gutter-x: 0.5rem;
+    --bs-gutter-y: 0.75rem;
+  }
+
+  /* ---- Recruiter Workspace Tool Cards ---- */
+  #quick-tools-section .col-md-6.col-lg-3 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
+  #quick-tools-section .card {
+    padding: 0.75rem !important;
+  }
+
+  #quick-tools-section .card .fs-1 {
+    font-size: 1.5rem !important;
+    margin-bottom: 0.35rem !important;
+  }
+
+  #quick-tools-section .card h5 {
+    font-size: 0.82rem !important;
+    margin-bottom: 0.35rem !important;
+  }
+
+  #quick-tools-section .card p {
+    font-size: 0.72rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* ---- Display typography ---- */
+  .display-1 { font-size: 2rem !important; }
+  .display-2 { font-size: 1.8rem !important; }
+  .display-3 { font-size: 1.6rem !important; }
+  .display-4 { font-size: 1.35rem !important; }
+  .display-5 { font-size: 1.15rem !important; }
+  .display-6 { font-size: 1rem !important; }
+
+  /* ---- Progress bars ---- */
+  .progress {
+    height: 6px !important;
+  }
+
+  /* ---- Coding Assessment Card section ---- */
+  .card .d-flex.justify-content-between.align-items-center.mb-3 {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+
+  /* ---- Messages page fixes ---- */
+  #messages-sidebar {
+    min-height: auto !important;
+  }
+
+  /* ---- Interview/Calendar pages ---- */
+  .status-bar {
+    flex-wrap: wrap !important;
+    gap: 0.35rem !important;
+    padding: 0.5rem !important;
+  }
 }
 
+/* =====================
+   TABLET (< 992px)
+   ===================== */
 @media (max-width: 991.98px) {
-  /* Fluid Display Typography Scaling */
-  .display-1 { font-size: calc(2.2rem + 1.5vw) !important; }
-  .display-2 { font-size: calc(2rem + 1.2vw) !important; }
-  .display-3 { font-size: calc(1.8rem + 1vw) !important; }
-  .display-4 { font-size: calc(1.5rem + 0.8vw) !important; }
+  /* Fluid typography scaling */
+  .display-1 { font-size: calc(2rem + 1.2vw) !important; }
+  .display-2 { font-size: calc(1.8rem + 1vw) !important; }
+  .display-3 { font-size: calc(1.6rem + 0.8vw) !important; }
+  .display-4 { font-size: calc(1.4rem + 0.6vw) !important; }
 
-  /* Hero Section Typography & Action Wrappers */
+  /* Hero typography */
   .hero-section h1 {
-    font-size: clamp(1.8rem, 5vw, 3.2rem) !important;
+    font-size: clamp(1.6rem, 4vw, 2.8rem) !important;
   }
 
   .hero-section p.lead {
-    font-size: 1rem !important;
+    font-size: 0.95rem !important;
   }
 
-  /* Live Interview Stage Stacking */
+  /* Live Interview Stage */
   .main-stage {
     height: auto !important;
     min-height: calc(100vh - 60px);
   }
 
-  /* Split Search Filters Collapse */
+  /* Search Filters */
   .search-filter-sidebar {
     position: relative !important;
     width: 100% !important;
     margin-bottom: 1.5rem;
   }
+
+  /* Recruiter workspace tool cards - 2 per row */
+  #quick-tools-section .col-lg-3 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
+  /* Container padding */
+  .container-fluid.p-4 {
+    padding: 1rem !important;
+  }
 }
 
+/* =====================
+   SMALL PHONES (< 576px)
+   ===================== */
 @media (max-width: 575.98px) {
   .container,
   .container-fluid {
-    padding-left: 0.75rem !important;
-    padding-right: 0.75rem !important;
+    padding-left: 0.6rem !important;
+    padding-right: 0.6rem !important;
   }
 
-  .card-body {
-    padding: 1rem !important;
+  /* Tighter card padding */
+  .card.p-4,
+  .card.p-3 {
+    padding: 0.7rem !important;
   }
 
-  .btn {
-    padding: 0.45rem 0.8rem !important;
-    font-size: 0.85rem !important;
+  .card-body,
+  .card-body.p-4 {
+    padding: 0.7rem !important;
   }
 
-  .btn-lg {
-    padding: 0.6rem 1rem !important;
-    font-size: 0.95rem !important;
+  /* Even smaller stat values */
+  .stat-value {
+    font-size: 1.1rem !important;
   }
 
-  /* Stack button groups vertically or wrap nicely on narrow phones */
+  /* Stack flex gap groups */
   .d-flex.gap-3,
   .d-flex.gap-2 {
-    gap: 0.5rem !important;
+    gap: 0.35rem !important;
   }
 
-  /* Form Selects auto width */
+  /* Full-width form elements */
   .form-select,
   .form-control {
     min-width: 100% !important;
+  }
+
+  /* Tab bar scrolling fix */
+  .nav-tabs {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .nav-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-tabs .nav-item {
+    flex-shrink: 0;
+  }
+
+  .nav-tabs .nav-link {
+    font-size: 0.78rem !important;
+    padding: 0.4rem 0.65rem !important;
+    white-space: nowrap;
+  }
+
+  /* Profile gradient banner even smaller */
+  .card > div[style*="height: 150px"] {
+    height: 80px !important;
+  }
+
+  .avatar-glow-indigo,
+  .avatar-glow-emerald {
+    width: 60px !important;
+    height: 60px !important;
+    margin-top: -30px !important;
+  }
+
+  /* Recruiter workspace cards - single column on very small */
+  #quick-tools-section .col-md-6.col-lg-3 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+/* =====================
+   LARGE DESKTOP (> 1400px)
+   ===================== */
+@media (min-width: 1400px) {
+  .container-fluid.p-4 {
+    padding: 1.75rem 2rem !important;
+  }
+}
+
+/* =====================
+   INDEX PAGE / LANDING PAGE MOBILE FIXES
+   ===================== */
+@media (max-width: 767.98px) {
+  /* Navbar mobile tweaks */
+  .glass-nav {
+    padding: 0.5rem 0 !important;
+  }
+
+  .glass-nav .navbar-brand {
+    font-size: 1rem !important;
+  }
+
+  .glass-nav .navbar-brand .badge {
+    display: none !important;
+  }
+
+  .glass-nav .navbar-brand span[style*="width: 36px"] {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 0.85rem !important;
+  }
+
+  .glass-nav .navbar-collapse {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: 12px;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  }
+
+  [data-bs-theme="dark"] .glass-nav .navbar-collapse {
+    background: rgba(21, 29, 42, 0.98);
+  }
+
+  .glass-nav .nav-link {
+    padding: 0.6rem 0.75rem !important;
+    font-size: 0.88rem !important;
+    border-radius: 8px;
+  }
+
+  .glass-nav .nav-link:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  #nav-user-controls {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.4rem !important;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  #nav-user-controls .btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* Hero section mobile */
+  .hero-section {
+    padding: 2rem 0 !important;
+  }
+
+  .hero-section .container {
+    padding: 1.5rem 0.75rem !important;
+  }
+
+  .hero-section h1.display-3 {
+    font-size: 1.5rem !important;
+    line-height: 1.25 !important;
+  }
+
+  .hero-section p.lead {
+    font-size: 0.85rem !important;
+    line-height: 1.55 !important;
+  }
+
+  .hero-badge-pill {
+    font-size: 0.72rem !important;
+    padding: 0.35rem 0.75rem !important;
+  }
+
+  /* Hero action buttons */
+  #hero-actions {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    padding-top: 0.5rem !important;
+  }
+
+  #hero-actions .btn {
+    width: 100% !important;
+    padding: 0.65rem 1rem !important;
+    font-size: 0.88rem !important;
+  }
+
+  /* Hero KPI cards */
+  .hero-kpi-card {
+    padding: 0.75rem 0.6rem !important;
+    border-radius: 0.85rem !important;
+  }
+
+  .hero-kpi-value {
+    font-size: 1.5rem !important;
+  }
+
+  .hero-kpi-label {
+    font-size: 0.7rem !important;
+  }
+
+  /* Feature cards */
+  .feature-card-pro {
+    padding: 1.25rem !important;
+    border-radius: 14px !important;
+  }
+
+  .feature-icon-wrapper {
+    width: 42px !important;
+    height: 42px !important;
+    font-size: 1.2rem !important;
+    border-radius: 10px !important;
+    margin-bottom: 0.85rem !important;
+  }
+
+  /* Step indicators */
+  .step-indicator-bubble {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 0.95rem !important;
+  }
+
+  /* CTA banner */
+  .cta-banner-gradient {
+    border-radius: 18px !important;
+    padding: 1.5rem 1rem !important;
+  }
+
+  /* Messages page — full height on mobile */
+  body.vh-100.overflow-hidden.d-flex {
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: 100vh;
+    overflow: auto !important;
+  }
+
+  /* Messages sidebar full width on mobile when visible */
+  #messages-sidebar {
+    max-height: 50vh;
+    min-height: 280px;
+  }
+
+  #messages-main-pane {
+    min-height: 50vh;
+  }
+
+  /* Messages chat thread */
+  #chat-thread-container {
+    padding: 0.75rem !important;
+    gap: 0.5rem !important;
+  }
+
+  /* Chat header */
+  #chat-header-pane {
+    padding: 0.6rem 0.75rem !important;
+  }
+
+  #chat-header-pane h6 {
+    font-size: 0.85rem !important;
+  }
+
+  #chat-header-pane .small {
+    font-size: 0.72rem !important;
+  }
+
+  #active-partner-avatar {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 0.95rem !important;
+  }
+
+  /* Chat input area */
+  #chat-input-container,
+  .chat-input-area {
+    padding: 0.5rem !important;
+  }
+
+  /* Portal pages */
+  .portal-hero {
+    padding: 1.5rem 0 !important;
+  }
+
+  /* Login/Register pages */
+  .auth-card {
+    padding: 1.25rem !important;
+    border-radius: 16px !important;
+  }
+}
+
+@media (max-width: 575.98px) {
+  /* Hero even tighter */
+  .hero-section h1.display-3 {
+    font-size: 1.3rem !important;
+  }
+
+  .hero-kpi-value {
+    font-size: 1.25rem !important;
+  }
+
+  .hero-kpi-label {
+    font-size: 0.65rem !important;
+  }
+
+  .hero-kpi-card {
+    padding: 0.6rem 0.5rem !important;
   }
 }
