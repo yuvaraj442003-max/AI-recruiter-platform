@@ -1173,8 +1173,48 @@ nav.sticky-top {
 }
 
 /* ===================================================
-   RESPONSIVE DESIGN & MOBILE/TABLET ECOSYSTEM
+   RESPONSIVE DESIGN & MOBILE/TABLET/DESKTOP ECOSYSTEM
    =================================================== */
+
+/* ---- Universal Box Sizing & Viewport Containment ---- */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: hidden !important;
+  width: 100%;
+  max-width: 100vw;
+}
+
+body {
+  overflow-x: hidden !important;
+  width: 100%;
+  max-width: 100vw;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+}
+
+body > div.d-flex,
+.d-flex:has(> main) {
+  width: 100% !important;
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+}
+
+main,
+.flex-grow-1 {
+  width: 100% !important;
+  max-width: 100vw !important;
+  min-width: 0 !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.container-fluid {
+  width: 100% !important;
+  max-width: 100vw !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
 
 /* Mobile Sidebar Drawer Overlay & Backdrop Styles */
 .mobile-sidebar-backdrop {
@@ -1189,7 +1229,7 @@ nav.sticky-top {
   z-index: 1040;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition: opacity 0.28s ease, visibility 0.28s ease;
   pointer-events: none;
 }
 
@@ -1213,101 +1253,149 @@ body.mobile-sidebar-active {
   border-radius: 50% !important;
   background: rgba(0, 0, 0, 0.06) !important;
   border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  font-size: 0.7rem !important;
+  font-size: 0.72rem !important;
   transition: background 0.2s ease;
   flex-shrink: 0;
+  cursor: pointer;
 }
 
 .mobile-sidebar-close:hover {
   background: rgba(0, 0, 0, 0.12) !important;
 }
 
-/* =====================
-   MOBILE (< 768px)
-   ===================== */
+/* ===================================================
+   MOBILE SCREENS (< 768px)
+   =================================================== */
 @media (max-width: 767.98px) {
-  /* ---- Mobile Header Bar ---- */
+  /* Prevent iOS Safari 16px auto-zoom */
+  input, select, textarea, .form-control, .form-select {
+    font-size: 16px !important;
+  }
+
+  /* ---- Unified Single-Row Mobile Header Bar ---- */
   main header,
   .flex-grow-1 > header,
   .mobile-header-bar {
-    padding: 0.5rem 0.75rem !important;
-    flex-wrap: wrap !important;
-    gap: 0.4rem !important;
+    height: 54px !important;
+    min-height: 54px !important;
+    padding: 0.4rem 0.75rem !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
     align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.5rem !important;
+    background: #ffffff !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1020 !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
   }
 
-  /* Header inner flex containers should wrap and space properly */
-  main header > div,
-  .flex-grow-1 > header > div {
-    flex-wrap: wrap !important;
-    gap: 0.35rem !important;
+  /* Header Left Container: Toggle + Title */
+  main header > div:first-child,
+  .flex-grow-1 > header > div:first-child,
+  .mobile-header-left {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
   }
 
+  /* Mobile sidebar toggle button */
+  header .mobile-sidebar-toggler {
+    font-size: 0.8rem !important;
+    padding: 0.28rem 0.55rem !important;
+    border-radius: 8px !important;
+    border: 1px solid #cbd5e1 !important;
+    background: #f8fafc !important;
+    color: #334155 !important;
+    flex-shrink: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.3rem !important;
+    line-height: 1 !important;
+  }
+
+  /* Page title inside header */
   main header .h5,
   main header h1,
   header h1.h5,
   header .h5 {
-    font-size: 1rem !important;
+    font-size: 0.95rem !important;
     font-weight: 700 !important;
-    line-height: 1.3 !important;
-    margin-bottom: 0 !important;
-    word-break: normal !important;
-    overflow-wrap: break-word !important;
-    white-space: normal !important;
-    margin-top: 0 !important;
-    order: 2;
+    line-height: 1.25 !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    color: #0f172a !important;
   }
 
-  /* Hide greeting text on mobile */
+  /* Badges in mobile header */
+  main header .badge,
+  header .badge {
+    font-size: 0.65rem !important;
+    padding: 0.18rem 0.45rem !important;
+    border-radius: 50rem !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  /* Header Right Container: Actions */
+  main header > div:last-child,
+  .flex-grow-1 > header > div:last-child,
+  .mobile-header-right {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0.35rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Hide greeting text on mobile to save space */
   main header #user-greeting,
   header #user-greeting {
     display: none !important;
   }
 
-  /* Header badges */
-  main header .badge,
-  header .badge.bg-primary-subtle,
-  header .badge.bg-success-subtle {
-    font-size: 0.65rem !important;
-    padding: 0.2rem 0.5rem !important;
-    order: 1;
-  }
-
-  /* Header buttons */
+  /* Action buttons in header */
   header .btn,
   header a.btn {
     height: auto !important;
-    align-self: center !important;
+    font-size: 0.76rem !important;
+    font-weight: 600 !important;
+    padding: 0.28rem 0.55rem !important;
     white-space: nowrap !important;
-    padding: 0.3rem 0.6rem !important;
-    font-size: 0.78rem !important;
-    flex-shrink: 0;
+    border-radius: 6px !important;
+    flex-shrink: 0 !important;
   }
 
-  /* Mobile sidebar toggle */
-  header .mobile-sidebar-toggler {
-    font-size: 0.8rem !important;
-    padding: 0.3rem 0.55rem !important;
-    order: 0;
-    flex-shrink: 0;
-  }
-
-  /* ---- Mobile Sidebar Offcanvas ---- */
+  /* ---- Mobile Sidebar Drawer Offcanvas ---- */
   nav.d-none.d-md-flex,
   nav#unified-messages-sidebar,
   nav[class*="sidebar"] {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
+    bottom: 0 !important;
     height: 100vh !important;
     height: 100dvh !important;
     width: 280px !important;
     max-width: 82vw !important;
+    min-width: 0 !important;
     z-index: 1050 !important;
     background: #ffffff !important;
     transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 4px 0 30px rgba(0, 0, 0, 0.25) !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-shadow: 6px 0 30px rgba(0, 0, 0, 0.25) !important;
     display: flex !important;
     flex-direction: column !important;
     padding: 1rem 0.85rem !important;
@@ -1319,12 +1407,11 @@ body.mobile-sidebar-active {
     transform: translateX(0) !important;
   }
 
-  /* Sidebar nav links */
   .nav-pills .nav-link {
-    padding: 0.65rem 0.85rem !important;
-    font-size: 0.875rem !important;
+    padding: 0.6rem 0.8rem !important;
+    font-size: 0.88rem !important;
     font-weight: 600 !important;
-    border-radius: 0.65rem !important;
+    border-radius: 0.55rem !important;
     display: flex !important;
     align-items: center !important;
     gap: 0.6rem !important;
@@ -1335,44 +1422,36 @@ body.mobile-sidebar-active {
     width: 100%;
   }
 
-  /* Sidebar brand */
   nav .navbar-brand {
-    font-size: 1rem !important;
+    font-size: 0.95rem !important;
     margin-bottom: 0.75rem !important;
     padding: 0.25rem 0.5rem !important;
   }
 
-  nav .navbar-brand .fs-4 {
-    font-size: 1.2rem !important;
-  }
-
-  nav .navbar-brand .fs-5 {
-    font-size: 0.95rem !important;
-  }
-
-  /* Sidebar logout button */
   nav .mt-auto {
     margin-top: auto !important;
     padding-top: 0.75rem !important;
   }
 
   nav .mt-auto .btn {
-    font-size: 0.85rem !important;
-    padding: 0.5rem 0.75rem !important;
+    font-size: 0.82rem !important;
+    padding: 0.45rem 0.75rem !important;
   }
 
-  /* ---- Main Content Area ---- */
-  .container-fluid {
-    padding: 0.75rem !important;
-  }
-
+  /* ---- Main Content Area Padding ---- */
+  .container-fluid,
   .container-fluid.p-4 {
     padding: 0.75rem !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
   }
 
-  /* ---- Cards & Panels ---- */
+  /* ---- Cards Universal Responsive Styling ---- */
   .card {
     border-radius: 14px !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .card.p-4,
@@ -1380,10 +1459,7 @@ body.mobile-sidebar-active {
     padding: 0.85rem !important;
   }
 
-  .card-body {
-    padding: 0.85rem !important;
-  }
-
+  .card-body,
   .card-body.p-4 {
     padding: 0.85rem !important;
   }
@@ -1393,9 +1469,10 @@ body.mobile-sidebar-active {
   .glass-card-v3 {
     border-radius: 14px !important;
     padding: 0.85rem !important;
+    max-width: 100% !important;
   }
 
-  /* ---- Card Headings ---- */
+  /* Card Headings */
   .card h1, .card h2, .card .display-6 {
     font-size: 1.15rem !important;
     line-height: 1.35 !important;
@@ -1416,139 +1493,200 @@ body.mobile-sidebar-active {
 
   .card p {
     font-size: 0.82rem !important;
-    line-height: 1.5 !important;
+    line-height: 1.45 !important;
   }
 
-  /* ---- Hero/Overview Welcome Banner ---- */
+  /* ---- Hero / Welcome Banner Cards (Candidate & Recruiter) ---- */
   #overview-section,
-  .card[style*="linear-gradient"][style*="border-radius: 24px"] {
+  .card[style*="linear-gradient"][style*="border-radius: 24px"],
+  .card[style*="linear-gradient"][style*="border-radius: 16px"] {
     border-radius: 16px !important;
+    margin-bottom: 0.85rem !important;
   }
 
   #overview-section .card-body,
   #overview-section .card-body.p-4,
-  #overview-section .card-body.p-md-5 {
+  #overview-section .card-body.p-md-5,
+  .card[style*="linear-gradient"] .card-body {
     padding: 1rem !important;
   }
 
   #overview-section h2,
-  #overview-section .display-6 {
+  #overview-section .display-6,
+  .card[style*="linear-gradient"] h2 {
     font-size: 1.15rem !important;
     line-height: 1.3 !important;
   }
 
-  #overview-section p {
+  #overview-section p,
+  .card[style*="linear-gradient"] p {
     font-size: 0.82rem !important;
-    line-height: 1.5 !important;
+    line-height: 1.45 !important;
+    margin-bottom: 0.75rem !important;
   }
 
-  #overview-section .badge {
-    font-size: 0.7rem !important;
-    padding: 0.25rem 0.6rem !important;
-  }
-
-  /* Action button rows in banners - stack vertically */
+  /* Banner Action Button Stacks */
   #overview-section .d-flex.flex-wrap,
-  .card-body .d-flex.flex-wrap.gap-3,
-  .card-body .d-flex.flex-wrap.gap-2 {
+  .card[style*="linear-gradient"] .d-flex.flex-wrap {
     flex-direction: column !important;
     width: 100% !important;
     gap: 0.45rem !important;
   }
 
   #overview-section .d-flex.flex-wrap .btn,
-  #overview-section .d-flex.flex-wrap a.btn {
+  #overview-section .d-flex.flex-wrap a.btn,
+  .card[style*="linear-gradient"] .d-flex.flex-wrap .btn,
+  .card[style*="linear-gradient"] .d-flex.flex-wrap a.btn {
     width: 100% !important;
     text-align: center !important;
     justify-content: center !important;
-    padding: 0.5rem 0.75rem !important;
+    padding: 0.55rem 0.75rem !important;
     font-size: 0.82rem !important;
+    border-radius: 10px !important;
   }
 
-  /* ---- Profile Banner Card ---- */
-  .card .d-flex.justify-content-between.align-items-end {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 0.75rem !important;
+  /* ---- Profile Banner Cards (Candidate & Recruiter) ---- */
+  /* Gradient top strip & cover */
+  .profile-cover,
+  .card > div[style*="height: 150px"],
+  .card > div[style*="height: 160px"] {
+    height: 80px !important;
   }
 
-  .card .d-flex.align-items-end.gap-3 {
-    flex-direction: column !important;
-    align-items: center !important;
-    text-align: center;
-    width: 100%;
-  }
-
-  /* Profile photo */
+  /* Avatar photo */
+  #cand-profile-photo,
+  #profile-photo-img,
+  .profile-avatar-lg,
   .avatar-glow-indigo,
   .avatar-glow-emerald {
     width: 72px !important;
     height: 72px !important;
     margin-top: -36px !important;
+    border: 3px solid #ffffff !important;
+    border-radius: 50% !important;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25) !important;
+    object-fit: cover !important;
+    display: block !important;
+    flex-shrink: 0 !important;
   }
 
-  /* Profile name/headline area */
-  .card .d-flex.align-items-end.gap-3 > div {
-    text-align: center;
-    width: 100%;
+  /* Profile card body */
+  .card:has(#cand-profile-photo) .card-body,
+  .card:has(#profile-photo-img) .card-body,
+  .card:has(.profile-avatar-lg) .card-body {
+    padding: 0 0.85rem 0.85rem 0.85rem !important;
   }
 
-  .card .d-flex.align-items-end.gap-3 h3 {
-    font-size: 1.1rem !important;
-  }
-
-  .card .d-flex.align-items-end.gap-3 p {
-    font-size: 0.8rem !important;
-  }
-
-  /* Profile action buttons */
-  .card .d-flex.gap-2:has(> a.btn, > button.btn) {
+  /* Profile header flex container */
+  .card:has(#cand-profile-photo) .card-body > .d-flex:first-child,
+  .card:has(#profile-photo-img) .card-body > .d-flex:first-child,
+  .card:has(.profile-avatar-lg) .card-body > .d-flex:first-child {
     flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
     width: 100% !important;
-    gap: 0.4rem !important;
   }
 
-  .card .d-flex.gap-2 > a.btn,
-  .card .d-flex.gap-2 > button.btn {
+  /* Avatar + info row */
+  .card:has(#cand-profile-photo) .d-flex.align-items-end.gap-3,
+  .card:has(#profile-photo-img) .d-flex.align-items-end.gap-3,
+  .card:has(.profile-avatar-lg) .d-flex.align-items-end.gap-3 {
+    flex-direction: column !important;
+    align-items: flex-start !important;
     width: 100% !important;
+    gap: 0.35rem !important;
+    text-align: left !important;
+  }
+
+  .card:has(#cand-profile-photo) .d-flex.align-items-end.gap-3 > div,
+  .card:has(#profile-photo-img) .d-flex.align-items-end.gap-3 > div,
+  .card:has(.profile-avatar-lg) .d-flex.align-items-end.gap-3 > div {
+    text-align: left !important;
+    width: 100% !important;
+    margin-top: 0.25rem !important;
+  }
+
+  #cand-name-display,
+  #recruiter-name-display {
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    margin-bottom: 0.15rem !important;
+    text-align: left !important;
+  }
+
+  #cand-headline-display,
+  #job-title-display {
+    font-size: 0.82rem !important;
+    color: #64748b !important;
+    margin-bottom: 0.3rem !important;
+    text-align: left !important;
+  }
+
+  #cand-location-display,
+  #cand-experience-display,
+  #company-name-badge,
+  #location-display {
+    font-size: 0.75rem !important;
+  }
+
+  /* Candidate & Recruiter action buttons */
+  .card:has(#cand-profile-photo) .d-flex.gap-2,
+  .card:has(#profile-photo-img) .d-flex.gap-2 {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 0.45rem !important;
+    width: 100% !important;
+    margin-top: 0.5rem !important;
+  }
+
+  .card:has(#cand-profile-photo) .d-flex.gap-2 > a.btn,
+  .card:has(#cand-profile-photo) .d-flex.gap-2 > button.btn,
+  .card:has(#profile-photo-img) button.btn,
+  .card:has(.profile-avatar-lg) button.btn {
+    flex: 1 1 0 !important;
+    width: auto !important;
+    padding: 0.45rem 0.5rem !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
     text-align: center !important;
     justify-content: center !important;
-    font-size: 0.82rem !important;
+    border-radius: 8px !important;
+    white-space: nowrap !important;
   }
 
-  /* Social links row */
-  .card .d-flex.flex-wrap.gap-2.pt-3 {
-    justify-content: center !important;
-  }
-
-  /* ---- Header flex rows inside cards ---- */
-  .card .d-flex.justify-content-between.align-items-center {
-    flex-wrap: wrap !important;
-    gap: 0.5rem !important;
-  }
-
-  .card .d-flex.justify-content-between.align-items-center > div {
-    width: 100% !important;
-    flex-shrink: 1 !important;
-  }
-
-  .card .d-flex.justify-content-between.align-items-center > .d-flex.align-items-center.gap-2 {
-    flex-wrap: wrap !important;
-    width: 100% !important;
+  /* Social buttons row */
+  .card:has(#cand-profile-photo) .d-flex.flex-wrap.gap-2.pt-3,
+  .card:has(#profile-photo-img) .d-flex.flex-wrap.gap-2.pt-2 {
     justify-content: flex-start !important;
+    gap: 0.35rem !important;
+    padding-top: 0.5rem !important;
+  }
+
+  .card:has(#cand-profile-photo) .d-flex.flex-wrap.gap-2.pt-3 a.btn,
+  .social-pill-btn {
+    font-size: 0.72rem !important;
+    padding: 0.25rem 0.55rem !important;
+    border-radius: 50rem !important;
   }
 
   /* ---- Quick Jump Navigation Bar ---- */
-  .card.sticky-top {
-    top: 52px !important;
-    padding: 0.6rem !important;
+  .card.sticky-top,
+  .card.sticky-top.glass-card-v2 {
+    top: 54px !important;
+    padding: 0.45rem 0.65rem !important;
+    margin-bottom: 0.85rem !important;
+    border-radius: 12px !important;
+    z-index: 1010 !important;
   }
 
   .card.sticky-top .d-flex.overflow-auto {
     gap: 0.35rem !important;
-    padding-bottom: 0.25rem !important;
+    padding-bottom: 0.2rem !important;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    white-space: nowrap !important;
+    -webkit-overflow-scrolling: touch;
   }
 
   .card.sticky-top .d-flex.overflow-auto::-webkit-scrollbar {
@@ -1561,10 +1699,11 @@ body.mobile-sidebar-active {
   }
 
   .card.sticky-top .btn-sm {
-    font-size: 0.68rem !important;
-    padding: 0.25rem 0.5rem !important;
+    font-size: 0.7rem !important;
+    padding: 0.22rem 0.5rem !important;
     white-space: nowrap;
     flex-shrink: 0;
+    border-radius: 50rem !important;
   }
 
   /* ---- Stat Cards / Metric Cards ---- */
@@ -1578,375 +1717,172 @@ body.mobile-sidebar-active {
   }
 
   .stat-value {
-    font-size: 1.2rem !important;
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
   }
 
   .text-muted-custom,
   .stat-card .small,
   .stat-card .fw-medium.small {
-    font-size: 0.7rem !important;
+    font-size: 0.72rem !important;
   }
 
   .stat-card .fs-4 {
     font-size: 1.1rem !important;
   }
 
-  .stat-card .d-flex.align-items-center.gap-2 {
-    gap: 0.35rem !important;
+  /* Stat cards row: 2 per row on mobile */
+  .row.g-3:has(.stat-card) > div {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
   }
 
-  /* ---- ATS Funnel Header ---- */
-  .d-flex.align-items-center.justify-content-between {
-    flex-wrap: wrap !important;
-    gap: 0.5rem !important;
+  /* ---- Workspace Tools Cards (Candidate & Recruiter) ---- */
+  #quick-tools-section .col-md-6.col-lg-3,
+  .col-md-6.col-lg-3:has(.card) {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 0.75rem !important;
   }
 
-  .d-flex.align-items-center.justify-content-between > h4 {
+  #quick-tools-section .card,
+  .col-md-6.col-lg-3 .card {
+    padding: 1rem !important;
+    border-radius: 14px !important;
+  }
+
+  /* ---- Tables Responsive Wrapper ---- */
+  .table-responsive {
+    border-radius: 10px !important;
+    margin-bottom: 0.75rem !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100% !important;
+  }
+
+  .table {
+    font-size: 0.78rem !important;
+    margin-bottom: 0 !important;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.5rem 0.65rem !important;
+    white-space: nowrap !important;
+  }
+
+  .table th {
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.02em;
+  }
+
+  /* Table search/filter bars */
+  .input-group.input-group-sm {
     width: 100% !important;
-    font-size: 0.95rem !important;
   }
 
-  .d-flex.align-items-center.justify-content-between > .d-flex.align-items-center.gap-2 {
-    flex-wrap: wrap !important;
-    width: 100% !important;
-    gap: 0.4rem !important;
-  }
-
-  /* ---- Banner gradient height ---- */
-  .card > div[style*="height: 150px"] {
-    height: 100px !important;
-  }
-
-  /* ---- Charts ---- */
+  /* ---- Chart.js Responsive Canvases ---- */
   canvas {
     max-width: 100% !important;
     height: auto !important;
+    max-height: 220px !important;
   }
 
-  /* ---- Best Suited Job Card ---- */
-  #dash-best-role-card .d-flex.justify-content-between {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 1rem !important;
-  }
-
-  #dash-best-role-card .text-end {
-    text-align: left !important;
-    width: 100%;
-  }
-
-  #dash-best-role-card .display-6 {
-    font-size: 1.5rem !important;
-  }
-
-  #dash-best-role-card .fs-1 {
-    font-size: 1.5rem !important;
-  }
-
-  /* ---- ATS Analysis Card ---- */
-  #dash-ats-analysis-card .col-lg-5,
-  #dash-ats-analysis-card .col-lg-7 {
-    border-right: none !important;
-    border-bottom: 1px solid #e2e8f0;
-    padding-bottom: 1rem;
-    margin-bottom: 0.5rem;
-  }
-
-  #dash-ats-analysis-card .col-lg-7 {
-    border-bottom: none;
-  }
-
-  #dash-ats-analysis-card .display-4 {
-    font-size: 1.8rem !important;
-  }
-
-  /* ---- Table Responsive ---- */
-  .table-responsive {
-    -webkit-overflow-scrolling: touch;
-    border-radius: var(--ar-radius-sm);
-    margin: 0 -0.5rem;
-    padding: 0 0.5rem;
-  }
-
-  table.table td,
-  table.table th,
-  .table-custom td,
-  .table-custom th {
-    padding: 0.5rem 0.6rem !important;
-    font-size: 0.78rem !important;
-    white-space: nowrap;
-  }
-
-  table.table thead th {
-    font-size: 0.7rem !important;
-  }
-
-  /* ---- Modals ---- */
-  .modal-dialog {
-    margin: 0.35rem !important;
-    max-width: calc(100% - 0.7rem) !important;
-  }
-
-  .modal-body,
-  .modal-header,
-  .modal-footer {
-    padding: 0.85rem !important;
-  }
-
-  .modal-title {
-    font-size: 1rem !important;
-  }
-
-  /* ---- Code Editors / Assessment Panels ---- */
-  .main-workspace {
-    height: auto !important;
-    min-height: calc(100vh - 56px);
-    flex-direction: column !important;
-  }
-
-  .left-panel,
-  .right-panel {
-    height: auto !important;
-    max-height: none !important;
-    width: 100% !important;
-  }
-
-  /* ---- Search & Filter Containers ---- */
-  .input-group {
-    flex-wrap: wrap !important;
-  }
-
-  .input-group > .btn {
-    flex: 1 1 auto !important;
-  }
-
-  /* ---- Filter bar row (recruiter dashboard) ---- */
-  .card .row.g-3 .col-md-4 {
-    margin-bottom: 0.25rem;
-  }
-
-  /* ---- Buttons Global ---- */
-  .btn {
-    padding: 0.4rem 0.7rem !important;
-    font-size: 0.82rem !important;
-  }
-
-  .btn-lg {
-    padding: 0.5rem 0.85rem !important;
-    font-size: 0.88rem !important;
-  }
-
-  .btn-sm {
-    padding: 0.25rem 0.5rem !important;
-    font-size: 0.75rem !important;
-  }
-
-  /* ---- Badges Global ---- */
-  .badge {
-    font-size: 0.68rem !important;
-    padding: 0.2rem 0.45rem !important;
-  }
-
-  /* ---- Form elements ---- */
-  .form-select,
-  .form-control {
-    font-size: 0.85rem !important;
-    padding: 0.4rem 0.6rem !important;
+  /* ---- Form Controls on Mobile ---- */
+  .form-control,
+  .form-select {
+    font-size: 16px !important; /* prevent iOS auto-zoom */
+    padding: 0.45rem 0.65rem !important;
+    border-radius: 8px !important;
   }
 
   .form-label {
-    font-size: 0.8rem !important;
-  }
-
-  /* ---- Row/column gap overrides ---- */
-  .row.g-3 {
-    --bs-gutter-x: 0.5rem;
-    --bs-gutter-y: 0.5rem;
-  }
-
-  .row.g-4 {
-    --bs-gutter-x: 0.5rem;
-    --bs-gutter-y: 0.75rem;
-  }
-
-  /* ---- Recruiter Workspace Tool Cards ---- */
-  #quick-tools-section .col-md-6.col-lg-3 {
-    flex: 0 0 50%;
-    max-width: 50%;
-  }
-
-  #quick-tools-section .card {
-    padding: 0.75rem !important;
-  }
-
-  #quick-tools-section .card .fs-1 {
-    font-size: 1.5rem !important;
-    margin-bottom: 0.35rem !important;
-  }
-
-  #quick-tools-section .card h5 {
-    font-size: 0.82rem !important;
-    margin-bottom: 0.35rem !important;
-  }
-
-  #quick-tools-section .card p {
-    font-size: 0.72rem !important;
-    margin-bottom: 0.5rem !important;
-  }
-
-  /* ---- Display typography ---- */
-  .display-1 { font-size: 2rem !important; }
-  .display-2 { font-size: 1.8rem !important; }
-  .display-3 { font-size: 1.6rem !important; }
-  .display-4 { font-size: 1.35rem !important; }
-  .display-5 { font-size: 1.15rem !important; }
-  .display-6 { font-size: 1rem !important; }
-
-  /* ---- Progress bars ---- */
-  .progress {
-    height: 6px !important;
-  }
-
-  /* ---- Coding Assessment Card section ---- */
-  .card .d-flex.justify-content-between.align-items-center.mb-3 {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 0.5rem !important;
-  }
-
-  /* ---- Messages page fixes ---- */
-  #messages-sidebar {
-    min-height: auto !important;
-  }
-
-  /* ---- Interview/Calendar pages ---- */
-  .status-bar {
-    flex-wrap: wrap !important;
-    gap: 0.35rem !important;
-    padding: 0.5rem !important;
-  }
-}
-
-/* =====================
-   TABLET (< 992px)
-   ===================== */
-@media (max-width: 991.98px) {
-  /* Fluid typography scaling */
-  .display-1 { font-size: calc(2rem + 1.2vw) !important; }
-  .display-2 { font-size: calc(1.8rem + 1vw) !important; }
-  .display-3 { font-size: calc(1.6rem + 0.8vw) !important; }
-  .display-4 { font-size: calc(1.4rem + 0.6vw) !important; }
-
-  /* Hero typography */
-  .hero-section h1 {
-    font-size: clamp(1.6rem, 4vw, 2.8rem) !important;
-  }
-
-  .hero-section p.lead {
-    font-size: 0.95rem !important;
-  }
-
-  /* Live Interview Stage */
-  .main-stage {
-    height: auto !important;
-    min-height: calc(100vh - 60px);
-  }
-
-  /* Search Filters */
-  .search-filter-sidebar {
-    position: relative !important;
-    width: 100% !important;
-    margin-bottom: 1.5rem;
-  }
-
-  /* Recruiter workspace tool cards - 2 per row */
-  #quick-tools-section .col-lg-3 {
-    flex: 0 0 50%;
-    max-width: 50%;
-  }
-
-  /* Container padding */
-  .container-fluid.p-4 {
-    padding: 1rem !important;
-  }
-}
-
-/* =====================
-   SMALL PHONES (< 576px)
-   ===================== */
-@media (max-width: 575.98px) {
-  .container,
-  .container-fluid {
-    padding-left: 0.6rem !important;
-    padding-right: 0.6rem !important;
-  }
-
-  /* Tighter card padding */
-  .card.p-4,
-  .card.p-3 {
-    padding: 0.7rem !important;
-  }
-
-  .card-body,
-  .card-body.p-4 {
-    padding: 0.7rem !important;
-  }
-
-  /* Even smaller stat values */
-  .stat-value {
-    font-size: 1.1rem !important;
-  }
-
-  /* Stack flex gap groups */
-  .d-flex.gap-3,
-  .d-flex.gap-2 {
-    gap: 0.35rem !important;
-  }
-
-  /* Full-width form elements */
-  .form-select,
-  .form-control {
-    min-width: 100% !important;
-  }
-
-  /* Tab bar scrolling fix */
-  .nav-tabs {
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  .nav-tabs::-webkit-scrollbar {
-    display: none;
-  }
-
-  .nav-tabs .nav-item {
-    flex-shrink: 0;
-  }
-
-  .nav-tabs .nav-link {
     font-size: 0.78rem !important;
-    padding: 0.4rem 0.65rem !important;
-    white-space: nowrap;
+    font-weight: 600 !important;
+    margin-bottom: 0.25rem !important;
   }
 
-  /* Profile gradient banner even smaller */
-  .card > div[style*="height: 150px"] {
-    height: 80px !important;
+  /* Dropzone on resume upload page */
+  .border-dashed,
+  [style*="border: 2px dashed"] {
+    padding: 1.25rem 0.75rem !important;
+    border-radius: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
-  .avatar-glow-indigo,
-  .avatar-glow-emerald {
-    width: 60px !important;
-    height: 60px !important;
-    margin-top: -30px !important;
+  /* Floating Chat Bubble */
+  #ar-floating-chat-btn,
+  #floating-chat-btn,
+  .chat-float-btn,
+  button#chat-widget-toggle {
+    bottom: 20px !important;
+    right: 20px !important;
+    left: auto !important;
+    top: auto !important;
+    width: 50px !important;
+    min-width: 50px !important;
+    max-width: 50px !important;
+    height: 50px !important;
+    min-height: 50px !important;
+    max-height: 50px !important;
+    border-radius: 50% !important;
+    font-size: 1.25rem !important;
+    z-index: 1050 !important;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
-  /* Recruiter workspace cards - single column on very small */
-  #quick-tools-section .col-md-6.col-lg-3 {
-    flex: 0 0 100%;
-    max-width: 100%;
+  /* Modals on Mobile */
+  .modal-dialog {
+    margin: 0.5rem !important;
+    max-width: calc(100vw - 1rem) !important;
+  }
+
+  .modal-content {
+    border-radius: 16px !important;
+  }
+
+  .modal-header,
+  .modal-footer {
+    padding: 0.75rem 1rem !important;
+  }
+
+  .modal-body {
+    padding: 1rem !important;
+    max-height: 75vh !important;
+    overflow-y: auto !important;
+  }
+
+  /* Rows margin reset */
+  .row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+
+/* ===================================================
+   TABLET SCREENS (768px - 991.98px)
+   =================================================== */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .container-fluid.p-4 {
+    padding: 1.25rem !important;
+  }
+
+  /* Workspace tools: 2 per row */
+  #quick-tools-section .col-md-6.col-lg-3,
+  .col-md-6.col-lg-3 {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+  }
+
+  /* Stat cards: 3 per row on tablet */
+  .row.g-3:has(.stat-card) > div {
+    flex: 0 0 33.333% !important;
+    max-width: 33.333% !important;
   }
 }
 

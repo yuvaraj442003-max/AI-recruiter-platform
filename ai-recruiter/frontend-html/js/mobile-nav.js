@@ -53,29 +53,17 @@ function initMobileSidebar() {
     const brand = sidebar.querySelector(".navbar-brand");
     if (brand) {
       // Make the brand row a flex container with close button
-      brand.classList.add("justify-content-between", "w-100");
+      brand.classList.add("d-flex", "align-items-center", "justify-content-between", "w-100");
       brand.style.position = "relative";
-      // Wrap existing brand content and append close button as sibling
-      const brandWrapper = document.createElement("div");
-      brandWrapper.className = "d-flex align-items-center justify-content-between w-100 mb-2 pb-2 border-bottom d-md-none";
-      brandWrapper.style.cssText = "min-height: 36px;";
-      
-      const brandLabel = document.createElement("span");
-      brandLabel.className = "fw-bold text-dark";
-      brandLabel.style.cssText = "font-size: 0.95rem;";
-      brandLabel.textContent = brand.textContent.trim();
-      
-      brandWrapper.appendChild(brandLabel);
-      brandWrapper.appendChild(closeBtn);
-      sidebar.insertBefore(brandWrapper, sidebar.firstChild);
+      closeBtn.style.marginLeft = "auto";
+      brand.appendChild(closeBtn);
     } else {
-      // No brand — create a standalone header with close button
+      // Standalone drawer header
       const topHeader = document.createElement("div");
-      topHeader.className = "d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom d-md-none";
-      topHeader.style.cssText = "min-height: 36px;";
+      topHeader.className = "d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom d-md-none w-100";
       const menuLabel = document.createElement("span");
-      menuLabel.className = "fw-bold small text-dark";
-      menuLabel.textContent = "Navigation";
+      menuLabel.className = "fw-bold fs-6 text-dark";
+      menuLabel.textContent = "Navigation Menu";
       topHeader.appendChild(menuLabel);
       topHeader.appendChild(closeBtn);
       sidebar.insertBefore(topHeader, sidebar.firstChild);
@@ -91,7 +79,6 @@ function initMobileSidebar() {
   sidebar.querySelectorAll(".nav-link, a[href]").forEach(link => {
     link.addEventListener("click", () => {
       if (window.innerWidth < 768) {
-        // Small delay so the click registers before closing
         setTimeout(closeMobileSidebar, 100);
       }
     });
@@ -113,6 +100,7 @@ function initMobileSidebar() {
 
 /**
  * Add mobile hamburger menu toggle button to the header
+ * Kept on ONE clean row with page title and action buttons
  */
 function initResponsiveHeader() {
   const header = document.querySelector("main header, .flex-grow-1 > header, .interview-header, .top-header");
@@ -127,12 +115,33 @@ function initResponsiveHeader() {
     const toggleBtn = document.createElement("button");
     toggleBtn.type = "button";
     toggleBtn.className = "btn btn-sm btn-outline-secondary d-md-none mobile-sidebar-toggler d-inline-flex align-items-center gap-1 shadow-sm";
-    toggleBtn.innerHTML = `<span style="font-size: 1.1rem; line-height: 1;">☰</span> <span class="fw-semibold">Menu</span>`;
+    toggleBtn.innerHTML = `<span style="font-size: 1.1rem; line-height: 1;">☰</span> <span class="fw-semibold d-none d-sm-inline">Menu</span>`;
     toggleBtn.setAttribute("aria-label", "Toggle navigation menu");
-    toggleBtn.style.cssText = "border-radius: 8px; border-color: #cbd5e1; color: #475569;";
+    toggleBtn.style.cssText = "border-radius: 8px; border-color: #cbd5e1; color: #334155; padding: 0.3rem 0.55rem; font-size: 0.8rem; flex-shrink: 0; background: #f8fafc;";
 
-    // Insert toggle button at top left of header
-    header.insertBefore(toggleBtn, header.firstChild);
+    // Check if header has a standalone heading or a left div container
+    const firstDiv = header.querySelector(":scope > div");
+    const heading = header.querySelector(":scope > h1, :scope > h2, :scope > h3, :scope > h4, :scope > h5");
+
+    if (heading && (!firstDiv || heading.compareDocumentPosition(firstDiv) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+      // Heading is direct child before any div: wrap in a left container
+      const leftContainer = document.createElement("div");
+      leftContainer.className = "d-flex align-items-center gap-2 mobile-header-left";
+      header.insertBefore(leftContainer, heading);
+      leftContainer.appendChild(toggleBtn);
+      leftContainer.appendChild(heading);
+    } else if (firstDiv) {
+      firstDiv.insertBefore(toggleBtn, firstDiv.firstChild);
+      firstDiv.classList.add("mobile-header-left");
+    } else {
+      header.insertBefore(toggleBtn, header.firstChild);
+    }
+
+    // Mark the last div as right container
+    const divs = header.querySelectorAll(":scope > div");
+    if (divs.length > 1) {
+      divs[divs.length - 1].classList.add("mobile-header-right");
+    }
 
     toggleBtn.addEventListener("click", () => {
       const backdrop = document.querySelector(".mobile-sidebar-backdrop");
