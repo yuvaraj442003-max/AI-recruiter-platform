@@ -442,10 +442,8 @@
       if (list.length === 0) {
         sidebarListContainer.innerHTML = `
           <div class="text-center text-muted p-4 small">
-            <div class="fs-2 mb-2">💬</div>
-            <div class="fw-semibold text-dark mb-1">No Active Conversations</div>
-            <div class="text-secondary mb-2">Select a real recruiter or candidate from the Directory to start messaging.</div>
-            <button id="switch-to-contacts-link" class="btn btn-outline-primary btn-sm fw-semibold mt-1">Browse Directory</button>
+            <div>No active conversations found.</div>
+            <button id="switch-to-contacts-link" class="btn btn-link btn-sm text-decoration-none mt-1">Browse all contacts</button>
           </div>`;
         document.getElementById("switch-to-contacts-link")?.addEventListener("click", () => {
           tabContactsBtn?.click();
@@ -489,12 +487,7 @@
       );
 
       if (list.length === 0) {
-        sidebarListContainer.innerHTML = `
-          <div class="text-center text-muted p-4 small">
-            <div class="fs-2 mb-2">👥</div>
-            <div class="fw-semibold text-dark mb-1">No Registered Contacts Found</div>
-            <div class="text-secondary">Only real registered candidates and recruiters from the database will appear in your directory.</div>
-          </div>`;
+        sidebarListContainer.innerHTML = `<div class="text-center text-muted p-4 small">No contacts found matching search.</div>`;
         return;
       }
 

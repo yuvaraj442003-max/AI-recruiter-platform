@@ -6,9 +6,8 @@ from pathlib import Path
 from typing import List, Optional
 from fastapi import APIRouter, Depends, File, Form, UploadFile, status
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, and_, desc, func, not_
+from sqlalchemy import or_, and_, desc, func
 
-from app.core.config import settings
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.core.exceptions import NotFoundError, BadRequestError
@@ -272,9 +271,7 @@ def get_conversations(
     conversations = []
     for partner_id in partner_ids:
         partner = db.get(User, partner_id)
-        if not partner or not partner.is_active or partner.email in settings.DEMO_ACCOUNT_EMAILS:
-            continue
-        if getattr(settings, "ENVIRONMENT", "").lower() == "production" and (partner.email.endswith("@example.com") or partner.email.endswith("@test.com")):
+        if not partner:
             continue
 
         last_msg = (
@@ -335,29 +332,18 @@ def get_contacts(
     contacts = []
     seen_user_ids = set()
 
-    real_user_filter = [
-        User.is_active == True,
-        not_(User.email.in_(settings.DEMO_ACCOUNT_EMAILS)),
-    ]
-    if getattr(settings, "ENVIRONMENT", "").lower() == "production":
-        real_user_filter.append(not_(User.email.ilike("%@example.com")))
-        real_user_filter.append(not_(User.email.ilike("%@test.com")))
-
     if current_user.role == UserRole.candidate:
-        # Candidate contacts:
-        # 1. Real Recruiters who posted jobs the candidate applied for (includes application_id and job_title)
+        # Candidate contacts: Recruiters who posted jobs candidate applied for + other active recruiters & candidates
         applied_recruiters = (
             db.query(User, Job.title, Application.id)
             .join(Job, Job.recruiter_id == User.id)
             .join(Application, Application.job_id == Job.id)
             .join(CandidateProfile, Application.candidate_id == CandidateProfile.id)
             .filter(CandidateProfile.user_id == current_user.id)
-            .filter(*real_user_filter)
-            .filter(User.role.in_([UserRole.recruiter, UserRole.company_admin]))
             .all()
         )
         for rec_user, job_title, app_id in applied_recruiters:
-            if rec_user.id not in seen_user_ids and rec_user.id != current_user.id:
+            if rec_user.id not in seen_user_ids:
                 seen_user_ids.add(rec_user.id)
                 comp = _get_user_headline_or_company(db, rec_user)
                 contacts.append(
@@ -372,13 +358,7 @@ def get_contacts(
                     )
                 )
 
-        # 2. All other registered active recruiters from the database
-        all_recruiters = (
-            db.query(User)
-            .filter(User.role.in_([UserRole.recruiter, UserRole.company_admin]))
-            .filter(*real_user_filter)
-            .all()
-        )
+        all_recruiters = db.query(User).filter(User.role.in_([UserRole.recruiter, UserRole.company_admin])).all()
         for rec_user in all_recruiters:
             if rec_user.id not in seen_user_ids and rec_user.id != current_user.id:
                 seen_user_ids.add(rec_user.id)
@@ -393,42 +373,18 @@ def get_contacts(
                     )
                 )
 
-        # 3. All other real registered candidates from the database (candidate community / networking)
-        all_candidates = (
-            db.query(User)
-            .filter(User.role == UserRole.candidate)
-            .filter(*real_user_filter)
-            .all()
-        )
-        for cand_user in all_candidates:
-            if cand_user.id not in seen_user_ids and cand_user.id != current_user.id:
-                seen_user_ids.add(cand_user.id)
-                hl = _get_user_headline_or_company(db, cand_user)
-                contacts.append(
-                    ContactResponse(
-                        user_id=cand_user.id,
-                        name=cand_user.name,
-                        email=cand_user.email,
-                        role=cand_user.role.value,
-                        company_or_headline=hl,
-                    )
-                )
-
     elif current_user.role in [UserRole.recruiter, UserRole.company_admin]:
-        # Recruiter contacts:
-        # 1. Candidates who applied to recruiter's jobs
+        # Recruiter contacts: Candidates who applied to recruiter's jobs + all active candidates
         applicant_candidates = (
             db.query(User, Job.title, Application.id)
             .join(CandidateProfile, CandidateProfile.user_id == User.id)
             .join(Application, Application.candidate_id == CandidateProfile.id)
             .join(Job, Application.job_id == Job.id)
             .filter(Job.recruiter_id == current_user.id)
-            .filter(*real_user_filter)
-            .filter(User.role == UserRole.candidate)
             .all()
         )
         for cand_user, job_title, app_id in applicant_candidates:
-            if cand_user.id not in seen_user_ids and cand_user.id != current_user.id:
+            if cand_user.id not in seen_user_ids:
                 seen_user_ids.add(cand_user.id)
                 hl = _get_user_headline_or_company(db, cand_user)
                 contacts.append(
@@ -443,13 +399,7 @@ def get_contacts(
                     )
                 )
 
-        # 2. All other registered active candidates from the database
-        all_candidates = (
-            db.query(User)
-            .filter(User.role == UserRole.candidate)
-            .filter(*real_user_filter)
-            .all()
-        )
+        all_candidates = db.query(User).filter(User.role == UserRole.candidate).all()
         for cand_user in all_candidates:
             if cand_user.id not in seen_user_ids and cand_user.id != current_user.id:
                 seen_user_ids.add(cand_user.id)
@@ -464,26 +414,21 @@ def get_contacts(
                     )
                 )
 
-        # 3. Fellow recruiters from the database
-        all_recruiters = (
-            db.query(User)
-            .filter(User.role.in_([UserRole.recruiter, UserRole.company_admin]))
-            .filter(*real_user_filter)
-            .all()
-        )
-        for rec_user in all_recruiters:
-            if rec_user.id not in seen_user_ids and rec_user.id != current_user.id:
-                seen_user_ids.add(rec_user.id)
-                comp = _get_user_headline_or_company(db, rec_user)
-                contacts.append(
-                    ContactResponse(
-                        user_id=rec_user.id,
-                        name=rec_user.name,
-                        email=rec_user.email,
-                        role=rec_user.role.value,
-                        company_or_headline=comp,
-                    )
+    # General fallback: include all other users so messaging is completely open and unified
+    all_users = db.query(User).all()
+    for u in all_users:
+        if u.id not in seen_user_ids and u.id != current_user.id:
+            seen_user_ids.add(u.id)
+            hl_or_comp = _get_user_headline_or_company(db, u)
+            contacts.append(
+                ContactResponse(
+                    user_id=u.id,
+                    name=u.name,
+                    email=u.email,
+                    role=u.role.value,
+                    company_or_headline=hl_or_comp,
                 )
+            )
 
     return APIResponse(success=True, message="Contacts list", data=contacts)
 

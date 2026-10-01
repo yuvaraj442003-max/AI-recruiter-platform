@@ -16,17 +16,6 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
 
-    # Demo / Sample accounts that must NEVER appear in candidate jobs, feeds, or messaging
-    DEMO_ACCOUNT_EMAILS: list[str] = [
-        "recruiter1@techcorp.com",
-        "recruiter2@innovate.io",
-        "alice@example.com",
-        "bob@example.com",
-        "charlie@example.com",
-        "diana@example.com",
-        "evan@example.com",
-    ]
-
     # --- Database (PostgreSQL is Primary; SQLite default fallback for deployment) ---
     DATABASE_URL: str = "sqlite:///./ai_recruiter.db"
     SQLITE_DATABASE_URL: str = "sqlite:///./ai_recruiter.db"

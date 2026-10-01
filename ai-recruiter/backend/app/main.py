@@ -237,6 +237,10 @@ async def lifespan(app: FastAPI):
     db = SessionLocal()
     try:
         seed_skills(db)
+        if db.query(user.User).count() == 0:
+            logging.info("Empty database detected on startup. Auto-seeding initial demo accounts and data...")
+            from scripts.seed_demo_data import seed_demo
+            seed_demo()
     except Exception:
         logging.getLogger("ai_recruiter").exception("Startup initialization failed")
     finally:

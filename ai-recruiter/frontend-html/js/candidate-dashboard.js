@@ -307,7 +307,7 @@
       const res = await jobsAPI.list(filters);
       const jobs = res.data;
       if (!jobs || !jobs.length) {
-        listEl.innerHTML = '<div class="col-12"><div class="card p-4 text-center border-0 bg-light rounded-4"><div class="fs-2 mb-2">💼</div><h6 class="fw-bold text-dark mb-1">No Recruiter Postings Available</h6><p class="text-secondary small mb-0">No active job postings from real recruiters match this role criteria right now. Check back soon as new recruiter jobs are published!</p></div></div>';
+        listEl.innerHTML = '<div class="col-12 text-muted-custom small py-2">No active job postings found for this role query.</div>';
         return;
       }
       listEl.innerHTML = jobs.slice(0, 6).map((job) => `

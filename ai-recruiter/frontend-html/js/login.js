@@ -262,6 +262,29 @@
     }
   });
 
+  // Quick Demo Login Buttons
+  const demoCandBtn = document.getElementById("demo-candidate-btn");
+  if (demoCandBtn) {
+    demoCandBtn.addEventListener("click", () => {
+      document.getElementById("email").value = "alice@example.com";
+      document.getElementById("password").value = "Password123!";
+      const cRadio = document.getElementById("login-role-candidate");
+      if (cRadio) cRadio.checked = true;
+      form.dispatchEvent(new Event("submit"));
+    });
+  }
+
+  const demoRecBtn = document.getElementById("demo-recruiter-btn");
+  if (demoRecBtn) {
+    demoRecBtn.addEventListener("click", () => {
+      document.getElementById("email").value = "recruiter1@techcorp.com";
+      document.getElementById("password").value = "Password123!";
+      const rRadio = document.getElementById("login-role-recruiter");
+      if (rRadio) rRadio.checked = true;
+      form.dispatchEvent(new Event("submit"));
+    });
+  }
+
   // Google Sign-In handler
   async function processGoogleAuth(credential) {
     hideError();
