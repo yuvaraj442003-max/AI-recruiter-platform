@@ -251,7 +251,7 @@
         document.getElementById('turn-status-badge').className = 'badge bg-danger';
         document.getElementById('turn-status-badge').textContent = 'Disconnected';
       };
-    }
+    
 
     function handleServerEvent(msg) {
       if (msg.type === 'session.state') {
@@ -374,5 +374,6 @@
       }, 1000);
     }
   </script>
+  <script src="js/mobile-nav.js"></script>
 </body>
 </html>

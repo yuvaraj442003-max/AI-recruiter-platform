@@ -1172,8 +1172,179 @@ nav.sticky-top {
   color: #e2e8f0;
 }
 
-border-radius: 6px;
-background: rgba(255, 255, 255, 0.08);
-border: 1px solid rgba(255, 255, 255, 0.12);
-color: #e2e8f0;
+/* ===================================================
+   RESPONSIVE DESIGN & MOBILE/TABLET ECOSYSTEM
+   =================================================== */
+
+/* Mobile Sidebar Drawer Overlay & Backdrop Styles */
+.mobile-sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1040;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.mobile-sidebar-backdrop.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+body.mobile-sidebar-active {
+  overflow: hidden !important;
+}
+
+@media (max-width: 767.98px) {
+  /* Mobile Sidebar Transformation */
+  nav.d-none.d-md-flex,
+  nav#unified-messages-sidebar,
+  nav[class*="sidebar"] {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100vh !important;
+    width: 280px !important;
+    max-width: 85vw !important;
+    z-index: 1050 !important;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3) !important;
+    display: flex !important;
+    overflow-y: auto !important;
+  }
+
+  nav.mobile-sidebar-open {
+    transform: translateX(0) !important;
+  }
+
+  /* Responsive Main Header Layout */
+  main header,
+  .flex-grow-1 > header {
+    padding: 0.75rem 1rem !important;
+  }
+
+  main header .h5,
+  main header h1 {
+    font-size: 1.1rem !important;
+  }
+
+  /* Stat & Metric Grid Auto-Adaptation */
+  .stat-value {
+    font-size: 1.5rem !important;
+  }
+
+  /* Table Responsive Scrolling & Touch Fixes */
+  .table-responsive {
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--ar-radius-sm);
+  }
+
+  .table-custom td,
+  .table-custom th {
+    padding: 0.65rem 0.75rem !important;
+    font-size: 0.825rem !important;
+  }
+
+  /* Modals Full Mobile Compatibility */
+  .modal-dialog {
+    margin: 0.5rem !important;
+    max-width: calc(100% - 1rem) !important;
+  }
+
+  .modal-body,
+  .modal-header,
+  .modal-footer {
+    padding: 1rem !important;
+  }
+
+  /* Code Editors & Assessment Panels */
+  .main-workspace {
+    height: auto !important;
+    min-height: calc(100vh - 56px);
+  }
+
+  .left-panel,
+  .right-panel {
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  /* Candidate Profile Banners */
+  .avatar-glow-indigo,
+  .avatar-glow-emerald {
+    width: 80px !important;
+    height: 80px !important;
+    margin-top: -40px !important;
+  }
+}
+
+@media (max-width: 991.98px) {
+  /* Fluid Display Typography Scaling */
+  .display-1 { font-size: calc(2.2rem + 1.5vw) !important; }
+  .display-2 { font-size: calc(2rem + 1.2vw) !important; }
+  .display-3 { font-size: calc(1.8rem + 1vw) !important; }
+  .display-4 { font-size: calc(1.5rem + 0.8vw) !important; }
+
+  /* Hero Section Typography & Action Wrappers */
+  .hero-section h1 {
+    font-size: clamp(1.8rem, 5vw, 3.2rem) !important;
+  }
+
+  .hero-section p.lead {
+    font-size: 1rem !important;
+  }
+
+  /* Live Interview Stage Stacking */
+  .main-stage {
+    height: auto !important;
+    min-height: calc(100vh - 60px);
+  }
+
+  /* Split Search Filters Collapse */
+  .search-filter-sidebar {
+    position: relative !important;
+    width: 100% !important;
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .container,
+  .container-fluid {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  .card-body {
+    padding: 1rem !important;
+  }
+
+  .btn {
+    padding: 0.5rem 0.9rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  .btn-lg {
+    padding: 0.65rem 1.1rem !important;
+    font-size: 1rem !important;
+  }
+
+  /* Stack button groups vertically or wrap nicely on narrow phones */
+  .d-flex.gap-3,
+  .d-flex.gap-2 {
+    gap: 0.5rem !important;
+  }
+
+  /* Form Selects auto width */
+  .form-select,
+  .form-control {
+    min-width: 100% !important;
+  }
 }
