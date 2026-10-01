@@ -1,11 +1,12 @@
 /**
  * mobile-nav.js — Universal Responsive Mobile Navigation & Sidebar Handler
- * Enhances all dashboard, portal, search, assessment, and messages pages
- * with smooth mobile sidebar drawer toggling, touch-scroll support,
+ * Enhances all candidate and recruiter dashboard, portal, search, assessment,
+ * and messages pages with smooth mobile sidebar drawer toggling, touch-scroll support,
  * and responsive layout adjustments.
  */
 document.addEventListener("DOMContentLoaded", () => {
   initMobileSidebar();
+  initResponsiveHeader();
   initResponsiveTables();
   initResponsiveMessages();
   initResponsiveModals();
@@ -15,9 +16,6 @@ function initMobileSidebar() {
   const sidebar = document.querySelector("nav.d-none.d-md-flex, nav#unified-messages-sidebar, nav[class*='sidebar']");
   if (!sidebar) return;
 
-  // Find header to inject mobile toggle if not already present
-  const header = document.querySelector("main header, .flex-grow-1 > header, .interview-header, .top-header");
-  
   // Create mobile backdrop if not existing
   let backdrop = document.querySelector(".mobile-sidebar-backdrop");
   if (!backdrop) {
@@ -26,23 +24,29 @@ function initMobileSidebar() {
     document.body.appendChild(backdrop);
   }
 
-  // Create mobile sidebar toggle button if header exists and button missing
-  if (header && !header.querySelector(".mobile-sidebar-toggler")) {
-    const toggleBtn = document.createElement("button");
-    toggleBtn.type = "button";
-    toggleBtn.className = "btn btn-sm btn-outline-secondary d-md-none me-2 mobile-sidebar-toggler d-inline-flex align-items-center gap-1";
-    toggleBtn.innerHTML = `<span>☰</span> <span class="fw-semibold">Menu</span>`;
-    toggleBtn.setAttribute("aria-label", "Toggle navigation menu");
-
-    // Insert toggle button at start of header's first flex child or header itself
-    const targetContainer = header.querySelector(".d-flex") || header;
-    targetContainer.insertBefore(toggleBtn, targetContainer.firstChild);
-
-    toggleBtn.addEventListener("click", () => {
-      sidebar.classList.toggle("mobile-sidebar-open");
-      backdrop.classList.toggle("show");
-      document.body.classList.toggle("mobile-sidebar-active");
-    });
+  // Ensure sidebar has a mobile close button inside if missing
+  if (!sidebar.querySelector(".mobile-sidebar-close")) {
+    const closeBtn = document.createElement("button");
+    closeBtn.type = "button";
+    closeBtn.className = "btn-close d-md-none mobile-sidebar-close p-2 border rounded-circle bg-light ms-auto";
+    closeBtn.setAttribute("aria-label", "Close navigation drawer");
+    
+    // Insert at top of sidebar
+    const firstChild = sidebar.firstElementChild;
+    if (firstChild) {
+      if (firstChild.classList.contains("navbar-brand") || firstChild.classList.contains("d-flex")) {
+        firstChild.classList.add("justify-content-between");
+        firstChild.appendChild(closeBtn);
+      } else {
+        const topHeader = document.createElement("div");
+        topHeader.className = "d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom d-md-none";
+        topHeader.innerHTML = `<span class="fw-bold fs-6 text-dark">Menu Navigation</span>`;
+        topHeader.appendChild(closeBtn);
+        sidebar.insertBefore(topHeader, firstChild);
+      }
+    }
+    
+    closeBtn.addEventListener("click", closeMobileSidebar);
   }
 
   // Close sidebar when backdrop is clicked
@@ -59,8 +63,36 @@ function initMobileSidebar() {
 
   function closeMobileSidebar() {
     sidebar.classList.remove("mobile-sidebar-open");
-    backdrop.classList.remove("show");
+    if (backdrop) backdrop.classList.remove("show");
     document.body.classList.remove("mobile-sidebar-active");
+  }
+}
+
+function initResponsiveHeader() {
+  const header = document.querySelector("main header, .flex-grow-1 > header, .interview-header, .top-header");
+  const sidebar = document.querySelector("nav.d-none.d-md-flex, nav#unified-messages-sidebar, nav[class*='sidebar']");
+  if (!header) return;
+
+  // Add mobile layout class
+  header.classList.add("mobile-header-bar");
+
+  // Create mobile sidebar toggle button if missing
+  if (sidebar && !header.querySelector(".mobile-sidebar-toggler")) {
+    const toggleBtn = document.createElement("button");
+    toggleBtn.type = "button";
+    toggleBtn.className = "btn btn-sm btn-outline-secondary d-md-none mobile-sidebar-toggler me-2 flex-shrink-0 d-inline-flex align-items-center gap-1 shadow-sm";
+    toggleBtn.innerHTML = `<span>☰</span> <span class="fw-semibold">Menu</span>`;
+    toggleBtn.setAttribute("aria-label", "Toggle navigation menu");
+
+    // Insert toggle button at top left of header
+    header.insertBefore(toggleBtn, header.firstChild);
+
+    toggleBtn.addEventListener("click", () => {
+      const backdrop = document.querySelector(".mobile-sidebar-backdrop");
+      sidebar.classList.toggle("mobile-sidebar-open");
+      if (backdrop) backdrop.classList.toggle("show");
+      document.body.classList.toggle("mobile-sidebar-active");
+    });
   }
 }
 
@@ -110,7 +142,6 @@ function initResponsiveMessages() {
     });
   }
 
-  // Delegate partner item click to switch to chat pane on mobile
   document.addEventListener("click", (e) => {
     if (e.target.closest(".partner-item, .contact-item, [data-partner-id]")) {
       mainPane.classList.add("active-chat");
