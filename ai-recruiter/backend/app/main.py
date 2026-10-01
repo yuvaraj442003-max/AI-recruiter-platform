@@ -237,10 +237,16 @@ async def lifespan(app: FastAPI):
     db = SessionLocal()
     try:
         seed_skills(db)
-        if db.query(user.User).count() == 0:
-            logging.info("Empty database detected on startup. Auto-seeding initial demo accounts and data...")
+        # Auto-seed demo data ONLY in development mode with SQLite
+        # NEVER seed in production or when PostgreSQL is the active database
+        is_sqlite = engine.dialect.name == "sqlite"
+        is_development = getattr(settings, "ENVIRONMENT", "development").lower() in ("development", "dev", "local")
+        if is_sqlite and is_development and db.query(user.User).count() == 0:
+            logging.info("Empty SQLite database detected in development mode. Auto-seeding demo accounts...")
             from scripts.seed_demo_data import seed_demo
             seed_demo()
+        elif db.query(user.User).count() == 0 and not is_sqlite:
+            logging.info("Empty PostgreSQL database detected. Skipping demo seed — register your real account via /api/v1/auth/register")
     except Exception:
         logging.getLogger("ai_recruiter").exception("Startup initialization failed")
     finally:
