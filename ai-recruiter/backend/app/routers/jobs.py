@@ -6,8 +6,10 @@ import uuid
 from typing import Optional
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Query
-from sqlalchemy import or_
+from sqlalchemy import or_, not_
 from sqlalchemy.orm import Session, joinedload
+
+from app.core.config import settings
 
 from app.core.database import get_db
 from app.core.deps import get_current_user, require_role
@@ -118,9 +120,23 @@ def list_jobs(
     current_user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
-    query = db.query(Job).options(
-        joinedload(Job.job_skills).joinedload(JobSkill.skill),
-        joinedload(Job.applications),
+    # Always exclude demo/seed accounts
+    real_recruiter_filter = [
+        User.is_active == True,
+        User.role.in_([UserRole.recruiter, UserRole.company_admin, UserRole.admin, UserRole.superadmin]),
+        not_(User.email.in_(settings.DEMO_ACCOUNT_EMAILS)),
+        not_(User.email.ilike("%@example.com")),
+        not_(User.email.ilike("%@test.com")),
+    ]
+
+    query = (
+        db.query(Job)
+        .join(User, Job.recruiter_id == User.id)
+        .options(
+            joinedload(Job.job_skills).joinedload(JobSkill.skill),
+            joinedload(Job.applications),
+        )
+        .filter(*real_recruiter_filter)
     )
 
     if current_user and current_user.role in [UserRole.recruiter, UserRole.admin, UserRole.superadmin]:

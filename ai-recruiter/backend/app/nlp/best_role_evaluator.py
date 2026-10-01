@@ -5,9 +5,12 @@ best suited job position and role match.
 """
 from dataclasses import dataclass, field
 import uuid
+from sqlalchemy import not_
 from sqlalchemy.orm import Session, joinedload
 
-from app.models.user import User
+from app.core.config import settings
+
+from app.models.user import User, UserRole
 from app.models.candidate import CandidateProfile, CandidateSkill
 from app.models.job import Job, JobSkill, JobStatus
 from app.ml.ranking import compute_match
@@ -76,10 +79,19 @@ def find_best_suited_position(
 
     # 1. Evaluate against all published active real jobs in the system (excluding generic talent pools)
     if published_jobs is None:
+        demo_filter = [
+            Job.status == JobStatus.published,
+            User.is_active == True,
+            User.role.in_([UserRole.recruiter, UserRole.company_admin, UserRole.admin, UserRole.superadmin]),
+            not_(User.email.in_(settings.DEMO_ACCOUNT_EMAILS)),
+            not_(User.email.ilike("%@example.com")),
+            not_(User.email.ilike("%@test.com")),
+        ]
         published_jobs = (
             db.query(Job)
+            .join(User, Job.recruiter_id == User.id)
             .options(joinedload(Job.job_skills).joinedload(JobSkill.skill))
-            .filter(Job.status == JobStatus.published)
+            .filter(*demo_filter)
             .all()
         )
 
