@@ -356,6 +356,7 @@ def google_login(payload: GoogleLoginRequest, request: Request, db: Session = De
             email=email,
             password_hash=hash_password(str(uuid.uuid4())),
             role=payload.role,
+            is_email_verified=True,
         )
         db.add(user)
         db.commit()
@@ -369,6 +370,9 @@ def google_login(payload: GoogleLoginRequest, request: Request, db: Session = De
             if actual != expected and not is_recruiter_type:
                 actual_title = "Candidate" if actual == "candidate" else ("Recruiter" if actual in ["recruiter", "company_admin"] else actual.capitalize())
                 raise AuthError(f"Access Denied: This Google account is registered as a {actual_title}. Please sign in using the {actual_title} role option.")
+        if not user.is_email_verified:
+            user.is_email_verified = True
+            db.commit()
         log_action(db, "user.google_login", user_id=user.id, ip_address=client_ip)
 
     return APIResponse(success=True, message="Google authentication successful", data=_issue_tokens(user))

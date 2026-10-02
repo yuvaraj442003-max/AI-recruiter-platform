@@ -157,7 +157,8 @@
     try {
       const res = await authAPI.google(credential, role);
       Session.save(res.data);
-      window.location.href = dashboardUrlForRole(res.data.user.role);
+      const userRole = res.data?.user?.role || res.data?.role || role;
+      window.location.href = dashboardUrlForRole(userRole);
     } catch (err) {
       showError(err.message || "Google registration failed.");
     } finally {
