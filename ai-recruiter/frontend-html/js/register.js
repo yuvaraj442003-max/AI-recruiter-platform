@@ -149,6 +149,8 @@
   });
 
 
+  let googleClientId = "";
+
   // Google Register handler
   async function processGoogleAuth(credential) {
     const role = document.querySelector('input[name="role"]:checked')?.value || "candidate";
@@ -176,12 +178,41 @@
   async function initGoogleGIS() {
     try {
       const configRes = await authAPI.getConfig();
-      const clientId = configRes?.data?.google_client_id;
-      if (clientId && window.google?.accounts?.id) {
+      googleClientId = configRes?.data?.google_client_id;
+      if (!googleClientId) return;
+
+      const setupGIS = () => {
+        if (!window.google?.accounts?.id) return false;
+
         window.google.accounts.id.initialize({
-          client_id: clientId,
+          client_id: googleClientId,
           callback: window.handleGoogleCredentialResponse,
+          auto_select: false,
+          cancel_on_tap_outside: true,
         });
+
+        const regContainer = document.getElementById("google-register-container");
+        if (regContainer) {
+          window.google.accounts.id.renderButton(regContainer, {
+            theme: "outline",
+            size: "large",
+            text: "signup_with",
+            shape: "rectangular",
+            width: Math.min(regContainer.offsetWidth || 340, 360),
+          });
+          const customBtn = document.getElementById("google-register-btn");
+          if (customBtn && regContainer.children.length > 0) {
+            customBtn.classList.add("d-none");
+          }
+        }
+        return true;
+      };
+
+      if (!setupGIS()) {
+        const interval = setInterval(() => {
+          if (setupGIS()) clearInterval(interval);
+        }, 300);
+        setTimeout(() => clearInterval(interval), 5000);
       }
     } catch (e) {
       console.warn("Google Auth config init:", e);
@@ -191,21 +222,29 @@
 
   const googleBtn = document.getElementById("google-register-btn");
   if (googleBtn) {
-    googleBtn.addEventListener("click", async () => {
-      if (window.google?.accounts?.id) {
-        window.google.accounts.id.prompt((notification) => {
-          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            const promptEmail = prompt("Continue with Google Account:\nEnter your Google Email (or press OK to sign in as yuvarajyuva442003@gmail.com):", "yuvarajyuva442003@gmail.com");
-            if (promptEmail && promptEmail.trim()) {
-              processGoogleAuth(promptEmail.trim());
+    googleBtn.addEventListener("click", () => {
+      if (!googleClientId) {
+        showError("Google Client ID is not configured on the server.");
+        return;
+      }
+
+      if (window.google?.accounts?.oauth2) {
+        const tokenClient = window.google.accounts.oauth2.initTokenClient({
+          client_id: googleClientId,
+          scope: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid",
+          callback: (tokenResp) => {
+            if (tokenResp && tokenResp.access_token) {
+              processGoogleAuth(tokenResp.access_token);
+            } else if (tokenResp?.error) {
+              showError("Google registration was cancelled or failed.");
             }
-          }
+          },
         });
+        tokenClient.requestAccessToken();
+      } else if (window.google?.accounts?.id) {
+        window.google.accounts.id.prompt();
       } else {
-        const promptEmail = prompt("Continue with Google Account:\nEnter your Google Email (or press OK to sign in as yuvarajyuva442003@gmail.com):", "yuvarajyuva442003@gmail.com");
-        if (promptEmail && promptEmail.trim()) {
-          processGoogleAuth(promptEmail.trim());
-        }
+        showError("Google Sign-In SDK is loading. Please try again in a moment.");
       }
     });
   }

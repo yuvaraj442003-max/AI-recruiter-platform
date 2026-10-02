@@ -262,6 +262,8 @@
     }
   });
 
+  let googleClientId = "";
+
   // Google Sign-In handler
   async function processGoogleAuth(credential) {
     hideError();
@@ -270,7 +272,7 @@
     try {
       const res = await authAPI.google(credential, expectedRole);
       Session.save(res.data);
-      const role = res.data.user.role;
+      const role = res.data?.user?.role || res.data?.role || expectedRole;
       window.location.href = dashboardUrlForRole(role);
     } catch (err) {
       showError(err.message || "Google Sign-In failed.");
@@ -289,12 +291,41 @@
   async function initGoogleGIS() {
     try {
       const configRes = await authAPI.getConfig();
-      const clientId = configRes?.data?.google_client_id;
-      if (clientId && window.google?.accounts?.id) {
+      googleClientId = configRes?.data?.google_client_id;
+      if (!googleClientId) return;
+
+      const setupGIS = () => {
+        if (!window.google?.accounts?.id) return false;
+
         window.google.accounts.id.initialize({
-          client_id: clientId,
+          client_id: googleClientId,
           callback: window.handleGoogleCredentialResponse,
+          auto_select: false,
+          cancel_on_tap_outside: true,
         });
+
+        const signinContainer = document.getElementById("google-signin-container");
+        if (signinContainer) {
+          window.google.accounts.id.renderButton(signinContainer, {
+            theme: "outline",
+            size: "large",
+            text: "signin_with",
+            shape: "rectangular",
+            width: Math.min(signinContainer.offsetWidth || 340, 360),
+          });
+          const customBtn = document.getElementById("google-signin-btn");
+          if (customBtn && signinContainer.children.length > 0) {
+            customBtn.classList.add("d-none");
+          }
+        }
+        return true;
+      };
+
+      if (!setupGIS()) {
+        const interval = setInterval(() => {
+          if (setupGIS()) clearInterval(interval);
+        }, 300);
+        setTimeout(() => clearInterval(interval), 5000);
       }
     } catch (e) {
       console.warn("Google Auth config init:", e);
@@ -304,21 +335,29 @@
 
   const googleBtn = document.getElementById("google-signin-btn");
   if (googleBtn) {
-    googleBtn.addEventListener("click", async () => {
-      if (window.google?.accounts?.id) {
-        window.google.accounts.id.prompt((notification) => {
-          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            const promptEmail = prompt("Sign in with Google Account:\nEnter your Google Email (or press OK to sign in as yuvarajyuva442003@gmail.com):", "yuvarajyuva442003@gmail.com");
-            if (promptEmail && promptEmail.trim()) {
-              processGoogleAuth(promptEmail.trim());
+    googleBtn.addEventListener("click", () => {
+      if (!googleClientId) {
+        showError("Google Client ID is not configured on the server.");
+        return;
+      }
+
+      if (window.google?.accounts?.oauth2) {
+        const tokenClient = window.google.accounts.oauth2.initTokenClient({
+          client_id: googleClientId,
+          scope: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid",
+          callback: (tokenResp) => {
+            if (tokenResp && tokenResp.access_token) {
+              processGoogleAuth(tokenResp.access_token);
+            } else if (tokenResp?.error) {
+              showError("Google Sign-In was cancelled or failed.");
             }
-          }
+          },
         });
+        tokenClient.requestAccessToken();
+      } else if (window.google?.accounts?.id) {
+        window.google.accounts.id.prompt();
       } else {
-        const promptEmail = prompt("Sign in with Google Account:\nEnter your Google Email (or press OK to sign in as yuvarajyuva442003@gmail.com):", "yuvarajyuva442003@gmail.com");
-        if (promptEmail && promptEmail.trim()) {
-          processGoogleAuth(promptEmail.trim());
-        }
+        showError("Google Sign-In SDK is loading. Please try again in a moment.");
       }
     });
   }

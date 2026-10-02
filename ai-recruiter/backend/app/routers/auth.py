@@ -297,7 +297,7 @@ def _verify_google_token(credential: str) -> tuple[str, str]:
     import httpx
     from app.core.config import settings
 
-    # 1. Verify via Google's official tokeninfo API
+    # 1. Verify via Google's official tokeninfo API (for ID tokens)
     try:
         resp = httpx.get(f"https://oauth2.googleapis.com/tokeninfo?id_token={credential}", timeout=5.0)
         if resp.status_code == 200:
@@ -312,6 +312,22 @@ def _verify_google_token(credential: str) -> tuple[str, str]:
                 return email.lower(), name
     except AuthError:
         raise
+    except Exception:
+        pass
+
+    # 1b. Verify via Google's userinfo API (for OAuth2 access tokens)
+    try:
+        resp = httpx.get(
+            "https://www.googleapis.com/oauth2/v3/userinfo",
+            headers={"Authorization": f"Bearer {credential}"},
+            timeout=5.0
+        )
+        if resp.status_code == 200:
+            data = resp.json()
+            email = data.get("email")
+            name = data.get("name") or data.get("given_name") or (email.split("@")[0] if email else "Google User")
+            if email:
+                return email.lower(), name
     except Exception:
         pass
 
