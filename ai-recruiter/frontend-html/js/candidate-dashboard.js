@@ -11,8 +11,22 @@
     alertBox.className = `alert alert-${variant} py-2`;
   }
 
+  let profileCompletionChartInstance = null;
+
   function renderProfileCompletionChart(percent) {
-    new Chart(document.getElementById("chart-profile-completion"), {
+    const canvas = document.getElementById("chart-profile-completion");
+    if (!canvas) return;
+
+    if (profileCompletionChartInstance) {
+      profileCompletionChartInstance.destroy();
+      profileCompletionChartInstance = null;
+    }
+    const existingChart = typeof Chart !== "undefined" && Chart.getChart ? Chart.getChart(canvas) : null;
+    if (existingChart) {
+      existingChart.destroy();
+    }
+
+    profileCompletionChartInstance = new Chart(canvas, {
       type: "doughnut",
       data: {
         labels: ["Complete", "Remaining"],
@@ -69,6 +83,11 @@
 
     if (appsStatusChartInstance) {
       appsStatusChartInstance.destroy();
+      appsStatusChartInstance = null;
+    }
+    const existingChart = typeof Chart !== "undefined" && Chart.getChart ? Chart.getChart(canvasEl) : null;
+    if (existingChart) {
+      existingChart.destroy();
     }
 
     const colorMap = {
