@@ -26,6 +26,7 @@ from app.services.email_providers.smtp_provider import SmtpEmailProvider
 from app.services.email_providers.sendgrid_provider import SendGridEmailProvider
 from app.services.email_providers.ses_provider import SesEmailProvider
 from app.services.email_providers.resend_provider import ResendEmailProvider
+from app.services.email_providers.brevo_provider import BrevoEmailProvider
 
 try:
     import jinja2
@@ -58,8 +59,10 @@ def _send_smtp_email(
 
 
 def get_email_provider() -> BaseEmailProvider:
-    provider_name = os.getenv("EMAIL_PROVIDER", getattr(settings, "EMAIL_PROVIDER", "smtp")).lower()
-    if provider_name == "sendgrid":
+    provider_name = os.getenv("EMAIL_PROVIDER", getattr(settings, "EMAIL_PROVIDER", "brevo")).lower()
+    if provider_name == "brevo":
+        return BrevoEmailProvider()
+    elif provider_name == "sendgrid":
         return SendGridEmailProvider()
     elif provider_name in ("ses", "aws_ses"):
         return SesEmailProvider()

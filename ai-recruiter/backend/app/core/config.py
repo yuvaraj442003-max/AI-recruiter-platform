@@ -52,8 +52,11 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str = ""
     GOOGLE_CLIENT_SECRET: str = ""
 
-    # --- SMTP / Email Delivery ---
-    EMAIL_PROVIDER: str = "smtp"
+    # --- Email Delivery (Brevo, SMTP, SendGrid, SES, Resend) ---
+    EMAIL_PROVIDER: str = "brevo"
+    BREVO_API_KEY: str = ""
+    BREVO_FROM_EMAIL: str = ""
+    BREVO_FROM_NAME: str = "AI Recruiter Team"
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
