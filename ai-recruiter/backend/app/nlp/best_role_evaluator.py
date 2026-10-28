@@ -165,14 +165,14 @@ def find_best_suited_position(
         primary_match = all_matched_roles[0]
     else:
         primary_match = {
-            "title": profile.current_role or "Software Professional",
+            "title": profile.current_role or profile.headline or "Candidate",
             "score": 50,
             "job_id": None,
-            "job_title": profile.current_role or "Software Professional",
+            "job_title": profile.current_role or profile.headline or "Candidate",
             "job_location": None,
             "is_active_job": False,
             "matched_skills": candidate_skills[:5],
-            "explanation": "General technical candidate profile.",
+            "explanation": "Profile based on verified resume background.",
             "type": "domain_role",
         }
 

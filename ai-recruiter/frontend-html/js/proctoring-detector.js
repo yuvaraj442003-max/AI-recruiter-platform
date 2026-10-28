@@ -21,7 +21,7 @@ class ProctorCameraDetector {
     this.canvas = document.createElement("canvas");
     this.ctx = this.canvas.getContext("2d", { willReadFrequently: true });
 
-    this.currentFaceCount = 1;
+    this.currentFaceCount = 0;
     this.noFaceStartTime = null;
     this.noFaceFlagged = false;
     this.multipleFacesFlagged = false;
@@ -69,12 +69,14 @@ class ProctorCameraDetector {
       return;
     }
 
-    let detectedCount = 1;
+    let detectedCount = 0;
 
     if (this.faceDetector) {
       try {
         const faces = await this.faceDetector.detect(this.videoEl);
-        detectedCount = faces.length;
+        // Exclude tiny artifacts (must be at least 35x35 pixels)
+        const validFaces = (faces || []).filter(f => f.boundingBox && f.boundingBox.width >= 35 && f.boundingBox.height >= 35);
+        detectedCount = validFaces.length;
       } catch (err) {
         detectedCount = this.canvasFallbackDetect();
       }
@@ -109,7 +111,7 @@ class ProctorCameraDetector {
       }
     }
 
-    // 2. No Face Handling (Debounced 5 seconds)
+    // 2. No Face Handling (Debounced 5 seconds for cheating violation log)
     if (detectedCount === 0) {
       if (!this.noFaceStartTime) {
         this.noFaceStartTime = now;
@@ -145,7 +147,7 @@ class ProctorCameraDetector {
     let state = "FACE_DETECTED";
     if (this.multipleFacesFlagged || (detectedCount > 1 && this.consecutiveMultiCount >= this.multiFaceDebounceCount)) {
       state = "MULTIPLE_FACES";
-    } else if (this.noFaceFlagged) {
+    } else if (detectedCount === 0) {
       state = "NO_FACE";
     }
 
@@ -156,8 +158,46 @@ class ProctorCameraDetector {
       multipleFaces: state === "MULTIPLE_FACES",
       message: state === "MULTIPLE_FACES"
         ? `Multiple faces (${detectedCount}) detected in camera view!`
-        : (this.noFaceFlagged ? "Face not detected" : "Camera Active ✓")
+        : (state === "NO_FACE" ? "Face not detected" : "Camera Active ✓")
     });
+  }
+
+  verifyBlobTexture(data, canvasWidth, minC, maxC, minR, maxR, cellW, cellH) {
+    // Verifies whether a candidate blob has facial luminance variance (eyes, brows, nose, lips).
+    // Flat background objects (plain wood doors, beige walls, fabric) have near-zero variance.
+    let totalLum = 0;
+    let pixelCount = 0;
+    const lums = [];
+
+    const startX = Math.floor(minC * cellW);
+    const endX = Math.min(canvasWidth - 1, Math.floor((maxC + 1) * cellW));
+    const startY = Math.floor(minR * cellH);
+    const endY = Math.min(119, Math.floor((maxR + 1) * cellH));
+
+    for (let y = startY; y < endY; y += 2) {
+      for (let x = startX; x < endX; x += 2) {
+        const idx = (y * canvasWidth + x) * 4;
+        const r = data[idx];
+        const g = data[idx + 1];
+        const b = data[idx + 2];
+        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+        lums.push(lum);
+        totalLum += lum;
+        pixelCount++;
+      }
+    }
+
+    if (pixelCount < 16) return false;
+
+    const mean = totalLum / pixelCount;
+    let varianceSum = 0;
+    for (let i = 0; i < pixelCount; i++) {
+      const diff = lums[i] - mean;
+      varianceSum += diff * diff;
+    }
+    const stdDev = Math.sqrt(varianceSum / pixelCount);
+    // Real face with facial contrast has stdDev >= 8.0
+    return stdDev >= 8.0;
   }
 
   canvasFallbackDetect() {
@@ -171,7 +211,7 @@ class ProctorCameraDetector {
       const imgData = this.ctx.getImageData(0, 0, width, height);
       const data = imgData.data;
 
-      // 40 columns x 30 rows grid (each cell is 4x4 px)
+      // 40 columns x 30 rows grid (each cell is 4x4 px = 16 px)
       const gridCols = 40;
       const gridRows = 30;
       const cellW = width / gridCols;
@@ -194,38 +234,58 @@ class ProctorCameraDetector {
               const green = data[idx + 1];
               const blue = data[idx + 2];
 
-              // Multi-space skin detection:
-              // 1. Standard YCrCb chromaticity
+              // Multi-space accurate skin detection:
+              // 1. Standard YCbCr chromaticity
               const Y = 0.299 * red + 0.587 * green + 0.114 * blue;
               const Cr = 0.5 * red - 0.418688 * green - 0.081312 * blue + 128;
               const Cb = -0.168736 * red - 0.331264 * green + 0.5 * blue + 128;
-              const isSkinYCrCb = (Cr >= 132 && Cr <= 175 && Cb >= 75 && Cb <= 130 && Y >= 25);
 
-              // 2. Normalized RGB (inclusive of varied lighting & darker/olive/fair skin tones)
+              // Reject extreme overexposure / total darkness
+              if (Y < 32 || Y > 240) continue;
+
+              // Human skin chrominance cluster: Cr in [133, 173], Cb in [77, 127]
+              const isSkinYCbCr = (Cr >= 133 && Cr <= 173 && Cb >= 77 && Cb <= 127);
+
+              // 2. Strict RGB checks to reject plain wood/cardboard/tan walls:
+              // Wood & beige walls often have high red & high green with almost no blue,
+              // or red and green too close together (yellow), or flat neutral tone.
               const maxRGB = Math.max(red, green, blue);
               const minRGB = Math.min(red, green, blue);
               const isSkinRGB = (
-                red > 38 && green > 28 && blue > 20 &&
-                red >= green && (red - minRGB) >= 8 &&
-                (maxRGB - minRGB) >= 10 &&
-                Math.abs(red - green) <= 125
+                red > 45 && green > 32 && blue > 20 &&
+                red > green &&
+                green >= blue &&
+                (red - green) >= 12 &&
+                (maxRGB - minRGB) >= 14 &&
+                (red - minRGB) >= 16 &&
+                Math.abs(red - green) <= 110
               );
 
-              if (isSkinYCrCb || isSkinRGB) {
+              // Darker skin tones under indoor lighting
+              const isDarkSkin = (
+                Y >= 32 && Y <= 110 &&
+                red >= 40 && green >= 25 && blue >= 15 &&
+                red >= green && (red - minRGB) >= 10 &&
+                Cr >= 134 && Cr <= 176 && Cb >= 80 && Cb <= 126
+              );
+
+              if ((isSkinYCbCr && isSkinRGB) || isDarkSkin) {
                 skinPixels++;
               }
             }
           }
 
-          if (skinPixels >= 5) {
+          // Require at least 8 out of 16 pixels (50%) to be skin to count cell as skin
+          if (skinPixels >= 8) {
             skinGrid[r][c] = 1;
             totalSkinCells++;
           }
         }
       }
 
-      // If virtually no skin detected anywhere in frame
-      if (totalSkinCells < 14) {
+      // If less than 35 skin cells across the entire 1200-cell frame,
+      // no human face can possibly be present in camera view.
+      if (totalSkinCells < 35) {
         return 0;
       }
 
@@ -268,8 +328,12 @@ class ProctorCameraDetector {
             const blobHeight = maxR - minR + 1;
             const aspectRatio = blobHeight / Math.max(1, blobWidth);
 
-            // Filter out tiny noise (less than 8 cells)
-            if (cells >= 8) {
+            // Filter out small noise blobs (< 20 cells).
+            // A human head in front of a laptop webcam is at least 30-150 cells.
+            if (cells >= 20 && blobWidth >= 3 && blobHeight >= 4) {
+              // Verify facial internal luminance texture (rejects flat uniform wood/walls)
+              const hasFaceTexture = this.verifyBlobTexture(data, width, minC, maxC, minR, maxR, cellW, cellH);
+
               rawBlobs.push({
                 cells,
                 minC, maxC, minR, maxR,
@@ -278,6 +342,7 @@ class ProctorCameraDetector {
                 aspectRatio,
                 centerC: (minC + maxC) / 2,
                 centerR: (minR + maxR) / 2,
+                hasFaceTexture,
               });
             }
           }
@@ -285,98 +350,80 @@ class ProctorCameraDetector {
       }
 
       if (rawBlobs.length === 0) {
-        return totalSkinCells >= 14 ? 1 : 0;
-      }
-
-      // Check if any single large blob contains two merged heads (people leaning close together)
-      // When 2 heads merge, width >= 14 cols (35% screen) and cells >= 40, with a central valley
-      let mergedHeadBonus = 0;
-      for (const b of rawBlobs) {
-        if (b.width >= 14 && b.cells >= 40 && b.aspectRatio <= 1.0) {
-          // Check column histogram within this blob
-          const colCounts = new Array(b.width).fill(0);
-          for (let r = b.minR; r <= b.maxR; r++) {
-            for (let c = b.minC; c <= b.maxC; c++) {
-              if (skinGrid[r][c] === 1) {
-                colCounts[c - b.minC]++;
-              }
-            }
-          }
-          // Find if there are two peaks separated by a valley in skin projection
-          let peaks = 0;
-          for (let i = 2; i < colCounts.length - 2; i++) {
-            if (colCounts[i] > colCounts[i - 1] && colCounts[i] >= colCounts[i + 1] && colCounts[i] >= 4) {
-              peaks++;
-              i += 2; // skip immediate neighbor
-            }
-          }
-          if (peaks >= 2) {
-            mergedHeadBonus++;
-          }
-        }
+        return 0;
       }
 
       // Sort candidate blobs by size descending
       rawBlobs.sort((a, b) => b.cells - a.cells);
 
-      // Identify distinct heads vs candidate's own neck/torso/hands
-      const distinctHeads = [];
+      // STEP 1: Find the PRIMARY candidate face
+      // Must be substantial (cells >= 30), proper aspect ratio, located in upper/middle frame,
+      // and have facial variance/texture (not a flat wooden door or beige wall).
+      const primaryFace = rawBlobs.find(b =>
+        b.cells >= 30 &&
+        b.width >= 4 &&
+        b.height >= 5 &&
+        b.aspectRatio >= 0.70 && b.aspectRatio <= 2.1 &&
+        b.centerR <= 22 &&
+        b.hasFaceTexture
+      );
+
+      // CRITICAL RULE: If no valid primary candidate face exists, NO ONE is in front of the camera!
+      // This completely prevents empty rooms with background objects from registering 4 or 5 faces.
+      if (!primaryFace) {
+        return 0;
+      }
+
+      // STEP 2: Detect any SECONDARY persons (real multiple faces)
+      const distinctHeads = [primaryFace];
 
       for (const blob of rawBlobs) {
-        // Exclude horizontal bottom-edge strips (hands resting on keyboard / desk at bottom 22% of screen)
-        if (blob.minR >= Math.floor(gridRows * 0.78) && blob.aspectRatio < 0.6) {
+        if (blob === primaryFace) continue;
+
+        // Exclude bottom edge strips (hands resting on keyboard / desk)
+        if (blob.minR >= 22 && blob.aspectRatio < 0.75) {
           continue;
         }
 
-        // Check if this blob is vertically stacked directly below an existing head (neck/chest)
-        let isPartOfExistingPerson = false;
-        for (const head of distinctHeads) {
-          const colDiff = Math.abs(blob.centerC - head.centerC);
-          const isDirectlyBelow = blob.minR >= head.minR + 3 && colDiff <= Math.max(head.width, blob.width) * 0.65;
-          const isCloseVertical = Math.hypot(blob.centerC - head.centerC, blob.centerR - head.centerR) < 4.0;
-          if (isDirectlyBelow || isCloseVertical) {
-            isPartOfExistingPerson = true;
-            break;
-          }
-        }
-
-        if (isPartOfExistingPerson) {
+        // Exclude body parts directly below the primary head (neck, shoulders, chest)
+        const colDiff = Math.abs(blob.centerC - primaryFace.centerC);
+        const isBelowPrimary = blob.centerR > primaryFace.centerR && colDiff <= Math.max(primaryFace.width, blob.width) * 0.7;
+        const eDistFromPrimary = Math.hypot(blob.centerC - primaryFace.centerC, blob.centerR - primaryFace.centerR);
+        if (isBelowPrimary || eDistFromPrimary < 6.0) {
           continue;
         }
 
-        // To qualify as a distinct head:
-        // Must have reasonable aspect ratio and minimum size
-        if (blob.cells >= 8 && blob.aspectRatio >= 0.45 && blob.aspectRatio <= 3.0) {
-          // Must have spatial separation from all existing heads (at least 3.5 columns horizontally or Euclidean >= 4.5)
-          let hasSufficientSeparation = true;
+        // To qualify as a genuine SECOND face:
+        // Must be a substantial head (cells >= 25, width >= 4, height >= 5),
+        // within human head proportions (aspectRatio 0.7 to 1.9),
+        // with face texture, and clear spatial separation from all other heads.
+        if (
+          blob.cells >= 25 &&
+          blob.width >= 4 &&
+          blob.height >= 5 &&
+          blob.aspectRatio >= 0.70 && blob.aspectRatio <= 1.9 &&
+          blob.centerR <= 22 &&
+          blob.hasFaceTexture
+        ) {
+          let separated = true;
           for (const head of distinctHeads) {
-            const hDist = Math.abs(blob.centerC - head.centerC);
-            const eDist = Math.hypot(blob.centerC - head.centerC, blob.centerR - head.centerR);
-            if (hDist < 3.5 && eDist < 4.5) {
-              hasSufficientSeparation = false;
+            const dist = Math.hypot(blob.centerC - head.centerC, blob.centerR - head.centerR);
+            if (dist < 6.0) {
+              separated = false;
               break;
             }
           }
-
-          if (hasSufficientSeparation) {
+          if (separated) {
             distinctHeads.push(blob);
           }
         }
       }
 
-      const totalDistinct = distinctHeads.length + mergedHeadBonus;
-
-      if (totalDistinct > 1) {
-        return totalDistinct;
-      }
-
-      if (totalDistinct === 1 || rawBlobs.length > 0 || totalSkinCells >= 14) {
-        return 1;
-      }
-
-      return 0;
+      // Cap at reasonable maximum for single proctored camera view
+      return Math.min(distinctHeads.length, 3);
     } catch (e) {
-      return 1;
+      console.warn("Face detection error:", e);
+      return 0;
     }
   }
 }

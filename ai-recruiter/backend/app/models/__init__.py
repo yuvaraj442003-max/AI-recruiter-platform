@@ -65,13 +65,39 @@ from app.models.candidate_feedback import (
     FeedbackStatus,
     FeedbackType,
 )
+from app.models.portfolio import Portfolio
+from app.models.student import (
+    AptitudeTopic,
+    AptitudeQuestion,
+    AptitudeOption,
+    AptitudeTest,
+    CandidateTestAttempt,
+    CandidateAnswer,
+    AptitudeTestResult,
+    AptitudeAttempt,
+    StudyMaterial,
+    LearningRoadmap,
+    StudentRoadmapProgress,
+    StudentLearningPreference,
+)
+from app.models.weekly_challenge import (
+    WeeklyAptitudeSet,
+    WeeklyAptitudeAttempt,
+    WeeklyCodingChallenge,
+    WeeklyCodingAttempt,
+)
 
 __all__ = [
+    "AptitudeOption",
+    "CandidateTestAttempt",
+    "CandidateAnswer",
+    "AptitudeTestResult",
     "User",
     "UserRole",
     "CandidateProfile",
     "Skill",
     "CandidateSkill",
+    "Portfolio",
     "RecruiterProfile",
     "Company",
     "Job",
@@ -125,6 +151,18 @@ __all__ = [
     "CandidateFeedbackReason",
     "FeedbackStatus",
     "FeedbackType",
+    "AptitudeTopic",
+    "AptitudeQuestion",
+    "AptitudeTest",
+    "AptitudeAttempt",
+    "StudyMaterial",
+    "LearningRoadmap",
+    "StudentRoadmapProgress",
+    "StudentLearningPreference",
+    "WeeklyAptitudeSet",
+    "WeeklyAptitudeAttempt",
+    "WeeklyCodingChallenge",
+    "WeeklyCodingAttempt",
 ]
 
 

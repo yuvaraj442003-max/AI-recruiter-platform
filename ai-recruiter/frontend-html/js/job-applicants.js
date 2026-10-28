@@ -1228,9 +1228,14 @@
       // Social links & export
       const socialButtonsHtml = `
         <div class="d-flex flex-wrap gap-2 mt-2">
+          ${c.published_portfolio_url ? `
+            <a href="${c.published_portfolio_url}" target="_blank" class="btn btn-sm btn-primary fw-bold text-white px-3 py-1 shadow-sm d-inline-flex align-items-center gap-1" style="background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%); border: none; border-radius: 50rem;">
+              <span>✨</span> View Portfolio
+            </a>
+          ` : ''}
           ${c.linkedin_url ? `<a href="${c.linkedin_url}" target="_blank" class="social-pill-sm social-linkedin"><span>in</span> LinkedIn</a>` : ''}
           ${c.github_url ? `<a href="${c.github_url}" target="_blank" class="social-pill-sm social-github"><span>💻</span> GitHub</a>` : ''}
-          ${c.portfolio_url ? `<a href="${c.portfolio_url}" target="_blank" class="social-pill-sm social-portfolio"><span>🌐</span> Portfolio</a>` : ''}
+          ${c.portfolio_url && !c.published_portfolio_url ? `<a href="${c.portfolio_url}" target="_blank" class="social-pill-sm social-portfolio"><span>🌐</span> External Portfolio</a>` : ''}
           <button class="btn btn-sm btn-info text-white fw-semibold export-details-btn px-3 py-1" data-candidate-id="${c.id || app.candidate_id}" data-app-id="${app.id}">
             📄 Export Candidate PDF (.pdf)
           </button>

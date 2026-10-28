@@ -272,7 +272,7 @@ def smart_search_talent_pool(
         results.append({
             "candidate_id": c.id,
             "candidate_name": c.user.name if c.user else "Candidate",
-            "headline": c.headline or "Software Professional",
+            "headline": c.headline or c.current_role or "Candidate",
             "location": c.location,
             "experience_years": c.experience_years or 0.0,
             "skills": [cs.skill.skill_name for cs in c.candidate_skills if cs.skill] if c.candidate_skills else [],

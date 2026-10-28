@@ -13,9 +13,6 @@ per-request would be far too slow for an API.
 import logging
 import re
 
-import nltk
-import spacy
-
 logger = logging.getLogger("ai_recruiter.nlp")
 
 _NLTK_READY = False
@@ -34,14 +31,20 @@ def _ensure_nltk_data() -> None:
 
 
 try:
-    NLP = spacy.load("en_core_web_sm")
-except OSError:
+    import spacy
     try:
-        import en_core_web_sm
-        NLP = en_core_web_sm.load()
-    except Exception:
-        logger.warning("spaCy model 'en_core_web_sm' not found; falling back to a blank English pipeline.")
-        NLP = spacy.blank("en")
+        NLP = spacy.load("en_core_web_sm")
+    except OSError:
+        try:
+            import en_core_web_sm
+            NLP = en_core_web_sm.load()
+        except Exception:
+            logger.warning("spaCy model 'en_core_web_sm' not found; falling back to a blank English pipeline.")
+            NLP = spacy.blank("en")
+except Exception:
+    spacy = None
+    NLP = None
+    logger.warning("spaCy not installed or failed to load; using lightweight fallback NLP.")
 
 _WHITESPACE_RE = re.compile(r"[ \t]+")
 _MULTI_NEWLINE_RE = re.compile(r"\n{3,}")
@@ -64,6 +67,9 @@ def tokenize_and_lemmatize(text: str) -> list[str]:
     and return lemmatized lowercase tokens. This is the representation
     used for TF-IDF/matching in Phase 3.
     """
+    if NLP is None:
+        words = re.findall(r"\b[a-zA-Z]{2,}\b", text.lower())
+        return [w for w in words if w not in {"the", "and", "or", "in", "at", "to", "for", "with", "on", "as", "by", "is", "are", "was", "were"}]
     doc = NLP(text)
     return [
         token.lemma_.lower()
@@ -88,8 +94,10 @@ def extract_entities(text: str) -> dict[str, list[str]]:
     """Run spaCy NER and bucket entities by label (PERSON, ORG, GPE, DATE)."""
     # NER is expensive on very long documents; a resume rarely needs more
     # than the first ~4000 characters analyzed for name/org/location cues.
-    doc = NLP(text[:4000])
     buckets: dict[str, list[str]] = {"PERSON": [], "ORG": [], "GPE": [], "DATE": []}
+    if NLP is None:
+        return buckets
+    doc = NLP(text[:4000])
     for ent in doc.ents:
         if ent.label_ in buckets and ent.text.strip() not in buckets[ent.label_]:
             buckets[ent.label_].append(ent.text.strip())

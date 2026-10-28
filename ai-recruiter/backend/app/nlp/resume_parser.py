@@ -12,6 +12,8 @@ import io
 import pymupdf  # PyMuPDF
 import pdfplumber
 from docx import Document
+from docx.text.paragraph import Paragraph
+from docx.table import Table
 
 from app.core.exceptions import AppError
 
@@ -25,7 +27,12 @@ def _extract_pdf_pymupdf(file_bytes: bytes) -> str:
     text_parts = []
     with pymupdf.open(stream=file_bytes, filetype="pdf") as doc:
         for page in doc:
-            text_parts.append(page.get_text())
+            try:
+                page_text = page.get_text("text", sort=True)
+            except Exception:
+                page_text = page.get_text()
+            if page_text and page_text.strip():
+                text_parts.append(page_text.strip())
     return "\n".join(text_parts)
 
 
@@ -33,8 +40,9 @@ def _extract_pdf_pdfplumber(file_bytes: bytes) -> str:
     text_parts = []
     with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
         for page in pdf.pages:
-            page_text = page.extract_text() or ""
-            text_parts.append(page_text)
+            page_text = page.extract_text(layout=False) or page.extract_text() or ""
+            if page_text.strip():
+                text_parts.append(page_text.strip())
     return "\n".join(text_parts)
 
 
@@ -44,11 +52,19 @@ def extract_pdf_text(file_bytes: bytes) -> str:
     except Exception:
         text = ""
 
-    # PyMuPDF sometimes returns very little on unusual layouts — fall back.
-    if len(text.strip()) < 30:
+    # PyMuPDF sometimes returns suspiciously little text on unusual layouts or textboxes — fall back to pdfplumber
+    if len(text.strip()) < 150:
         try:
             fallback_text = _extract_pdf_pdfplumber(file_bytes)
             if len(fallback_text.strip()) > len(text.strip()):
+                text = fallback_text
+        except Exception:
+            pass
+    elif len(text.strip()) < 600:
+        # Check if pdfplumber extracts substantially more text (e.g. form fields, textboxes)
+        try:
+            fallback_text = _extract_pdf_pdfplumber(file_bytes)
+            if len(fallback_text.strip()) > len(text.strip()) * 1.25:
                 text = fallback_text
         except Exception:
             pass
@@ -65,13 +81,36 @@ def extract_docx_text(file_bytes: bytes) -> str:
     except Exception as exc:
         raise ResumeParsingError("This file could not be read as a .docx document.") from exc
 
-    parts = [p.text for p in document.paragraphs if p.text.strip()]
-
-    for table in document.tables:
-        for row in table.rows:
-            for cell in row.cells:
-                if cell.text.strip():
-                    parts.append(cell.text.strip())
+    parts = []
+    try:
+        # Walk body in natural document order so tables remain directly attached to their respective section headers
+        for child in document.element.body:
+            if child.tag.endswith("p"):
+                p = Paragraph(child, document)
+                txt = p.text.strip()
+                if txt:
+                    parts.append(txt)
+            elif child.tag.endswith("tbl"):
+                t = Table(child, document)
+                for row in t.rows:
+                    row_cells_text = []
+                    seen_in_row = set()
+                    for cell in row.cells:
+                        ctext = cell.text.strip()
+                        # avoid duplicate text in merged cells
+                        if ctext and ctext not in seen_in_row:
+                            seen_in_row.add(ctext)
+                            row_cells_text.append(ctext)
+                    if row_cells_text:
+                        parts.append(" | ".join(row_cells_text))
+    except Exception:
+        # Fallback to standard paragraphs and tables if custom document XML walking fails
+        parts = [p.text.strip() for p in document.paragraphs if p.text.strip()]
+        for table in document.tables:
+            for row in table.rows:
+                row_cells = [cell.text.strip() for cell in row.cells if cell.text.strip()]
+                if row_cells:
+                    parts.append(" | ".join(dict.fromkeys(row_cells)))
 
     text = "\n".join(parts).strip()
     if len(text) < 10:

@@ -27,13 +27,15 @@ class CodingQuestion(Base, TimestampMixin):
     expected_output: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     constraints: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     explanation: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    status: Mapped[str] = mapped_column(String(50), default="approved", nullable=False)  # approved, pending_review, draft
+    week_assigned: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, index=True)  # e.g. "2026-W42"
 
     test_cases: Mapped[List["CodingTestCase"]] = relationship(
         "CodingTestCase", back_populates="question", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:
-        return f"<CodingQuestion id={self.id} title={self.title} difficulty={self.difficulty}>"
+        return f"<CodingQuestion id={self.id} title={self.title} difficulty={self.difficulty} status={self.status}>"
 
 
 class CodingTestCase(Base, TimestampMixin):

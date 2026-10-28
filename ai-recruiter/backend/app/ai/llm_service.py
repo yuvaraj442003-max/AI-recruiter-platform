@@ -28,7 +28,7 @@ from app.core.config import settings
 
 logger = logging.getLogger("ai_recruiter.llm")
 
-_REQUEST_TIMEOUT_SECONDS = 10.0
+_REQUEST_TIMEOUT_SECONDS = 45.0
 
 
 def get_active_provider() -> Optional[str]:
@@ -50,23 +50,40 @@ def is_configured() -> bool:
     return get_active_provider() is not None
 
 
-def _call_gemini(system_prompt: str, user_prompt: str, max_tokens: int) -> Optional[str]:
-    api_key = settings.GEMINI_API_KEY or settings.LLM_API_KEY
-    primary_model = settings.GEMINI_MODEL or settings.LLM_MODEL or "gemini-1.5-flash"
-
-    if not api_key or not api_key.startswith("AIza"):
-        logger.debug("No valid Gemini API key configured (key must start with 'AIza'), using template summary output.")
+def _call_gemini(
+    system_prompt: str,
+    user_prompt: str,
+    max_tokens: int,
+    model: Optional[str] = None
+) -> Optional[str]:
+    raw_key = settings.GEMINI_API_KEY or settings.LLM_API_KEY
+    if not raw_key:
+        logger.debug("No Gemini API key configured, using template output.")
         return None
 
-    # Model candidates to try if 404 or model not found occurs
+    api_key = raw_key.strip().strip('"').strip("'")
+    if not api_key:
+        return None
+
+    # Priority: explicit model passed in > GEMINI_MODEL setting > fallback
+    primary_model = (model or settings.GEMINI_MODEL or settings.LLM_MODEL or "gemini-3-flash-preview").strip()
+
+    # Intelligent model candidates: try requested model first, then resilient fallbacks
     models_to_try = [primary_model]
-    for fallback in ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-exp"]:
-        if fallback not in models_to_try:
+    for fallback in [
+        getattr(settings, "GEMINI_MODEL", "gemini-3-flash-preview"),
+        "gemini-3-flash-preview",
+        "gemini-flash-lite-latest",
+        "gemini-3.5-flash-lite",
+        "gemini-flash-latest",
+        "gemini-3.5-flash",
+    ]:
+        if fallback and fallback not in models_to_try:
             models_to_try.append(fallback)
 
-    for model in models_to_try:
+    for current_model in models_to_try:
         try:
-            url = f"{settings.GEMINI_BASE_URL}/models/{model}:generateContent?key={api_key}"
+            url = f"{settings.GEMINI_BASE_URL}/models/{current_model}:generateContent?key={api_key}"
             payload = {
                 "contents": [
                     {
@@ -89,8 +106,12 @@ def _call_gemini(system_prompt: str, user_prompt: str, max_tokens: int) -> Optio
                 json=payload,
                 timeout=_REQUEST_TIMEOUT_SECONDS,
             )
-            if response.status_code == 404:
-                logger.info("Gemini model '%s' returned 404, trying fallback...", model)
+            if response.status_code in (400, 401, 403):
+                logger.warning("Gemini AI API key invalid or unauthorized (%d), skipping fallback models.", response.status_code)
+                return None
+
+            if response.status_code in (404, 503, 429):
+                logger.info("Gemini model '%s' returned %d, trying fallback...", current_model, response.status_code)
                 continue
 
             response.raise_for_status()
@@ -102,8 +123,8 @@ def _call_gemini(system_prompt: str, user_prompt: str, max_tokens: int) -> Optio
                     return parts[0].get("text", "").strip()
             return None
         except Exception as exc:
-            logger.warning("Gemini AI call failed on model '%s': %s", model, exc)
-            if model == models_to_try[-1]:
+            logger.warning("Gemini AI call failed on model '%s': %s", current_model, exc)
+            if current_model == models_to_try[-1]:
                 return None
     return None
 
@@ -159,7 +180,12 @@ def _call_huggingface(system_prompt: str, user_prompt: str, max_tokens: int) -> 
         return None
 
 
-def generate(system_prompt: str, user_prompt: str, max_tokens: int = 500) -> Optional[str]:
+def generate(
+    system_prompt: str,
+    user_prompt: str,
+    max_tokens: int = 500,
+    model: Optional[str] = None
+) -> Optional[str]:
     """
     Calls the configured LLM provider. Returns the raw text response,
     or None if nothing is configured or the call failed — callers must
@@ -171,7 +197,7 @@ def generate(system_prompt: str, user_prompt: str, max_tokens: int = 500) -> Opt
         return None
 
     if provider == "gemini":
-        return _call_gemini(system_prompt, user_prompt, max_tokens)
+        return _call_gemini(system_prompt, user_prompt, max_tokens, model=model)
     if provider == "openai":
         return _call_openai(system_prompt, user_prompt, max_tokens)
     if provider == "huggingface":

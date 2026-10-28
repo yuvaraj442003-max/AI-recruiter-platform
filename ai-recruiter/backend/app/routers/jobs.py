@@ -125,9 +125,12 @@ def list_jobs(
         User.is_active == True,
         User.role.in_([UserRole.recruiter, UserRole.company_admin, UserRole.admin, UserRole.superadmin]),
         not_(User.email.in_(settings.DEMO_ACCOUNT_EMAILS)),
-        not_(User.email.ilike("%@example.com")),
-        not_(User.email.ilike("%@test.com")),
     ]
+    if getattr(settings, "ENVIRONMENT", "development").lower() == "production":
+        real_recruiter_filter.extend([
+            not_(User.email.ilike("%@example.com")),
+            not_(User.email.ilike("%@test.com")),
+        ])
 
     query = (
         db.query(Job)

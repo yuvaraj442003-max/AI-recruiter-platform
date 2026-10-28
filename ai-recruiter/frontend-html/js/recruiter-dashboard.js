@@ -476,19 +476,23 @@
             recBadge = '<span class="badge bg-success-subtle text-success border border-success px-2 py-1 rounded-pill small">✅ ' + item.recommendation + '</span>';
           }
 
+          const appId = item.application?.id || "";
+          const jobId = item.job?.id || "";
+          const jobTitle = item.job?.title || "Position";
+
           return `
             <tr>
               <td class="fw-bold text-secondary">#${idx + 1}</td>
               <td>
-                <div class="fw-bold text-dark fs-6 cursor-pointer text-primary" onclick="window.openRecruiterAssessmentModal('${item.application.id}', '${escapeHtml(item.candidateName)}', '${escapeHtml(item.job.title)}')">${item.candidateName}</div>
+                <div class="fw-bold text-dark fs-6 cursor-pointer text-primary" onclick="window.openRecruiterAssessmentModal('${appId}', '${escapeHtml(item.candidateName)}', '${escapeHtml(jobTitle)}')">${item.candidateName}</div>
                 <div class="text-muted small">${item.candidateEmail}</div>
               </td>
               <td class="text-secondary small fw-medium">
-                <div class="fw-semibold text-dark">${item.job.title}</div>
-                ${item.matchedRole && item.matchedRole !== item.job.title ? `<div class="mt-1"><span class="badge bg-primary-subtle text-primary border border-primary-subtle px-1.5 py-0.5 rounded" style="font-size: 0.72rem;">🎯 Matched: ${escapeHtml(item.matchedRole)}</span></div>` : ''}
+                <div class="fw-semibold text-dark">${jobTitle}</div>
+                ${item.matchedRole && item.matchedRole !== jobTitle ? `<div class="mt-1"><span class="badge bg-primary-subtle text-primary border border-primary-subtle px-1.5 py-0.5 rounded" style="font-size: 0.72rem;">🎯 Matched: ${escapeHtml(item.matchedRole)}</span></div>` : ''}
               </td>
               <td>
-                <span class="badge ${scoreBadge} px-3 py-1 rounded-pill fs-6 cursor-pointer" onclick="window.openRecruiterAssessmentModal('${item.application.id}', '${escapeHtml(item.candidateName)}', '${escapeHtml(item.job.title)}')">${item.atsScore}%</span>
+                <span class="badge ${scoreBadge} px-3 py-1 rounded-pill fs-6 cursor-pointer" onclick="window.openRecruiterAssessmentModal('${appId}', '${escapeHtml(item.candidateName)}', '${escapeHtml(jobTitle)}')">${item.atsScore}%</span>
               </td>
               <td>
                 <span class="badge bg-light text-dark border px-3 py-1 rounded-pill fs-6">${item.jobMatchScore}%</span>
@@ -503,10 +507,10 @@
                 ${recBadge}
               </td>
               <td class="text-end">
-                <button class="btn btn-sm btn-info text-white fw-semibold view-assessment-btn me-1 shadow-sm" data-app-id="${item.application.id}" data-candidate-name="${escapeHtml(item.candidateName)}" data-job-title="${escapeHtml(item.job.title)}">
+                <button class="btn btn-sm btn-info text-white fw-semibold view-assessment-btn me-1 shadow-sm" data-app-id="${appId}" data-candidate-name="${escapeHtml(item.candidateName)}" data-job-title="${escapeHtml(jobTitle)}">
                   📊 Score Breakdown
                 </button>
-                <a href="job-applicants.html?job_id=${item.job.id}" class="btn btn-sm btn-outline-primary fw-semibold px-3">
+                <a href="job-applicants.html?job_id=${jobId}" class="btn btn-sm btn-outline-primary fw-semibold px-3">
                   Inspect Applicants &rarr;
                 </a>
               </td>
@@ -652,7 +656,7 @@
       const data = r.extracted_data || {};
       const score = Math.round(r.overall_match_score || 0);
 
-      const matchedRole = r.matched_job_role || r.best_suited_role?.best_role_title || data.matched_job_role || data.current_role || "Software Professional";
+      const matchedRole = r.matched_job_role || r.best_suited_role?.best_role_title || data.matched_job_role || data.current_role || "Candidate Profile";
       const roleScore = r.best_suited_role?.best_match_score || score;
       const isActiveJob = r.best_suited_role?.is_active_job;
       const activePill = isActiveJob ? `<span class="badge bg-success text-white small" style="font-size: 0.65rem;" title="Matches an open job opening you posted">🏢 Open Job</span>` : '';
@@ -1166,6 +1170,445 @@
   if (dateFilterSelect) dateFilterSelect.addEventListener("change", loadAnalytics);
   if (statusFilterSelect) statusFilterSelect.addEventListener("change", loadAnalytics);
 
+  // ==========================================
+  // Student Career Guidance & Learning Activity Monitor
+  // (View and Monitor Only — No Question Generation)
+  // ==========================================
+  function escapeHtml(str) {
+    if (str == null) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  async function loadStudentLearningMonitor() {
+    const searchInput = document.getElementById("sm-filter-search");
+    const perfSelect = document.getElementById("sm-filter-performance");
+    const trendSelect = document.getElementById("sm-filter-trend");
+    const tableBody = document.getElementById("sm-students-table-body");
+
+    const search = searchInput ? searchInput.value.trim() : "";
+    const performance = perfSelect ? perfSelect.value : "all";
+    const trend = trendSelect ? trendSelect.value : "all";
+
+    if (tableBody) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center py-4 text-muted">
+            <div class="spinner-border spinner-border-sm text-success me-2" role="status"></div>
+            Loading student career guidance &amp; aptitude telemetry...
+          </td>
+        </tr>
+      `;
+    }
+
+    try {
+      const res = await (window.studentAPI || api.student).getRecruiterMonitor({ search, performance, trend });
+      const payload = res.data || res;
+      const summary = payload.summary || {};
+      const students = payload.students || [];
+
+      renderStudentLearningKPIs(summary);
+      renderStudentLearningTable(students);
+    } catch (err) {
+      console.error("Failed to load student learning monitor:", err);
+      if (tableBody) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center py-4 text-danger">
+              ⚠️ Failed to load student learning telemetry: ${escapeHtml(err.message || String(err))}
+            </td>
+          </tr>
+        `;
+      }
+    }
+  }
+
+  function renderStudentLearningKPIs(summary) {
+    if (!summary) return;
+    const totalEl = document.getElementById("sm-kpi-total-students");
+    const activeEl = document.getElementById("sm-kpi-active-learners");
+    const avgScoreEl = document.getElementById("sm-kpi-avg-score");
+    const testsCountEl = document.getElementById("sm-kpi-tests-count");
+    const avgRoadmapEl = document.getElementById("sm-kpi-avg-roadmap");
+    const wellBadge = document.getElementById("sm-kpi-well-badge");
+    const modBadge = document.getElementById("sm-kpi-mod-badge");
+    const impBadge = document.getElementById("sm-kpi-imp-badge");
+    const consistentEl = document.getElementById("sm-kpi-consistent-learners");
+
+    if (totalEl) totalEl.textContent = summary.total_students ?? 0;
+    if (activeEl) activeEl.textContent = `${summary.active_learners_count ?? 0} active learners`;
+    if (avgScoreEl) avgScoreEl.textContent = `${summary.avg_aptitude_score ?? 0}%`;
+    if (testsCountEl) testsCountEl.textContent = `${summary.active_learners_count ?? 0} active student learners`;
+    if (avgRoadmapEl) avgRoadmapEl.textContent = `${summary.avg_roadmap_progress ?? 0}%`;
+    if (wellBadge) wellBadge.textContent = `${summary.performing_well_count ?? 0} Well`;
+    if (modBadge) modBadge.textContent = `${summary.moderate_count ?? 0} Moderate`;
+    if (impBadge) impBadge.textContent = `${summary.needs_improvement_count ?? 0} Needs Imp.`;
+    if (consistentEl) consistentEl.textContent = `${summary.consistent_learners_count ?? 0} consistent daily learners`;
+  }
+
+  function renderStudentLearningTable(students) {
+    const tableBody = document.getElementById("sm-students-table-body");
+    if (!tableBody) return;
+
+    if (!students || students.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center py-5 text-muted">
+            <div class="mb-2 fs-2">🎓</div>
+            <div class="fw-semibold">No student learning activities found</div>
+            <small class="text-muted">Try adjusting your search criteria or filter options.</small>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    const rows = students.map((s) => {
+      // 1. Preparing Topics Badges
+      let topicsHtml = "";
+      if (s.preparing_topics && s.preparing_topics.length > 0) {
+        const visibleTopics = s.preparing_topics.slice(0, 3);
+        topicsHtml = visibleTopics.map(t => `<span class="badge bg-light text-dark border me-1 mb-1 small">${escapeHtml(t)}</span>`).join("");
+        if (s.preparing_topics.length > 3) {
+          topicsHtml += `<span class="badge bg-secondary-subtle text-secondary small" title="${s.preparing_topics.slice(3).map(escapeHtml).join(', ')}">+${s.preparing_topics.length - 3} more</span>`;
+        }
+      } else {
+        topicsHtml = `<span class="text-muted small">No topics chosen</span>`;
+      }
+
+      // 2. Aptitude Tests Info
+      let aptitudeHtml = "";
+      if (s.tests_count > 0) {
+        const scoreBadgeClass = s.avg_score >= 70 ? "bg-success" : s.avg_score >= 50 ? "bg-warning text-dark" : "bg-danger";
+        aptitudeHtml = `
+          <div>
+            <span class="badge ${scoreBadgeClass} fw-bold">${s.avg_score}% Avg</span>
+            <span class="small text-muted ms-1">(${s.tests_count} test${s.tests_count > 1 ? 's' : ''})</span>
+          </div>
+          <div class="small text-muted mt-1">
+            Pass: <strong>${s.passed_count}</strong> / Fail: <strong>${s.failed_count}</strong> (${s.pass_rate}%)
+          </div>
+        `;
+      } else {
+        aptitudeHtml = `<span class="badge bg-light text-muted border">No tests attended</span>`;
+      }
+
+      // 3. Learning / Roadmap Progress
+      const rmBarColor = s.roadmap_progress >= 70 ? "bg-success" : s.roadmap_progress >= 40 ? "bg-info" : "bg-warning";
+      const learningHtml = `
+        <div class="d-flex align-items-center justify-content-between small mb-1">
+          <span class="fw-bold">${s.roadmap_progress}%</span>
+          <span class="text-muted">${s.milestones_completed_count} milestones</span>
+        </div>
+        <div class="progress" style="height: 6px;">
+          <div class="progress-bar ${rmBarColor}" style="width: ${s.roadmap_progress}%;"></div>
+        </div>
+        <div class="small text-muted mt-1">⏱️ ${s.total_time_spent_mins}m spent</div>
+      `;
+
+      // 4. Consistency
+      const streakHtml = s.daily_streak > 0 
+        ? `<div class="fw-bold text-danger small">🔥 ${s.daily_streak} Day Streak</div>`
+        : `<div class="text-muted small">No active streak</div>`;
+      const consistencyHtml = `
+        ${streakHtml}
+        <span class="badge ${s.consistency_badge || 'bg-light text-secondary'} small mt-1">${escapeHtml(s.consistency_label || 'Inactive')}</span>
+      `;
+
+      // 5. Trend
+      let trendHtml = "";
+      if (s.trend === "improving") {
+        trendHtml = `<span class="badge bg-success-subtle text-success border border-success fw-bold px-2 py-1" title="Scores are improving across recent tests">↗ Improving</span>`;
+      } else if (s.trend === "declining") {
+        trendHtml = `<span class="badge bg-danger-subtle text-danger border border-danger fw-bold px-2 py-1" title="Scores are declining, requires attention">↘ Declining</span>`;
+      } else if (s.trend === "steady") {
+        trendHtml = `<span class="badge bg-primary-subtle text-primary border border-primary fw-bold px-2 py-1">➔ Steady</span>`;
+      } else if (s.trend === "baseline") {
+        trendHtml = `<span class="badge bg-light text-secondary border px-2 py-1">🎯 1 Test (Base)</span>`;
+      } else {
+        trendHtml = `<span class="badge bg-light text-muted border px-2 py-1">No Tests</span>`;
+      }
+
+      // 6. Status & Star Rating
+      let statusHtml = "";
+      if (s.performance_status === "Performing Well") {
+        statusHtml = `<span class="badge bg-success text-white px-2.5 py-1.5 rounded-pill fw-bold">Performing Well ✅</span>`;
+      } else if (s.performance_status === "Moderate Progress") {
+        statusHtml = `<span class="badge bg-warning text-dark px-2.5 py-1.5 rounded-pill fw-bold">Moderate Progress ⚠️</span>`;
+      } else {
+        statusHtml = `<span class="badge bg-danger text-white px-2.5 py-1.5 rounded-pill fw-bold">Needs Improvement ❌</span>`;
+      }
+      const stars = "★".repeat(s.rating_stars || 1) + "☆".repeat(5 - (s.rating_stars || 1));
+
+      // 7. Student Academic Details
+      const collegeDisplay = s.college_name ? escapeHtml(s.college_name) : "College not set";
+      const branchDisplay = [s.degree, s.branch].filter(Boolean).map(escapeHtml).join(" - ");
+
+      return `
+        <tr>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 38px; height: 38px; min-width: 38px; font-size: 14px;">
+                ${escapeHtml((s.name || "S").charAt(0).toUpperCase())}
+              </div>
+              <div class="overflow-hidden">
+                <div class="fw-bold text-dark text-truncate">${escapeHtml(s.name)}</div>
+                <div class="text-muted small text-truncate">${escapeHtml(s.email)}</div>
+                <div class="text-secondary small mt-0.5 text-truncate" title="${collegeDisplay}">
+                  🏛️ ${collegeDisplay} ${branchDisplay ? `(${branchDisplay})` : ''}
+                </div>
+              </div>
+            </div>
+          </td>
+          <td>${topicsHtml}</td>
+          <td>${aptitudeHtml}</td>
+          <td>${learningHtml}</td>
+          <td>${consistencyHtml}</td>
+          <td>${trendHtml}</td>
+          <td>
+            ${statusHtml}
+            <div class="small text-warning mt-1" style="font-size: 11px;">${stars}</div>
+          </td>
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-success fw-semibold text-nowrap" onclick="window.openStudentActivityDetailModal('${s.user_id}')">
+              🔍 View Details
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    tableBody.innerHTML = rows;
+  }
+
+  async function openStudentActivityDetailModal(userId) {
+    const modalEl = document.getElementById("studentActivityDetailModal");
+    const modalBody = document.getElementById("sad-modal-body");
+    const modalName = document.getElementById("sad-modal-name");
+    const modalSubtitle = document.getElementById("sad-modal-subtitle");
+    if (!modalEl || !modalBody) return;
+
+    modalBody.innerHTML = `
+      <div class="text-center py-5">
+        <div class="spinner-border text-success" role="status"></div>
+        <p class="mt-2 text-muted">Loading detailed student activities...</p>
+      </div>
+    `;
+
+    if (window.bootstrap) {
+      const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+      modal.show();
+    }
+
+    try {
+      const res = await (window.studentAPI || api.student).getStudentActivityDetail(userId);
+      const student = res.data || res;
+
+      if (modalName) modalName.textContent = `${student.name} — Career Guidance & Aptitude Telemetry`;
+      if (modalSubtitle) modalSubtitle.textContent = `${student.college_name || 'Academic Institution'} • ${student.degree || 'Student'} ${student.branch ? '(' + student.branch + ')' : ''} • Target Role: ${student.target_role || 'General'}`;
+
+      // Build Modal Body HTML
+      const statusBadge = student.performance_status === "Performing Well"
+        ? '<span class="badge bg-success text-white px-3 py-1.5 rounded-pill fs-6">Performing Well ✅</span>'
+        : student.performance_status === "Moderate Progress"
+        ? '<span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill fs-6">Moderate Progress ⚠️</span>'
+        : '<span class="badge bg-danger text-white px-3 py-1.5 rounded-pill fs-6">Needs Improvement ❌</span>';
+
+      const trendBadge = student.trend === "improving"
+        ? '<span class="badge bg-success-subtle text-success border border-success fw-bold px-3 py-1.5 rounded-pill">↗ Performance Improving</span>'
+        : student.trend === "declining"
+        ? '<span class="badge bg-danger-subtle text-danger border border-danger fw-bold px-3 py-1.5 rounded-pill">↘ Performance Declining</span>'
+        : '<span class="badge bg-primary-subtle text-primary border border-primary fw-bold px-3 py-1.5 rounded-pill">➔ Steady Performance</span>';
+
+      // Topics Badges
+      const prepTopics = (student.preparing_topics && student.preparing_topics.length > 0)
+        ? student.preparing_topics.map(t => `<span class="badge bg-light text-dark border px-2.5 py-1.5 me-1 mb-1">${escapeHtml(t)}</span>`).join("")
+        : '<span class="text-muted">No specific topics selected</span>';
+
+      const strongBadges = (student.strong_areas && student.strong_areas.length > 0)
+        ? student.strong_areas.map(t => `<span class="badge bg-success-subtle text-success border border-success px-2.5 py-1.5 me-1 mb-1">💪 ${escapeHtml(t)}</span>`).join("")
+        : '<span class="text-muted small">None identified yet</span>';
+
+      const weakBadges = (student.weak_areas && student.weak_areas.length > 0)
+        ? student.weak_areas.map(t => `<span class="badge bg-danger-subtle text-danger border border-danger px-2.5 py-1.5 me-1 mb-1">⚠️ ${escapeHtml(t)}</span>`).join("")
+        : '<span class="text-muted small">None identified yet</span>';
+
+      // Tests Table Rows
+      let testRowsHtml = "";
+      if (student.recent_attempts && student.recent_attempts.length > 0) {
+        testRowsHtml = student.recent_attempts.map((att, idx) => {
+          const passBadge = att.is_passed
+            ? '<span class="badge bg-success-subtle text-success border border-success">PASSED</span>'
+            : '<span class="badge bg-danger-subtle text-danger border border-danger">FAILED</span>';
+          const scoreClass = att.score_percentage >= 70 ? 'text-success' : att.score_percentage >= 50 ? 'text-warning' : 'text-danger';
+          const mins = Math.floor(att.time_taken_seconds / 60);
+          const secs = att.time_taken_seconds % 60;
+          const timeFormatted = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+
+          return `
+            <tr>
+              <td class="fw-semibold">#${idx + 1} ${escapeHtml(att.title)}</td>
+              <td class="text-muted small">${escapeHtml(att.created_at || '—')}</td>
+              <td><span class="fw-bold fs-6 ${scoreClass}">${att.score_percentage}%</span></td>
+              <td>${passBadge}</td>
+              <td class="small">
+                <span class="text-success fw-bold">✓ ${att.correct_count}</span> / 
+                <span class="text-danger fw-bold">✗ ${att.wrong_count}</span> 
+                <span class="text-muted">(${att.total_questions} Qs)</span>
+              </td>
+              <td class="text-muted small">⏱️ ${timeFormatted}</td>
+            </tr>
+          `;
+        }).join("");
+      } else {
+        testRowsHtml = `
+          <tr>
+            <td colspan="6" class="text-center py-4 text-muted">
+              Student has not attended any aptitude tests yet in the Career Guidance section.
+            </td>
+          </tr>
+        `;
+      }
+
+      modalBody.innerHTML = `
+        <!-- Status & Evaluation Banner -->
+        <div class="card border-0 bg-light p-3 rounded-4 mb-4 shadow-sm">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+              <div class="small text-muted text-uppercase fw-semibold mb-1">Overall Learning Evaluation</div>
+              <div class="d-flex align-items-center gap-2">
+                ${statusBadge}
+                ${trendBadge}
+                <span class="badge ${student.consistency_badge || 'bg-light text-secondary'} px-3 py-1.5 rounded-pill">
+                  🔥 ${student.daily_streak} Day Streak (${escapeHtml(student.consistency_label)})
+                </span>
+              </div>
+            </div>
+            <div class="text-end">
+              <div class="small text-muted">Last Active Date</div>
+              <div class="fw-bold text-dark">${escapeHtml(student.last_active_date || 'No recent activity')}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 KPI Stat Boxes -->
+        <div class="row g-3 mb-4">
+          <div class="col-sm-6 col-lg-3">
+            <div class="p-3 border rounded-3 bg-white shadow-sm h-100">
+              <div class="small text-muted fw-semibold">Tests Attended</div>
+              <div class="fs-4 fw-bold text-primary">${student.tests_count}</div>
+              <small class="text-muted">${student.passed_count} Passed / ${student.failed_count} Failed</small>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="p-3 border rounded-3 bg-white shadow-sm h-100">
+              <div class="small text-muted fw-semibold">Average Test Score</div>
+              <div class="fs-4 fw-bold text-success">${student.avg_score}%</div>
+              <small class="text-muted">Best Score: <strong>${student.best_score}%</strong></small>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="p-3 border rounded-3 bg-white shadow-sm h-100">
+              <div class="small text-muted fw-semibold">Roadmap Progress</div>
+              <div class="fs-4 fw-bold text-info">${student.roadmap_progress}%</div>
+              <small class="text-muted">${student.milestones_completed_count} Milestones Completed</small>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <div class="p-3 border rounded-3 bg-white shadow-sm h-100">
+              <div class="small text-muted fw-semibold">Total Study Time</div>
+              <div class="fs-4 fw-bold text-dark">${student.total_time_spent_mins} <span class="fs-6 fw-normal">mins</span></div>
+              <small class="text-muted">Across all attempts</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preparation Topics, Strengths & Weaknesses -->
+        <div class="card border mb-4 rounded-3 shadow-sm">
+          <div class="card-body p-3">
+            <h6 class="fw-bold mb-2">📚 Preparation Topics &amp; Focus Domains</h6>
+            <div class="mb-3">${prepTopics}</div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="small fw-bold text-success mb-1">💪 Strong Subject Areas (&gt;= 70%):</div>
+                <div>${strongBadges}</div>
+              </div>
+              <div class="col-md-6">
+                <div class="small fw-bold text-danger mb-1">⚠️ Areas Needing Support (&lt; 60%):</div>
+                <div>${weakBadges}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aptitude Test History Table -->
+        <div class="card border rounded-3 shadow-sm">
+          <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold mb-0">🧠 Aptitude Test Attendance &amp; Score History</h6>
+            <span class="badge bg-light text-dark border">${student.recent_attempts ? student.recent_attempts.length : 0} Attempts Logged</span>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light small text-muted text-uppercase">
+                <tr>
+                  <th>Topic / Test Name</th>
+                  <th>Date Attended</th>
+                  <th>Score</th>
+                  <th>Status</th>
+                  <th>Correct / Wrong</th>
+                  <th>Time Taken</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${testRowsHtml}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    } catch (err) {
+      modalBody.innerHTML = `
+        <div class="alert alert-danger">
+          Failed to load candidate activity details: ${escapeHtml(err.message || String(err))}
+        </div>
+      `;
+    }
+  }
+
+  window.openStudentActivityDetailModal = openStudentActivityDetailModal;
+
+  // Filter Listeners for Student Monitor
+  let smSearchTimeout = null;
+  const smSearchInput = document.getElementById("sm-filter-search");
+  if (smSearchInput) {
+    smSearchInput.addEventListener("input", () => {
+      clearTimeout(smSearchTimeout);
+      smSearchTimeout = setTimeout(loadStudentLearningMonitor, 300);
+    });
+  }
+  const smPerfSelect = document.getElementById("sm-filter-performance");
+  if (smPerfSelect) smPerfSelect.addEventListener("change", loadStudentLearningMonitor);
+
+  const smTrendSelect = document.getElementById("sm-filter-trend");
+  if (smTrendSelect) smTrendSelect.addEventListener("change", loadStudentLearningMonitor);
+
+  const smResetBtn = document.getElementById("sm-filter-reset-btn");
+  if (smResetBtn) {
+    smResetBtn.addEventListener("click", () => {
+      if (smSearchInput) smSearchInput.value = "";
+      if (smPerfSelect) smPerfSelect.value = "all";
+      if (smTrendSelect) smTrendSelect.value = "all";
+      loadStudentLearningMonitor();
+    });
+  }
+
+  const smRefreshBtn = document.getElementById("refresh-student-monitor-btn");
+  if (smRefreshBtn) smRefreshBtn.addEventListener("click", loadStudentLearningMonitor);
+
   async function initRecruiterDashboard() {
     // 1. Immediately render candidate resumes table with highest priority
     renderBulkUploadedCandidatesTable().catch(err => {
@@ -1181,6 +1624,11 @@
     loadAnalytics().catch(err => {
       console.warn("Analytics error:", err);
     });
+
+    // 4. Load student career guidance & learning activity monitor
+    loadStudentLearningMonitor().catch(err => {
+      console.warn("Student learning monitor error:", err);
+    });
   }
 
   // If auth is already initialized by auth-guard.js, run immediately
@@ -1192,10 +1640,16 @@
 
   // Backup trigger: if page is ready, attempt rendering candidate resumes immediately
   if (document.readyState === "complete" || document.readyState === "interactive") {
-    setTimeout(renderBulkUploadedCandidatesTable, 50);
+    setTimeout(() => {
+      renderBulkUploadedCandidatesTable();
+      loadStudentLearningMonitor();
+    }, 50);
   } else {
     document.addEventListener("DOMContentLoaded", () => {
-      setTimeout(renderBulkUploadedCandidatesTable, 50);
+      setTimeout(() => {
+        renderBulkUploadedCandidatesTable();
+        loadStudentLearningMonitor();
+      }, 50);
     });
   }
 })();

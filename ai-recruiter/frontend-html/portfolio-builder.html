@@ -1,0 +1,1157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio — AI Recruiter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/portfolio-themes.css?v=4.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ai-gradient-primary: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #06b6d4 100%);
+      --ai-glow: 0 0 25px rgba(99, 102, 241, 0.25);
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    /* Prompt Hero Box */
+    .prompt-hero-box {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      border-radius: 20px;
+      padding: 1.5rem;
+      color: #ffffff;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 30px -10px rgba(79, 70, 229, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .prompt-hero-box::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .prompt-textarea {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(129, 140, 248, 0.3);
+      color: #f8fafc;
+      border-radius: 14px;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      padding: 0.85rem 1rem;
+      resize: vertical;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(8px);
+    }
+    .prompt-textarea:focus {
+      background: rgba(15, 23, 42, 0.9);
+      border-color: #818cf8;
+      box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.25);
+      color: #ffffff;
+      outline: none;
+    }
+    .prompt-textarea::placeholder {
+      color: #94a3b8;
+    }
+    .prompt-starter-chip {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      border-radius: 50rem;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      white-space: nowrap;
+    }
+    .prompt-starter-chip:hover {
+      background: rgba(255, 255, 255, 0.18);
+      color: #ffffff;
+      border-color: #818cf8;
+      transform: translateY(-1px);
+    }
+    .btn-ai-generate {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #06b6d4 100%);
+      border: none;
+      color: #ffffff;
+      font-weight: 700;
+      border-radius: 12px;
+      padding: 0.75rem 1.5rem;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+      transition: all 0.2s ease;
+    }
+    .btn-ai-generate:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(79, 70, 229, 0.6);
+      color: #ffffff;
+    }
+    .btn-ai-generate:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    /* Conversational Refine Bar */
+    .refine-bar-box {
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      padding: 1rem 1.25rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+    .refine-input {
+      border-radius: 10px;
+      font-size: 0.88rem;
+    }
+    .refine-chip {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      color: #475569;
+      border-radius: 50rem;
+      padding: 0.25rem 0.65rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .refine-chip:hover {
+      background: #e0e7ff;
+      color: #4338ca;
+      border-color: #c7d2fe;
+    }
+
+    /* Studio Tabs & Controls */
+    .studio-tabs .nav-link {
+      color: #64748b;
+      font-weight: 600;
+      font-size: 0.85rem;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+    .studio-tabs .nav-link.active {
+      color: #4f46e5;
+      background: #eef2ff;
+      font-weight: 700;
+    }
+    .color-preset-dot {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      transition: transform 0.15s ease;
+    }
+    .color-preset-dot:hover {
+      transform: scale(1.15);
+    }
+    .device-switcher-btn.active {
+      background: #4f46e5;
+      color: #ffffff;
+      border-color: #4f46e5;
+    }
+
+    /* Live Preview Simulator */
+    .preview-card-wrapper {
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .preview-frame-container {
+      background: #0f172a;
+      padding: 12px;
+      border-radius: 14px;
+      transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin: 0 auto;
+      width: 100%;
+    }
+    .preview-mode-desktop { max-width: 100%; }
+    .preview-mode-tablet { max-width: 760px; }
+    .preview-mode-mobile { max-width: 420px; }
+
+    .preview-desktop-chrome {
+      background: #1e293b;
+      border-radius: 10px 10px 0 0;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .chrome-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .chrome-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .chrome-dots .dot-red { background: #ef4444; }
+    .chrome-dots .dot-yellow { background: #f59e0b; }
+    .chrome-dots .dot-green { background: #10b981; }
+    .chrome-url-bar {
+      flex-grow: 1;
+      background: #0f172a;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-family: monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    #preview-stage-viewport {
+      background: #ffffff;
+      border-radius: 0 0 10px 10px;
+      min-height: 700px;
+      max-height: 820px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+      scroll-behavior: smooth;
+    }
+
+    /* AI Thinking Overlay */
+    .ai-loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      border-radius: inherit;
+    }
+    .ai-spinner-glow {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-top-color: #818cf8;
+      border-right-color: #06b6d4;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Theme Pill Card in Theme Selector */
+    .theme-select-card {
+      cursor: pointer;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 0.75rem;
+      transition: all 0.2s ease;
+      background: #ffffff;
+    }
+    .theme-select-card:hover {
+      border-color: #818cf8;
+      transform: translateY(-2px);
+    }
+    .theme-select-card.active {
+      border-color: #4f46e5;
+      background: #f5f3ff;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+
+    /* Background Preset Chips & Cards */
+    .bg-preset-card {
+      cursor: pointer;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 0.35rem 0.65rem;
+      font-size: 0.74rem;
+      font-weight: 600;
+      background: #ffffff;
+      color: #334155;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      white-space: nowrap;
+    }
+    .bg-preset-card:hover {
+      border-color: #818cf8;
+      background: #f8fafc;
+      transform: translateY(-1px);
+    }
+    .bg-preset-card.active {
+      border-color: #4f46e5;
+      background: #eef2ff;
+      color: #4338ca;
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+    }
+
+    /* Sculpted Portrait Mask Selector */
+    .mask-shape-btn {
+      cursor: pointer;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #ffffff;
+      color: #334155;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .mask-shape-btn:hover {
+      border-color: #818cf8;
+      background: #f8fafc;
+    }
+    .mask-shape-btn.active {
+      border-color: #4f46e5;
+      background: #eef2ff;
+      color: #4338ca;
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+    }
+    .mask-mini-preview {
+      width: 16px;
+      height: 16px;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .mask-mini-pebble { border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%; }
+    .mask-mini-arch { border-radius: 6px 6px 1px 1px; }
+    .mask-mini-corner { border-radius: 1px 6px 1px 6px; }
+    .mask-mini-bento { border-radius: 3px; }
+    .mask-mini-pill { border-radius: 6px 2px 6px 2px; }
+  </style>
+</head>
+<body data-required-role="candidate">
+
+  <div class="d-flex min-vh-100">
+    <!-- Sidebar -->
+    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 260px; min-width: 260px;">
+      <a href="candidate-portal.html" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mb-4 px-2">
+        <span class="fs-4">👨‍💻</span>
+        <span class="fw-bold text-dark fs-5">Candidate Portal</span>
+      </a>
+      <ul class="nav nav-pills flex-column gap-2">
+        <li class="nav-item">
+          <a href="candidate-portal.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🏠</span> Portal Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="candidate-dashboard.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📊</span> Candidate Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="upload-resume.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📄</span> Resume &amp; ATS Score
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="portfolio-builder.html" class="nav-link active text-nowrap d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color: #fff;">
+            <span>✨</span> Portfolio
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="jobs.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🔍</span> Find Jobs
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="my-applications.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📑</span> My Applications
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="messages.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>💬</span> Messages &amp; Chat
+          </a>
+        </li>
+      </ul>
+      <div class="mt-auto pt-3 border-top">
+        <button id="logout-btn" class="btn btn-outline-secondary w-100 fw-semibold">Log out</button>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow-1" style="min-width: 0;">
+      <!-- Top Action Bar -->
+      <header class="bg-white border-bottom px-4 py-3 d-flex justify-content-between align-items-center sticky-top flex-wrap gap-2" style="z-index: 100;">
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-primary text-white fw-bold px-3 py-1 rounded-pill" style="background: var(--ai-gradient-primary) !important;">
+            ✨ AI Powered
+          </span>
+          <h1 class="h5 mb-0 fw-bold">Portfolio</h1>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <!-- Status Pill -->
+          <div id="portfolio-status-pill" class="badge bg-secondary-subtle text-secondary px-3 py-2 rounded-pill fw-semibold">
+            Status: Draft
+          </div>
+
+          <!-- Public Link Group -->
+          <div id="portfolio-public-link-group" class="d-none d-flex align-items-center gap-1">
+            <button id="btn-copy-portfolio-link" class="btn btn-sm btn-outline-primary fw-semibold d-flex align-items-center gap-1">
+              <span>📋</span> Copy Link
+            </button>
+            <a id="btn-open-portfolio-link" href="#" target="_blank" class="btn btn-sm btn-outline-secondary fw-semibold d-flex align-items-center gap-1" title="Open public URL in new tab">
+              <span>🌐</span> Open Site
+            </a>
+          </div>
+
+          <!-- Edit Portfolio Button -->
+          <button id="btn-toggle-edit-mode" class="btn btn-sm btn-outline-primary fw-bold px-3 py-2 shadow-sm d-flex align-items-center gap-1" title="Modify details and customize sections">
+            <span>✏️</span> Edit Portfolio
+          </button>
+
+          <!-- Export Standalone HTML -->
+          <button id="btn-export-portfolio-html" class="btn btn-sm btn-outline-dark fw-bold px-3 py-2 shadow-sm d-flex align-items-center gap-1" title="Download self-contained single HTML website file">
+            <span>💾</span> Export HTML
+          </button>
+
+          <!-- Print / PDF CV -->
+          <button id="btn-print-portfolio-cv" class="btn btn-sm btn-outline-secondary fw-semibold px-2 py-2 shadow-sm d-flex align-items-center gap-1" title="Print or Save CV to PDF">
+            <span>🖨️</span> PDF / Print
+          </button>
+
+          <!-- Publish / Unpublish Action Button -->
+          <button id="btn-toggle-publish" class="btn btn-sm btn-success fw-bold px-3 py-2 shadow-sm d-flex align-items-center gap-1">
+            <span>🚀</span> Publish Portfolio
+          </button>
+
+          <!-- Delete Portfolio Button -->
+          <button id="btn-delete-portfolio" class="btn btn-sm btn-outline-danger fw-bold px-3 py-2 shadow-sm d-flex align-items-center gap-1" title="Delete portfolio permanently">
+            <span>🗑️</span> Delete Portfolio
+          </button>
+
+          <!-- Save Button -->
+          <button id="btn-save-portfolio" class="btn btn-sm btn-primary fw-bold px-3 py-2 shadow-sm d-flex align-items-center gap-1" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); border: none;">
+            <span>💾</span> Save Changes
+          </button>
+        </div>
+      </header>
+
+      <div class="container-fluid p-3 p-md-4">
+        <!-- Alert Notification -->
+        <div id="builder-alert" class="alert d-none py-2 px-3 mb-4 rounded-3" role="alert"></div>
+
+        <!-- 2-Column Split Workspace -->
+        <div class="row g-4">
+
+          <!-- Left Column: AI Studio Controls & Prompt Center -->
+          <div class="col-xl-5 col-lg-6" id="builder-controls-column">
+
+            <!-- 1. MASTER GEMINI PROMPT HERO -->
+            <!-- 1. MASTER GEMINI PROMPT HERO -->
+            <div class="prompt-hero-box mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="fs-5">✨</span>
+                  <h5 class="fw-bold mb-0 text-white">Generate Your Portfolio with AI</h5>
+                </div>
+                <span class="badge bg-light text-dark fw-semibold" style="font-size: 0.72rem;">Triple-Gemini AI Engine</span>
+              </div>
+              <p class="text-white-50 small mb-3">
+                Enter a prompt describing your role, skills, experience, and style preferences. Our AI will synthesize your complete portfolio website.
+              </p>
+
+              <!-- Prompt Input -->
+              <div class="mb-3 position-relative">
+                <textarea id="input-ai-prompt" rows="4" class="form-control prompt-textarea w-100" placeholder="e.g. Create an award-winning portfolio for a Lead AI Systems Engineer with 6 years experience in LLMs, distributed training, and PyTorch. Highlight high-scale microservices, dark cyberpunk theme with neon cyan accents, latency reduction metrics, and an interactive terminal feel..."></textarea>
+              </div>
+
+              <!-- Quick Prompt Starters -->
+              <div class="mb-3">
+                <div class="text-white-50 small mb-2 fw-semibold">Try inspiring prompt ideas:</div>
+                <div class="d-flex flex-wrap gap-2" id="prompt-starters-container">
+                  <button type="button" class="prompt-starter-chip" data-prompt="Create a high-impact portfolio for a Senior AI & ML Engineer specializing in Large Language Models, PyTorch, and LangChain with 5 years experience. Use a futuristic dark cyber aesthetic with neon cyan and violet accents, highlighting agentic AI projects and sub-100ms inference optimization.">
+                    🤖 AI &amp; LLM Specialist
+                  </button>
+                  <button type="button" class="prompt-starter-chip" data-prompt="Build a clean, high-growth SaaS Product Engineer portfolio with 4 years experience in Next.js, TypeScript, and FastAPI. Emphasize modular Bento grid design, electric indigo colors, and 99.9% uptime reliability metrics.">
+                    ⚡ SaaS Product Lead (Bento)
+                  </button>
+                  <button type="button" class="prompt-starter-chip" data-prompt="Create a minimalist, Swiss editorial style portfolio for a Principal Cloud & DevOps Architect. Focus on Kubernetes, AWS, and Terraform with ultra-readable typography, clean obsidian slate colors, and enterprise cost reduction stats.">
+                    ☁️ Cloud &amp; DevOps Architect
+                  </button>
+                  <button type="button" class="prompt-starter-chip" data-prompt="Design a creative, asymmetric neo-display portfolio for a Senior UI/UX & Frontend Engineer with expertise in React, Three.js, and design systems. Use warm terracotta and vibrant violet accents with interactive showcase projects.">
+                    🎨 Creative Frontend &amp; UI/UX
+                  </button>
+                  <button type="button" class="prompt-starter-chip" data-prompt="Build an executive 2-column briefing portfolio for a Director of Engineering with 10+ years experience leading teams of 25+ engineers, enterprise migrations, and executive strategy.">
+                    🏢 Executive Tech Director
+                  </button>
+                </div>
+              </div>
+
+              <!-- Factual Context Toggle & Generate Button -->
+              <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 pt-2 border-top border-white-subtle">
+                <div class="form-check form-switch mb-0">
+                  <input class="form-check-input" type="checkbox" id="check-include-resume" checked />
+                  <label class="form-check-label text-white small" for="check-include-resume" title="Gemini anchors factual company names, degrees, and verified skills to your uploaded resume">
+                    Weave in my uploaded resume facts
+                  </label>
+                </div>
+                <button id="btn-generate-with-gemini" class="btn btn-ai-generate d-flex align-items-center gap-2">
+                  <span id="btn-generate-icon">✨</span>
+                  <span id="btn-generate-text">Generate Portfolio</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- PORTFOLIO GENERATED / EDIT NOTIFICATION BANNER -->
+            <div id="portfolio-ready-banner" class="alert alert-primary d-none align-items-center justify-content-between p-3 mb-4 rounded-3 shadow-sm border-0 bg-primary-subtle text-primary">
+              <div class="d-flex align-items-center gap-2">
+                <span class="fs-4">🎉</span>
+                <div>
+                  <div class="fw-bold">Portfolio Ready!</div>
+                  <div class="small text-secondary">Your portfolio is loaded in the live preview. Click <strong>Edit Portfolio</strong> to customize details or fix any inaccuracies.</div>
+                </div>
+              </div>
+              <button id="btn-banner-edit" class="btn btn-primary btn-sm fw-bold px-3 py-2 text-nowrap d-flex align-items-center gap-1 shadow-sm">
+                <span>✏️</span> Edit Details
+              </button>
+            </div>
+
+            <!-- 2. CONVERSATIONAL AI REFINE BAR -->
+            <div class="refine-bar-box mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="form-label small fw-bold text-dark mb-0 d-flex align-items-center gap-1">
+                  <span>💬</span> AI Refinement &amp; Follow-up Tweaks
+                </label>
+                <small class="text-muted">Chat with Gemini to edit anything</small>
+              </div>
+              <div class="input-group mb-2">
+                <input type="text" id="input-refine-prompt" class="form-control refine-input" placeholder="e.g. 'Make the bio punchier', 'Switch to OLED dark mode', 'Add a project about Kafka'..." />
+                <button id="btn-submit-refine" class="btn btn-outline-primary fw-semibold px-3" type="button">
+                  Refine with AI
+                </button>
+              </div>
+              <div class="d-flex flex-wrap gap-1">
+                <span class="refine-chip" data-refine="Switch the theme to OLED Dark with high contrast cyan rim glow">🌙 OLED Dark</span>
+                <span class="refine-chip" data-refine="Change layout to Minimalist Swiss Design with clean monochromatic typography">📐 Minimalist Swiss</span>
+                <span class="refine-chip" data-refine="Regenerate impact metrics with 4 quantified business metrics and KPI percentages">⚡ 4 Impact Metrics</span>
+                <span class="refine-chip" data-refine="Rewrite the About Me summary with executive leadership tone and strategic vision">💼 Executive Tone</span>
+                <span class="refine-chip" data-refine="Add a flagship project about Real-time Distributed Event Streaming with Kafka and Python">🚀 Add Streaming Project</span>
+                <span class="refine-chip" data-refine="Change color theme to Emerald Slate with gold secondary accents">🌿 Emerald Slate</span>
+              </div>
+            </div>
+
+            <!-- 3. STUDIO INSPECTOR TABS (Content, Styles, Publishing) -->
+            <div class="card border-0 shadow-sm p-3 mb-4 rounded-4 bg-white" id="studio-inspector-card">
+              <ul class="nav studio-tabs mb-3 border-bottom pb-2" role="tablist">
+                <li class="nav-item">
+                  <button class="nav-link active" id="tab-btn-content" data-bs-toggle="tab" data-bs-target="#tab-content" type="button">
+                    ✏️ Edit Details &amp; Content
+                  </button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" id="tab-btn-styles" data-bs-toggle="tab" data-bs-target="#tab-styles" type="button">
+                    🎨 Design &amp; Styles
+                  </button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" id="tab-btn-publish" data-bs-toggle="tab" data-bs-target="#tab-publish" type="button">
+                    🌐 URL &amp; Publish
+                  </button>
+                </li>
+              </ul>
+
+              <div class="tab-content">
+                <!-- TAB 1: DESIGN & STYLES -->
+                <div class="tab-pane fade" id="tab-styles" role="tabpanel">
+
+                  <!-- 1. Layout Architecture Selector -->
+                  <div class="mb-3 p-3 bg-light rounded-3 border">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <label class="form-label small fw-bold mb-0">🏛️ Layout Architecture</label>
+                      <span class="badge bg-primary-subtle text-primary small" style="font-size: 0.7rem;">Multi-Layout Engine</span>
+                    </div>
+                    <p class="text-muted small mb-2" style="font-size: 0.78rem;">Choose the core layout framework for your portfolio experience:</p>
+                    <select id="select-layout-architecture" class="form-select form-select-sm fw-semibold">
+                      <option value="nova">🌟 NOVA Editorial Studio (Boutique Agency Showcase)</option>
+                      <option value="modern">🍱 Modern Bento Grid (Apple/Linear Modular)</option>
+                      <option value="developer">💻 Developer Terminal (Hacker IDE Workstation)</option>
+                      <option value="ai_tech">🤖 AI Neural HUD (Futuristic Telemetry)</option>
+                      <option value="minimal">📐 Minimalist Swiss (Zurich Monograph)</option>
+                      <option value="corporate">🏢 Executive Corporate (2-Column Strategic Briefing)</option>
+                      <option value="creative">🎨 Creative Neo-Display (Asymmetric Studio)</option>
+                      <option value="dark">🌙 Dark Luxury (OLED Midnight Titanium)</option>
+                      <option value="split_screen">🪟 Split-Screen Showcase</option>
+                      <option value="dashboard">📊 Cockpit Analytics Dashboard</option>
+                      <option value="timeline">🧭 Career Journey &amp; Milestones</option>
+                      <option value="notion">📄 Notion Workspace (Clean Document)</option>
+                    </select>
+                  </div>
+
+                  <!-- 2. Active Theme Style Archetype -->
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold">Active Theme Style</label>
+                    <select id="select-theme-id" class="form-select form-select-sm">
+                      <option value="modern">✨ Modern Bento (Apple/Linear)</option>
+                      <option value="developer">💻 Developer Terminal (Hacker IDE)</option>
+                      <option value="cyberpunk">⚡ Cyberpunk High-Tech (Neon Telemetry)</option>
+                      <option value="ai_tech">🤖 AI Neural HUD (Futuristic Telemetry)</option>
+                      <option value="minimal">📐 Minimalist Swiss (Zurich Monograph)</option>
+                      <option value="corporate">🏢 Executive Corporate (2-Column Briefing)</option>
+                      <option value="creative">🎨 Creative Neo-Display (Asymmetric Studio)</option>
+                      <option value="dark">🌙 OLED Midnight Titanium</option>
+                      <option value="notion">📄 Notion Workspace (Clean Document)</option>
+                      <option value="timeline">🧭 Career Journey &amp; Milestones</option>
+                      <option value="dashboard">📊 Cockpit Analytics &amp; Dashboard</option>
+                      <option value="split_screen">🪟 Split-Screen Showcase</option>
+                    </select>
+                  </div>
+
+                  <!-- 3. Curated Color Palettes -->
+                  <div class="mb-3 p-3 bg-light rounded-3">
+                    <label class="form-label small fw-bold mb-2">Curated Color Palettes</label>
+                    <div class="d-flex flex-wrap gap-2" id="palettes-presets-container">
+                      <button type="button" class="btn btn-sm btn-white border px-2 py-1 small palette-btn" data-primary="#4f46e5" data-secondary="#06b6d4">
+                        <span class="d-inline-block rounded-circle me-1" style="width: 10px; height: 10px; background: #4f46e5;"></span>
+                        Electric Indigo
+                      </button>
+                      <button type="button" class="btn btn-sm btn-white border px-2 py-1 small palette-btn" data-primary="#10b981" data-secondary="#06b6d4">
+                        <span class="d-inline-block rounded-circle me-1" style="width: 10px; height: 10px; background: #10b981;"></span>
+                        Emerald Slate
+                      </button>
+                      <button type="button" class="btn btn-sm btn-white border px-2 py-1 small palette-btn" data-primary="#7c3aed" data-secondary="#f43f5e">
+                        <span class="d-inline-block rounded-circle me-1" style="width: 10px; height: 10px; background: #7c3aed;"></span>
+                        Sunset Violet
+                      </button>
+                      <button type="button" class="btn btn-sm btn-white border px-2 py-1 small palette-btn" data-primary="#0284c7" data-secondary="#10b981">
+                        <span class="d-inline-block rounded-circle me-1" style="width: 10px; height: 10px; background: #0284c7;"></span>
+                        Ocean Teal
+                      </button>
+                      <button type="button" class="btn btn-sm btn-white border px-2 py-1 small palette-btn" data-primary="#18181b" data-secondary="#71717a">
+                        <span class="d-inline-block rounded-circle me-1" style="width: 10px; height: 10px; background: #18181b;"></span>
+                        OLED Titanium
+                      </button>
+                      <button type="button" class="btn btn-sm btn-white border px-2 py-1 small palette-btn" data-primary="#d97706" data-secondary="#1e3a8a">
+                        <span class="d-inline-block rounded-circle me-1" style="width: 10px; height: 10px; background: #d97706;"></span>
+                        Monaco Amber
+                      </button>
+                      <button type="button" class="btn btn-sm btn-white border px-2 py-1 small palette-btn" data-primary="#00E5FF" data-secondary="#6366f1">
+                        <span class="d-inline-block rounded-circle me-1" style="width: 10px; height: 10px; background: #00E5FF;"></span>
+                        Cyber Cyan
+                      </button>
+                      <button type="button" class="btn btn-sm btn-white border px-2 py-1 small palette-btn" data-primary="#0D9488" data-secondary="#BA855E">
+                        <span class="d-inline-block rounded-circle me-1" style="width: 10px; height: 10px; background: #0D9488;"></span>
+                        Agency Emerald
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- 4. Primary & Secondary Accent Pickers -->
+                  <div class="row g-3 mb-3">
+                    <div class="col-6">
+                      <label class="form-label small fw-bold">Primary Accent</label>
+                      <div class="d-flex align-items-center gap-2">
+                        <input type="color" id="input-primary-color" class="form-control form-control-color" value="#4f46e5" />
+                        <input type="text" id="input-primary-color-text" class="form-control form-control-sm" value="#4f46e5" />
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label small fw-bold">Secondary Accent</label>
+                      <div class="d-flex align-items-center gap-2">
+                        <input type="color" id="input-secondary-color" class="form-control form-control-color" value="#06b6d4" />
+                        <input type="text" id="input-secondary-color-text" class="form-control form-control-sm" value="#06b6d4" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 5. Background Image Studio & Presets -->
+                  <div class="mb-3 p-3 bg-light rounded-3 border">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <label class="form-label small fw-bold mb-0">🖼️ Professional Background Image</label>
+                      <span class="badge bg-secondary-subtle text-secondary small" style="font-size: 0.68rem;">High-Resolution</span>
+                    </div>
+                    <p class="text-muted small mb-2" style="font-size: 0.76rem;">Select an authentic curated domain backdrop or provide your own custom image URL:</p>
+
+                    <!-- Presets Chips -->
+                    <div class="d-flex flex-wrap gap-1 mb-2" id="bg-presets-container">
+                      <button type="button" class="bg-preset-card" data-bg-url="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=2000&q=80">
+                        <span>🤖</span> AI Systems
+                      </button>
+                      <button type="button" class="bg-preset-card" data-bg-url="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=2000&q=80">
+                        <span>💻</span> Software Dev
+                      </button>
+                      <button type="button" class="bg-preset-card" data-bg-url="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=2000&q=80">
+                        <span>☁️</span> Cloud &amp; DevOps
+                      </button>
+                      <button type="button" class="bg-preset-card" data-bg-url="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=2000&q=80">
+                        <span>🎨</span> UI/UX Studio
+                      </button>
+                      <button type="button" class="bg-preset-card" data-bg-url="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=2000&q=80">
+                        <span>🏢</span> Corporate Exec
+                      </button>
+                      <button type="button" class="bg-preset-card" data-bg-url="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=2000&q=80">
+                        <span>📊</span> Data Analytics
+                      </button>
+                      <button type="button" class="bg-preset-card" data-bg-url="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=2000&q=80">
+                        <span>👥</span> Talent &amp; People
+                      </button>
+                      <button type="button" class="bg-preset-card" data-bg-url="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=2000&q=80">
+                        <span>📐</span> Minimalist Desk
+                      </button>
+                      <button type="button" class="bg-preset-card" data-bg-url="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=2000&q=80">
+                        <span>⚡</span> Cyber Hardware
+                      </button>
+                      <button type="button" class="bg-preset-card" data-bg-url="none">
+                        <span>🚫</span> Clean Solid (No Image)
+                      </button>
+                    </div>
+
+                    <!-- Custom URL input -->
+                    <div class="input-group input-group-sm">
+                      <span class="input-group-text bg-white small text-muted">URL</span>
+                      <input type="text" id="input-bg-image-url" class="form-control" placeholder="Paste custom image URL (e.g. Unsplash, CDN)..." />
+                      <button id="btn-apply-bg-image" class="btn btn-outline-primary" type="button">Apply</button>
+                      <button id="btn-clear-bg-image" class="btn btn-outline-secondary" type="button" title="Remove background image">Clear</button>
+                    </div>
+                  </div>
+
+                  <!-- 6. Sculpted Portrait Mask Shape -->
+                  <div class="mb-3 p-3 bg-light rounded-3 border">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <label class="form-label small fw-bold mb-0">🎭 Sculpted Portrait Mask Shape</label>
+                      <span class="badge bg-secondary-subtle text-secondary small" style="font-size: 0.68rem;">Geometric Silhouette</span>
+                    </div>
+                    <p class="text-muted small mb-2" style="font-size: 0.76rem;">Select the sculpted mask contour for your profile portrait:</p>
+                    <div class="d-flex flex-wrap gap-1" id="portrait-mask-container">
+                      <button type="button" class="mask-shape-btn active" data-mask="mask-pebble">
+                        <span class="mask-mini-preview mask-mini-pebble"></span>
+                        Organic Pebble
+                      </button>
+                      <button type="button" class="mask-shape-btn" data-mask="mask-arch">
+                        <span class="mask-mini-preview mask-mini-arch"></span>
+                        Classic Arch
+                      </button>
+                      <button type="button" class="mask-shape-btn" data-mask="mask-corner-curve">
+                        <span class="mask-mini-preview mask-mini-corner"></span>
+                        Cyber Corner
+                      </button>
+                      <button type="button" class="mask-shape-btn" data-mask="mask-studio-bento">
+                        <span class="mask-mini-preview mask-mini-bento"></span>
+                        Studio Bento
+                      </button>
+                      <button type="button" class="mask-shape-btn" data-mask="mask-asymmetric-pill">
+                        <span class="mask-mini-preview mask-mini-pill"></span>
+                        Asymmetric Pill
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- 7. Typography & Ambient Background Pattern -->
+                  <div class="row g-3 mb-3">
+                    <div class="col-6">
+                      <label class="form-label small fw-bold">Typography Font</label>
+                      <select id="select-font-family" class="form-select form-select-sm">
+                        <option value="Plus Jakarta Sans">Plus Jakarta Sans (Modern)</option>
+                        <option value="Inter">Inter (Ultra Clean)</option>
+                        <option value="Outfit">Outfit (Geometric &amp; Creative)</option>
+                        <option value="Fira Code">Fira Code (Developer Monospace)</option>
+                        <option value="Playfair Display">Playfair Display (Luxury Serif)</option>
+                        <option value="Poppins">Poppins (Friendly)</option>
+                      </select>
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label small fw-bold">Ambient Pattern</label>
+                      <select id="select-bg-style" class="form-select form-select-sm">
+                        <option value="mesh">Ambient Mesh Gradient</option>
+                        <option value="clean">Solid Clean Minimal</option>
+                        <option value="dots">Subtle Dot Matrix</option>
+                        <option value="grid">Technical Grid</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- 8. Card & Button Style Tokens -->
+                  <div class="row g-3 mb-3">
+                    <div class="col-6">
+                      <label class="form-label small fw-bold">Card Styling</label>
+                      <select id="select-card-style" class="form-select form-select-sm">
+                        <option value="glass">Glassmorphic (Frosted Blur)</option>
+                        <option value="elevated">Elevated (Soft Shadow)</option>
+                        <option value="bordered">Bordered (Crisp Wireframe)</option>
+                        <option value="flat">Flat Minimal</option>
+                      </select>
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label small fw-bold">Button Styling</label>
+                      <select id="select-button-style" class="form-select form-select-sm">
+                        <option value="rounded">Rounded Smooth</option>
+                        <option value="pill">Pill Shape</option>
+                        <option value="sharp">Sharp Razor Edge</option>
+                        <option value="glow">Neon Glow Rim</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- 9. Dark Mode Switch -->
+                  <div class="form-check form-switch p-3 bg-light rounded-3 d-flex justify-content-between align-items-center">
+                    <label class="form-check-label fw-bold mb-0" for="switch-dark-mode">
+                      🌙 Dark Mode Theme
+                    </label>
+                    <input class="form-check-input ms-0 fs-5" type="checkbox" id="switch-dark-mode" />
+                  </div>
+                </div>
+
+                <!-- TAB 2: CONTENT & SECTIONS -->
+                <div class="tab-pane fade show active" id="tab-content" role="tabpanel">
+
+                  <!-- Quick Jump Navigation -->
+                  <div class="d-flex flex-wrap gap-1 mb-3 p-2 bg-light rounded-3 border">
+                    <span class="w-100 text-muted fw-bold mb-1" style="font-size: 0.72rem;">QUICK SECTION JUMP:</span>
+                    <a href="#sec-profile" class="badge bg-white text-dark border text-decoration-none px-2 py-1">👤 Profile &amp; Bio</a>
+                    <a href="#sec-metrics" class="badge bg-white text-dark border text-decoration-none px-2 py-1">⚡ Metrics</a>
+                    <a href="#sec-skills" class="badge bg-white text-dark border text-decoration-none px-2 py-1">🛠️ Skills</a>
+                    <a href="#sec-projects" class="badge bg-white text-dark border text-decoration-none px-2 py-1">🚀 Projects</a>
+                    <a href="#sec-experience" class="badge bg-white text-dark border text-decoration-none px-2 py-1">💼 Experience</a>
+                    <a href="#sec-education" class="badge bg-white text-dark border text-decoration-none px-2 py-1">🎓 Education</a>
+                    <a href="#sec-certifications" class="badge bg-white text-dark border text-decoration-none px-2 py-1">📜 Certifications</a>
+                    <a href="#sec-services" class="badge bg-white text-dark border text-decoration-none px-2 py-1">🎯 Services</a>
+                    <a href="#sec-social" class="badge bg-white text-dark border text-decoration-none px-2 py-1">🔗 Contact &amp; Links</a>
+                  </div>
+
+                  <!-- 1. Profile & Bio Information -->
+                  <div class="mb-3 p-3 bg-light rounded-3" id="sec-profile">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <label class="form-label fw-bold small mb-0">👤 Profile &amp; Bio Information</label>
+                      <span class="badge bg-secondary-subtle text-secondary small" style="font-size: 0.68rem;">Personal Info</span>
+                    </div>
+
+                    <div class="mb-2">
+                      <label class="form-label small text-muted mb-1" style="font-size: 0.76rem;">Full Display Name</label>
+                      <input type="text" id="input-candidate-name" class="form-control form-control-sm fw-semibold" placeholder="e.g. Jane Doe" />
+                    </div>
+
+                    <div class="mb-2">
+                      <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label small text-muted mb-0" style="font-size: 0.76rem;">Professional Headline</label>
+                        <button id="btn-quick-rewrite-headline" class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold" style="font-size: 0.72rem;">
+                          ✨ AI Polish
+                        </button>
+                      </div>
+                      <input type="text" id="input-headline" class="form-control form-control-sm" placeholder="e.g. Senior AI Engineer | LLM Orchestration & Systems" />
+                    </div>
+
+                    <div>
+                      <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label small text-muted mb-0" style="font-size: 0.76rem;">About Me Narrative</label>
+                        <button id="btn-quick-rewrite-about" class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold" style="font-size: 0.72rem;">
+                          ✨ AI Polish
+                        </button>
+                      </div>
+                      <textarea id="textarea-about" rows="3" class="form-control form-control-sm" placeholder="Tell your professional story..."></textarea>
+                    </div>
+                  </div>
+
+                  <!-- 2. Key Impact Metrics -->
+                  <div class="mb-3 p-3 bg-light rounded-3" id="sec-metrics">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <label class="form-label fw-bold small mb-0">⚡ Impact Metrics &amp; KPIs</label>
+                      <button id="btn-add-metric" class="btn btn-sm btn-primary py-0 px-2 fw-semibold" style="font-size: 0.72rem;">
+                        + Add Metric
+                      </button>
+                    </div>
+                    <div id="metrics-editor-container" class="d-flex flex-column gap-2">
+                      <!-- Rendered by JS -->
+                    </div>
+                  </div>
+
+                  <!-- 3. Skills Section -->
+                  <div class="mb-3 p-3 bg-light rounded-3" id="sec-skills">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <label class="form-label fw-bold small mb-0">🛠️ Categorized Skills</label>
+                      <button id="btn-ai-reorganize-skills" class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold" style="font-size: 0.72rem;">
+                        ✨ AI Organize
+                      </button>
+                    </div>
+                    <div id="skills-editor-container" class="mb-2">
+                      <!-- Rendered by JS -->
+                    </div>
+                    <div class="input-group input-group-sm">
+                      <input type="text" id="input-add-skill-text" class="form-control" placeholder="Add skill (e.g. Docker, PyTorch)..." />
+                      <button id="btn-add-skill-item" class="btn btn-primary" type="button">+ Add</button>
+                    </div>
+                  </div>
+
+                  <!-- 4. Featured Projects Section -->
+                  <div class="mb-3 p-3 bg-light rounded-3" id="sec-projects">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <label class="form-label fw-bold small mb-0">🚀 Featured Projects</label>
+                      <button id="btn-add-project-item" class="btn btn-sm btn-primary py-0 px-2 fw-semibold" style="font-size: 0.72rem;">
+                        + Add Project
+                      </button>
+                    </div>
+                    <div id="projects-editor-container" class="d-flex flex-column gap-2">
+                      <!-- Rendered by JS -->
+                    </div>
+                  </div>
+
+                  <!-- 5. Work Experience Section -->
+                  <div class="mb-3 p-3 bg-light rounded-3" id="sec-experience">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <label class="form-label fw-bold small mb-0">💼 Work Experience</label>
+                      <button id="btn-add-experience-item" class="btn btn-sm btn-primary py-0 px-2 fw-semibold" style="font-size: 0.72rem;">
+                        + Add Experience
+                      </button>
+                    </div>
+                    <div id="experience-editor-container" class="d-flex flex-column gap-2">
+                      <!-- Rendered by JS -->
+                    </div>
+                  </div>
+
+                  <!-- 6. Education Section -->
+                  <div class="mb-3 p-3 bg-light rounded-3" id="sec-education">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <label class="form-label fw-bold small mb-0">🎓 Education &amp; Degrees</label>
+                      <button id="btn-add-education-item" class="btn btn-sm btn-primary py-0 px-2 fw-semibold" style="font-size: 0.72rem;">
+                        + Add Education
+                      </button>
+                    </div>
+                    <div id="education-editor-container" class="d-flex flex-column gap-2">
+                      <!-- Rendered by JS -->
+                    </div>
+                  </div>
+
+                  <!-- 7. Certifications Section -->
+                  <div class="mb-3 p-3 bg-light rounded-3" id="sec-certifications">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <label class="form-label fw-bold small mb-0">📜 Certifications &amp; Licenses</label>
+                      <button id="btn-add-certification-item" class="btn btn-sm btn-primary py-0 px-2 fw-semibold" style="font-size: 0.72rem;">
+                        + Add Certification
+                      </button>
+                    </div>
+                    <div id="certifications-editor-container" class="d-flex flex-column gap-2">
+                      <!-- Rendered by JS -->
+                    </div>
+                  </div>
+
+                  <!-- 8. Services & Offerings Section -->
+                  <div class="mb-3 p-3 bg-light rounded-3" id="sec-services">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <label class="form-label fw-bold small mb-0">🎯 Services &amp; Offerings</label>
+                      <button id="btn-add-service-item" class="btn btn-sm btn-primary py-0 px-2 fw-semibold" style="font-size: 0.72rem;">
+                        + Add Service
+                      </button>
+                    </div>
+                    <div id="services-editor-container" class="d-flex flex-column gap-2">
+                      <!-- Rendered by JS -->
+                    </div>
+                  </div>
+
+                  <!-- 9. Contact & Social Links -->
+                  <div class="p-3 bg-light rounded-3 mb-3" id="sec-social">
+                    <label class="form-label fw-bold small mb-2">🔗 Contact &amp; Social Links</label>
+                    <div class="row g-2">
+                      <div class="col-6">
+                        <label class="form-label text-muted small mb-0" style="font-size: 0.72rem;">Email</label>
+                        <input type="email" id="input-social-email" class="form-control form-control-sm" placeholder="Email address" />
+                      </div>
+                      <div class="col-6">
+                        <label class="form-label text-muted small mb-0" style="font-size: 0.72rem;">Phone</label>
+                        <input type="tel" id="input-social-phone" class="form-control form-control-sm" placeholder="Phone number" />
+                      </div>
+                      <div class="col-6">
+                        <label class="form-label text-muted small mb-0" style="font-size: 0.72rem;">Location</label>
+                        <input type="text" id="input-social-location" class="form-control form-control-sm" placeholder="City, Country" />
+                      </div>
+                      <div class="col-6">
+                        <label class="form-label text-muted small mb-0" style="font-size: 0.72rem;">Website</label>
+                        <input type="url" id="input-social-website" class="form-control form-control-sm" placeholder="https://mywebsite.dev" />
+                      </div>
+                      <div class="col-6">
+                        <label class="form-label text-muted small mb-0" style="font-size: 0.72rem;">LinkedIn URL</label>
+                        <input type="url" id="input-social-linkedin" class="form-control form-control-sm" placeholder="https://linkedin.com/in/..." />
+                      </div>
+                      <div class="col-6">
+                        <label class="form-label text-muted small mb-0" style="font-size: 0.72rem;">GitHub URL</label>
+                        <input type="url" id="input-social-github" class="form-control form-control-sm" placeholder="https://github.com/..." />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Bottom Save Button in Content Tab -->
+                  <div class="pt-2">
+                    <button id="btn-save-portfolio-bottom" class="btn btn-primary fw-bold w-100 py-2 shadow-sm d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); border: none;">
+                      <span>💾</span> Save All Portfolio Changes
+                    </button>
+                    <small class="text-muted d-block text-center mt-1" style="font-size: 0.72rem;">Your updates are live in the preview and will be stored permanently.</small>
+                  </div>
+
+                </div>
+
+                <!-- TAB 3: URL & PUBLISH -->
+                <div class="tab-pane fade" id="tab-publish" role="tabpanel">
+                  <div class="p-3 bg-light rounded-3 mb-3">
+                    <label class="form-label small fw-bold mb-1">Public Portfolio URL Slug</label>
+                    <p class="text-muted small mb-2">Your portfolio will be publicly viewable by recruiters and anyone on the internet at this link:</p>
+                    <div class="input-group input-group-sm mb-2">
+                      <span class="input-group-text bg-white text-muted">/portfolio/</span>
+                      <input type="text" id="input-portfolio-slug" class="form-control fw-bold text-primary" placeholder="your-custom-slug" />
+                      <button id="btn-check-slug" class="btn btn-outline-secondary" type="button">Check Availability</button>
+                    </div>
+                    <div id="slug-availability-msg" class="small text-muted"></div>
+                  </div>
+
+                  <div class="card p-3 border-0 bg-primary-subtle text-primary rounded-3">
+                    <h6 class="fw-bold mb-1">🚀 Instant Sharing</h6>
+                    <p class="small mb-0">Publishing makes your link active immediately. You can unpublish anytime to make it private again.</p>
+                  </div>
+
+                  <!-- Danger Zone: Delete Portfolio -->
+                  <div class="card p-3 border border-danger-subtle bg-danger-subtle text-danger rounded-3 mt-3" id="portfolio-danger-zone-card">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                      <div>
+                        <h6 class="fw-bold mb-1 text-danger d-flex align-items-center gap-1">
+                          <span>🗑️</span> Danger Zone: Delete Portfolio
+                        </h6>
+                        <p class="small mb-0 text-muted">Permanently delete your portfolio, public URL, and all custom designs.</p>
+                      </div>
+                      <button type="button" id="btn-delete-portfolio-tab" class="btn btn-sm btn-danger fw-bold px-3 py-1 shadow-sm d-flex align-items-center gap-1">
+                        <span>🗑️</span> Delete Portfolio
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Live Interactive Preview Simulator -->
+          <div class="col-xl-7 col-lg-6" id="builder-preview-column">
+            <div class="preview-card-wrapper sticky-top" style="top: 80px; z-index: 50;">
+              <!-- Simulator Header -->
+              <div class="d-flex justify-content-between align-items-center p-3 border-bottom bg-white flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="badge bg-success-subtle text-success border px-2 py-1 small fw-semibold">Live Preview</span>
+                  <span class="small text-muted" id="preview-theme-indicator">Theme: Modern</span>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                  <button type="button" class="btn btn-sm btn-outline-primary fw-semibold d-flex align-items-center gap-1" id="btn-quick-edit-preview" title="Edit portfolio content and details">
+                    <span>✏️</span> Edit Portfolio
+                  </button>
+                  <!-- Device Mode Switcher -->
+                  <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-secondary device-switcher-btn active" data-mode="desktop" title="Desktop View">
+                      🖥️ Desktop
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary device-switcher-btn" data-mode="tablet" title="Tablet View">
+                      📱 Tablet
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary device-switcher-btn" data-mode="mobile" title="Mobile View">
+                      📱 Mobile
+                    </button>
+                  </div>
+
+                  <!-- Expand Toggle -->
+                  <button type="button" class="btn btn-sm btn-outline-primary fw-semibold" id="btn-toggle-expand" title="Toggle Fullscreen Width">
+                    ⛶ Expand
+                  </button>
+                </div>
+              </div>
+
+              <!-- Simulator Viewport Frame -->
+              <div class="p-3 bg-light">
+                <div class="preview-frame-container preview-mode-desktop" id="preview-frame-container">
+                  <!-- Chrome Browser Top -->
+                  <div class="preview-desktop-chrome">
+                    <div class="chrome-dots">
+                      <span class="dot-red"></span>
+                      <span class="dot-yellow"></span>
+                      <span class="dot-green"></span>
+                    </div>
+                    <div class="chrome-url-bar">
+                      <span>🔒</span>
+                      <span>https://ai-recruiter.io/portfolio/<span id="chrome-slug-display" class="text-white fw-bold">candidate</span></span>
+                    </div>
+                  </div>
+
+                  <!-- Live Render Stage -->
+                  <div id="preview-stage-viewport">
+                    <div id="portfolio-preview-stage">
+                      <!-- Rendered dynamically by PortfolioThemesEngine -->
+                    </div>
+
+                    <!-- Gemini AI Thinking Overlay -->
+                    <div id="ai-loading-overlay" class="ai-loading-overlay d-none">
+                      <div class="ai-spinner-glow mb-3"></div>
+                      <h5 class="fw-bold text-white mb-2" id="ai-loading-title">Gemini AI Generating Portfolio...</h5>
+                      <div class="text-white-50 small" id="ai-loading-step">Analyzing prompt and persona...</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Delete Portfolio Confirmation Modal -->
+  <div class="modal fade" id="deletePortfolioModal" tabindex="-1" aria-labelledby="deletePortfolioModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow">
+        <div class="modal-header border-0 pb-0">
+          <div class="d-flex align-items-center gap-2">
+            <div class="p-2 rounded-circle bg-danger-subtle text-danger fs-5">🗑️</div>
+            <h5 class="modal-title fw-bold text-dark" id="deletePortfolioModalLabel">Delete Portfolio?</h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body py-3">
+          <p class="mb-2 text-secondary">
+            Are you sure you want to permanently delete your portfolio?
+          </p>
+          <div class="alert alert-warning py-2 px-3 small mb-0 rounded-3">
+            <strong>⚠️ Warning:</strong> This action is permanent and cannot be undone. Your portfolio website, public URL link (<code id="modal-delete-slug">/portfolio/slug</code>), and custom themes will be deleted. You can generate a new one from your resume anytime.
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary fw-semibold px-3" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" id="btn-confirm-delete-portfolio" class="btn btn-danger fw-bold px-3 d-flex align-items-center gap-1 shadow-sm">
+            <span id="delete-btn-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+            <span>Permanently Delete</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js?v=3.0"></script>
+  <script src="js/portfolio-themes.js?v=4.0"></script>
+  <script src="js/portfolio-builder.js?v=3.0"></script>
+</body>
+</html>

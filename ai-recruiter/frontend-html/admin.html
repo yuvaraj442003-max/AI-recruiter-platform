@@ -13,6 +13,14 @@
     <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 220px;">
       <a href="admin.html" class="text-primary-custom fw-bold fs-5 mb-4 text-decoration-none">AI Recruiter</a>
       <div class="badge text-bg-dark mb-3 align-self-start">Admin</div>
+      <ul class="nav nav-pills flex-column gap-1 mb-4">
+        <li class="nav-item">
+          <a href="admin.html" class="nav-link active py-1.5 px-2">⚙️ System Admin</a>
+        </li>
+        <li class="nav-item">
+          <a href="recruiter-aptitude.html" class="nav-link text-dark py-1.5 px-2">🧠 Aptitude Studio</a>
+        </li>
+      </ul>
       <div class="mt-auto">
         <button id="logout-btn" class="btn btn-outline-secondary w-100">Log out</button>
       </div>
@@ -81,12 +89,14 @@
         <!-- Tabs -->
         <ul class="nav nav-tabs mb-3">
           <li class="nav-item"><button class="nav-link active" data-tab="users">Users &amp; Accounts</button></li>
+          <li class="nav-item"><button class="nav-link text-warning fw-semibold" data-tab="weekly-questions">⚡ Weekly Questions</button></li>
           <li class="nav-item"><button class="nav-link text-primary fw-semibold" data-tab="recruiter-approvals">🛡️ Recruiter Approvals</button></li>
           <li class="nav-item"><button class="nav-link" data-tab="companies">🏢 Company Verification</button></li>
           <li class="nav-item"><button class="nav-link text-danger" data-tab="fraud">🚨 Suspicious Jobs (Fraud Alerts)</button></li>
           <li class="nav-item"><button class="nav-link" data-tab="skills">Skills</button></li>
           <li class="nav-item"><button class="nav-link" data-tab="jobs">All Jobs</button></li>
           <li class="nav-item"><button class="nav-link" data-tab="audit">Audit Log</button></li>
+          <li class="nav-item"><button class="nav-link text-info fw-semibold" data-tab="vector-db">🔍 Vector DB (Qdrant)</button></li>
         </ul>
 
         <!-- Users tab -->
@@ -102,6 +112,90 @@
               </select>
             </div>
             <div id="users-table"><div class="text-muted-custom small">Loading…</div></div>
+          </div>
+        </div>
+
+        <!-- Weekly Questions tab -->
+        <div id="tab-weekly-questions" class="tab-pane d-none">
+          <div class="card p-3 mb-3">
+            <!-- Qdrant PDF RAG Engine Banner -->
+            <div class="alert alert-info py-2 px-3 mb-3 d-flex flex-wrap align-items-center justify-content-between gap-2 border-primary border-opacity-25" style="border-left: 4px solid #0d6efd; border-radius: 8px;">
+              <div>
+                <strong class="d-flex align-items-center gap-1.5 text-primary">
+                  <span>📚</span> RS Aggarwal Reasoning PDF + Qdrant RAG:
+                </strong>
+                <span id="pdf-rag-status-badge" class="badge bg-secondary ms-1">Checking PDF...</span>
+                <span id="pdf-rag-status-text" class="small text-muted ms-2">Detecting vector knowledge base...</span>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-sm btn-outline-primary" id="btn-index-pdf-qdrant" title="Extract and embed RS Aggarwal textbook content into Qdrant">
+                  📥 Index PDF to Qdrant
+                </button>
+                <button class="btn btn-sm btn-success fw-semibold" id="btn-rotate-from-pdf" title="Generate this week's questions grounded in the PDF via Qdrant semantic search">
+                  ⚡ Update Weekly from PDF
+                </button>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+              <div>
+                <h6 class="fw-semibold mb-1">⚡ Weekly Placement Questions &amp; Rotations</h6>
+                <p class="text-muted small mb-0">Review, approve, and curate weekly aptitude &amp; coding questions, trigger rotation, or generate with AI.</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-sm btn-outline-warning" id="btn-force-rotate" title="Force rotate/refresh weekly challenges">
+                  🔄 Force Rotate Week
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" id="btn-manage-topics" data-bs-toggle="modal" data-bs-target="#modal-manage-topics">
+                  📚 Manage Topics
+                </button>
+                <button class="btn btn-sm btn-outline-success" id="btn-quick-sync-aptitude" title="Synchronize all aptitude questions to Qdrant vector database">
+                  ⚡ Sync Vectors
+                </button>
+                <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal-ai-generate">
+                  🤖 AI Generate Question
+                </button>
+                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal-add-aptitude">
+                  + Add Aptitude MCQ
+                </button>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modal-add-coding">
+                  + Add Coding Challenge
+                </button>
+              </div>
+            </div>
+
+            <!-- Filter Toolbar -->
+            <div class="row g-2 align-items-center bg-light p-2 rounded mb-3 border">
+              <div class="col-sm-3">
+                <label class="form-label small fw-semibold text-muted mb-1">Question Type</label>
+                <select id="weekly-filter-type" class="form-select form-select-sm">
+                  <option value="aptitude">Aptitude Questions (MCQs)</option>
+                  <option value="coding">Coding Questions</option>
+                </select>
+              </div>
+              <div class="col-sm-3">
+                <label class="form-label small fw-semibold text-muted mb-1">Difficulty</label>
+                <select id="weekly-filter-difficulty" class="form-select form-select-sm">
+                  <option value="">All Difficulties</option>
+                  <option value="easy">Easy</option>
+                  <option value="medium">Medium</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </div>
+              <div class="col-sm-3">
+                <label class="form-label small fw-semibold text-muted mb-1">Status</label>
+                <select id="weekly-filter-status" class="form-select form-select-sm">
+                  <option value="">All Statuses</option>
+                  <option value="approved">Approved</option>
+                  <option value="pending_review">Pending Review</option>
+                </select>
+              </div>
+              <div class="col-sm-3 text-end pt-3">
+                <button class="btn btn-sm btn-primary w-100" id="btn-filter-weekly">🔍 Filter</button>
+              </div>
+            </div>
+
+            <div id="weekly-questions-table"><div class="text-muted-custom small">Loading weekly questions…</div></div>
           </div>
         </div>
 
@@ -169,8 +263,375 @@
             <div id="audit-table"><div class="text-muted-custom small">Loading…</div></div>
           </div>
         </div>
+
+        <!-- Vector DB (Qdrant) tab -->
+        <div id="tab-vector-db" class="tab-pane d-none">
+          <div class="card p-3 mb-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+              <div>
+                <h5 class="fw-bold mb-1">⚡ Qdrant Vector Database Engine</h5>
+                <p class="text-muted-custom small mb-0">High-performance semantic retrieval &amp; dense vector similarity for Resumes, Jobs, Question Banks, and Roadmaps.</p>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-refresh-vector-health">🔄 Refresh Status</button>
+                <button type="button" class="btn btn-sm btn-primary" id="btn-sync-vector-db">⚡ Synchronize Relational DB</button>
+              </div>
+            </div>
+
+            <!-- Health & Engine Metrics -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-3">
+                <div class="p-3 bg-dark-subtle rounded border border-secondary-subtle">
+                  <div class="text-muted small">Status</div>
+                  <div class="fs-5 fw-bold" id="vec-status-badge"><span class="badge bg-secondary">Checking…</span></div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="p-3 bg-dark-subtle rounded border border-secondary-subtle">
+                  <div class="text-muted small">Deployment Mode</div>
+                  <div class="fs-6 fw-semibold text-truncate" id="vec-mode">—</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="p-3 bg-dark-subtle rounded border border-secondary-subtle">
+                  <div class="text-muted small">Embedding Model</div>
+                  <div class="fs-6 fw-semibold font-monospace text-truncate" id="vec-model" title="all-MiniLM-L6-v2">—</div>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <div class="p-3 bg-dark-subtle rounded border border-secondary-subtle">
+                  <div class="text-muted small">Dimensions</div>
+                  <div class="fs-5 fw-bold" id="vec-dim">384</div>
+                </div>
+              </div>
+            </div>
+
+            <div id="vec-sync-feedback" class="d-none alert alert-info py-2 small mb-3"></div>
+
+            <!-- Collections Table -->
+            <h6 class="fw-semibold mb-2">Vector Collections</h6>
+            <div class="table-responsive mb-4">
+              <table class="table table-sm table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Collection</th>
+                    <th>Entities Represented</th>
+                    <th>Vector Metric</th>
+                    <th>Vectors Indexed</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="vector-collections-tbody">
+                  <tr><td colspan="5" class="text-muted-custom small py-3 text-center">Loading collections…</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Live Semantic Search Tester -->
+            <div class="border-top pt-3">
+              <h6 class="fw-semibold mb-2">Live Semantic Search &amp; Similarity Tester</h6>
+              <p class="text-muted-custom small mb-3">Test vector retrieval directly against Qdrant dense embeddings.</p>
+              <form id="form-vector-search" class="row g-2 mb-3">
+                <div class="col-md-3">
+                  <select class="form-select form-select-sm" id="vec-search-collection" required>
+                    <option value="jobs">jobs (Job Postings)</option>
+                    <option value="resumes">resumes (Candidate Profiles)</option>
+                    <option value="aptitude_questions" selected>aptitude_questions (MCQ Bank)</option>
+                    <option value="coding_problems">coding_problems (Challenges)</option>
+                    <option value="interview_questions">interview_questions (Mock Bank)</option>
+                    <option value="learning_resources">learning_resources (Roadmaps)</option>
+                  </select>
+                </div>
+                <div class="col-md-7">
+                  <input type="text" class="form-control form-control-sm" id="vec-search-query" placeholder="Enter natural language query e.g. 'Percentages discount calculation' or 'Python FastAPI Developer'" required>
+                </div>
+                <div class="col-md-2 d-grid">
+                  <button type="submit" class="btn btn-sm btn-info text-white" id="btn-vector-search-run">🔍 Search</button>
+                </div>
+              </form>
+
+              <div id="vector-search-results" class="d-none">
+                <div class="table-responsive">
+                  <table class="table table-sm table-bordered align-middle">
+                    <thead class="table-light">
+                      <tr>
+                        <th style="width: 15%;">Similarity</th>
+                        <th style="width: 15%;">Score</th>
+                        <th>Matched Document Payload</th>
+                      </tr>
+                    </thead>
+                    <tbody id="vector-search-results-tbody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
+  </div>
+
+  <!-- Modal: Add Aptitude MCQ -->
+  <div class="modal fade" id="modal-add-aptitude" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">➕ Add Weekly Aptitude MCQ</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="form-add-aptitude">
+          <div class="modal-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Topic / Domain</label>
+                <select class="form-select form-select-sm" id="apt-topic-slug" required>
+                  <option value="quantitative-aptitude">Quantitative Aptitude</option>
+                  <option value="logical-reasoning">Logical Reasoning</option>
+                  <option value="verbal-ability">Verbal Ability</option>
+                  <option value="data-interpretation">Data Interpretation &amp; Analytics</option>
+                  <option value="core-cs">Core Computer Science</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Subtopic</label>
+                <input type="text" class="form-control form-control-sm" id="apt-subtopic" placeholder="e.g. Time and Work, Syllogisms" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold">Difficulty</label>
+                <select class="form-select form-select-sm" id="apt-difficulty" required>
+                  <option value="easy">Easy</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold">Company Tag</label>
+                <input type="text" class="form-control form-control-sm" id="apt-company-tag" value="General" placeholder="e.g. TCS, Infosys, Amazon">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold">Status</label>
+                <select class="form-select form-select-sm" id="apt-status" required>
+                  <option value="approved" selected>Approved (Ready for rotation)</option>
+                  <option value="pending_review">Pending Review</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <label class="form-label small fw-semibold mb-0">Question Statement</label>
+                  <button type="button" class="btn btn-xs btn-outline-info py-0 px-2 small" id="btn-check-apt-duplicate">
+                    🔍 Check Semantic Duplicates
+                  </button>
+                </div>
+                <textarea class="form-control form-control-sm" id="apt-question" rows="3" placeholder="Enter problem statement clearly..." required></textarea>
+                <div id="apt-dup-feedback" class="d-none alert py-1 px-2 mt-1 small"></div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Option A</label>
+                <input type="text" class="form-control form-control-sm" id="apt-opt-0" placeholder="Option A" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Option B</label>
+                <input type="text" class="form-control form-control-sm" id="apt-opt-1" placeholder="Option B" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Option C</label>
+                <input type="text" class="form-control form-control-sm" id="apt-opt-2" placeholder="Option C" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Option D</label>
+                <input type="text" class="form-control form-control-sm" id="apt-opt-3" placeholder="Option D" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold">Correct Answer</label>
+                <select class="form-select form-select-sm" id="apt-correct-idx" required>
+                  <option value="0">Option A</option>
+                  <option value="1">Option B</option>
+                  <option value="2">Option C</option>
+                  <option value="3">Option D</option>
+                </select>
+              </div>
+              <div class="col-md-8">
+                <label class="form-label small fw-semibold">Step-by-step Solution &amp; Explanation</label>
+                <textarea class="form-control form-control-sm" id="apt-explanation" rows="2" placeholder="Explain the calculation or reasoning..." required></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-sm btn-primary" id="btn-submit-aptitude">Save Aptitude Question</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Coding Challenge -->
+  <div class="modal fade" id="modal-add-coding" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">💻 Add Weekly Coding Challenge</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="form-add-coding">
+          <div class="modal-body">
+            <div class="row g-3">
+              <div class="col-md-8">
+                <label class="form-label small fw-semibold">Challenge Title</label>
+                <input type="text" class="form-control form-control-sm" id="code-title" placeholder="e.g. Valid Parentheses" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold">Difficulty</label>
+                <select class="form-select form-select-sm" id="code-difficulty" required>
+                  <option value="easy">Easy</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Category</label>
+                <input type="text" class="form-control form-control-sm" id="code-category" value="Algorithms &amp; Data Structures" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Status</label>
+                <select class="form-select form-select-sm" id="code-status" required>
+                  <option value="approved" selected>Approved (Ready for rotation)</option>
+                  <option value="pending_review">Pending Review</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-semibold">Problem Description</label>
+                <textarea class="form-control form-control-sm font-monospace" id="code-description" rows="3" placeholder="Describe the problem, input format, and output format..." required></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-semibold">Constraints</label>
+                <input type="text" class="form-control form-control-sm" id="code-constraints" placeholder="e.g. 1 &lt;= n &lt;= 10^5, time limit: 2s" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Public Test Cases (JSON)</label>
+                <textarea class="form-control form-control-sm font-monospace" id="code-public-tcs" rows="3" placeholder='[{"input_data": "()", "expected_output": "True", "points": 10}]' required></textarea>
+                <div class="form-text small">List of objects with input_data, expected_output, points.</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold">Hidden Test Cases (JSON)</label>
+                <textarea class="form-control form-control-sm font-monospace" id="code-hidden-tcs" rows="3" placeholder='[{"input_data": "([)]", "expected_output": "False", "points": 15}]' required></textarea>
+                <div class="form-text small">Tested during final evaluation for ranking.</div>
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-semibold">Python Starter Code</label>
+                <textarea class="form-control form-control-sm font-monospace" id="code-starter" rows="3" placeholder="def solution(input_str):&#10;    # Write code here&#10;    pass"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-sm btn-primary" id="btn-submit-coding">Save Coding Challenge</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: AI Generate Question -->
+  <div class="modal fade" id="modal-ai-generate" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">🤖 Generate AI Aptitude Question</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="small text-muted mb-3">AI generates placement-grade MCQs with mathematical correctness checks and step-by-step explanations, immediately validated before publishing.</p>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Topic Domain</label>
+            <select class="form-select form-select-sm" id="ai-topic-slug">
+              <option value="quantitative-aptitude">Quantitative Aptitude</option>
+              <option value="logical-reasoning">Logical Reasoning</option>
+              <option value="verbal-ability">Verbal Ability</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Difficulty Level</label>
+            <select class="form-select form-select-sm" id="ai-difficulty">
+              <option value="easy">Easy</option>
+              <option value="medium" selected>Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+          <div id="ai-gen-result" class="d-none alert alert-info small py-2 font-monospace"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-sm btn-primary" id="btn-trigger-ai-gen">Generate &amp; Validate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Manage Aptitude Topics -->
+  <div class="modal fade" id="modal-manage-topics" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">📚 Aptitude Topics &amp; Domains</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="small text-muted mb-3">Manage placement aptitude topics. Topics organize questions for practice, campus mock assessments, and semantic vector matching.</p>
+          
+          <!-- Existing Topics List -->
+          <div class="table-responsive mb-4">
+            <table class="table table-sm table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th style="width: 10%;">Icon</th>
+                  <th>Topic Name</th>
+                  <th>Slug</th>
+                  <th>Questions</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="topics-list-tbody">
+                <tr><td colspan="5" class="text-center text-muted small py-3">Loading topics…</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Add / Edit Topic Form -->
+          <div class="card p-3 bg-light border">
+            <h6 class="fw-bold mb-3" id="topic-form-heading">➕ Add New Aptitude Topic</h6>
+            <form id="form-manage-topic">
+              <input type="hidden" id="topic-edit-id" value="">
+              <div class="row g-2">
+                <div class="col-md-2">
+                  <label class="form-label small fw-semibold">Icon</label>
+                  <input type="text" class="form-control form-control-sm" id="topic-icon" value="📊" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold">Topic Name</label>
+                  <input type="text" class="form-control form-control-sm" id="topic-name" placeholder="e.g. Critical Thinking" required>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small fw-semibold">Order Index</label>
+                  <input type="number" class="form-control form-control-sm" id="topic-order" value="10" min="0">
+                </div>
+                <div class="col-12">
+                  <label class="form-label small fw-semibold">Description</label>
+                  <input type="text" class="form-control form-control-sm" id="topic-desc" placeholder="Brief summary of subtopics covered...">
+                </div>
+                <div class="col-12 text-end pt-2">
+                  <button type="button" class="btn btn-sm btn-outline-secondary d-none" id="btn-cancel-topic-edit">Cancel Edit</button>
+                  <button type="submit" class="btn btn-sm btn-success" id="btn-save-topic">Save Topic</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

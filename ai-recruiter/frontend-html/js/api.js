@@ -3,6 +3,12 @@
  * Handles the base URL, attaching the JWT, and normalizing errors
  * so every page can call `await api.post(...)` the same way.
  */
+
+// Google OAuth 2.0 strictly requires 'localhost' instead of raw IP '127.0.0.1' for local origins.
+if (typeof window !== "undefined" && window.location.hostname === "127.0.0.1") {
+  window.location.replace(window.location.href.replace("//127.0.0.1", "//localhost"));
+}
+
 const API_BASE_URL = window.API_BASE_URL || (
   window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
     ? "http://localhost:8000/api/v1"
@@ -270,6 +276,7 @@ const resumeAPI = {
   },
 
   me: () => api.get("/resumes/me"),
+  getProfile: () => api.get("/resumes/me"),
   generateSummary: () => api.post("/resumes/summary", {}),
   update: (payload) => api.put("/resumes/me", payload),
   delete: () => api.delete("/resumes/me"),
@@ -379,7 +386,11 @@ const applicationsAPI = {
 
 const recommendationsAPI = {
   jobs: (limit = 10) => api.get(`/recommendations/jobs?limit=${limit}`),
+  getJobs: (limit = 10) => api.get(`/recommendations/jobs?limit=${limit}`),
+  getCampusJobs: (limit = 10) => api.get(`/recommendations/campus-jobs?limit=${limit}`),
 };
+api.recommendations = recommendationsAPI;
+window.recommendationsAPI = recommendationsAPI;
 
 const interviewsAPI = {
   start: (candidateId, jobId, interviewType = "mixed", numQuestions = 6) =>
@@ -513,6 +524,132 @@ const messagesAPI = {
   update: (messageId, content) => api.put(`/messages/${messageId}`, { content }),
 };
 api.messages = messagesAPI;
+window.messagesAPI = messagesAPI;
+
+const studentAPI = {
+  getProfile: () => api.get("/student/profile"),
+  updateProfile: (payload) => api.put("/student/profile", payload),
+  getReadiness: () => api.get("/student/readiness"),
+  getRecruiterMonitor: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.search) query.append("search", params.search);
+    if (params.performance) query.append("performance", params.performance);
+    if (params.trend) query.append("trend", params.trend);
+    const qs = query.toString();
+    return api.get(`/student/recruiter/monitor${qs ? '?' + qs : ''}`);
+  },
+  getStudentActivityDetail: (userId) => api.get(`/student/recruiter/candidate/${encodeURIComponent(userId)}`),
+};
+api.student = studentAPI;
+window.studentAPI = studentAPI;
+
+const aptitudeAPI = {
+  getTopics: () => api.get("/aptitude/topics"),
+  getTopicDetail: (topicId) => api.get(`/aptitude/topics/${topicId}`),
+  getTopicPractice: (topicId) => api.get(`/aptitude/topics/${topicId}/practice`),
+  createTopic: (payload) => api.post("/aptitude/topics", payload),
+  updateTopic: (topicId, payload) => api.put(`/aptitude/topics/${topicId}`, payload),
+  deleteTopic: (topicId) => api.delete(`/aptitude/topics/${topicId}`),
+  createQuestion: (payload) => api.post("/aptitude/questions", payload),
+  getTests: (params = {}) => api.get(`/aptitude/tests${buildQueryString(params)}`),
+  getTest: (testId) => api.get(`/aptitude/tests/${testId}`),
+  getTestById: (testId) => api.get(`/aptitude/tests/${testId}`),
+  generate: (payload) => api.post("/aptitude/generate", payload),
+  generateTest: (payload) => api.post("/aptitude/generate", payload),
+  editQuestion: (questionId, payload) => api.put(`/aptitude/questions/${questionId}`, payload),
+  updateQuestion: (questionId, payload) => api.put(`/aptitude/questions/${questionId}`, payload),
+  deleteQuestion: (questionId) => api.delete(`/aptitude/questions/${questionId}`),
+  regenerateQuestion: (questionId) => api.post(`/aptitude/questions/${questionId}/regenerate`),
+  publishTest: (testId) => api.post(`/aptitude/tests/${testId}/publish`),
+  startTest: (testId) => api.post(`/aptitude/tests/${testId}/start`),
+  submitCandidateTest: (testId, payload) => api.post(`/aptitude/tests/${testId}/submit`, payload),
+  getTestResults: (testId) => api.get(`/aptitude/tests/${testId}/results`),
+  getDailySprint: () => api.get("/aptitude/daily-sprint"),
+  submit: (payload) => api.post("/aptitude/submit", payload),
+  getHistory: () => api.get("/aptitude/history"),
+  vectorSearchQuestions: (payload) => api.post("/aptitude/questions/search", payload),
+  syncVectors: () => api.post("/aptitude/sync-vectors", {}),
+};
+api.aptitude = aptitudeAPI;
+window.aptitudeAPI = aptitudeAPI;
+
+const studyMaterialsAPI = {
+  list: (params = {}) => api.get(`/study-materials${buildQueryString(params)}`),
+  getDetail: (slug) => api.get(`/study-materials/${encodeURIComponent(slug)}`),
+  getRoadmaps: () => api.get("/study-materials/roadmaps/all"),
+  updateRoadmapProgress: (slug, payload) => api.post(`/study-materials/roadmaps/${encodeURIComponent(slug)}/progress`, payload),
+  getMilestoneQuiz: (slug, milestoneId) => api.get(`/study-materials/roadmaps/${encodeURIComponent(slug)}/milestones/${encodeURIComponent(milestoneId)}/quiz`),
+  generateMilestoneAiQuiz: (slug, milestoneId) => api.post(`/study-materials/roadmaps/${encodeURIComponent(slug)}/milestones/${encodeURIComponent(milestoneId)}/ai-quiz`, {}),
+  submitMilestoneQuiz: (slug, milestoneId, payload) => api.post(`/study-materials/roadmaps/${encodeURIComponent(slug)}/milestones/${encodeURIComponent(milestoneId)}/submit-quiz`, payload),
+  getAvailableTopics: () => api.get("/study-materials/topics/available"),
+  getTopicPreferences: () => api.get("/study-materials/topics/preferences"),
+  saveTopicPreferences: (payload) => api.post("/study-materials/topics/preferences", payload),
+  getCuratedFeed: (topic) => api.get(`/study-materials/topics/curated-feed${topic && topic !== "all" ? `?topic=${encodeURIComponent(topic)}` : ""}`),
+  getTopicGuide: (topic) => api.get(`/study-materials/topics/guide?topic=${encodeURIComponent(topic)}`),
+  startDailyAssessment: (topic) => api.post(`/study-materials/topics/daily-assessment/start${topic ? `?topic=${encodeURIComponent(topic)}` : ""}`, {}),
+  submitDailyAssessment: (payload) => api.post("/study-materials/topics/daily-assessment/submit", payload),
+  getPrescribedBooks: (topic) => api.get(`/study-materials/books/prescribed${topic && topic !== "all" ? `?topic=${encodeURIComponent(topic)}` : ""}`),
+  getBookChapters: (subject) => api.get(`/study-materials/books/chapters?subject=${encodeURIComponent(subject)}`),
+  getBookPdfDownloadUrl: (slug) => `${API_BASE_URL}/study-materials/books/${encodeURIComponent(slug)}/download-pdf`,
+  getLearningJourney: () => api.get("/study-materials/learning-journey"),
+  advanceLearningPhase: (payload) => api.post("/study-materials/learning-journey/advance-phase", payload),
+  toggleDailyTask: (payload) => api.post("/study-materials/learning-journey/toggle-task", payload),
+  resetLearningJourney: () => api.post("/study-materials/learning-journey/reset", {}),
+  getCompanies: () => api.get("/study-materials/companies"),
+  getCompanyDetail: (slug) => api.get(`/study-materials/companies/${encodeURIComponent(slug)}`),
+  startCompanyMockTest: (slug) => api.post(`/study-materials/companies/${encodeURIComponent(slug)}/start-test`, {}),
+  submitCompanyMockTest: (slug, payload) => api.post(`/study-materials/companies/${encodeURIComponent(slug)}/submit-test`, payload),
+  uploadPrescribedBook: async (formData) => {
+    const token = Session.getAccessToken();
+    const res = await fetch(`${API_BASE_URL}/study-materials/books/upload`, {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: formData,
+    });
+    const payload = await res.json().catch(() => null);
+    if (!res.ok) {
+      throw new ApiError(payload?.message || payload?.detail || "Upload failed", payload?.error_code || "UPLOAD_FAILED", res.status);
+    }
+    return payload;
+  },
+};
+api.studyMaterials = studyMaterialsAPI;
+window.studyMaterialsAPI = studyMaterialsAPI;
+
+const weeklyAPI = {
+  getOverview: () => api.get("/weekly/overview"),
+  getStatus: () => api.get("/weekly/status"),
+  getCodingTopics: () => api.get("/weekly/topics/coding"),
+  getTopicCodingProblems: (topicSlug) => api.get(`/weekly/topics/coding/${encodeURIComponent(topicSlug)}/problems`),
+  getCodingProblemDetail: (problemId) => api.get(`/weekly/topics/coding/problem/${encodeURIComponent(problemId)}`),
+  getAptitudeTopics: () => api.get("/weekly/topics/aptitude"),
+  getTopicAptitudeQuestions: (topicSlug) => api.get(`/weekly/topics/aptitude/${encodeURIComponent(topicSlug)}/questions`),
+  getCurriculum: (weekCode) => api.get(`/weekly/curriculum${weekCode ? `?week_code=${encodeURIComponent(weekCode)}` : ""}`),
+  getAptitudeCurrent: () => api.get("/weekly/aptitude/current"),
+  submitAptitude: (payload) => api.post("/weekly/aptitude/submit", payload),
+  getAptitudeHistory: () => api.get("/weekly/aptitude/history"),
+  getAptitudeLeaderboard: (weekCode) => api.get(`/weekly/aptitude/leaderboard${weekCode ? `?week_code=${encodeURIComponent(weekCode)}` : ""}`),
+  getCodingCurrent: () => api.get("/weekly/coding/current"),
+  runCoding: (payload) => api.post("/weekly/coding/run", payload),
+  submitCoding: (payload) => api.post("/weekly/coding/submit", payload),
+  getCodingHistory: () => api.get("/weekly/coding/history"),
+  getCodingLeaderboard: (weekCode) => api.get(`/weekly/coding/leaderboard${weekCode ? `?week_code=${encodeURIComponent(weekCode)}` : ""}`),
+  // Admin
+  adminListQuestions: (params = {}) => api.get(`/weekly/admin/questions${buildQueryString(params)}`),
+  adminCreateAptitude: (payload) => api.post("/weekly/admin/aptitude/question", payload),
+  adminUpdateAptitude: (id, payload) => api.put(`/weekly/admin/aptitude/question/${id}`, payload),
+  adminDeleteAptitude: (id) => api.delete(`/weekly/admin/aptitude/question/${id}`),
+  adminApproveAptitude: (id) => api.post(`/weekly/admin/aptitude/question/${id}/approve`),
+  adminCreateCoding: (payload) => api.post("/weekly/admin/coding/question", payload),
+  adminDeleteCoding: (id) => api.delete(`/weekly/admin/coding/question/${id}`),
+  adminRotateNow: () => api.post("/weekly/admin/rotate-now"),
+  adminGenerateAIQuestion: (params = {}) => api.post(`/weekly/admin/generate-ai-question${buildQueryString(params)}`),
+  adminIndexPdf: (params = {}) => api.post(`/weekly/admin/index-pdf${buildQueryString(params)}`),
+  adminRotateFromPdf: () => api.post("/weekly/admin/rotate-from-pdf"),
+  adminGetPdfRagStatus: () => api.get("/weekly/admin/pdf-rag-status"),
+};
+api.weekly = weeklyAPI;
+window.weeklyAPI = weeklyAPI;
 
 function dashboardUrlForRole(role) {
   const user = Session.getUser();
@@ -653,7 +790,7 @@ const codingAPI = {
   listAssessments: (jobId) => api.get("/coding/assessments", jobId ? { job_id: jobId } : {}),
   getAssessment: (id) => api.get(`/coding/assessments/${id}`),
   getCandidateAssessments: () => api.get("/coding/candidate/assessments"),
-  startAssessment: (id) => api.post(`/coding/candidate/assessments/${id}/start`),
+  startAssessment: (id, reset = false) => api.post(`/coding/candidate/assessments/${id}/start${reset ? '?reset=true' : ''}`),
   runCode: (attemptId, payload) => api.post(`/coding/candidate/attempts/${attemptId}/run`, payload),
   submitAssessment: (attemptId, submissions) => api.post(`/coding/candidate/attempts/${attemptId}/submit`, submissions),
   terminateAssessment: (attemptId, reason = "TAB_SWITCH") => api.post(`/coding/candidate/attempts/${attemptId}/terminate?reason=${encodeURIComponent(reason)}`),
@@ -779,10 +916,62 @@ const feedbackAPI = {
     api.post("/recruiter/feedback/bulk-generate", { application_ids: applicationIds, auto_approve: autoApprove, regeneration_prompt: prompt }),
 };
 
+const portfolioAPI = {
+  getMyPortfolio: () => api.get("/portfolio/me"),
+  generateFromPrompt: (prompt, options = {}) =>
+    api.post("/portfolio/generate-from-prompt", {
+      prompt,
+      include_resume: options.include_resume !== false,
+      refinement: Boolean(options.refinement),
+    }),
+  refineSection: (section, instruction) =>
+    api.post("/portfolio/refine-section", { section, instruction }),
+  generate: async (formDataOrPayload) => {
+    const token = Session.getAccessToken();
+    let body;
+    if (formDataOrPayload instanceof FormData) {
+      body = formDataOrPayload;
+    } else {
+      body = new FormData();
+      if (formDataOrPayload && formDataOrPayload.theme_id) {
+        body.append("theme_id", formDataOrPayload.theme_id);
+      }
+    }
+    const response = await fetch(`${API_BASE_URL}/portfolio/generate`, {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: body,
+    });
+    const payload = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new ApiError(payload?.message || "Failed to generate portfolio", payload?.error_code || "GENERATE_FAILED", response.status);
+    }
+    return payload;
+  },
+  updateMyPortfolio: (payload) => api.put("/portfolio/me", payload),
+  deleteMyPortfolio: () => api.delete("/portfolio/me"),
+  publish: () => api.post("/portfolio/publish"),
+  unpublish: () => api.post("/portfolio/unpublish"),
+  setTheme: (theme_id) => api.put("/portfolio/theme", { theme_id }),
+  customize: (payload) => api.put("/portfolio/customize", payload),
+  generateHeadlines: (current_role, key_skills) => api.post("/portfolio/generate-headline", { current_role, key_skills }),
+  improveAbout: (about_text, tone = "professional") => api.post("/portfolio/improve-about", { about_text, tone }),
+  improveExperience: (experience_item) => api.post("/portfolio/improve-experience", { experience_item }),
+  improveProject: (project_item) => api.post("/portfolio/improve-project", { project_item }),
+  organizeSkills: (skills = []) => api.post("/portfolio/organize-skills", { skills }),
+  generateServices: (payload = {}) => api.post("/portfolio/generate-services", payload),
+  generateMetrics: (payload = {}) => api.post("/portfolio/generate-metrics", payload),
+  getDomainBackgrounds: () => api.get("/portfolio/domain-backgrounds"),
+  checkSlug: (slug) => api.get(`/portfolio/check-slug?slug=${encodeURIComponent(slug)}`),
+  getPublicPortfolio: (slug) => api.get(`/portfolio/public/${encodeURIComponent(slug)}`, { auth: false }),
+  getCandidatePortfolioForRecruiter: (candidate_id) => api.get(`/portfolio/candidate/${encodeURIComponent(candidate_id)}`),
+};
+
 const systemAPI = {
   getStatus: () => api.get("/system/status"),
 };
 
+window.portfolioAPI = portfolioAPI;
 window.candidateSearchAPI = candidateSearchAPI;
 window.screeningAPI = screeningAPI;
 window.proctoringAPI = proctoringAPI;
@@ -791,9 +980,18 @@ window.talentRediscoveryAPI = talentRediscoveryAPI;
 window.feedbackAPI = feedbackAPI;
 window.systemAPI = systemAPI;
 
+const vectorAPI = {
+  health: () => api.get("/vector/health"),
+  sync: (background = false) => api.post(`/vector/sync?background=${background}`, {}),
+  search: (payload) => api.post("/vector/search", payload),
+  checkDuplicate: (payload) => api.post("/vector/check-duplicate", payload),
+};
+window.vectorAPI = vectorAPI;
+
 // Attach sub-namespaces directly to api object so API.interviews, API.jobs, etc. work seamlessly
 Object.assign(api, {
   system: systemAPI,
+  student: studentAPI,
   auth: authAPI,
   ats: atsAPI,
   comparison: comparisonAPI,
@@ -821,6 +1019,10 @@ Object.assign(api, {
   interviewScorecard: interviewScorecardAPI,
   talentRediscovery: talentRediscoveryAPI,
   feedback: feedbackAPI,
+  portfolio: portfolioAPI,
+  weekly: weeklyAPI,
+  vector: vectorAPI,
+  aptitude: aptitudeAPI,
 });
 
 

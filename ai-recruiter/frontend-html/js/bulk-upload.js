@@ -289,7 +289,7 @@
       const score = Math.round(r.overall_match_score || 0);
 
       // Matched Job Role logic
-      const matchedRole = r.matched_job_role || r.best_suited_role?.best_role_title || data.matched_job_role || data.current_role || data.headline || "Software Professional";
+      const matchedRole = r.matched_job_role || r.best_suited_role?.best_role_title || data.matched_job_role || data.current_role || data.headline || "Candidate Profile";
       const roleScore = r.best_suited_role?.best_match_score || score;
       const isActiveJob = r.best_suited_role?.is_active_job;
       const activePill = isActiveJob ? `<span class="badge bg-success text-white small" style="font-size: 0.65rem;" title="Matches an open job opening you posted">🏢 Open Job</span>` : '';

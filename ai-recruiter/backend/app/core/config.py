@@ -27,10 +27,10 @@ class Settings(BaseSettings):
         "evan@example.com",
     ]
 
-    # --- Database (PostgreSQL is Primary; SQLite default fallback for deployment) ---
-    DATABASE_URL: str = "sqlite:///./ai_recruiter.db"
+    # --- Database (PostgreSQL is Primary; SQLite fallback for offline development) ---
+    DATABASE_URL: str = "postgresql+psycopg2://postgres:postgres234@localhost:5432/ai_recruiter"
+    POSTGRES_DATABASE_URL: str = "postgresql+psycopg2://postgres:postgres234@localhost:5432/ai_recruiter"
     SQLITE_DATABASE_URL: str = "sqlite:///./ai_recruiter.db"
-    POSTGRES_DATABASE_URL: str = ""
 
     # --- Redis & Caching Layer ---
     REDIS_HOST: str = "localhost"
@@ -40,6 +40,16 @@ class Settings(BaseSettings):
     REDIS_URL: str = ""
     REDIS_ENABLED: bool = True
     CACHE_DEFAULT_TTL_SECONDS: int = 300  # 5 minutes
+
+    # --- Vector Database (Qdrant) ---
+    QDRANT_URL: str = ""
+    QDRANT_API_KEY: str = ""
+    QDRANT_HOST: str = "localhost"
+    QDRANT_PORT: int = 6333
+    QDRANT_ENABLED: bool = True
+    QDRANT_STORAGE_PATH: str = "./qdrant_storage"
+    QDRANT_COLLECTION_PREFIX: str = "ai_recruiter_"
+    EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
 
 
     # --- JWT / Auth ---
@@ -88,7 +98,10 @@ class Settings(BaseSettings):
     LLM_PROVIDER: str = "gemini"
 
     GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-1.5-flash"
+    GEMINI_MODEL: str = "gemini-3-flash-preview"
+    GEMINI_RESUME_MODEL: str = "gemini-3-flash-preview"
+    GEMINI_PROMPT_MODEL: str = "gemini-3.5-flash-lite"
+    GEMINI_PORTFOLIO_MODEL: str = "gemini-flash-lite-latest"
     GEMINI_BASE_URL: str = "https://generativelanguage.googleapis.com/v1beta"
 
     OPENAI_API_KEY: str = ""
@@ -121,7 +134,11 @@ class Settings(BaseSettings):
     LOGIN_LOCKOUT_MAX_ATTEMPTS: int = 5
     LOGIN_LOCKOUT_WINDOW_SECONDS: int = 900  # 15 minutes
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=(".env", "ai-recruiter/backend/.env", "backend/.env"),
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
 
     @property
     def cors_origins_list(self) -> List[str]:

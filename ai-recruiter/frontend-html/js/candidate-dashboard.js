@@ -210,19 +210,115 @@
 
       // Load Advanced Job-Specific ATS Analysis
       loadATSAnalysis();
+
+      // Load Candidate Portfolio Website Status
+      loadCandidatePortfolioStatus();
     } catch (err) {
       showAlert(err.message, "danger");
+    }
+  }
+
+  async function loadCandidatePortfolioStatus() {
+    try {
+      const portRes = await portfolioAPI.getMyPortfolio();
+      const port = portRes?.data;
+
+      const card = document.getElementById("dash-portfolio-card");
+      const statusBadge = document.getElementById("dash-portfolio-status-badge");
+      const themeBadge = document.getElementById("dash-portfolio-theme-badge");
+      const descEl = document.getElementById("dash-portfolio-desc");
+      const urlContainer = document.getElementById("dash-portfolio-url-container");
+      const urlLink = document.getElementById("dash-portfolio-url-link");
+      const btnCopy = document.getElementById("dash-btn-copy-link");
+      const btnView = document.getElementById("dash-btn-view-portfolio");
+      const btnDelete = document.getElementById("dash-btn-delete-portfolio");
+      const actionText = document.getElementById("dash-portfolio-action-text");
+
+      if (port) {
+        if (btnDelete) {
+          btnDelete.classList.remove("d-none");
+          btnDelete.disabled = false;
+          btnDelete.textContent = "🗑️ Delete";
+          btnDelete.onclick = async () => {
+            if (confirm("Are you sure you want to permanently delete your portfolio? This action cannot be undone.")) {
+              btnDelete.disabled = true;
+              btnDelete.textContent = "Deleting...";
+              try {
+                await portfolioAPI.deleteMyPortfolio();
+                await loadCandidatePortfolioStatus();
+              } catch (err) {
+                alert("Failed to delete portfolio: " + (err.message || "Unknown error"));
+                btnDelete.disabled = false;
+                btnDelete.textContent = "🗑️ Delete";
+              }
+            }
+          };
+        }
+        if (themeBadge) {
+          themeBadge.textContent = `Theme: ${(port.theme_id || 'Modern').toUpperCase()}`;
+          themeBadge.classList.remove("d-none");
+        }
+        if (actionText) actionText.textContent = "Edit Portfolio";
+
+        if (port.is_published) {
+          if (statusBadge) {
+            statusBadge.textContent = "Published Live";
+            statusBadge.className = "badge bg-success text-white px-2 py-1 small rounded-pill";
+          }
+          if (descEl) descEl.textContent = `Your portfolio is published and viewable by recruiters! Views: ${port.views_count || 0}`;
+          if (urlContainer) {
+            urlContainer.classList.remove("d-none");
+            urlLink.href = `/portfolio/${port.slug}`;
+            urlLink.textContent = `/portfolio/${port.slug}`;
+          }
+          if (btnCopy) {
+            btnCopy.classList.remove("d-none");
+            btnCopy.onclick = () => {
+              navigator.clipboard.writeText(`${window.location.origin}/portfolio/${port.slug}`);
+              btnCopy.textContent = "✓ Copied!";
+              setTimeout(() => { btnCopy.textContent = "📋 Copy Link"; }, 2000);
+            };
+          }
+          if (btnView) {
+            btnView.classList.remove("d-none");
+            btnView.href = `/portfolio/${port.slug}`;
+          }
+        } else {
+          if (statusBadge) {
+            statusBadge.textContent = "Draft";
+            statusBadge.className = "badge bg-secondary-subtle text-secondary px-2 py-1 small rounded-pill";
+          }
+          if (descEl) descEl.textContent = "Your portfolio is saved in draft mode. Click 'Edit Portfolio' to customize and publish it.";
+          if (urlContainer) urlContainer.classList.add("d-none");
+          if (btnCopy) btnCopy.classList.add("d-none");
+          if (btnView) btnView.classList.add("d-none");
+        }
+      } else {
+        if (btnDelete) btnDelete.classList.add("d-none");
+        if (urlContainer) urlContainer.classList.add("d-none");
+        if (btnCopy) btnCopy.classList.add("d-none");
+        if (btnView) btnView.classList.add("d-none");
+        if (statusBadge) {
+          statusBadge.textContent = "Not Created";
+          statusBadge.className = "badge bg-light text-muted border px-2 py-1 small rounded-pill";
+        }
+        if (themeBadge) themeBadge.classList.add("d-none");
+        if (descEl) descEl.textContent = "You haven't created a portfolio yet. Build your professional portfolio in 1 click!";
+        if (actionText) actionText.textContent = "Build Portfolio";
+      }
+    } catch (err) {
+      console.debug("Portfolio status not loaded:", err);
     }
   }
 
   async function loadATSAnalysis() {
     try {
       const meRes = await API.get("/resumes/me");
-      if (!meRes || !meRes.data) return;
+      if (!meRes || !meRes.data || !meRes.data.id) return;
       const candId = meRes.data.id;
       const jobsRes = await jobsAPI.list();
-      const jobs = jobsRes.data;
-      if (!jobs || !jobs.length) return;
+      const jobs = jobsRes?.data || [];
+      if (!jobs || !jobs.length || !jobs[0] || !jobs[0].id) return;
 
       const firstJob = jobs[0];
       const atsRes = await atsAPI.getAnalysis(candId, firstJob.id);
@@ -359,7 +455,7 @@
       const nameEl = document.getElementById("cand-name-display");
       if (nameEl) nameEl.textContent = user ? user.name : "Candidate";
       const headlineEl = document.getElementById("cand-headline-display");
-      if (headlineEl) headlineEl.textContent = p.headline || p.current_role || "Software Professional";
+      if (headlineEl) headlineEl.textContent = p.headline || p.current_role || "";
       const locEl = document.getElementById("cand-location-display");
       if (locEl) locEl.textContent = p.location ? `📍 ${p.location}` : "📍 Location Not Specified";
       const expEl = document.getElementById("cand-experience-display");
@@ -426,6 +522,62 @@
         setVal("edit-cand-github", p.github_url);
         setVal("edit-cand-portfolio", p.portfolio_url);
       }
+
+      // Load College Student Academic Details
+      try {
+        const studRes = await api.student.getProfile();
+        const sp = studRes?.data;
+        if (sp) {
+          const colEl = document.getElementById("cand-college-display");
+          if (colEl) colEl.textContent = sp.college_name ? `🏛️ ${sp.college_name}` : "🏛️ College / University";
+          const degEl = document.getElementById("cand-degree-display");
+          if (degEl) degEl.textContent = sp.degree && sp.branch ? `${sp.degree} (${sp.branch})` : (sp.degree || "Degree & Branch");
+          const cgpaEl = document.getElementById("cand-cgpa-display");
+          if (cgpaEl) cgpaEl.textContent = sp.cgpa ? `CGPA: ${sp.cgpa}` : "CGPA: —";
+
+          const setVal = (id, val) => {
+            const el = document.getElementById(id);
+            if (el && document.activeElement !== el) el.value = val || "";
+          };
+          setVal("edit-cand-college", sp.college_name);
+          setVal("edit-cand-degree", sp.degree);
+          setVal("edit-cand-branch", sp.branch);
+          setVal("edit-cand-grad-year", sp.graduation_year);
+          setVal("edit-cand-cgpa", sp.cgpa);
+        }
+      } catch (e) {
+        // Fallback
+      }
+
+      // Load Placement Readiness Metrics
+      try {
+        const readRes = await api.student.getReadiness();
+        const rd = readRes?.data;
+        if (rd) {
+          const badge = document.getElementById("readiness-score-badge");
+          if (badge) badge.textContent = `${rd.overall_readiness_score}/100 Readiness`;
+          const streak = document.getElementById("readiness-streak-badge");
+          if (streak) streak.textContent = `🔥 ${rd.streak_days} Day Streak`;
+          const pBar = document.getElementById("readiness-progress-bar");
+          if (pBar) {
+            pBar.style.width = `${rd.overall_readiness_score}%`;
+            pBar.setAttribute("aria-valuenow", rd.overall_readiness_score);
+          }
+          const pctText = document.getElementById("readiness-pct-text");
+          if (pctText) pctText.textContent = `${rd.overall_readiness_score}% Placement Ready`;
+
+          const aptEl = document.getElementById("stat-readiness-aptitude");
+          if (aptEl) aptEl.textContent = `${rd.aptitude_score_avg}%`;
+          const testsEl = document.getElementById("stat-readiness-tests");
+          if (testsEl) testsEl.textContent = `${rd.tests_completed} Tests`;
+          const codeEl = document.getElementById("stat-readiness-coding");
+          if (codeEl) codeEl.textContent = `${rd.coding_challenges_completed} Solved`;
+          const intEl = document.getElementById("stat-readiness-interviews");
+          if (intEl) intEl.textContent = `${rd.mock_interviews_completed} Done`;
+        }
+      } catch (e) {
+        // Fallback
+      }
     } catch (e) {
       // Ignore if resume not uploaded yet
     }
@@ -439,25 +591,40 @@
       saveBtn.disabled = true;
       saveBtn.textContent = "Saving...";
 
-      const expVal = document.getElementById("edit-cand-exp").value;
+      const expVal = document.getElementById("edit-cand-exp")?.value;
 
       const payload = {
-        headline: document.getElementById("edit-cand-headline").value.trim() || null,
-        current_role: document.getElementById("edit-cand-role").value.trim() || null,
-        profile_photo: document.getElementById("edit-cand-photo").value.trim() || null,
-        location: document.getElementById("edit-cand-location").value.trim() || null,
-        summary: document.getElementById("edit-cand-summary").value.trim() || null,
-        phone: document.getElementById("edit-cand-phone").value.trim() || null,
+        headline: document.getElementById("edit-cand-headline")?.value?.trim() || null,
+        current_role: document.getElementById("edit-cand-role")?.value?.trim() || null,
+        profile_photo: document.getElementById("edit-cand-photo")?.value?.trim() || null,
+        location: document.getElementById("edit-cand-location")?.value?.trim() || null,
+        summary: document.getElementById("edit-cand-summary")?.value?.trim() || null,
+        phone: document.getElementById("edit-cand-phone")?.value?.trim() || null,
         experience_years: expVal ? Number(expVal) : null,
-        certifications: document.getElementById("edit-cand-certifications").value.trim() || null,
-        linkedin_url: document.getElementById("edit-cand-linkedin").value.trim() || null,
-        github_url: document.getElementById("edit-cand-github").value.trim() || null,
-        portfolio_url: document.getElementById("edit-cand-portfolio").value.trim() || null,
+        certifications: document.getElementById("edit-cand-certifications")?.value?.trim() || null,
+        linkedin_url: document.getElementById("edit-cand-linkedin")?.value?.trim() || null,
+        github_url: document.getElementById("edit-cand-github")?.value?.trim() || null,
+        portfolio_url: document.getElementById("edit-cand-portfolio")?.value?.trim() || null,
       };
+
+      const collegeVal = document.getElementById("edit-cand-college")?.value?.trim() || null;
+      const degreeVal = document.getElementById("edit-cand-degree")?.value?.trim() || null;
+      const branchVal = document.getElementById("edit-cand-branch")?.value?.trim() || null;
+      const gradYearVal = document.getElementById("edit-cand-grad-year")?.value ? Number(document.getElementById("edit-cand-grad-year").value) : null;
+      const cgpaVal = document.getElementById("edit-cand-cgpa")?.value ? Number(document.getElementById("edit-cand-cgpa").value) : null;
 
       try {
         await API.put("/resumes/me", payload);
-        alert("Candidate profile updated successfully!");
+        await api.student.updateProfile({
+          college_name: collegeVal,
+          degree: degreeVal,
+          branch: branchVal,
+          graduation_year: gradYearVal,
+          cgpa: cgpaVal,
+          is_student: true,
+        });
+
+        alert("Candidate profile and academic details updated successfully!");
         const modalEl = document.getElementById("editCandProfileModal");
         if (window.bootstrap && modalEl) {
           const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
@@ -507,11 +674,11 @@
 
     try {
       const meRes = await API.get("/resumes/me");
-      if (!meRes || !meRes.data) throw new Error("Please upload a resume first.");
+      if (!meRes || !meRes.data || !meRes.data.id) throw new Error("Please upload a resume first.");
       const candId = meRes.data.id;
       const jobsRes = await jobsAPI.list();
-      const jobs = jobsRes.data;
-      if (!jobs || !jobs.length) throw new Error("No open jobs available for comparison.");
+      const jobs = jobsRes?.data || [];
+      if (!jobs || !jobs.length || !jobs[0] || !jobs[0].id) throw new Error("No open jobs available for comparison.");
       const firstJob = jobs[0];
 
       const res = await resumeImprovementAPI.improve(candId, firstJob.id);
@@ -725,6 +892,7 @@
               </thead>
               <tbody>
                 ${res.data.map(item => {
+                  if (!item || !item.id) return "";
                   const isFrontend = item.role_type === 'frontend_developer';
                   const isAI = item.role_type === 'ai_developer';
                   const isDev = item.role_type === 'developer' || isFrontend || isAI || item.assessment_type === 'coding';
@@ -747,14 +915,17 @@
                             : `<span class="badge bg-dark border border-primary text-primary me-1">📝 Aptitude</span>`));
 
                   const isTerminated = item.status === 'Terminated';
+                  const isExpired = item.status === 'Expired';
                   const statusBadge = isTerminated
-                    ? `<span class="badge bg-danger text-white"><i class="bi bi-x-circle me-1"></i>Disqualified (Tab Switch)</span>`
-                    : (item.status === 'Evaluated' 
-                        ? `<span class="badge bg-${item.passed ? 'success' : 'danger'}">${item.passed ? 'Passed ✓' : 'Failed ❌'}</span>`
-                        : `<span class="badge bg-${item.status === 'In Progress' ? 'warning' : 'secondary'}">${item.status}</span>`);
+                    ? `<span class="badge bg-danger text-white"><i class="bi bi-x-circle me-1"></i>Disqualified</span>`
+                    : (isExpired
+                        ? `<span class="badge bg-secondary text-white"><i class="bi bi-clock-history me-1"></i>Time Expired</span>`
+                        : (item.status === 'Evaluated' 
+                            ? `<span class="badge bg-${item.passed ? 'success' : 'danger'}">${item.passed ? 'Passed ✓' : 'Failed ❌'}</span>`
+                            : `<span class="badge bg-${item.status === 'In Progress' ? 'warning text-dark' : 'secondary'}">${item.status}</span>`));
 
-                  const actionBtn = isTerminated
-                    ? `<button class="btn btn-sm btn-outline-danger" disabled title="Assessment terminated due to tab switch violation"><i class="bi bi-slash-circle me-1"></i>Disqualified</button>`
+                  const actionBtn = (isTerminated || isExpired)
+                    ? `<a href="coding-assessment.html?assessment_id=${item.id}&reset=true" class="btn btn-sm ${isExpired ? 'btn-primary' : 'btn-outline-warning'} fw-semibold"><i class="bi bi-arrow-repeat me-1"></i>Retake Test &rarr;</a>`
                     : (item.status === 'Evaluated'
                         ? `<a href="coding-report.html?attempt_id=${item.attempt_id}" class="btn btn-sm btn-outline-primary fw-semibold">View Result</a>`
                         : `<a href="coding-assessment.html?assessment_id=${item.id}" class="btn btn-sm btn-primary fw-bold">Start Assessment &rarr;</a>`);
@@ -844,7 +1015,8 @@
 
         // List standard interviews
         interviewsList.forEach(item => {
-          if (!upcomingList.some(u => u.interview_id === item.id)) {
+          if (!item || !item.id) return;
+          if (!upcomingList.some(u => u && u.interview_id === item.id)) {
             html += `
               <tr>
                 <td class="fw-semibold">${item.job ? item.job.title : 'Position'}</td>
@@ -1126,7 +1298,352 @@
     });
   }
 
+  // --- WEEKLY PLACEMENT ARENA LOGIC ---
+  async function loadWeeklyArena() {
+    try {
+      if (!api.weekly) return;
+      const res = await api.weekly.getOverview();
+      const data = res?.data;
+      if (!data) return;
+
+      const weekBadge = document.getElementById("weekly-week-badge");
+      if (weekBadge) weekBadge.textContent = data.week_label || data.current_week_code;
+
+      // Aptitude Section
+      const apt = data.aptitude;
+      if (apt) {
+        const aptTitle = document.getElementById("dash-weekly-apt-title");
+        if (aptTitle && apt.title) aptTitle.textContent = apt.title;
+        const aptDuration = document.getElementById("dash-weekly-apt-duration");
+        if (aptDuration) {
+          const totalQ = apt.total_questions || 10;
+          const mins = apt.duration_minutes || Math.max(1, Math.ceil((totalQ * 30) / 60));
+          aptDuration.textContent = `⏱️ ${mins} Mins (30s/q)`;
+        }
+        const aptQCount = document.getElementById("dash-weekly-apt-qcount");
+        if (aptQCount) {
+          aptQCount.textContent = `📝 ${apt.total_questions || 10} Questions`;
+        }
+
+        const aptStatus = document.getElementById("dash-weekly-apt-status");
+        const aptScore = document.getElementById("dash-weekly-apt-score");
+        const aptBtn = document.getElementById("dash-weekly-apt-action-btn");
+
+        if (apt.user_completed) {
+          if (aptStatus) {
+            aptStatus.className = `badge ${apt.user_passed ? 'bg-success' : 'bg-warning text-dark'} px-2.5 py-1.5 rounded-pill small`;
+            aptStatus.textContent = apt.user_passed ? "✓ Passed" : "Needs Practice";
+          }
+          if (aptScore) {
+            aptScore.innerHTML = `<span class="${apt.user_passed ? 'text-success' : 'text-warning'}">${apt.user_score_percentage}%</span> <span class="small text-white-50">(${apt.user_passed ? 'Passed 🎉' : 'Below Cutoff'})</span>`;
+          }
+          if (aptBtn) {
+            aptBtn.innerHTML = `👁️ Review Solutions &amp; Explanations &rarr;`;
+            aptBtn.href = "aptitude-test.html?mode=weekly&view=review";
+          }
+        } else {
+          if (aptStatus) {
+            aptStatus.className = "badge bg-secondary px-2.5 py-1.5 rounded-pill small";
+            aptStatus.textContent = "Not Started";
+          }
+          if (aptScore) aptScore.textContent = "— (10 Questions)";
+          if (aptBtn) {
+            aptBtn.innerHTML = `🚀 Start Weekly Aptitude &rarr;`;
+            aptBtn.href = "aptitude-test.html?mode=weekly";
+          }
+        }
+      }
+
+      // Coding Section
+      const coding = data.coding;
+      if (coding) {
+        const codingTitle = document.getElementById("dash-weekly-coding-title");
+        if (codingTitle && coding.title) codingTitle.textContent = coding.title;
+
+        const codingStatus = document.getElementById("dash-weekly-coding-status");
+        const codingScore = document.getElementById("dash-weekly-coding-score");
+        const codingBtn = document.getElementById("dash-weekly-coding-action-btn");
+
+        if (coding.user_completed) {
+          if (codingStatus) {
+            codingStatus.className = `badge ${coding.user_passed ? 'bg-success' : 'bg-warning text-dark'} px-2.5 py-1.5 rounded-pill small`;
+            codingStatus.textContent = coding.user_passed ? "✓ Completed" : "Attempted";
+          }
+          if (codingScore) {
+            codingScore.innerHTML = `<span class="${coding.user_passed ? 'text-success' : 'text-warning'}">${coding.user_score} / ${coding.total_score}</span> <span class="small text-white-50">(${coding.user_passed ? 'Passed 🎉' : 'Needs Practice'})</span>`;
+          }
+          if (codingBtn) {
+            codingBtn.innerHTML = `👁️ Review Coding Submissions &rarr;`;
+            codingBtn.href = "coding-assessment.html?mode=weekly&view=report";
+          }
+        } else {
+          if (codingStatus) {
+            codingStatus.className = "badge bg-secondary px-2.5 py-1.5 rounded-pill small";
+            codingStatus.textContent = "Not Started";
+          }
+          if (codingScore) codingScore.textContent = "— (3 Problems)";
+          if (codingBtn) {
+            codingBtn.innerHTML = `🚀 Start Coding Challenge &rarr;`;
+            codingBtn.href = "coding-assessment.html?mode=weekly";
+          }
+        }
+      }
+
+      // Schedule Badge
+      const schedBadge = document.getElementById("weekly-schedule-badge");
+      if (schedBadge && data.schedule) {
+        const s = data.schedule;
+        schedBadge.textContent = `🔄 Updated Weekly Once • Refreshes in ${s.days_remaining}d ${s.hours_remaining}h`;
+        schedBadge.title = s.cadence || "Refreshes every Monday at 00:00 UTC";
+      }
+
+      // Programming Topics for Coding Practice Grid
+      const codingGrid = document.getElementById("dash-programming-topics-grid");
+      if (codingGrid) {
+        try {
+          let topics = [];
+          if (api.weekly.getCodingTopics) {
+            const cRes = await api.weekly.getCodingTopics();
+            topics = cRes?.data || [];
+          }
+          if (!topics.length && data.coding_topics_summary) {
+            topics = data.coding_topics_summary;
+          }
+
+          const counter = document.getElementById("dash-coding-topics-counter");
+          if (counter) counter.textContent = `${topics.length} Core DSA Topics`;
+
+          if (!topics.length) {
+            codingGrid.innerHTML = `<div class="col-12 text-white-50 small text-center py-3">No programming topics found.</div>`;
+          } else {
+            codingGrid.innerHTML = topics.map(t => {
+              const diffPills = Object.entries(t.difficulty_distribution || {})
+                .map(([diff, cnt]) => {
+                  const bg = diff.toLowerCase() === 'easy' ? 'bg-success' : diff.toLowerCase() === 'medium' ? 'bg-warning text-dark' : 'bg-danger';
+                  return `<span class="badge ${bg} px-1.5 py-0.5 rounded-pill" style="font-size: 0.65rem;">${cnt} ${diff}</span>`;
+                }).join(' ');
+
+              const subBadges = (t.subtopics || []).slice(0, 3)
+                .map(st => `<span class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-10 rounded-pill small" style="font-size: 0.68rem;">${escapeHtml(st)}</span>`)
+                .join(' ');
+
+              return `
+              <div class="col-md-6 col-xl-4">
+                <div class="p-3 rounded-3 h-100 d-flex flex-column justify-content-between" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.2s ease;">
+                  <div>
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="fs-4">${t.icon || "💻"}</span>
+                        <div>
+                          <h6 class="fw-bold text-white mb-0" style="font-size: 0.92rem;">${escapeHtml(t.name)}</h6>
+                          <span class="badge bg-light bg-opacity-10 text-white-50" style="font-size: 0.65rem;">${escapeHtml(t.category)}</span>
+                        </div>
+                      </div>
+                      ${t.popular ? '<span class="badge bg-warning text-dark px-1.5 py-0.5 rounded-pill" style="font-size: 0.65rem;">🔥 High Yield</span>' : ''}
+                    </div>
+                    <p class="text-white-50 small mb-2" style="font-size: 0.78rem; line-height: 1.35; min-height: 32px;">${escapeHtml(t.description)}</p>
+                    <div class="d-flex flex-wrap gap-1 mb-2">${subBadges}</div>
+                    <div class="d-flex align-items-center gap-1.5 mb-2">${diffPills}</div>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center pt-2 border-top border-white border-opacity-10 mt-auto">
+                    <span class="text-white-50 small" style="font-size: 0.75rem;"><strong>${t.problem_count}</strong> Problems</span>
+                    <a href="coding-assessment.html?mode=practice&topic=${encodeURIComponent(t.slug)}" class="btn btn-sm btn-outline-success rounded-pill px-2.5 py-1 fw-semibold text-nowrap" style="font-size: 0.75rem;">
+                      Practice Topic &rarr;
+                    </a>
+                  </div>
+                </div>
+              </div>`;
+            }).join('');
+          }
+        } catch (cErr) {
+          console.warn("Failed to render programming topics grid:", cErr);
+        }
+      }
+
+      // Aptitude Preparation Tracks Grid
+      const aptGrid = document.getElementById("dash-aptitude-topics-grid");
+      if (aptGrid) {
+        try {
+          let tracks = [];
+          if (api.weekly.getAptitudeTopics) {
+            const aRes = await api.weekly.getAptitudeTopics();
+            tracks = aRes?.data || [];
+          }
+          if (!tracks.length && data.aptitude_topics_summary) {
+            tracks = data.aptitude_topics_summary;
+          }
+
+          const aCounter = document.getElementById("dash-aptitude-topics-counter");
+          if (aCounter) aCounter.textContent = `${tracks.length} Placement Tracks`;
+
+          if (!tracks.length) {
+            aptGrid.innerHTML = `<div class="col-12 text-white-50 small text-center py-3">No aptitude preparation tracks found.</div>`;
+          } else {
+            aptGrid.innerHTML = tracks.map(track => {
+              const coBadges = (track.company_focus || []).slice(0, 4)
+                .map(c => `<span class="badge bg-primary bg-opacity-25 text-info border border-info border-opacity-25 rounded-pill" style="font-size: 0.65rem;">${escapeHtml(c)}</span>`)
+                .join(' ');
+
+              const subBadges = (track.subtopics || []).slice(0, 3)
+                .map(s => `<span class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-10 rounded-pill" style="font-size: 0.68rem;">${escapeHtml(s)}</span>`)
+                .join(' ');
+
+              const isCurrent = Boolean(track.is_current_week);
+              return `
+              <div class="col-md-6 col-xl-3">
+                <div class="p-3 rounded-3 h-100 d-flex flex-column justify-content-between" style="background: ${isCurrent ? 'rgba(99, 102, 241, 0.12)' : 'rgba(255, 255, 255, 0.04)'}; border: ${isCurrent ? '1.5px solid #818cf8' : '1px solid rgba(255, 255, 255, 0.08)'}; transition: all 0.2s ease;">
+                  <div>
+                    ${isCurrent ? '<div class="badge bg-warning text-dark fw-bold mb-2 rounded-pill px-2 py-0.5" style="font-size: 0.65rem;">🔥 Active Weekly Focus</div>' : ''}
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                      <span class="fs-4">${track.icon || "🧠"}</span>
+                      <div>
+                        <h6 class="fw-bold text-white mb-0" style="font-size: 0.92rem;">${escapeHtml(track.name)}</h6>
+                        ${track.chapters ? `<span class="badge bg-white bg-opacity-10 text-info small" style="font-size: 0.62rem;">${escapeHtml(track.chapters)}</span>` : ''}
+                      </div>
+                    </div>
+                    <p class="text-white-50 small mb-2" style="font-size: 0.78rem; line-height: 1.35; min-height: 40px;">${escapeHtml(track.description)}</p>
+                    <div class="d-flex flex-wrap gap-1 mb-2">${subBadges}</div>
+                    <div class="d-flex flex-wrap gap-1 mb-2">${coBadges}</div>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center pt-2 border-top border-white border-opacity-10 mt-auto">
+                    <span class="text-white-50 small" style="font-size: 0.75rem;"><strong>${track.question_count || 10}+</strong> Questions</span>
+                    <a href="aptitude-test.html?topic=${encodeURIComponent(track.slug)}" class="btn btn-sm ${isCurrent ? 'btn-primary' : 'btn-outline-primary'} rounded-pill px-2.5 py-1 fw-semibold text-nowrap" style="font-size: 0.75rem;">
+                      Prepare Track &rarr;
+                    </a>
+                  </div>
+                </div>
+              </div>`;
+            }).join('');
+          }
+        } catch (aErr) {
+          console.warn("Failed to render aptitude tracks grid:", aErr);
+        }
+      }
+    } catch (err) {
+      console.warn("Weekly Arena load warning:", err);
+    }
+  }
+
+  // Load Leaderboards
+  async function loadWeeklyLeaderboard() {
+    const aptTbody = document.getElementById("lb-apt-tbody");
+    const codingTbody = document.getElementById("lb-coding-tbody");
+
+    try {
+      const [aptRes, codingRes] = await Promise.all([
+        api.weekly.getAptitudeLeaderboard(),
+        api.weekly.getCodingLeaderboard()
+      ]);
+
+      const renderEntries = (entries) => {
+        if (!entries || !entries.length) {
+          return `<tr><td colspan="5" class="text-center py-4 text-muted">No attempts recorded this week yet. Be the first to top the leaderboard!</td></tr>`;
+        }
+        return entries.map(e => {
+          let rankBadge = `<span class="badge bg-light text-dark fw-bold border">${e.rank}</span>`;
+          if (e.rank === 1) rankBadge = `<span class="badge bg-warning text-dark fw-bold">🥇 1st</span>`;
+          else if (e.rank === 2) rankBadge = `<span class="badge bg-secondary-subtle text-dark fw-bold border">🥈 2nd</span>`;
+          else if (e.rank === 3) rankBadge = `<span class="badge bg-danger-subtle text-danger fw-bold border">🥉 3rd</span>`;
+
+          const mins = Math.floor(e.time_taken_seconds / 60);
+          const secs = e.time_taken_seconds % 60;
+          const timeStr = `${mins}m ${secs}s`;
+
+          return `
+            <tr class="${e.is_current_user ? 'table-primary fw-bold' : ''}">
+              <td>${rankBadge}</td>
+              <td>${escapeHtml(e.candidate_name)}</td>
+              <td><span class="fw-bold ${e.is_passed ? 'text-success' : 'text-primary'}">${e.score}%</span></td>
+              <td class="text-muted small">${timeStr}</td>
+              <td><span class="badge ${e.is_passed ? 'bg-success' : 'bg-secondary'} small">${e.is_passed ? 'Passed' : 'Attempted'}</span></td>
+            </tr>
+          `;
+        }).join("");
+      };
+
+      if (aptTbody) aptTbody.innerHTML = renderEntries(aptRes?.data?.entries);
+      if (codingTbody) codingTbody.innerHTML = renderEntries(codingRes?.data?.entries);
+    } catch (e) {
+      if (aptTbody) aptTbody.innerHTML = `<tr><td colspan="5" class="text-danger py-3 text-center">Failed to load leaderboard.</td></tr>`;
+      if (codingTbody) codingTbody.innerHTML = `<tr><td colspan="5" class="text-danger py-3 text-center">Failed to load leaderboard.</td></tr>`;
+    }
+  }
+
+  // Load History
+  async function loadWeeklyHistory() {
+    const aptTbody = document.getElementById("hist-apt-tbody");
+    const codingTbody = document.getElementById("hist-coding-tbody");
+
+    try {
+      const [aptRes, codingRes] = await Promise.all([
+        api.weekly.getAptitudeHistory(),
+        api.weekly.getCodingHistory()
+      ]);
+
+      const aptAttempts = aptRes?.data || [];
+      if (aptTbody) {
+        if (!aptAttempts.length) {
+          aptTbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">No past weekly aptitude attempts yet.</td></tr>`;
+        } else {
+          aptTbody.innerHTML = aptAttempts.map(a => `
+            <tr>
+              <td><span class="badge bg-primary-subtle text-primary border">${escapeHtml(a.week_code)}</span></td>
+              <td class="fw-semibold">${escapeHtml(a.title)}</td>
+              <td><span class="fw-bold ${a.is_passed ? 'text-success' : 'text-danger'}">${a.score_percentage}%</span></td>
+              <td>${a.correct_count} / ${a.total_questions}</td>
+              <td class="text-muted small">${Math.floor(a.time_taken_seconds / 60)}m ${a.time_taken_seconds % 60}s</td>
+              <td class="text-muted small">${a.created_at ? new Date(a.created_at).toLocaleDateString() : '—'}</td>
+            </tr>
+          `).join("");
+        }
+      }
+
+      const codingAttempts = codingRes?.data || [];
+      if (codingTbody) {
+        if (!codingAttempts.length) {
+          codingTbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">No past weekly coding attempts yet.</td></tr>`;
+        } else {
+          codingTbody.innerHTML = codingAttempts.map(c => `
+            <tr>
+              <td><span class="badge bg-success-subtle text-success border">${escapeHtml(c.week_code)}</span></td>
+              <td class="fw-semibold">${escapeHtml(c.title)}</td>
+              <td><span class="fw-bold ${c.passed ? 'text-success' : 'text-danger'}">${c.percentage}%</span></td>
+              <td><span class="badge ${c.passed ? 'bg-success' : 'bg-secondary'}">${c.passed ? 'PASSED' : 'ATTEMPTED'}</span></td>
+              <td class="text-muted small">${Math.floor(c.time_taken_seconds / 60)}m ${c.time_taken_seconds % 60}s</td>
+              <td class="text-muted small">${c.created_at ? new Date(c.created_at).toLocaleDateString() : '—'}</td>
+            </tr>
+          `).join("");
+        }
+      }
+    } catch (e) {
+      if (aptTbody) aptTbody.innerHTML = `<tr><td colspan="6" class="text-danger py-3 text-center">Failed to load history.</td></tr>`;
+      if (codingTbody) codingTbody.innerHTML = `<tr><td colspan="6" class="text-danger py-3 text-center">Failed to load history.</td></tr>`;
+    }
+  }
+
+  const lbModalEl = document.getElementById("weeklyLeaderboardModal");
+  if (lbModalEl) {
+    lbModalEl.addEventListener("show.bs.modal", loadWeeklyLeaderboard);
+  }
+
+  const histModalEl = document.getElementById("weeklyHistoryModal");
+  if (histModalEl) {
+    histModalEl.addEventListener("show.bs.modal", loadWeeklyHistory);
+  }
+
+  // =========================================================================
+  // CANDIDATE LEARNING JOURNEY DASHBOARD & STAGE-GATED ROADMAP (REFERENCE UI)
+  // Handled modularly by js/candidate-learning-journey.js
+  // =========================================================================
+  function loadCandidateLearningJourney() {
+    if (typeof window.loadCandidateLearningJourney === "function") {
+      window.loadCandidateLearningJourney();
+    }
+  }
+
   // Load immediately on script execution
+  loadCandidateLearningJourney();
+  loadWeeklyArena();
   loadCandidateApplications();
   loadExplorerJobs();
   loadCandidateCodingAssessments();
@@ -1135,6 +1652,8 @@
 
   document.addEventListener("ar:auth-ready", () => {
     load();
+    loadCandidateLearningJourney();
+    loadWeeklyArena();
     loadCandidateApplications();
     loadCandidateProfileData();
     loadExplorerJobs();
@@ -1151,6 +1670,7 @@
   // Sync immediately when candidate returns to dashboard tab
   window.addEventListener("focus", () => {
     loadCandidateApplications();
+    loadWeeklyArena();
     load();
   });
 })();

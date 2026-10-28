@@ -52,6 +52,18 @@ async def upload_resume(
     file_bytes = await file.read()
     profile = process_resume(db, current_user.id, file_bytes, file.filename)
 
+    # Automatically generate / update candidate's portfolio with verbatim extracted resume details
+    try:
+        from app.services.portfolio_service import build_portfolio_from_candidate_profile
+        build_portfolio_from_candidate_profile(
+            db=db,
+            candidate=profile,
+            file_bytes=file_bytes,
+            filename=file.filename,
+        )
+    except Exception as e:
+        logger.warning("Auto-generating portfolio upon resume upload failed: %s", e)
+
     profile = (
         db.query(CandidateProfile)
         .options(joinedload(CandidateProfile.candidate_skills).joinedload(CandidateSkill.skill))
@@ -150,51 +162,16 @@ def _save_and_store_bulk_resume(
             user.name = cand_name
             db.add(user)
 
-    if not profile:
-        profile = CandidateProfile(user_id=user.id)
-        db.add(profile)
-        db.flush()
-
-    # Update candidate profile fields and resume hash
-    profile.resume_path = file_path
-    profile.resume_text = raw_text
-    profile.resume_original_filename = filename
-    profile.resume_hash = resume_hash
-
-    if fields.get("phone"): profile.phone = fields.get("phone")
-    if fields.get("location"): profile.location = fields.get("location")
-    if fields.get("address"): profile.address = fields.get("address")
-    if fields.get("summary"): profile.summary = fields.get("summary")
-    if fields.get("experience_years") is not None: profile.experience_years = fields.get("experience_years")
-    if fields.get("education"): profile.education = fields.get("education")
-    if fields.get("work_experience"): profile.work_experience = fields.get("work_experience")
-    if fields.get("linkedin_url"): profile.linkedin_url = fields.get("linkedin_url")
-    if fields.get("github_url"): profile.github_url = fields.get("github_url")
-    if fields.get("portfolio_url"): profile.portfolio_url = fields.get("portfolio_url")
-    profile.profile_score = score
-
-    extracted_certs = fields.get("certifications")
-    if extracted_certs:
-        profile.certifications = ", ".join(extracted_certs) if isinstance(extracted_certs, list) else str(extracted_certs)
-
-    extracted_skills = fields.get("skills") or []
-    if extracted_skills:
-        top_skills = extracted_skills[:4]
-        profile.headline = f"{top_skills[0]} Specialist | {', '.join(top_skills)}"
-        profile.current_role = f"{top_skills[0]} Specialist"
-
-    fields["resume_text"] = raw_text
-    try:
-        ai_res = generate_resume_summary(fields)
-        profile.ai_summary = ai_res.get("summary")
-    except Exception:
-        pass
-
-    db.flush()
-
-    seed_skills(db)
-    fresh_skills = sorted(list(set(extracted_skills)))
-    _sync_candidate_skills(db, profile, fresh_skills)
+    # Ingest resume through the unified process_resume pipeline (identical extraction, profile enrichment, skill syncing, ATS scoring, and portfolio generation)
+    profile = process_resume(
+        db=db,
+        user_id=user.id,
+        file_bytes=file_bytes,
+        original_filename=filename,
+        recruiter_id=recruiter_id,
+        source="recruiter_bulk_upload",
+    )
+    fields["completeness_score"] = profile.profile_score or 0
 
     # Job / Custom JD Association & ATS Scoring
     ats_res = None
@@ -302,7 +279,7 @@ def _save_and_store_bulk_resume(
     from app.nlp.best_role_evaluator import find_best_suited_position
     best_role_res = find_best_suited_position(db, profile=profile)
     best_role_dict = best_role_res.to_dict() if best_role_res else None
-    matched_job_role = best_role_dict.get("best_role_title") if best_role_dict else (fields.get("current_role") or "Software Professional")
+    matched_job_role = best_role_dict.get("best_role_title") if best_role_dict else fields.get("current_role")
     matched_roles = best_role_dict.get("matched_roles", []) if best_role_dict else []
     fields["matched_job_role"] = matched_job_role
     fields["matched_roles"] = matched_roles
@@ -476,7 +453,10 @@ def get_my_profile(
 ):
     profile = (
         db.query(CandidateProfile)
-        .options(joinedload(CandidateProfile.candidate_skills).joinedload(CandidateSkill.skill))
+        .options(
+            joinedload(CandidateProfile.candidate_skills).joinedload(CandidateSkill.skill),
+            joinedload(CandidateProfile.portfolio),
+        )
         .filter(CandidateProfile.user_id == current_user.id)
         .first()
     )
@@ -503,7 +483,7 @@ def update_my_profile(
         profile = CandidateProfile(
             user_id=current_user.id,
             headline=body.headline or "Candidate",
-            current_role=body.current_role or "Software Professional",
+            current_role=body.current_role,
             location=body.location,
             phone=body.phone,
             summary=body.summary,
@@ -781,6 +761,16 @@ async def complete_candidate_registration(
             raise AppError(err_msg, "RESUME_FORM_MISMATCH", 400)
 
         profile = process_resume(db, current_user.id, file_bytes, file.filename)
+        try:
+            from app.services.portfolio_service import build_portfolio_from_candidate_profile
+            build_portfolio_from_candidate_profile(
+                db=db,
+                candidate=profile,
+                file_bytes=file_bytes,
+                filename=file.filename,
+            )
+        except Exception as e:
+            logger.warning("Auto-generating portfolio upon registration resume upload failed: %s", e)
     elif not profile:
         profile = CandidateProfile(
             user_id=current_user.id,
@@ -1212,7 +1202,7 @@ def list_recruiter_uploaded_candidates(
                 cached_data = None
 
         if cached_data:
-            matched_job_role = cached_data.get("matched_job_role") or p.current_role or "Software Professional"
+            matched_job_role = cached_data.get("matched_job_role") or p.current_role or ""
             matched_roles = cached_data.get("matched_roles", [])
             best_role_dict = cached_data.get("best_suited_role") or {
                 "best_role_title": matched_job_role,
@@ -1223,7 +1213,7 @@ def list_recruiter_uploaded_candidates(
         else:
             best_role_res = find_best_suited_position(db, profile=p, published_jobs=published_jobs)
             best_role_dict = best_role_res.to_dict() if best_role_res else None
-            matched_job_role = best_role_dict.get("best_role_title") if best_role_dict else (p.current_role or "Software Professional")
+            matched_job_role = best_role_dict.get("best_role_title") if best_role_dict else (p.current_role or "")
             matched_roles = best_role_dict.get("matched_roles", []) if best_role_dict else []
             effective_score = float(best_role_dict.get("best_match_score") or p.profile_score or 75.0)
 

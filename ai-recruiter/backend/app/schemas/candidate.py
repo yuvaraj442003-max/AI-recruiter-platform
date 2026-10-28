@@ -58,6 +58,9 @@ class CandidateProfileResponse(BaseModel):
     current_role: Optional[str] = None
     certifications: Optional[str] = None
     portfolio_url: Optional[str] = None
+    portfolio_slug: Optional[str] = None
+    is_portfolio_published: Optional[bool] = False
+    published_portfolio_url: Optional[str] = None
     linkedin_url: Optional[str] = None
     github_url: Optional[str] = None
     other_links: Optional[str] = None
@@ -69,6 +72,10 @@ class CandidateProfileResponse(BaseModel):
 
     @classmethod
     def from_profile(cls, profile) -> "CandidateProfileResponse":
+        port = getattr(profile, "portfolio", None)
+        is_published = bool(port and port.is_published)
+        port_slug = port.slug if is_published else None
+
         return cls(
             id=profile.id,
             user_id=profile.user_id,
@@ -88,6 +95,9 @@ class CandidateProfileResponse(BaseModel):
             current_role=getattr(profile, "current_role", None),
             certifications=getattr(profile, "certifications", None),
             portfolio_url=getattr(profile, "portfolio_url", None),
+            portfolio_slug=port_slug,
+            is_portfolio_published=is_published,
+            published_portfolio_url=f"/portfolio/{port_slug}" if port_slug else None,
             linkedin_url=getattr(profile, "linkedin_url", None),
             github_url=getattr(profile, "github_url", None),
             other_links=getattr(profile, "other_links", None),

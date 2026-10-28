@@ -236,9 +236,17 @@
             if (tokenResp && tokenResp.access_token) {
               processGoogleAuth(tokenResp.access_token);
             } else if (tokenResp?.error) {
-              showError("Google registration was cancelled or failed.");
+              showError("Google registration was cancelled or failed: " + (tokenResp.error_description || tokenResp.error));
             }
           },
+          error_callback: (err) => {
+            console.error("Google OAuth error:", err);
+            if (err?.type === "popup_closed") {
+              showError("Google Sign-In popup was closed before completing.");
+            } else {
+              showError(`Google OAuth error: Please verify 'http://localhost:8000' is added to Authorized JavaScript origins in Google Cloud Console.`);
+            }
+          }
         });
         tokenClient.requestAccessToken();
       } else if (window.google?.accounts?.id) {

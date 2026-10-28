@@ -58,6 +58,17 @@
         if (prof.github_url) document.getElementById("cand-github").value = prof.github_url;
         if (prof.portfolio_url) document.getElementById("cand-portfolio").value = prof.portfolio_url;
       }
+
+      try {
+        const studRes = await api.student.getProfile();
+        const sp = studRes?.data;
+        if (sp) {
+          if (sp.college_name && document.getElementById("cand-college")) document.getElementById("cand-college").value = sp.college_name;
+          if (sp.degree && document.getElementById("cand-degree")) document.getElementById("cand-degree").value = sp.degree;
+          if (sp.graduation_year && document.getElementById("cand-grad-year")) document.getElementById("cand-grad-year").value = sp.graduation_year;
+          if (sp.cgpa && document.getElementById("cand-cgpa")) document.getElementById("cand-cgpa").value = sp.cgpa;
+        }
+      } catch (err) {}
     } catch (e) {
       // No existing profile yet
     }
@@ -156,6 +167,27 @@
       const res = await apiObj.completeRegistration(formData);
       if (res && res.data) {
         Session.save(res.data);
+      }
+
+      // Save Student Academic Credentials
+      const college = document.getElementById("cand-college")?.value?.trim() || null;
+      const degree = document.getElementById("cand-degree")?.value?.trim() || null;
+      const gradYear = document.getElementById("cand-grad-year")?.value ? Number(document.getElementById("cand-grad-year").value) : null;
+      const cgpa = document.getElementById("cand-cgpa")?.value ? Number(document.getElementById("cand-cgpa").value) : null;
+
+      if (college || degree || gradYear || cgpa) {
+        try {
+          await api.student.updateProfile({
+            college_name: college,
+            degree: degree,
+            graduation_year: gradYear,
+            cgpa: cgpa,
+            target_role: headline,
+            is_student: true,
+          });
+        } catch (e) {
+          console.error("Student profile update notice:", e);
+        }
       }
 
       const updatedUser = Session.getUser() || {};

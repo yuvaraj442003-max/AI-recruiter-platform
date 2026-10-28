@@ -13,3 +13,14 @@ __pycache__/
 .pytest_cache/
 .vscode/
 .idea/
+.env
+.env.*
+*.env
+scratch/
+ai-recruiter/backend/scratch/
+qdrant_storage/
+ai-recruiter/backend/qdrant_storage/
+raw_resume_*.txt
+extraction_results.txt
+dsa_dump.txt
+*.log

@@ -3,7 +3,11 @@ resume_service.py — orchestrates the resume upload pipeline:
 validate -> save file -> extract text -> run NLP -> upsert CandidateProfile
 and the candidate's extracted skills.
 """
+import hashlib
+import logging
 import os
+import uuid
+from typing import Optional
 
 from sqlalchemy.orm import Session
 
@@ -13,6 +17,8 @@ from app.nlp.resume_parser import extract_resume_text
 from app.nlp.skill_extractor import parse_resume_fields
 from app.nlp.skills_data import SKILLS_KB
 from app.utils.file_validation import secure_filename, validate_extension, validate_size
+
+logger = logging.getLogger(__name__)
 
 
 def seed_skills(db: Session) -> None:
@@ -108,22 +114,29 @@ def save_uploaded_file(file_bytes: bytes, original_filename: str) -> tuple[str, 
     return file_path, safe_name
 
 
-def process_resume(db: Session, user_id, file_bytes: bytes, original_filename: str) -> CandidateProfile:
+def process_resume(
+    db: Session,
+    user_id,
+    file_bytes: bytes,
+    original_filename: str,
+    recruiter_id: Optional[uuid.UUID] = None,
+    source: Optional[str] = None,
+) -> CandidateProfile:
     """
     Full pipeline for one uploaded resume: save -> extract text -> parse
-    fields -> upsert the candidate's profile and skill links.
+    fields -> upsert the candidate's profile and skill links -> auto-generate portfolio.
     """
     file_path, safe_name = save_uploaded_file(file_bytes, original_filename)
+    resume_hash = hashlib.sha256(file_bytes).hexdigest()
 
     raw_text = extract_resume_text(file_bytes, original_filename)
     fields = parse_resume_fields(raw_text)
+    extracted_skills = fields.get("skills") or []
 
     profile = db.query(CandidateProfile).filter(CandidateProfile.user_id == user_id).first()
-    is_new = False
     if not profile:
         profile = CandidateProfile(user_id=user_id)
         db.add(profile)
-        is_new = True
 
     new_phone = fields.get("phone")
     new_location = fields.get("location")
@@ -136,6 +149,7 @@ def process_resume(db: Session, user_id, file_bytes: bytes, original_filename: s
     profile.resume_path = file_path
     profile.resume_text = raw_text
     profile.resume_original_filename = original_filename
+    profile.resume_hash = resume_hash
 
     profile.phone = new_phone or profile.phone
     profile.location = new_location or profile.location
@@ -153,15 +167,29 @@ def process_resume(db: Session, user_id, file_bytes: bytes, original_filename: s
             user_obj.name = extracted_name.strip()
             db.add(user_obj)
 
-    extracted_certs = fields.get("certifications")
+    extracted_certs = fields.get("certifications_text") or fields.get("certifications")
     if extracted_certs:
         profile.certifications = ", ".join(extracted_certs) if isinstance(extracted_certs, list) else str(extracted_certs)
 
-    extracted_skills = fields.get("skills") or []
-    if extracted_skills:
-        top_skills = extracted_skills[:4]
-        profile.headline = f"{top_skills[0]} Specialist | {', '.join(top_skills)}"
-        profile.current_role = f"{top_skills[0]} Specialist"
+    profile.headline = fields.get("headline") or profile.headline
+    profile.current_role = fields.get("current_role") or fields.get("headline") or profile.current_role
+    if not profile.headline and extracted_skills:
+        profile.headline = f"{extracted_skills[0]} Specialist"
+        profile.current_role = profile.headline
+
+    if fields.get("linkedin_url"):
+        profile.linkedin_url = fields.get("linkedin_url")
+    if fields.get("github_url"):
+        profile.github_url = fields.get("github_url")
+    if fields.get("portfolio_url"):
+        profile.portfolio_url = fields.get("portfolio_url")
+    if fields.get("phone"):
+        profile.phone = fields.get("phone")
+
+    if recruiter_id:
+        profile.created_by_recruiter_id = recruiter_id
+    if source:
+        profile.source = source
 
     fields["resume_text"] = raw_text
     from app.ai.resume_summarizer import generate_resume_summary
@@ -182,6 +210,41 @@ def process_resume(db: Session, user_id, file_bytes: bytes, original_filename: s
 
     db.commit()
     db.refresh(profile)
+
+    # Automatically extract candidate details and generate / update portfolio website
+    try:
+        from app.services.portfolio_service import build_portfolio_from_candidate_profile
+        build_portfolio_from_candidate_profile(
+            db=db,
+            candidate=profile,
+            file_bytes=file_bytes,
+            filename=original_filename,
+        )
+    except Exception as e:
+        logger.warning("Auto-generating portfolio after resume upload failed non-critically: %s", e)
+
+    # Sync candidate resume vector to Qdrant vector database
+    try:
+        from app.services.qdrant_service import upsert_document, COLLECTION_RESUMES
+        cand_text = f"Headline: {profile.headline or ''}\nSkills: {', '.join(fresh_skills)}\nSummary: {profile.summary or ''}\nExperience: {profile.work_experience or ''}\nResume: {raw_text}"
+        upsert_document(
+            collection_name=COLLECTION_RESUMES,
+            doc_id=profile.id,
+            text=cand_text,
+            metadata={
+                "candidate_id": str(profile.id),
+                "user_id": str(profile.user_id),
+                "headline": profile.headline,
+                "current_role": profile.current_role,
+                "experience_years": profile.experience_years,
+                "skills": fresh_skills,
+                "college_name": getattr(profile, "college_name", None),
+                "target_role": getattr(profile, "target_role", None),
+            },
+        )
+    except Exception as q_err:
+        logger.debug("Qdrant candidate vector indexing non-critical notice: %s", q_err)
+
     return profile
 
 

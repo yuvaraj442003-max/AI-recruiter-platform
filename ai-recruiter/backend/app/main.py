@@ -24,7 +24,7 @@ from app.core.database import Base, engine, SessionLocal
 from app.core.exceptions import register_exception_handlers
 from app.middleware.security_headers import SecurityHeadersMiddleware
 # Import all models to ensure metadata registration
-from app.models import user, candidate, job, application, interview, interview_scorecard, talent_rediscovery, candidate_feedback, audit_log, recruiter, notification, application_history, message, saved_search
+from app.models import user, candidate, job, application, interview, interview_scorecard, talent_rediscovery, candidate_feedback, audit_log, recruiter, notification, application_history, message, saved_search, portfolio, student
 from app.routers import (
     admin,
     analytics,
@@ -51,8 +51,16 @@ from app.routers import (
     screening,
     proctoring,
     speech,
+    portfolio as portfolio_router,
+    student as student_router,
+    aptitude as aptitude_router,
+    study_materials as study_materials_router,
+    weekly_challenge as weekly_challenge_router,
+    vector as vector_router,
 )
 from app.services.resume_service import seed_skills
+from app.services.student_seed_service import seed_student_ecosystem
+from app.services.weekly_challenge_service import ensure_all_weekly_challenges
 
 logging.basicConfig(level=logging.INFO)
 
@@ -111,6 +119,14 @@ def _auto_migrate_db(target_engine=None):
         ("candidate_profiles", "other_links", "TEXT"),
         ("candidate_profiles", "created_by_recruiter_id", uuid_type),
         ("candidate_profiles", "source", "VARCHAR(100) DEFAULT 'direct_candidate'"),
+        ("candidate_profiles", "is_student", "BOOLEAN DEFAULT TRUE"),
+        ("candidate_profiles", "college_name", "VARCHAR(255)"),
+        ("candidate_profiles", "degree", "VARCHAR(100)"),
+        ("candidate_profiles", "branch", "VARCHAR(150)"),
+        ("candidate_profiles", "graduation_year", "INTEGER"),
+        ("candidate_profiles", "cgpa", "FLOAT"),
+        ("candidate_profiles", "current_semester", "INTEGER"),
+        ("candidate_profiles", "target_role", "VARCHAR(150)"),
 
         # ATS Screening & Composite Scores for applications
         ("applications", "ats_score", "FLOAT"),
@@ -193,9 +209,64 @@ def _auto_migrate_db(target_engine=None):
         ("assessment_events", "interview_id", uuid_type),
         ("assessment_events", "assessment_id", uuid_type),
         ("assessment_events", "duration_seconds", "FLOAT"),
+        ("assessment_events", "metadata_json", "TEXT"),
         ("assessment_consents", "interview_id", uuid_type),
+        ("assessment_consents", "camera_consent", "BOOLEAN DEFAULT TRUE"),
+        ("assessment_consents", "microphone_consent", "BOOLEAN DEFAULT TRUE"),
+        ("assessment_consents", "browser_consent", "BOOLEAN DEFAULT TRUE"),
+        ("assessment_consents", "clipboard_consent", "BOOLEAN DEFAULT TRUE"),
         ("integrity_results", "interview_id", uuid_type),
         ("integrity_results", "assessment_id", uuid_type),
+        ("integrity_results", "reviewed_by_user_id", uuid_type),
+
+        # Portfolio module columns
+        ("portfolios", "slug", "VARCHAR(120)"),
+        ("portfolios", "is_published", "BOOLEAN DEFAULT FALSE"),
+        ("portfolios", "views_count", "INTEGER DEFAULT 0"),
+        ("portfolios", "theme_id", "VARCHAR(50) DEFAULT 'modern'"),
+        ("portfolios", "primary_color", "VARCHAR(50) DEFAULT '#4f46e5'"),
+        ("portfolios", "secondary_color", "VARCHAR(50) DEFAULT '#06b6d4'"),
+        ("portfolios", "font", "VARCHAR(50) DEFAULT 'Plus Jakarta Sans'"),
+        ("portfolios", "background_style", "VARCHAR(50) DEFAULT 'mesh'"),
+        ("portfolios", "background_image", "VARCHAR(500)"),
+        ("portfolios", "dark_mode", "BOOLEAN DEFAULT FALSE"),
+        ("portfolios", "button_style", "VARCHAR(50) DEFAULT 'rounded'"),
+        ("portfolios", "card_style", "VARCHAR(50) DEFAULT 'glass'"),
+        ("portfolios", "layout", "VARCHAR(50) DEFAULT 'standard'"),
+        ("portfolios", "section_order", "TEXT"),
+        ("portfolios", "section_visibility", "TEXT"),
+        ("portfolios", "profile_image", "VARCHAR(500)"),
+        ("portfolios", "professional_headline", "VARCHAR(255)"),
+        ("portfolios", "headline_options", "TEXT"),
+        ("portfolios", "about", "TEXT"),
+        ("portfolios", "skills", "TEXT"),
+        ("portfolios", "experience", "TEXT"),
+        ("portfolios", "education", "TEXT"),
+        ("portfolios", "projects", "TEXT"),
+        ("portfolios", "certifications", "TEXT"),
+        ("portfolios", "achievements", "TEXT"),
+        ("portfolios", "services", "TEXT"),
+        ("portfolios", "social_links", "TEXT"),
+        ("portfolios", "custom_css", "TEXT"),
+
+        # Weekly aptitude & coding questions status and rotation tracking
+        ("aptitude_questions", "status", "VARCHAR(50) DEFAULT 'approved'"),
+        ("aptitude_questions", "week_assigned", "VARCHAR(50)"),
+        ("coding_questions", "status", "VARCHAR(50) DEFAULT 'approved'"),
+        ("coding_questions", "week_assigned", "VARCHAR(50)"),
+
+        # AI Aptitude Generator extended columns
+        ("aptitude_tests", "topics_json", "TEXT"),
+        ("aptitude_tests", "difficulty", "VARCHAR(50) DEFAULT 'mixed'"),
+        ("aptitude_tests", "marks_per_question", "FLOAT DEFAULT 1.0"),
+        ("aptitude_tests", "total_marks", "FLOAT DEFAULT 15.0"),
+        ("aptitude_tests", "status", "VARCHAR(50) DEFAULT 'published'"),
+        ("aptitude_tests", "created_by_user_id", uuid_type),
+        ("aptitude_questions", "test_id", uuid_type),
+        ("aptitude_questions", "topic_name", "VARCHAR(150)"),
+        ("aptitude_questions", "marks", "FLOAT DEFAULT 1.0"),
+        ("student_roadmap_progress", "scores_json", "TEXT DEFAULT '{}'"),
+        ("student_learning_preferences", "journey_state_json", "TEXT"),
     ]
 
     with active_engine.begin() as conn:
@@ -237,6 +308,10 @@ async def lifespan(app: FastAPI):
     db = SessionLocal()
     try:
         seed_skills(db)
+        seed_student_ecosystem(db)
+        ensure_all_weekly_challenges(db)
+        from scripts.rebalance_aptitude_options import rebalance_aptitude_options
+        rebalance_aptitude_options(db)
         # Auto-seed demo accounts when the database is completely empty.
         # Runs on both SQLite (local dev) and PostgreSQL (deployed).
         # Only skipped when ENVIRONMENT is explicitly set to "production".
@@ -258,6 +333,12 @@ async def lifespan(app: FastAPI):
     except Exception as err:
         logging.getLogger("ai_recruiter").warning(f"Redis initialization notice: {err}")
 
+    try:
+        from app.services.qdrant_service import ensure_collections
+        ensure_collections()
+    except Exception as err:
+        logging.getLogger("ai_recruiter").warning(f"Qdrant initialization notice: {err}")
+
     yield
 
 
@@ -278,6 +359,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.add_middleware(SecurityHeadersMiddleware)
+
+@app.middleware("http")
+async def add_no_cache_for_frontend_assets(request, call_next):
+    response = await call_next(request)
+    path = request.url.path
+    if path.endswith(".html") or path.startswith("/js/") or path.startswith("/css/"):
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
 
 register_exception_handlers(app)
 
@@ -310,18 +401,44 @@ app.include_router(proctoring.router, prefix="/api/v1")
 app.include_router(interview_scorecard_router.router, prefix="/api/v1")
 app.include_router(talent_rediscovery_router.router, prefix="/api/v1")
 app.include_router(feedback_router.router)
+app.include_router(portfolio_router.router, prefix="/api/v1")
+app.include_router(student_router.router, prefix="/api/v1")
+app.include_router(aptitude_router.router, prefix="/api/v1")
+app.include_router(aptitude_router.router, prefix="/api")
+app.include_router(study_materials_router.router, prefix="/api/v1")
+app.include_router(weekly_challenge_router.router, prefix="/api/v1")
+app.include_router(vector_router.router, prefix="/api/v1")
 
 # Serve frontend HTML pages statically for direct verification / reset links
 _frontend_dir = Path(__file__).parent.parent.parent / "frontend-html"
 if _frontend_dir.exists():
     from fastapi.responses import FileResponse
+    @app.get("/portfolio/{slug}", include_in_schema=False)
+    def serve_public_portfolio_page(slug: str):
+        file_path = _frontend_dir / "portfolio.html"
+        if file_path.exists():
+            return FileResponse(
+                str(file_path),
+                headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"}
+            )
+        from fastapi.exceptions import HTTPException
+        raise HTTPException(status_code=404, detail="Page not found")
+
     @app.get("/{page_name}.html", include_in_schema=False)
     def serve_frontend_page(page_name: str):
         file_path = _frontend_dir / f"{page_name}.html"
         if file_path.exists():
-            return FileResponse(str(file_path))
+            return FileResponse(
+                str(file_path),
+                headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"}
+            )
         from fastapi.exceptions import HTTPException
         raise HTTPException(status_code=404, detail="Page not found")
+
+    for sub in ["js", "css", "assets"]:
+        sub_path = _frontend_dir / sub
+        if sub_path.exists():
+            app.mount(f"/{sub}", StaticFiles(directory=str(sub_path)), name=f"frontend-{sub}")
 
     app.mount("/static-frontend", StaticFiles(directory=str(_frontend_dir), html=True), name="frontend-html")
 

@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aptitude & Placement Practice Tests — AI Recruiter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .test-option-card {
+      cursor: pointer;
+      border: 2px solid var(--ar-card-border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      transition: all 0.2s ease;
+      background: var(--ar-card-bg);
+    }
+    .test-option-card:hover {
+      border-color: var(--ar-primary);
+      background: var(--ar-primary-light);
+    }
+    .test-option-card.selected {
+      border-color: var(--ar-primary);
+      background: rgba(79, 70, 229, 0.12);
+      font-weight: 600;
+      box-shadow: 0 0 0 1px var(--ar-primary);
+    }
+    .q-palette-btn, .palette-legend-dot {
+      width: 36px;
+      height: 36px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 1px solid var(--ar-card-border);
+      background: #fff;
+    }
+    .q-palette-btn.answered, .palette-legend-dot.answered {
+      background: #10b981;
+      color: #fff;
+      border-color: #10b981;
+    }
+    .q-palette-btn.current {
+      border: 2px solid #4f46e5;
+      color: #4f46e5;
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body data-required-role="candidate">
+
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 260px; min-width: 260px;">
+      <a href="candidate-portal.html" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mb-4 px-2">
+        <span class="fs-4">🎓</span>
+        <span class="fw-bold text-dark fs-5">Campus Hub</span>
+      </a>
+      <ul class="nav nav-pills flex-column gap-2">
+        <li class="nav-item">
+          <a href="candidate-dashboard.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📊</span> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="aptitude-test.html" class="nav-link active text-nowrap d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color: #fff;">
+            <span>🧠</span> Aptitude &amp; Tests
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="study-materials.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📚</span> Study Materials
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="coding-assessment.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>💻</span> Coding Lab (DSA)
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="interview.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🎙️</span> AI Mock Interviews
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="upload-resume.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📄</span> Resume &amp; ATS Score
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="portfolio-builder.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>✨</span> Portfolio
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="jobs.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🔍</span> Find Jobs &amp; Drives
+          </a>
+        </li>
+      </ul>
+      <div class="mt-auto pt-3 border-top">
+        <button id="logout-btn" class="btn btn-outline-secondary w-100 fw-semibold">Log out</button>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow-1">
+      <header class="bg-white border-bottom p-3 d-flex justify-content-between align-items-center sticky-top" style="z-index: 10;">
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-1 rounded-pill">Campus Placement</span>
+          <h1 class="h5 mb-0 fw-bold">Aptitude &amp; Reasoning Practice Lab</h1>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <span id="user-greeting" class="text-muted-custom small"></span>
+          <a href="candidate-dashboard.html" class="btn btn-sm btn-outline-secondary">Back to Dashboard</a>
+        </div>
+      </header>
+
+      <div class="container-fluid p-4">
+        <div id="aptitude-alert" class="alert d-none py-2 mb-4" role="alert"></div>
+
+        <!-- VIEW 1: LOBBY & TEST SELECTION -->
+        <div id="lobby-view">
+          <!-- Weekly Aptitude Sprint Banner -->
+          <div class="card border-0 mb-4 shadow-sm overflow-hidden" id="weekly-aptitude-lobby-banner" style="border-radius: 20px; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); color: #fff;">
+            <div class="card-body p-4 p-md-5 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4">
+              <div>
+                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                  <span class="badge bg-warning text-dark fw-bold px-3 py-1 rounded-pill">⚡ OFFICIAL WEEKLY APTITUDE</span>
+                  <span id="weekly-apt-lobby-badge" class="badge bg-white bg-opacity-10 text-white px-2.5 py-1 rounded-pill border border-white border-opacity-25 small">This Week</span>
+                  <span id="weekly-apt-focus-badge" class="badge bg-success bg-opacity-75 text-white border border-success border-opacity-50 px-2.5 py-1 rounded-pill small">🎯 Focus: Loading...</span>
+                  <span id="weekly-apt-schedule-badge" class="badge bg-info-subtle text-info border border-info border-opacity-25 px-2.5 py-1 rounded-pill small">🔄 Updated Weekly Once (Every Monday 00:00 UTC)</span>
+                </div>
+                <h3 class="fw-bold mb-2 text-white" id="weekly-apt-lobby-title">Weekly Placement Aptitude Challenge</h3>
+                <p class="mb-0 text-white-50" style="max-width: 620px;" id="weekly-apt-lobby-desc">
+                  Curated 10 multi-tier questions aligned with the RS Aggarwal Aptitude Syllabus. Rotated weekly to cover all reasoning domains!
+                </p>
+                <div class="d-flex align-items-center gap-3 mt-3 flex-wrap">
+                  <span id="weekly-apt-lobby-duration" class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-10 py-1 px-2.5 rounded-pill small">⏱️ 5 Mins (30s / question)</span>
+                  <span id="weekly-apt-lobby-qcount" class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-10 py-1 px-2.5 rounded-pill small">📝 10 Questions</span>
+                  <span class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-10 py-1 px-2.5 rounded-pill small">🎯 Passing: 60%</span>
+                  <span id="weekly-apt-lobby-user-status" class="badge bg-info-subtle text-info py-1 px-2.5 rounded-pill small">Available</span>
+                </div>
+              </div>
+              <div class="d-flex flex-column gap-2 text-md-end">
+                <button id="start-weekly-sprint-btn" class="btn btn-primary btn-lg fw-bold px-4 py-2.5 text-nowrap shadow-sm hover-lift" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); border: none;">
+                  🚀 Start Weekly Challenge
+                </button>
+                <button id="btn-open-syllabus-modal" class="btn btn-outline-light btn-sm rounded-pill text-center hover-lift" data-bs-toggle="modal" data-bs-target="#modal-weekly-syllabus">
+                  📅 View RS Aggarwal 52-Week Syllabus
+                </button>
+                <a href="candidate-dashboard.html" class="btn btn-link text-white-50 btn-sm text-center text-decoration-none p-0">
+                  🏆 View Weekly Leaderboard
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Daily Sprint Banner -->
+          <div class="card border-0 mb-4 shadow-sm overflow-hidden" style="border-radius: 20px; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: #fff;">
+            <div class="card-body p-4 p-md-5 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4">
+              <div>
+                <span class="badge bg-white text-primary fw-bold px-3 py-1.5 rounded-pill mb-2">⚡ Daily Practice Sprint</span>
+                <h3 class="fw-bold mb-2">Today's 5-Minute Analytical Sprint</h3>
+                <p class="mb-0 opacity-90" style="max-width: 600px;">
+                  Quick 10 high-yield questions (30s / question) covering Quantitative, Logical Reasoning, and Verbal Ability to maintain your daily preparation streak.
+                </p>
+              </div>
+              <button id="start-daily-sprint-btn" class="btn btn-light btn-lg fw-bold px-4 py-2.5 text-primary text-nowrap shadow-sm hover-lift">
+                ▶ Start Daily Sprint
+              </button>
+            </div>
+          </div>
+
+          <!-- Section: Company Placement Mock Tests -->
+          <h4 class="fw-bold text-dark mb-3">🏢 Company-Specific Mock Tests</h4>
+          <div class="row g-3 mb-5" id="company-tests-list">
+            <div class="col-12 text-center py-4">
+              <div class="spinner-border text-primary" role="status"></div>
+              <p class="text-muted small mt-2">Loading placement mock tests...</p>
+            </div>
+          </div>
+
+          <!-- Section: Practice Topics with Category Filters -->
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+              <h4 class="fw-bold text-dark mb-0">📊 Topic-Wise Preparation Tracks</h4>
+              <small class="text-muted" id="apt-topics-count-badge">Aligned with RS Aggarwal Aptitude &amp; Reasoning Syllabus (41 Chapters)</small>
+            </div>
+            <div class="d-flex align-items-center gap-1 flex-wrap" id="apt-topic-filters">
+              <button class="btn btn-sm btn-primary rounded-pill px-3 py-1 apt-filter-btn active" data-filter="all">All Tracks</button>
+              <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 apt-filter-btn" data-filter="Verbal Reasoning">Verbal</button>
+              <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 apt-filter-btn" data-filter="Problem Solving Reasoning">Problem Solving</button>
+              <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 apt-filter-btn" data-filter="Logical Reasoning">Logical</button>
+              <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 apt-filter-btn" data-filter="Maths Related Reasoning">Maths / Clock / Age</button>
+              <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 apt-filter-btn" data-filter="Non-Verbal Reasoning">Non-Verbal</button>
+              <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 apt-filter-btn" data-filter="Quantitative Aptitude">Quant</button>
+            </div>
+          </div>
+          <div class="row g-3 mb-5" id="topics-list">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <!-- Section: Past Attempt History -->
+          <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+            <div class="card-body p-4">
+              <h5 class="fw-bold text-dark mb-3">📈 Your Recent Test Attempts &amp; Scores</h5>
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Test Title</th>
+                      <th>Score</th>
+                      <th>Correct / Total</th>
+                      <th>Time Spent</th>
+                      <th>Status</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="attempt-history-body">
+                    <tr>
+                      <td colspan="6" class="text-center text-muted py-3">No tests completed yet. Start your first sprint above!</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW 2: ACTIVE TEST RUNNER -->
+        <div id="runner-view" class="d-none">
+          <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+            <div>
+              <h4 id="runner-test-title" class="fw-bold text-dark mb-1">Topic Practice Exam</h4>
+              <p id="runner-test-subtitle" class="text-muted small mb-0">Answer all questions before the timer expires.</p>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="confirmQuit()">
+              &larr; Exit to Practice Lab
+            </button>
+          </div>
+          <div class="row g-4">
+            <!-- Left: Question Card -->
+            <div class="col-lg-8">
+              <div class="card border-0 shadow-sm mb-3" style="border-radius: 16px;">
+                <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center gap-2">
+                    <span id="runner-q-num-badge" class="badge bg-primary px-2.5 py-1.5 rounded-pill">Question 1</span>
+                    <span id="runner-subtopic-badge" class="badge bg-secondary-subtle text-secondary px-2.5 py-1.5 rounded-pill">Subtopic</span>
+                    <span id="runner-difficulty-badge" class="badge bg-warning-subtle text-warning px-2.5 py-1.5 rounded-pill">Medium</span>
+                  </div>
+                  <span id="runner-company-tag" class="badge bg-dark-subtle text-dark px-2.5 py-1.5 rounded-pill">TCS</span>
+                </div>
+                <div class="card-body p-4">
+                  <h5 id="runner-question-text" class="fw-bold text-dark mb-4 lh-base" style="min-height: 70px;">
+                    Question text will appear here...
+                  </h5>
+
+                  <div class="d-flex flex-column gap-3" id="runner-options-container">
+                    <!-- Option cards rendered dynamically -->
+                  </div>
+                </div>
+                <div class="card-footer bg-white border-top p-3 d-flex justify-content-between align-items-center">
+                  <button id="runner-prev-btn" class="btn btn-outline-secondary px-3 fw-semibold">
+                    &larr; Previous
+                  </button>
+                  <button id="runner-clear-btn" class="btn btn-link text-muted text-decoration-none small">
+                    Clear Selection
+                  </button>
+                  <button id="runner-next-btn" class="btn btn-primary px-4 fw-semibold">
+                    Next &rarr;
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Timer, Progress & Question Palette -->
+            <div class="col-lg-4">
+              <!-- Timer Card -->
+              <div class="card border-0 shadow-sm mb-3 text-center p-3" style="border-radius: 16px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #fff;">
+                <div class="small text-uppercase opacity-75 fw-bold mb-1">Time Remaining</div>
+                <div id="runner-timer-display" class="display-6 fw-bold font-monospace text-warning">05:00</div>
+                <div class="badge bg-white bg-opacity-10 text-white-50 mt-1" style="font-size:0.75rem;">⏱️ 30s per question</div>
+              </div>
+
+              <!-- Question Palette Card -->
+              <div class="card border-0 shadow-sm p-4" style="border-radius: 16px;">
+                <h6 class="fw-bold text-dark mb-3">Question Navigator</h6>
+                <div class="d-flex flex-wrap gap-2 mb-4" id="runner-palette-container">
+                  <!-- Palette buttons rendered dynamically -->
+                </div>
+
+                <div class="d-flex align-items-center gap-3 small text-muted mb-4">
+                  <div class="d-flex align-items-center gap-1">
+                    <span class="palette-legend-dot answered" style="width: 16px; height: 16px; border-radius: 4px;"></span> Answered
+                  </div>
+                  <div class="d-flex align-items-center gap-1">
+                    <span class="palette-legend-dot" style="width: 16px; height: 16px; border-radius: 4px;"></span> Unanswered
+                  </div>
+                </div>
+
+                <button id="runner-submit-btn" class="btn btn-success w-100 py-2.5 fw-bold shadow-sm">
+                  ✓ Finish &amp; Submit Test
+                </button>
+                <button id="runner-quit-btn" class="btn btn-outline-danger btn-sm w-100 mt-2">
+                  ✕ Cancel &amp; Exit Test
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW 3: TEST REPORT & REVIEW MODAL -->
+        <div class="modal fade" id="testResultModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+          <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+              <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="result-modal-title">📊 Assessment Scorecard &amp; Solutions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="returnToLobby()"></button>
+              </div>
+              <div class="modal-body p-4">
+                <!-- Result Banner -->
+                <div id="result-status-banner" class="alert text-center py-4 mb-4" style="border-radius: 16px;">
+                  <h3 id="result-score-text" class="fw-bold mb-1">80.0%</h3>
+                  <div id="result-passed-badge" class="badge bg-success px-3 py-1 mb-2">PASSED</div>
+                  <p id="result-feedback-text" class="mb-0 small"></p>
+                </div>
+
+                <!-- Stats summary -->
+                <div class="row g-3 text-center mb-4">
+                  <div class="col-4">
+                    <div class="p-3 bg-light rounded-3">
+                      <div class="text-success fs-4 fw-bold" id="res-correct-count">0</div>
+                      <div class="text-muted small">Correct</div>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="p-3 bg-light rounded-3">
+                      <div class="text-danger fs-4 fw-bold" id="res-wrong-count">0</div>
+                      <div class="text-muted small">Wrong</div>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="p-3 bg-light rounded-3">
+                      <div class="text-secondary fs-4 fw-bold" id="res-percentile">0%</div>
+                      <div class="text-muted small">Est. Percentile</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Detailed Question Review & Step-by-Step Solutions -->
+                <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">📝 Detailed Question Review &amp; Explanations</h6>
+                <div class="d-flex flex-column gap-3" id="result-review-list">
+                  <!-- Reviews rendered dynamically -->
+                </div>
+              </div>
+              <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-primary fw-semibold px-4" data-bs-dismiss="modal" onclick="returnToLobby()">
+                  Back to Practice Lobby
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal: RS Aggarwal 52-Week Aptitude Syllabus -->
+        <div class="modal fade" id="modal-weekly-syllabus" tabindex="-1" aria-labelledby="modalWeeklySyllabusLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow" style="border-radius: 20px;">
+              <div class="modal-header border-bottom p-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); color: #fff;">
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                    <span class="badge bg-warning text-dark fw-bold px-2.5 py-0.5 rounded-pill">RS Aggarwal Syllabus</span>
+                    <span id="syllabus-active-week-badge" class="badge bg-white bg-opacity-10 text-white border border-white border-opacity-25 px-2.5 py-0.5 rounded-pill small">Current: Week 43</span>
+                    <span class="badge bg-info-subtle text-info border border-info border-opacity-25 px-2.5 py-0.5 rounded-pill small">41 Chapters • 5 Core Sections</span>
+                  </div>
+                  <h5 class="modal-title fw-bold mb-0 text-white" id="modalWeeklySyllabusLabel">📅 52-Week Aptitude &amp; Reasoning Rotation Curriculum</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-4">
+                <div class="alert alert-info border-0 d-flex align-items-center gap-2 mb-3" style="border-radius: 12px;">
+                  <span class="fs-4">💡</span>
+                  <div class="small">
+                    Our weekly assessment engine automatically updates the aptitude sprint topic every week based on 
+                    <strong>"A New Approach to Reasoning Book for Competitive Exams" (Radian / RS Aggarwal)</strong>. 
+                    Practice each week's specific chapters below or take the live weekly challenge!
+                  </div>
+                </div>
+                <div class="list-group list-group-flush gap-2" id="syllabus-timeline-list">
+                  <div class="text-center py-3 text-muted">Loading curriculum schedule...</div>
+                </div>
+              </div>
+              <div class="modal-footer border-top p-3 bg-light">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary rounded-pill px-4" id="syllabus-start-active-btn" data-bs-dismiss="modal">
+                  🚀 Start This Week's Challenge
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/aptitude-test.js"></script>
+</body>
+</html>

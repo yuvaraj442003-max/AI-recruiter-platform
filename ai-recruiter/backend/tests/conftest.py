@@ -23,6 +23,8 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 def _setup_test_database():
     settings.SMTP_USER = "test@gmail.com"
     settings.SMTP_PASSWORD = "testpassword1234"
+    settings.EMAIL_PROVIDER = "smtp"
+    settings.QDRANT_STORAGE_PATH = ""
 
     patcher = patch("app.services.email_service._send_smtp_email", return_value=True)
     patcher.start()

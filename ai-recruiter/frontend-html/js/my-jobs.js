@@ -204,7 +204,10 @@
   }
 
   document.addEventListener("ar:auth-ready", (event) => {
-    loadJobs(event.detail.user.id);
+    const userId = event?.detail?.user?.id || (typeof Session !== "undefined" && Session.getUser()?.id);
+    if (userId) {
+      loadJobs(userId);
+    }
   });
 })();
 

@@ -230,7 +230,8 @@ def get_application(
         .options(
             joinedload(Application.job),
             joinedload(Application.candidate).joinedload(CandidateProfile.user),
-            joinedload(Application.candidate).joinedload(CandidateProfile.candidate_skills)
+            joinedload(Application.candidate).joinedload(CandidateProfile.candidate_skills),
+            joinedload(Application.candidate).joinedload(CandidateProfile.portfolio),
         )
         .filter(Application.id == parsed_id)
         .first()
@@ -257,6 +258,10 @@ def get_application(
     cand_user = cand.user if cand else None
     cand_profile_dict = None
     if cand:
+        cand_portfolio = getattr(cand, "portfolio", None)
+        is_port_published = bool(cand_portfolio and cand_portfolio.is_published)
+        port_slug = cand_portfolio.slug if is_port_published else None
+
         cand_profile_dict = {
             "id": str(cand.id),
             "user_id": str(cand.user_id),
@@ -274,6 +279,9 @@ def get_application(
             "work_experience": cand.work_experience,
             "certifications": getattr(cand, "certifications", None),
             "portfolio_url": getattr(cand, "portfolio_url", None),
+            "published_portfolio_slug": port_slug,
+            "published_portfolio_url": f"/portfolio/{port_slug}" if port_slug else None,
+            "has_published_portfolio": is_port_published,
             "linkedin_url": getattr(cand, "linkedin_url", None),
             "github_url": getattr(cand, "github_url", None),
             "other_links": getattr(cand, "other_links", None),

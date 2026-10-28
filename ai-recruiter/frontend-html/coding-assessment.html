@@ -19,42 +19,71 @@
     
     /* Aptitude Option Cards */
     .aptitude-option-card {
-      background-color: #252526;
-      border: 2px solid #3c3c3c;
-      border-radius: 10px;
-      padding: 14px 18px;
+      background-color: #1e293b;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 16px 20px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       align-items: center;
-      gap: 14px;
-      color: #e2e8f0;
+      gap: 16px;
+      color: #f1f5f9;
+      position: relative;
     }
     .aptitude-option-card:hover {
-      border-color: #0d6efd;
-      background-color: #2d2d30;
-      transform: translateY(-1px);
+      border-color: #38bdf8;
+      background-color: #273549;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
     }
     .aptitude-option-card.selected {
-      border-color: #0d6efd;
-      background-color: #1e3a5f;
+      border-color: #0ea5e9;
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.2) 0%, rgba(30, 41, 59, 0.95) 100%);
       color: #ffffff;
-      box-shadow: 0 0 10px rgba(13, 110, 253, 0.4);
+      box-shadow: 0 0 16px rgba(14, 165, 233, 0.35);
     }
     .option-letter-badge {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background-color: #3c3c3c;
-      color: #fff;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #334155;
+      color: #94a3b8;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: bold;
+      font-weight: 700;
+      font-size: 1.1rem;
       flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+    .aptitude-option-card:hover .option-letter-badge {
+      background: #0284c7;
+      color: #fff;
     }
     .aptitude-option-card.selected .option-letter-badge {
-      background-color: #0d6efd;
+      background: linear-gradient(135deg, #0ea5e9, #2563eb);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4);
+    }
+    .option-radio-indicator {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #fff;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    .aptitude-option-card.selected .option-radio-indicator {
+      border-color: #10b981;
+      background-color: #10b981;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
     }
     .q-pill-btn {
       min-width: 42px;
@@ -76,7 +105,7 @@
   </style>
 </head>
 <body>
-  <!-- Disqualification / Termination Fullscreen Overlay -->
+  <!-- Disqualification / Integrity Termination Fullscreen Overlay -->
   <div id="assessment-terminated-overlay" class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="z-index: 999999; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(8px);">
     <div class="card border border-danger shadow-lg text-center p-4 p-md-5" style="max-width: 580px; background-color: #1e1e2e; border-radius: 16px;">
       <div class="mb-3">
@@ -86,7 +115,7 @@
       </div>
       <h3 class="fw-bold text-white mb-2">Assessment Terminated</h3>
       <div class="badge bg-danger text-uppercase px-3 py-2 mb-3 fs-6">Disqualified — Integrity Violation</div>
-      <p class="text-slate-300 mb-3 fs-6" id="termination-reason-text">
+      <p class="text-light mb-3 fs-6" id="termination-reason-text" style="color: #cbd5e1 !important;">
         You switched browser tabs or navigated away from the assessment window.
       </p>
       <div class="alert alert-danger text-start small mb-4 bg-danger bg-opacity-10 border border-danger text-danger-emphasis">
@@ -97,26 +126,234 @@
           <li>Your attempt score has been finalized as <strong>0%</strong> (Rejected).</li>
         </ul>
       </div>
-      <a href="candidate-dashboard.html" class="btn btn-danger btn-lg fw-bold w-100 shadow">
-        Return to Candidate Dashboard &rarr;
-      </a>
+      <div class="d-flex flex-column gap-2">
+        <button id="termination-retake-btn" class="btn btn-outline-warning fw-semibold w-100" onclick="retakeAssessment()">
+          🔄 Request / Start Fresh Retake
+        </button>
+        <a href="candidate-dashboard.html" class="btn btn-danger btn-lg fw-bold w-100 shadow">
+          Return to Candidate Dashboard &rarr;
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Time Expired Fullscreen Overlay (Polite & Non-Punitive) -->
+  <div id="assessment-expired-overlay" class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="z-index: 999999; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(8px);">
+    <div class="card border border-warning shadow-lg text-center p-4 p-md-5" style="max-width: 580px; background-color: #1e1e2e; border-radius: 16px;">
+      <div class="mb-3">
+        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-25 p-3 text-warning" style="width: 80px; height: 80px; font-size: 2.5rem;">
+          ⏱️
+        </div>
+      </div>
+      <h3 class="fw-bold text-white mb-2">Assessment Time Expired</h3>
+      <div class="badge bg-warning text-dark text-uppercase px-3 py-2 mb-3 fs-6 fw-bold">Session Time Limit Reached</div>
+      <p class="text-light mb-3 fs-6" id="expired-reason-text" style="color: #cbd5e1 !important;">
+        The allotted time limit for this assessment session has elapsed.
+      </p>
+      <div class="alert alert-info text-start small mb-4 bg-primary bg-opacity-10 border border-primary" style="color: #93c5fd !important;">
+        <strong class="text-white">Session Information:</strong>
+        <ul class="mb-0 ps-3 mt-1">
+          <li>Your previous answers and code drafts have been saved.</li>
+          <li>You can start a fresh retake attempt with a full timer reset, or return to your dashboard.</li>
+        </ul>
+      </div>
+      <div class="d-flex flex-column gap-2">
+        <button id="expired-retake-btn" class="btn btn-primary btn-lg fw-bold w-100 shadow" onclick="retakeAssessment()">
+          🔄 Retake Assessment (Start Fresh Attempt) &rarr;
+        </button>
+        <a id="expired-report-btn" href="candidate-dashboard.html" class="btn btn-outline-light w-100 fw-semibold">
+          📊 Return to Candidate Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assessment Results Modal -->
+  <div id="assessment-result-overlay" class="d-none position-fixed top-0 start-0 w-100 h-100 align-items-center justify-content-center" style="z-index: 999998; background: rgba(10, 15, 30, 0.97); backdrop-filter: blur(12px); overflow-y: auto;">
+    <div class="card border-0 shadow-lg text-start p-0" style="max-width: 680px; width: 95%; background: linear-gradient(160deg, #0f172a 0%, #1e1e2e 60%, #0c1a2e 100%); border-radius: 20px; margin: 24px auto;">
+      <!-- Header -->
+      <div id="result-header-bar" class="p-4 rounded-top-4" style="background: linear-gradient(135deg, #10b981 0%, #0d9488 50%, #0284c7 100%);">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span id="result-icon-emoji" class="fs-2">🎉</span>
+              <h3 id="result-main-title" class="fw-bold text-white mb-0">Assessment Submitted!</h3>
+            </div>
+            <p class="text-white opacity-75 mb-0 small">Your responses have been evaluated. Here's your scorecard.</p>
+          </div>
+          <div class="text-end">
+            <div id="result-pass-badge" class="badge bg-white text-success px-3 py-2 fs-6 fw-bold rounded-pill shadow">PASSED ✓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Score Hero -->
+      <div class="p-4">
+        <div class="text-center py-3 mb-4" style="background: rgba(255,255,255,0.04); border-radius: 14px; border: 1px solid rgba(255,255,255,0.08);">
+          <div id="result-percent-display" class="display-4 fw-bold" style="background: linear-gradient(135deg, #10b981, #0284c7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">—%</div>
+          <div class="text-slate-400 small mt-1">Overall Score</div>
+          <div class="mt-2">
+            <span id="result-score-raw" class="badge bg-dark border border-secondary text-light px-3 py-1">— / — marks</span>
+          </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-md-3">
+            <div class="text-center p-3 rounded-3" style="background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25);">
+              <div id="result-answered" class="fs-4 fw-bold text-success">—</div>
+              <div class="text-slate-400 small mt-1">Answered</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="text-center p-3 rounded-3" style="background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25);">
+              <div id="result-unanswered" class="fs-4 fw-bold text-danger">—</div>
+              <div class="text-slate-400 small mt-1">Skipped</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="text-center p-3 rounded-3" style="background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.25);">
+              <div id="result-total-qs" class="fs-4 fw-bold text-indigo-400" style="color:#a5b4fc;">—</div>
+              <div class="text-slate-400 small mt-1">Total Qs</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="text-center p-3 rounded-3" style="background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.25);">
+              <div id="result-time-taken" class="fs-4 fw-bold" style="color:#fbbf24;">—</div>
+              <div class="text-slate-400 small mt-1">Time Taken</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section Breakdown -->
+        <div id="result-section-breakdown" class="mb-4">
+          <h6 class="text-slate-400 text-uppercase fw-bold small mb-3">📊 Section Breakdown</h6>
+          <div id="result-apt-row" class="d-flex justify-content-between align-items-center p-3 rounded-3 mb-2" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-primary px-2 py-1">📝</span>
+              <span class="text-light fw-semibold">Section 1: Aptitude</span>
+            </div>
+            <div class="text-end">
+              <span id="result-apt-score" class="fw-bold text-white">— / —</span>
+              <span class="text-slate-400 small ms-2" id="result-apt-pct"></span>
+            </div>
+          </div>
+          <div id="result-code-row" class="d-flex justify-content-between align-items-center p-3 rounded-3" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-info text-dark px-2 py-1">💻</span>
+              <span class="text-light fw-semibold">Section 2: Coding</span>
+            </div>
+            <div class="text-end">
+              <span id="result-code-score" class="fw-bold text-white">— / —</span>
+              <span class="text-slate-400 small ms-2" id="result-code-pct"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Passing Threshold Bar -->
+        <div class="mb-4">
+          <div class="d-flex justify-content-between small text-slate-400 mb-1">
+            <span>Your Score</span>
+            <span>Passing: <strong id="result-threshold" class="text-warning">60%</strong></span>
+          </div>
+          <div class="progress" style="height: 10px; background: rgba(255,255,255,0.08); border-radius: 99px;">
+            <div id="result-progress-bar" class="progress-bar" role="progressbar" style="width: 0%; border-radius: 99px; background: linear-gradient(90deg, #10b981, #0284c7); transition: width 0.8s ease;"></div>
+          </div>
+        </div>
+
+        <!-- Feedback Message -->
+        <div id="result-feedback-box" class="p-3 rounded-3 mb-4" style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2);">
+          <div class="d-flex align-items-start gap-2">
+            <span id="result-feedback-icon" class="fs-5">✅</span>
+            <div>
+              <div class="fw-semibold text-white small mb-1" id="result-feedback-title">Congratulations!</div>
+              <div class="text-slate-400 small" id="result-feedback-msg">You have successfully passed the assessment. Your result has been recorded.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="d-flex flex-column gap-2">
+          <a id="result-full-report-btn" href="candidate-dashboard.html" class="btn btn-primary btn-lg fw-bold w-100 shadow" style="background: linear-gradient(135deg, #0284c7, #4f46e5); border: none; border-radius: 10px;">
+            📊 View Full Report &amp; Detailed Scores
+          </a>
+          <button id="result-retake-btn" class="btn btn-outline-info w-100 fw-semibold" onclick="retakeAssessment()" style="border-radius: 10px;">
+            🔄 Retake Assessment (Start Fresh Attempt)
+          </button>
+          <a href="candidate-dashboard.html" class="btn btn-outline-light w-100 fw-semibold" style="border-radius: 10px;">
+            🏠 Return to Candidate Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Programming Topics & Weekly Challenges Modal -->
+  <div class="modal fade" id="topicsCatalogModal" tabindex="-1" aria-labelledby="topicsCatalogModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content text-white" style="background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 18px;">
+        <div class="modal-header border-secondary pb-3">
+          <div class="d-flex align-items-center gap-2">
+            <span class="fs-4">💻</span>
+            <div>
+              <h5 class="modal-title fw-bold text-white mb-0" id="topicsCatalogModalLabel">Programming Topics for Coding Practice</h5>
+              <span class="text-white-50 small">12 Core DSA Patterns • Multi-Language Sandbox • Test Cases</span>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <!-- Weekly Challenge Quick Launch Banner -->
+          <div class="p-3 rounded-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3" style="background: linear-gradient(135deg, rgba(99,102,241,0.2) 0%, rgba(16,185,129,0.2) 100%); border: 1px solid rgba(99,102,241,0.4);">
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-warning text-dark fw-bold rounded-pill">⚡ OFFICIAL WEEKLY CODING CHALLENGE</span>
+                <span id="modal-weekly-cadence-badge" class="badge bg-white bg-opacity-10 text-white rounded-pill small">Updated Weekly Once</span>
+              </div>
+              <p class="text-white-50 small mb-0">Solve this week's timed algorithmic challenges and rank on the competitive leaderboard.</p>
+            </div>
+            <a href="coding-assessment.html?mode=weekly" class="btn btn-sm btn-success fw-bold px-3 py-2 rounded-pill shadow-sm">
+              Launch Weekly Challenge &rarr;
+            </a>
+          </div>
+
+          <h6 class="fw-bold text-white-50 text-uppercase small mb-3">SELECT A TOPIC TO PRACTICE</h6>
+          <div class="row g-3" id="modal-topics-grid">
+            <div class="col-12 text-center py-4 text-white-50">
+              <div class="spinner-border spinner-border-sm text-light me-2" role="status"></div> Loading programming topics catalog...
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Top Navigation Bar -->
   <div class="top-header d-flex align-items-center justify-content-between px-3 text-white">
-    <div class="d-flex align-items-center">
-      <span class="fw-bold fs-5 me-3 text-primary">🤖 AI Recruiter Assessment</span>
-      <span id="assessment-title-nav" class="text-slate-300 me-3 fw-semibold">Loading Assessment...</span>
+    <div class="d-flex align-items-center flex-wrap gap-2">
+      <span class="fw-bold fs-5 me-2 text-primary">🤖 AI Recruiter Assessment</span>
+      <span id="assessment-title-nav" class="text-slate-300 me-2 fw-semibold">Loading Assessment...</span>
+      <span id="weekly-update-indicator" class="badge bg-info-subtle text-info border border-info border-opacity-25 px-2.5 py-1 rounded-pill small d-none">
+        🔄 Updated Weekly Once
+      </span>
     </div>
-    <div class="d-flex align-items-center gap-3">
+    <div class="d-flex align-items-center gap-2">
+      <button id="btn-browse-topics" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1.5 fw-semibold d-flex align-items-center gap-1.5" data-bs-toggle="modal" data-bs-target="#topicsCatalogModal">
+        📚 Programming Topics
+      </button>
       <div class="d-flex align-items-center gap-2 bg-dark px-3 py-1 rounded border border-secondary">
-        <span class="text-slate-400 small fw-bold">TIME REMAINING:</span>
+        <span id="timer-label" class="text-slate-400 small fw-bold">TIME:</span>
         <span id="timer-display" class="badge timer-badge text-white">60:00</span>
       </div>
       <button id="submit-assessment-btn" class="btn btn-sm btn-success fw-bold px-3 py-2 shadow-sm d-flex align-items-center gap-2">
         <span>🚀</span> Submit Final Assessment
       </button>
+      <a href="candidate-dashboard.html" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-1 text-white-50 ms-1" title="Back to Dashboard">
+        ✕
+      </a>
     </div>
   </div>
 
@@ -271,7 +508,7 @@
     let forceEditorMode = false;
     let isAssessmentTerminated = false;
 
-    function triggerAssessmentTermination(reason = "Proctoring flags recorded during session.") {
+    function triggerAssessmentTermination(reason = "Proctoring flags recorded during session.", isViolation = true) {
       if (isAssessmentTerminated) return;
       isAssessmentTerminated = true;
 
@@ -297,24 +534,84 @@
         if (el) el.disabled = true;
       });
 
-      if (attemptId) {
+      if (attemptId && isViolation) {
         codingAPI.terminateAssessment(attemptId, "TAB_SWITCH").catch(err => {
           console.error("Termination API call failed:", err);
         });
       }
     }
 
+    function showAssessmentExpiredOverlay(reason = "The assessment time limit has elapsed.") {
+      if (timerInterval) clearInterval(timerInterval);
+      if (proctorMgr) proctorMgr.stopMonitors();
+
+      const overlay = document.getElementById('assessment-expired-overlay');
+      if (overlay) {
+        overlay.classList.remove('d-none');
+        overlay.classList.add('d-flex');
+      }
+      const reasonText = document.getElementById('expired-reason-text');
+      if (reasonText) {
+        reasonText.textContent = reason;
+      }
+
+      if (editor) {
+        try { editor.updateOptions({ readOnly: true }); } catch (e) {}
+      }
+
+      ['run-code-btn', 'submit-assessment-btn', 'prev-q-btn', 'next-q-btn', 'apt-next-btn', 'banner-next-btn', 'reset-code-btn'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.disabled = true;
+      });
+    }
+
+    async function retakeAssessment() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetId = urlParams.get('assessment_id') || 'default';
+      try {
+        const startRes = await codingAPI.startAssessment(targetId, true);
+        if (startRes && startRes.success) {
+          window.location.href = `coding-assessment.html?assessment_id=${targetId}`;
+        } else {
+          window.location.href = `coding-assessment.html?assessment_id=${targetId}&reset=true`;
+        }
+      } catch (err) {
+        window.location.href = `coding-assessment.html?assessment_id=${targetId}&reset=true`;
+      }
+    }
+
     window.triggerAssessmentTermination = triggerAssessmentTermination;
+    window.showAssessmentExpiredOverlay = showAssessmentExpiredOverlay;
+    window.retakeAssessment = retakeAssessment;
 
     document.addEventListener('DOMContentLoaded', async () => {
       const urlParams = new URLSearchParams(window.location.search);
-      const assessmentId = urlParams.get('assessment_id');
+      let assessmentId = urlParams.get('assessment_id');
       attemptId = urlParams.get('attempt_id');
 
       if (!assessmentId && !attemptId) {
-        alert('Missing assessment context.');
-        window.location.href = 'candidate-dashboard.html';
-        return;
+        try {
+          const listRes = await codingAPI.getCandidateAssessments();
+          const items = listRes?.data || [];
+          if (items.length > 0) {
+            const chosen = items.find(a => a.status === 'Not Started')
+                        || items.find(a => a.status === 'In Progress')
+                        || items.find(a => a.status !== 'Expired' && a.status !== 'Evaluated')
+                        || items[0];
+            if (chosen && chosen.id) {
+              assessmentId = chosen.id;
+              if (chosen.attempt_id) {
+                attemptId = chosen.attempt_id;
+              }
+            }
+          }
+        } catch (fetchErr) {
+          console.warn("Failed to auto-resolve candidate assessment:", fetchErr);
+        }
+      }
+
+      if (!assessmentId && !attemptId) {
+        assessmentId = 'default';
       }
 
       // Initialize Monaco Editor
@@ -356,65 +653,185 @@
         }
       });
 
+      // Load topics catalog in background for modal
+      loadTopicsCatalogModal();
+
       // Start Attempt or fetch session
       try {
-        const targetId = assessmentId || 'default';
-        const startRes = await codingAPI.startAssessment(targetId);
-        if (startRes.success) {
-          const attemptData = startRes.data;
-          attemptId = attemptData.id;
-          assessmentData = attemptData.assessment;
+        const mode = new URLSearchParams(window.location.search).get("mode");
+        const isWeekly = mode === "weekly";
+        const isPractice = mode === "practice";
 
-          // Check if attempt time expired or already evaluated
-          if (attemptData.status === "Expired" || (attemptData.remaining_seconds !== undefined && attemptData.remaining_seconds <= 0)) {
-            triggerAssessmentTermination("The assessment time limit has elapsed.");
-            return;
-          }
+        if (isPractice) {
+          const topicSlug = new URLSearchParams(window.location.search).get("topic") || "arrays-matrices";
+          const problemId = new URLSearchParams(window.location.search).get("problem_id");
 
-          if (attemptData.status === "Terminated" && (attemptData.remaining_seconds === 0)) {
-            triggerAssessmentTermination("The assessment session has expired.");
-            return;
-          }
+          let problems = [];
+          let topicTitle = "Topic Practice";
 
-          if (attemptData.status === "Evaluated") {
-            alert("This assessment has already been evaluated and completed.");
-            window.location.href = `coding-report.html?attempt_id=${attemptData.id}`;
-            return;
-          }
-
-          // Launch Proctoring Permission & Pre-Check
-          try {
-            proctorMgr = new ProctoringManager({
-              mode: "assessment",
-              attemptId: attemptId,
-              assessmentId: assessmentId,
-              maxTabWarnings: 3
-            });
-            await proctorMgr.showPreCheckModal();
-          } catch (pErr) {
-            console.warn("Proctoring pre-check modal exception:", pErr);
-          }
-
-          const maxAllowedSeconds = (assessmentData && assessmentData.duration_minutes ? assessmentData.duration_minutes : 60) * 60;
-          if (attemptData.remaining_seconds !== undefined && attemptData.remaining_seconds !== null && attemptData.remaining_seconds >= 0) {
-            remainingSeconds = Math.min(maxAllowedSeconds, attemptData.remaining_seconds);
+          if (problemId) {
+            const pRes = await api.weekly.getCodingProblemDetail(problemId);
+            if (pRes?.data) {
+              problems = [pRes.data];
+              topicTitle = pRes.data.title;
+            }
           } else {
-            remainingSeconds = maxAllowedSeconds;
+            const pRes = await api.weekly.getTopicCodingProblems(topicSlug);
+            problems = pRes?.data || [];
+            topicTitle = topicSlug.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
           }
 
-          const initMins = Math.floor(remainingSeconds / 60);
-          const initSecs = remainingSeconds % 60;
+          if (!problems.length) {
+            console.warn("No problems returned for practice topic, fetching fallback.");
+          }
+
+          assessmentData = {
+            title: `Practice: ${topicTitle}`,
+            duration_minutes: 0,
+            isPractice: true,
+            isWeekly: false,
+            topic_slug: topicSlug,
+            questions: (problems || []).map((q, idx) => ({
+              id: q.id,
+              title: q.title,
+              category: q.category || 'Algorithms',
+              difficulty: q.difficulty || 'Medium',
+              description: q.description,
+              starter_code: q.starter_code,
+              constraints: q.constraints,
+              question_order: idx + 1,
+              test_cases: q.public_test_cases || []
+            }))
+          };
+
           const timerEl = document.getElementById('timer-display');
           if (timerEl) {
-            timerEl.textContent = `${initMins.toString().padStart(2, '0')}:${initSecs.toString().padStart(2, '0')}`;
+            timerEl.className = 'badge bg-secondary text-white';
+            timerEl.textContent = 'Untimed Practice';
+          }
+          const timerLabel = document.getElementById('timer-label');
+          if (timerLabel) timerLabel.textContent = 'MODE:';
+
+          const submitBtn = document.getElementById('submit-assessment-btn');
+          if (submitBtn) {
+            submitBtn.className = 'btn btn-sm btn-outline-success fw-bold px-3 py-1.5 shadow-sm d-flex align-items-center gap-1.5';
+            submitBtn.innerHTML = '<span>💾</span> Save Practice Progress';
           }
 
-          document.getElementById('assessment-title-nav').textContent = assessmentData.title || 'Technical & Aptitude Assessment';
-          startTimer();
+          const aptSecBtn = document.getElementById('nav-sec-aptitude');
+          if (aptSecBtn) aptSecBtn.classList.add('d-none');
+          const codSecBtn = document.getElementById('nav-sec-coding');
+          if (codSecBtn) codSecBtn.textContent = `💻 ${assessmentData.title}`;
+
+          document.getElementById('assessment-title-nav').textContent = `💻 ${assessmentData.title}`;
           renderQuestionTabs();
           loadQuestion(0);
+        } else if (isWeekly) {
+          const weeklyIndicator = document.getElementById('weekly-update-indicator');
+          if (weeklyIndicator) weeklyIndicator.classList.remove('d-none');
+
+          const wRes = await api.weekly.getCodingCurrent();
+          if (wRes.success) {
+            const wData = wRes.data;
+            assessmentData = {
+              title: wData.challenge.title,
+              duration_minutes: wData.challenge.duration_minutes,
+              isWeekly: true,
+              week_code: wData.challenge.week_code,
+              questions: (wData.questions || []).map((q, idx) => ({
+                id: q.id,
+                title: q.title,
+                category: q.category,
+                difficulty: q.difficulty,
+                description: q.description,
+                starter_code: q.starter_code,
+                constraints: q.constraints,
+                question_order: idx + 1,
+                test_cases: q.public_test_cases || []
+              }))
+            };
+            remainingSeconds = (assessmentData.duration_minutes || 60) * 60;
+            const initMins = Math.floor(remainingSeconds / 60);
+            const initSecs = remainingSeconds % 60;
+            const timerEl = document.getElementById('timer-display');
+            if (timerEl) {
+              timerEl.textContent = `${initMins.toString().padStart(2, '0')}:${initSecs.toString().padStart(2, '0')}`;
+            }
+            document.getElementById('assessment-title-nav').textContent = `⚡ ${assessmentData.title}`;
+            startTimer();
+            renderQuestionTabs();
+            loadQuestion(0);
+          } else {
+            alert("Could not load weekly challenge: " + wRes.message);
+          }
         } else {
-          alert('Error starting assessment: ' + startRes.message);
+          const targetId = assessmentId || 'default';
+          const shouldReset = urlParams.get('reset') === 'true';
+          const startRes = await codingAPI.startAssessment(targetId, shouldReset);
+          if (startRes.success) {
+            const attemptData = startRes.data;
+            attemptId = attemptData.id;
+            assessmentData = attemptData.assessment;
+
+            // Check if attempt time expired or already evaluated
+            if (attemptData.status === "Expired" || (attemptData.remaining_seconds !== undefined && attemptData.remaining_seconds <= 0)) {
+              showAssessmentExpiredOverlay("The assessment time limit has elapsed. You can start a fresh retake attempt whenever you are ready.");
+              return;
+            }
+
+            if (attemptData.status === "Terminated") {
+              if (attemptData.remaining_seconds === 0) {
+                showAssessmentExpiredOverlay("The assessment session duration has expired.");
+                return;
+              } else {
+                triggerAssessmentTermination("Assessment was terminated due to a proctoring integrity flag.", false);
+                return;
+              }
+            }
+
+            if (attemptData.status === "Evaluated") {
+              showAssessmentResultModal({
+                score: attemptData.score || attemptData.percentage || 0,
+                percentage: attemptData.percentage || attemptData.score || 0,
+                passed: attemptData.passed
+              }, attemptData.id);
+              return;
+            }
+
+            // Launch Proctoring Permission & Pre-Check
+            try {
+              proctorMgr = new ProctoringManager({
+                mode: "assessment",
+                attemptId: attemptId,
+                assessmentId: assessmentId,
+                maxTabWarnings: 3
+              });
+              await proctorMgr.showPreCheckModal();
+            } catch (pErr) {
+              console.warn("Proctoring pre-check modal exception:", pErr);
+            }
+
+            const maxAllowedSeconds = (assessmentData && assessmentData.duration_minutes ? assessmentData.duration_minutes : 60) * 60;
+            if (attemptData.remaining_seconds !== undefined && attemptData.remaining_seconds !== null && attemptData.remaining_seconds >= 0) {
+              remainingSeconds = Math.min(maxAllowedSeconds, attemptData.remaining_seconds);
+            } else {
+              remainingSeconds = maxAllowedSeconds;
+            }
+
+            const initMins = Math.floor(remainingSeconds / 60);
+            const initSecs = remainingSeconds % 60;
+            const timerEl = document.getElementById('timer-display');
+            if (timerEl) {
+              timerEl.textContent = `${initMins.toString().padStart(2, '0')}:${initSecs.toString().padStart(2, '0')}`;
+            }
+
+            document.getElementById('assessment-title-nav').textContent = assessmentData.title || 'Technical & Aptitude Assessment';
+            startTimer();
+            renderQuestionTabs();
+            loadQuestion(0);
+          } else {
+            alert('Error starting assessment: ' + startRes.message);
+          }
         }
       } catch (err) {
         alert('Failed to initialize session: ' + err.message);
@@ -642,16 +1059,31 @@
       loadQuestion(index);
     }
 
-    function extractOptionsFromDescription(desc) {
+    function parseAptitudeQuestion(desc) {
       const options = [];
+      const questionLines = [];
       const lines = (desc || '').split('\n');
-      for (const line of lines) {
-        const m = line.trim().match(/^([A-D])\)\s*(.+)$/i);
+      let foundOption = false;
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        const m = line.match(/^([A-D])[\)\.\:\-]\s*(.+)$/i) || line.match(/^\(([A-D])\)\s*(.+)$/i);
         if (m) {
+          foundOption = true;
           options.push({ letter: m[1].toUpperCase(), text: m[2].trim() });
+        } else if (!foundOption) {
+          questionLines.push(lines[i]);
+        } else if (line.length > 0 && options.length > 0) {
+          options[options.length - 1].text += ' ' + line;
         }
       }
-      return options;
+
+      const cleanQuestion = questionLines.join('\n').trim();
+      return { cleanQuestion, options };
+    }
+
+    function extractOptionsFromDescription(desc) {
+      return parseAptitudeQuestion(desc).options;
     }
 
     function loadQuestion(index) {
@@ -660,15 +1092,28 @@
 
       const aptCount = assessmentData.questions.filter(item => item.category === 'Aptitude' || item.category === 'Recruiter Aptitude').length;
       const isPureApt = (aptCount === assessmentData.questions.length) || (assessmentData.assessment_type === 'aptitude');
-      const options = extractOptionsFromDescription(q.description);
+      const parsed = parseAptitudeQuestion(q.description);
+      const options = parsed.options;
       const isAptitude = (q.category === 'Aptitude') || (q.category === 'Recruiter Aptitude') || isPureApt || (options.length >= 2 && !q.starter_code);
 
       // Update Header & Details
       document.getElementById('q-title').textContent = q.title;
       document.getElementById('q-difficulty').textContent = q.difficulty;
       document.getElementById('q-category').textContent = q.category;
-      document.getElementById('q-description').textContent = q.description;
-      document.getElementById('q-constraints').textContent = q.constraints || 'None specified.';
+
+      // Clean Description: if Aptitude and options detected, only show the question statement!
+      if (isAptitude && options.length >= 2) {
+        document.getElementById('q-description').textContent = parsed.cleanQuestion || q.description;
+        document.getElementById('q-constraints').innerHTML = `
+          <div class="d-flex align-items-center gap-2 text-info">
+            <span>🎯</span>
+            <span><strong>Format:</strong> Multiple Choice (Single Correct Option). Select one option on the right to record your response.</span>
+          </div>
+        `;
+      } else {
+        document.getElementById('q-description').textContent = q.description;
+        document.getElementById('q-constraints').textContent = q.constraints || 'None specified.';
+      }
 
       const secIndicator = document.getElementById('q-section-indicator');
       if (secIndicator) {
@@ -715,13 +1160,16 @@
         optsContainer.innerHTML = options.map(opt => `
           <div class="aptitude-option-card ${savedAns === opt.letter ? 'selected' : ''}" onclick="selectAptitudeOption('${opt.letter}')">
             <div class="option-letter-badge">${opt.letter}</div>
-            <div class="flex-grow-1 fs-6">${escapeHtml(opt.text)}</div>
+            <div class="flex-grow-1 fs-6 fw-medium">${escapeHtml(opt.text)}</div>
+            <div class="option-radio-indicator">
+              ${savedAns === opt.letter ? '✓' : ''}
+            </div>
           </div>
         `).join('');
 
         document.getElementById('apt-selected-status').innerHTML = savedAns
-          ? `Selected: <strong>Option ${savedAns}</strong> ✓`
-          : `No option selected yet.`;
+          ? `<span class="badge bg-success me-1">✓ Saved</span> Selected: <strong>Option ${savedAns}</strong>`
+          : `<span class="text-secondary small">No option selected yet. Click an option above to select.</span>`;
       } else {
         aptContainer.classList.add('d-none');
         codingBar.classList.remove('d-none');
@@ -788,10 +1236,16 @@
       if (!q) return;
 
       document.querySelectorAll('.aptitude-option-card').forEach(card => {
-        card.classList.toggle('selected', card.querySelector('.option-letter-badge').textContent.trim() === letter);
+        const badge = card.querySelector('.option-letter-badge');
+        const isSelected = badge && badge.textContent.trim() === letter;
+        card.classList.toggle('selected', isSelected);
+        const radio = card.querySelector('.option-radio-indicator');
+        if (radio) {
+          radio.textContent = isSelected ? '✓' : '';
+        }
       });
 
-      document.getElementById('apt-selected-status').innerHTML = `Selected: <strong>Option ${letter}</strong> (Saved ✓)`;
+      document.getElementById('apt-selected-status').innerHTML = `<span class="badge bg-success me-1">✓ Saved</span> Selected: <strong>Option ${letter}</strong>`;
 
       const codeStr = `print("${letter}")\n`;
       codeStore[q.id] = {
@@ -812,13 +1266,13 @@
 
       const container = document.getElementById('console-output-container');
       if (container) {
-        container.innerHTML = `<div class="text-info small font-monospace">✓ Option ${letter} recorded.<br><span class="text-muted small">🔒 Note: Score and correctness will be displayed after the entire assessment is submitted.</span></div>`;
+        container.innerHTML = `<div class="text-success small font-monospace">✓ Option <strong>${letter}</strong> recorded and saved.<br><span class="text-muted small">🔒 Note: Score and correctness will be displayed after final submission.</span></div>`;
       }
 
       const badge = document.getElementById('run-status-badge');
       if (badge) {
-        badge.className = 'badge bg-info text-dark';
-        badge.textContent = 'Saved';
+        badge.className = 'badge bg-success';
+        badge.textContent = 'Saved ✓';
       }
 
       const banner = document.getElementById('passed-banner');
@@ -832,8 +1286,8 @@
 
       consoleStore[q.id] = {
         html: container ? container.innerHTML : '',
-        badgeText: 'Saved',
-        badgeClass: 'badge bg-info text-dark',
+        badgeText: 'Saved ✓',
+        badgeClass: 'badge bg-success',
         bannerVisible: true
       };
 
@@ -858,11 +1312,20 @@
       container.innerHTML = `<div class="text-warning small font-monospace">⏳ Running code in secure sandbox...</div>`;
 
       try {
-        const res = await codingAPI.runCode(attemptId, {
-          question_id: q.id,
-          language: lang,
-          source_code: code
-        });
+        let res;
+        if (assessmentData && (assessmentData.isWeekly || assessmentData.isPractice)) {
+          res = await api.weekly.runCoding({
+            question_id: q.id,
+            language: lang,
+            source_code: code
+          });
+        } else {
+          res = await codingAPI.runCode(attemptId, {
+            question_id: q.id,
+            language: lang,
+            source_code: code
+          });
+        }
 
         if (res.success) {
           const data = res.data;
@@ -875,17 +1338,34 @@
             qStatus.textContent = 'Error in Code';
           } else {
             badge.className = 'badge bg-success';
-            badge.textContent = 'Executed ✓';
+            badge.textContent = data.passed !== undefined ? `Passed ${data.passed}/${data.total} ✓` : 'Executed ✓';
             qStatus.className = 'badge bg-success';
             qStatus.textContent = 'Answered ✓';
           }
 
           banner.classList.remove('d-none');
           if (bannerText) {
-            bannerText.innerHTML = `<strong>💾 Code Executed &amp; Saved!</strong> Solution recorded. Final evaluation and score will be shown upon completing the assessment.`;
+            if (assessmentData && assessmentData.isWeekly) {
+              bannerText.innerHTML = `<strong>💾 Code Executed &amp; Saved!</strong> Passed <strong>${data.passed ?? 0}/${data.total ?? 0}</strong> public test cases (${data.functional_score ?? 0}%). Final hidden test cases evaluated upon submission.`;
+            } else if (assessmentData && assessmentData.isPractice) {
+              bannerText.innerHTML = `<strong>💾 Practice Solution Tested!</strong> Passed <strong>${data.passed ?? 0}/${data.total ?? 0}</strong> public test cases (${data.functional_score ?? 0}%). Nice work!`;
+            } else {
+              bannerText.innerHTML = `<strong>💾 Code Executed &amp; Saved!</strong> Solution recorded. Final evaluation and score will be shown upon completing the assessment.`;
+            }
           }
 
           let detailsHtml = `<pre class="text-light small font-monospace border p-2 bg-dark rounded mb-2">${escapeHtml(data.output || 'Code executed successfully.')}</pre>`;
+          if (data.test_cases && data.test_cases.length > 0) {
+            detailsHtml += `<div class="mt-2"><div class="fw-bold small mb-1">Public Test Results:</div>`;
+            data.test_cases.forEach((tc, idx) => {
+              const pass = tc.passed;
+              detailsHtml += `<div class="d-flex justify-content-between align-items-center p-2 rounded mb-1 ${pass ? 'bg-success bg-opacity-25 border border-success' : 'bg-danger bg-opacity-25 border border-danger'}">
+                <span class="small font-monospace">${pass ? '✓' : '✗'} Test #${idx + 1}: In [${escapeHtml(tc.input || '')}]</span>
+                <span class="badge ${pass ? 'bg-success' : 'bg-danger'}">${pass ? 'Passed' : 'Failed'}</span>
+              </div>`;
+            });
+            detailsHtml += `</div>`;
+          }
           container.innerHTML = detailsHtml;
 
           consoleStore[q.id] = {
@@ -915,28 +1395,268 @@
       }
     }
 
+    function showAssessmentResultModal(scoreData, attemptIdForReport) {
+      // Calculate answered/skipped counts
+      const totalQs = assessmentData ? assessmentData.questions.length : 0;
+      const answeredCount = Object.keys(codeStore).filter(qId => {
+        const s = codeStore[qId];
+        return s && (s.selectedOption || (s.code && s.code.trim().length > 0 && !s.code.trim().startsWith('# Write') && !s.code.trim().startsWith('# Solution')));
+      }).length;
+      const skippedCount = totalQs - answeredCount;
+
+      // Identify aptitude vs coding questions
+      let aptTotal = 0, aptAnswered = 0, codeTotal = 0, codeAnswered = 0;
+      if (assessmentData && assessmentData.questions) {
+        assessmentData.questions.forEach(q => {
+          const isApt = (q.category === 'Aptitude' || q.category === 'Recruiter Aptitude');
+          const s = codeStore[q.id];
+          const ans = s && (s.selectedOption || (s.code && s.code.trim().length > 0 && !s.code.trim().startsWith('# Write') && !s.code.trim().startsWith('# Solution')));
+          if (isApt) { aptTotal++; if (ans) aptAnswered++; }
+          else { codeTotal++; if (ans) codeAnswered++; }
+        });
+      }
+
+      const pct = scoreData.percentage !== undefined ? Math.round(scoreData.percentage) : (scoreData.score !== undefined ? Math.round(scoreData.score) : 0);
+      const passingScore = (scoreData.passing_score !== undefined) ? scoreData.passing_score : ((assessmentData && assessmentData.passing_score) ? assessmentData.passing_score : 60);
+      const passed = scoreData.passed !== undefined ? scoreData.passed : (pct >= passingScore);
+
+      // Time taken
+      const totalAllowed = (assessmentData && assessmentData.duration_minutes ? assessmentData.duration_minutes : 60) * 60;
+      const timeTakenSec = Math.max(1, totalAllowed - (remainingSeconds || 0));
+      const tMins = Math.floor(timeTakenSec / 60);
+      const tSecs = timeTakenSec % 60;
+
+      // Populate modal fields
+      document.getElementById('result-percent-display').textContent = pct + '%';
+      document.getElementById('result-score-raw').textContent = `${pct}% overall score`;
+      document.getElementById('result-answered').textContent = answeredCount;
+      document.getElementById('result-unanswered').textContent = skippedCount;
+      document.getElementById('result-total-qs').textContent = totalQs;
+      document.getElementById('result-time-taken').textContent = `${tMins}m ${tSecs}s`;
+      document.getElementById('result-threshold').textContent = passingScore + '%';
+
+      // Progress bar
+      const progressBar = document.getElementById('result-progress-bar');
+      progressBar.style.width = Math.min(100, pct) + '%';
+      progressBar.className = 'progress-bar ' + (passed ? '' : 'bg-danger');
+      if (passed) {
+        progressBar.style.background = 'linear-gradient(90deg, #10b981, #0284c7)';
+      } else {
+        progressBar.style.background = 'linear-gradient(90deg, #ef4444, #f97316)';
+      }
+
+      // Pass/Fail badge
+      const passBadge = document.getElementById('result-pass-badge');
+      const headerBar = document.getElementById('result-header-bar');
+      const icon = document.getElementById('result-icon-emoji');
+      const title = document.getElementById('result-main-title');
+      if (passed) {
+        passBadge.className = 'badge bg-white text-success px-3 py-2 fs-6 fw-bold rounded-pill shadow';
+        passBadge.textContent = 'PASSED ✓';
+        headerBar.style.background = 'linear-gradient(135deg, #10b981 0%, #0d9488 50%, #0284c7 100%)';
+        icon.textContent = '🎉';
+        title.textContent = 'Assessment Complete!';
+        document.getElementById('result-feedback-icon').textContent = '✅';
+        document.getElementById('result-feedback-title').textContent = 'Congratulations — You Passed!';
+        document.getElementById('result-feedback-msg').textContent = `You scored ${pct}% (Passing: ${passingScore}%). Your performance has been recorded and notified to the recruiter.`;
+        document.getElementById('result-feedback-box').style.background = 'rgba(16,185,129,0.08)';
+        document.getElementById('result-feedback-box').style.border = '1px solid rgba(16,185,129,0.25)';
+      } else {
+        passBadge.className = 'badge bg-danger text-white px-3 py-2 fs-6 fw-bold rounded-pill shadow';
+        passBadge.textContent = 'NOT PASSED';
+        headerBar.style.background = 'linear-gradient(135deg, #7f1d1d 0%, #dc2626 50%, #b91c1c 100%)';
+        icon.textContent = '📋';
+        title.textContent = 'Assessment Submitted';
+        document.getElementById('result-feedback-icon').textContent = '📌';
+        document.getElementById('result-feedback-title').textContent = 'Keep Practicing!';
+        document.getElementById('result-feedback-msg').textContent = `You scored ${pct}% which is below the passing threshold of ${passingScore}%. Review the full report to identify areas for improvement.`;
+        document.getElementById('result-feedback-box').style.background = 'rgba(239,68,68,0.08)';
+        document.getElementById('result-feedback-box').style.border = '1px solid rgba(239,68,68,0.25)';
+      }
+
+      // Section breakdown
+      const aptRow = document.getElementById('result-apt-row');
+      const codeRow = document.getElementById('result-code-row');
+      if (aptTotal > 0) {
+        aptRow.classList.remove('d-none');
+        document.getElementById('result-apt-score').textContent = `${aptAnswered} / ${aptTotal} answered`;
+        document.getElementById('result-apt-pct').textContent = `(${Math.round((aptAnswered/aptTotal)*100)}% attempted)`;
+      } else {
+        aptRow.classList.add('d-none');
+      }
+      if (codeTotal > 0) {
+        codeRow.classList.remove('d-none');
+        document.getElementById('result-code-score').textContent = `${codeAnswered} / ${codeTotal} submitted`;
+        document.getElementById('result-code-pct').textContent = `(${Math.round((codeAnswered/codeTotal)*100)}% submitted)`;
+      } else {
+        codeRow.classList.add('d-none');
+      }
+
+      // Report link
+      const reportBtn = document.getElementById('result-full-report-btn');
+      if (attemptIdForReport) {
+        reportBtn.href = `coding-report.html?attempt_id=${attemptIdForReport}`;
+        reportBtn.textContent = '📊 View Full Detailed Report';
+      } else {
+        reportBtn.href = 'candidate-dashboard.html';
+        reportBtn.textContent = '📊 Go to Dashboard';
+      }
+
+      // Show the overlay
+      const overlay = document.getElementById('assessment-result-overlay');
+      overlay.classList.remove('d-none');
+      overlay.classList.add('d-flex');
+
+      // Animate progress bar after small delay
+      setTimeout(() => {
+        progressBar.style.width = Math.min(100, pct) + '%';
+      }, 200);
+    }
+
     async function submitAssessment() {
       saveCurrentState();
 
+      if (assessmentData && assessmentData.isPractice) {
+        alert("🎉 Practice progress saved! Explore more programming topics using the 'Programming Topics' button in the header.");
+        return;
+      }
+
+      if (assessmentData && assessmentData.isWeekly) {
+        if (!confirm("Are you ready to submit your weekly coding challenges for evaluation?")) {
+          return;
+        }
+        const submissionsMap = {};
+        assessmentData.questions.forEach(q => {
+          const saved = codeStore[q.id] || { lang: 'python', code: '' };
+          submissionsMap[q.id] = {
+            language: saved.lang || 'python',
+            source_code: saved.code || ''
+          };
+        });
+
+        const totalAllowed = (assessmentData.duration_minutes || 60) * 60;
+        const timeTaken = Math.max(1, totalAllowed - (remainingSeconds || 0));
+
+        const submitBtn = document.getElementById('submit-assessment-btn');
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Evaluating...'; }
+
+        try {
+          if (proctorMgr) proctorMgr.stopMonitors();
+          if (timerInterval) clearInterval(timerInterval);
+          const res = await api.weekly.submitCoding({
+            submissions: submissionsMap,
+            time_taken_seconds: timeTaken,
+            is_anonymous: false
+          });
+
+          if (res.success) {
+            showAssessmentResultModal(res.data, null);
+          } else {
+            alert("Submission error: " + res.message);
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<span>🚀</span> Submit Final Assessment'; }
+          }
+        } catch (err) {
+          alert("Failed to submit weekly coding challenge: " + err.message);
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<span>🚀</span> Submit Final Assessment'; }
+        }
+        return;
+      }
+
       const submissions = assessmentData.questions.map(q => {
         const saved = codeStore[q.id] || { lang: 'python', code: '' };
+        let codeToSend = saved.code || '';
+        if (saved.selectedOption) {
+          codeToSend = `print("${saved.selectedOption}")\n`;
+        }
         return {
           question_id: q.id,
           language: saved.lang || 'python',
-          source_code: saved.code || ''
+          source_code: codeToSend
         };
       });
 
+      const submitBtn = document.getElementById('submit-assessment-btn');
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting & Evaluating...'; }
+
       try {
         if (proctorMgr) proctorMgr.stopMonitors();
+        if (timerInterval) clearInterval(timerInterval);
         const res = await codingAPI.submitAssessment(attemptId, submissions);
         if (res.success) {
-          window.location.href = `coding-report.html?attempt_id=${attemptId}`;
+          const scoreData = res.data;
+          // Show result modal immediately
+          showAssessmentResultModal(scoreData, attemptId);
         } else {
           alert('Submission error: ' + res.message);
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<span>🚀</span> Submit Final Assessment'; }
         }
       } catch (err) {
         alert('Failed to submit assessment: ' + err.message);
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<span>🚀</span> Submit Final Assessment'; }
+      }
+    }
+
+    async function loadTopicsCatalogModal() {
+      const modalGrid = document.getElementById('modal-topics-grid');
+      if (!modalGrid) return;
+      try {
+        const [cRes, statusRes] = await Promise.all([
+          api.weekly.getCodingTopics(),
+          api.weekly.getStatus().catch(() => null)
+        ]);
+        const topics = cRes?.data || [];
+        const status = statusRes?.data;
+
+        if (status) {
+          const badge = document.getElementById('modal-weekly-cadence-badge');
+          if (badge) badge.textContent = `Updated Weekly Once • Next in ${status.days_remaining}d ${status.hours_remaining}h`;
+        }
+
+        if (!topics.length) {
+          modalGrid.innerHTML = `<div class="col-12 text-center text-white-50">No programming topics found.</div>`;
+          return;
+        }
+
+        modalGrid.innerHTML = topics.map(t => {
+          const diffPills = Object.entries(t.difficulty_distribution || {})
+            .map(([diff, cnt]) => {
+              const bg = diff.toLowerCase() === 'easy' ? 'bg-success' : diff.toLowerCase() === 'medium' ? 'bg-warning text-dark' : 'bg-danger';
+              return `<span class="badge ${bg} px-1.5 py-0.5 rounded-pill" style="font-size: 0.65rem;">${cnt} ${diff}</span>`;
+            }).join(' ');
+
+          const subBadges = (t.subtopics || []).slice(0, 3)
+            .map(st => `<span class="badge bg-secondary text-light px-2 py-0.5 rounded-pill" style="font-size: 0.68rem;">${escapeHtml(st)}</span>`)
+            .join(' ');
+
+          return `
+          <div class="col-md-6 col-lg-4">
+            <div class="p-3 rounded-3 h-100 d-flex flex-column justify-content-between" style="background-color: #252526; border: 1px solid #3c3c3c;">
+              <div>
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fs-4">${t.icon || "💻"}</span>
+                    <div>
+                      <h6 class="fw-bold text-white mb-0" style="font-size: 0.95rem;">${escapeHtml(t.name)}</h6>
+                      <span class="badge bg-dark text-slate-400 border border-secondary" style="font-size: 0.65rem;">${escapeHtml(t.category)}</span>
+                    </div>
+                  </div>
+                  ${t.popular ? '<span class="badge bg-warning text-dark px-1.5 py-0.5 rounded-pill" style="font-size: 0.65rem;">🔥 High Yield</span>' : ''}
+                </div>
+                <p class="text-slate-300 small mb-2" style="font-size: 0.8rem; min-height: 34px; line-height: 1.35;">${escapeHtml(t.description)}</p>
+                <div class="d-flex flex-wrap gap-1 mb-2">${subBadges}</div>
+                <div class="d-flex align-items-center gap-1.5 mb-2">${diffPills}</div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary mt-auto">
+                <span class="text-slate-400 small" style="font-size: 0.75rem;"><strong>${t.problem_count}</strong> Problems</span>
+                <a href="coding-assessment.html?mode=practice&topic=${encodeURIComponent(t.slug)}" class="btn btn-sm btn-outline-success rounded-pill px-2.5 py-1 fw-semibold text-nowrap" style="font-size: 0.75rem;">
+                  Practice &rarr;
+                </a>
+              </div>
+            </div>
+          </div>`;
+        }).join('');
+      } catch (err) {
+        console.warn("Failed to load topics catalog for modal:", err);
       }
     }
 

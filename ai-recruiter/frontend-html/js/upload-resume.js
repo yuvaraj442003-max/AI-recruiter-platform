@@ -318,6 +318,10 @@
 
   function renderProfile(profile) {
     currentProfileData = profile;
+    const portBanner = document.getElementById("portfolio-generated-banner");
+    if (portBanner) {
+      portBanner.classList.remove("d-none");
+    }
     document.getElementById("profile-card").classList.remove("d-none");
     document.getElementById("profile-score-badge").textContent = profile.profile_score != null ? `General ATS Score: ${profile.profile_score}%` : "General ATS Score: —";
     document.getElementById("profile-phone").textContent = profile.phone || "—";
@@ -473,14 +477,15 @@
 
       try {
         const meRes = await API.get("/resumes/me");
-        if (!meRes || !meRes.data) throw new Error("Please upload a resume first.");
+        if (!meRes || !meRes.data || !meRes.data.id) throw new Error("Please upload a resume first.");
         const candId = meRes.data.id;
         const jobsRes = await jobsAPI.list();
-        const jobs = jobsRes.data || [];
+        const jobs = jobsRes?.data || [];
         if (!jobs || !jobs.length) throw new Error("No open jobs available for comparison.");
 
         const targetDomain = document.getElementById("target-role-name")?.textContent || "";
-        let targetJob = jobs.find(j => j.title && targetDomain && (j.title.toLowerCase().includes(targetDomain.toLowerCase()) || targetDomain.toLowerCase().includes(j.title.toLowerCase()))) || jobs[0];
+        let targetJob = jobs.find(j => j && j.title && targetDomain && (j.title.toLowerCase().includes(targetDomain.toLowerCase()) || targetDomain.toLowerCase().includes(j.title.toLowerCase()))) || jobs[0];
+        if (!targetJob || !targetJob.id) throw new Error("No valid job target found for comparison.");
 
         const res = await resumeImprovementAPI.improve(candId, targetJob.id);
         renderResumeImprovementModalContent(res.data, candId);

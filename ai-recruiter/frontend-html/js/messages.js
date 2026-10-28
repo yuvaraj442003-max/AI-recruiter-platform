@@ -598,7 +598,7 @@
       const isScrolledToBottom = chatThreadContainer.scrollHeight - chatThreadContainer.scrollTop <= chatThreadContainer.clientHeight + 100;
 
       chatThreadContainer.innerHTML = messages.map(msg => {
-        const isSelf = msg.sender_id === currentUser.id;
+        const isSelf = Boolean(currentUser && currentUser.id && msg.sender_id === currentUser.id);
         const isAudio = msg.is_audio || !!msg.audio_url;
 
         const bodyHtml = isAudio

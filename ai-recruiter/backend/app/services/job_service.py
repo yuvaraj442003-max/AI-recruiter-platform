@@ -138,6 +138,28 @@ def create_job(db: Session, recruiter_id: uuid.UUID, payload) -> Job:
 
     db.commit()
     db.refresh(job)
+
+    # Sync job vector to Qdrant vector database
+    try:
+        from app.services.qdrant_service import upsert_document, COLLECTION_JOBS
+        skills_str = ", ".join(required) if required else ""
+        upsert_document(
+            collection_name=COLLECTION_JOBS,
+            doc_id=job.id,
+            text=f"Title: {job.title}\nCompany: {job.company_name or ''}\nSkills: {skills_str}\nDescription: {job.description}",
+            metadata={
+                "job_id": str(job.id),
+                "title": job.title,
+                "company": job.company_name,
+                "location": job.location,
+                "skills": required,
+                "status": str(job.status),
+                "experience_required": job.experience_required,
+            },
+        )
+    except Exception as q_err:
+        logger.debug("Qdrant job vector indexing non-critical notice: %s", q_err)
+
     return _load_job(db, job.id)
 
 
@@ -172,6 +194,28 @@ def update_job(db: Session, job: Job, payload) -> Job:
 
     db.commit()
     db.refresh(job)
+
+    # Sync updated job vector to Qdrant vector database
+    try:
+        from app.services.qdrant_service import upsert_document, COLLECTION_JOBS
+        req_skills = [js.skill.skill_name for js in job.job_skills if js.skill and js.required]
+        upsert_document(
+            collection_name=COLLECTION_JOBS,
+            doc_id=job.id,
+            text=f"Title: {job.title}\nCompany: {job.company_name or ''}\nSkills: {', '.join(req_skills)}\nDescription: {job.description}",
+            metadata={
+                "job_id": str(job.id),
+                "title": job.title,
+                "company": job.company_name,
+                "location": job.location,
+                "skills": req_skills,
+                "status": str(job.status),
+                "experience_required": job.experience_required,
+            },
+        )
+    except Exception as q_err:
+        logger.debug("Qdrant job vector update non-critical notice: %s", q_err)
+
     return _load_job(db, job.id)
 
 
@@ -405,9 +449,12 @@ def recommend_jobs_for_candidate(db: Session, candidate_user_id, limit: int = 10
         User.is_active == True,
         User.role.in_([UserRole.recruiter, UserRole.company_admin, UserRole.admin, UserRole.superadmin]),
         not_(User.email.in_(settings.DEMO_ACCOUNT_EMAILS)),
-        not_(User.email.ilike("%@example.com")),
-        not_(User.email.ilike("%@test.com")),
     ]
+    if getattr(settings, "ENVIRONMENT", "development").lower() == "production":
+        demo_filter.extend([
+            not_(User.email.ilike("%@example.com")),
+            not_(User.email.ilike("%@test.com")),
+        ])
 
     jobs = (
         db.query(Job)

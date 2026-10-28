@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <base href="/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Fira+Code:wght@400;600&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&family=Syne:wght@600;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/portfolio-themes.css?v=4.5" />
+  <style>
+    /* Public page stage baseline */
+    #portfolio-public-stage {
+      position: relative;
+      min-height: 100vh;
+      width: 100%;
+      overflow-x: hidden;
+    }
+    /* Public page subtle floating helper bar */
+    .public-floating-bar {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 8px 16px;
+      border-radius: 9999px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #ffffff;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+    .public-floating-bar a {
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .public-floating-bar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.35);
+    }
+    #portfolio-error-container {
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading State Spinner -->
+  <div id="portfolio-loading-container" class="min-vh-100 d-flex flex-column align-items-center justify-content-center bg-light">
+    <div class="spinner-grow text-primary mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+    <h5 class="fw-bold text-dark mb-1">Loading Portfolio...</h5>
+    <p class="text-muted small">Rendering personalized candidate portfolio website.</p>
+  </div>
+
+  <!-- Error / Unpublished Container -->
+  <div id="portfolio-error-container" class="d-none">
+    <div class="card border-0 shadow-lg p-5 rounded-4 text-center" style="max-width: 520px;">
+      <div class="display-3 mb-3">🔒</div>
+      <h3 class="fw-bold text-dark mb-2">Portfolio Not Available</h3>
+      <p class="text-muted small mb-4" id="portfolio-error-message">
+        This portfolio is currently unpublished or does not exist.
+      </p>
+      <div>
+        <a href="/" class="btn btn-primary fw-semibold px-4 py-2 rounded-pill">
+          Return to AI Recruiter Platform
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Dynamic Portfolio Stage -->
+  <div id="portfolio-public-stage" class="d-none">
+    <!-- Rendered dynamically by PortfolioThemesEngine -->
+  </div>
+
+  <!-- Floating Utility Bar -->
+  <div class="public-floating-bar d-none" id="public-floating-bar">
+    <button id="btn-floating-copy" class="btn btn-sm btn-outline-light py-1 px-3 rounded-pill small d-flex align-items-center gap-2" title="Share portfolio link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+      <span>Share Portfolio</span>
+    </button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api.js?v=3.1"></script>
+  <script src="/js/portfolio-themes.js?v=4.5"></script>
+  <script src="/js/portfolio-view.js?v=4.5"></script>
+</body>
+</html>

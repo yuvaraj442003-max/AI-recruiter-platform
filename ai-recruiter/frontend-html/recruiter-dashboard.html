@@ -30,6 +30,11 @@
           </a>
         </li>
         <li class="nav-item">
+          <a href="#candidate-learning-section" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
+            <span>🎓</span> Student Learning Monitor
+          </a>
+        </li>
+        <li class="nav-item">
           <a href="my-jobs.html" class="nav-link text-dark fw-medium d-flex align-items-center gap-2">
             <span>💼</span> Manage Jobs
           </a>
@@ -93,6 +98,7 @@
             <a href="#top-candidates-section" class="btn btn-sm btn-outline-secondary rounded-pill fw-semibold">🏆 Top Candidates</a>
             <a href="#metrics-section" class="btn btn-sm btn-outline-secondary rounded-pill fw-semibold">📈 Hiring Analytics</a>
             <a href="#job-performance-section" class="btn btn-sm btn-outline-secondary rounded-pill fw-semibold">💼 Job Requisitions</a>
+            <a href="#candidate-learning-section" class="btn btn-sm btn-outline-success rounded-pill fw-semibold">🎓 Student Career Guidance</a>
           </div>
         </div>
 
@@ -496,10 +502,143 @@
         </div>
 
         <!-- Job Performance Table -->
-        <div id="job-performance-section" class="card border-0 shadow-sm p-4" style="border-radius: 12px;">
+        <div id="job-performance-section" class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 12px;">
           <h6 class="fw-bold mb-3">Job Performance</h6>
           <div id="job-performance-table">
             <div class="text-muted-custom small">Loading…</div>
+          </div>
+        </div>
+
+        <!-- Student Career Guidance & Learning Activity Monitor Section -->
+        <div id="candidate-learning-section" class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 16px; background: #ffffff;">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 border-bottom pb-3">
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="fs-4">🎓</span>
+                <h4 class="fw-bold mb-0 text-dark">Student Career Guidance &amp; Learning Activity Monitor</h4>
+                <span class="badge bg-secondary-subtle text-secondary border border-secondary px-2.5 py-1 rounded-pill small">
+                  👁️ View &amp; Monitor Only (Read-Only)
+                </span>
+              </div>
+              <p class="text-muted small mb-0">
+                Track candidate preparation topics, aptitude test attendance, scores, overall learning progress, daily consistency, and whether performance is improving or declining.
+              </p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-light text-muted border px-3 py-2 rounded-pill small">
+                🔒 Question Generation Disabled for Recruiters
+              </span>
+              <button id="refresh-student-monitor-btn" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-semibold">
+                🔄 Refresh Telemetry
+              </button>
+            </div>
+          </div>
+
+          <!-- Summary KPI Cards -->
+          <div class="row g-3 mb-4" id="student-monitor-kpis">
+            <div class="col-sm-6 col-lg-3">
+              <div class="p-3 rounded-4 border bg-light h-100 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="small text-muted fw-semibold">Total Students</span>
+                  <span class="badge bg-primary-subtle text-primary rounded-pill">Enrolled</span>
+                </div>
+                <h3 class="fw-bold mb-0 text-dark" id="sm-kpi-total-students">0</h3>
+                <small class="text-muted" id="sm-kpi-active-learners">0 active learners</small>
+              </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+              <div class="p-3 rounded-4 border bg-light h-100 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="small text-muted fw-semibold">Avg Aptitude Score</span>
+                  <span class="badge bg-success-subtle text-success rounded-pill">Assessments</span>
+                </div>
+                <h3 class="fw-bold mb-0 text-success" id="sm-kpi-avg-score">0%</h3>
+                <small class="text-muted" id="sm-kpi-tests-count">0 tests evaluated</small>
+              </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+              <div class="p-3 rounded-4 border bg-light h-100 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="small text-muted fw-semibold">Avg Roadmap Progress</span>
+                  <span class="badge bg-info-subtle text-info rounded-pill">Career Paths</span>
+                </div>
+                <h3 class="fw-bold mb-0 text-info" id="sm-kpi-avg-roadmap">0%</h3>
+                <small class="text-muted">Curriculum milestones</small>
+              </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+              <div class="p-3 rounded-4 border bg-light h-100 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="small text-muted fw-semibold">Performance Health</span>
+                  <span class="badge bg-dark-subtle text-dark rounded-pill">Status</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mt-1">
+                  <span class="badge bg-success text-white px-2 py-1 rounded-pill" id="sm-kpi-well-badge" title="Performing Well">0 Well</span>
+                  <span class="badge bg-warning text-dark px-2 py-1 rounded-pill" id="sm-kpi-mod-badge" title="Moderate Progress">0 Moderate</span>
+                  <span class="badge bg-danger text-white px-2 py-1 rounded-pill" id="sm-kpi-imp-badge" title="Needs Improvement">0 Needs Imp.</span>
+                </div>
+                <small class="text-muted d-block mt-1" id="sm-kpi-consistent-learners">0 consistent daily learners</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filter & Search Controls -->
+          <div class="bg-light p-3 rounded-3 mb-3 border">
+            <div class="row g-2 align-items-center">
+              <div class="col-md-5">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text bg-white border-end-0">🔍</span>
+                  <input type="text" id="sm-filter-search" class="form-control form-control-sm border-start-0" placeholder="Search student by name, college, email, or topic..." />
+                </div>
+              </div>
+              <div class="col-md-3">
+                <select id="sm-filter-performance" class="form-select form-select-sm">
+                  <option value="all">🎯 All Performance Statuses</option>
+                  <option value="well">✅ Performing Well (>= 70%)</option>
+                  <option value="moderate">⚠️ Moderate Progress (45% - 69%)</option>
+                  <option value="improvement">❌ Needs Improvement (&lt; 45%)</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <select id="sm-filter-trend" class="form-select form-select-sm">
+                  <option value="all">📈 All Trends (Improving / Declining)</option>
+                  <option value="improving">↗ Improving Performance</option>
+                  <option value="steady">➔ Steady Performance</option>
+                  <option value="declining">↘ Declining Performance</option>
+                </select>
+              </div>
+              <div class="col-md-1 text-end">
+                <button id="sm-filter-reset-btn" class="btn btn-sm btn-outline-secondary w-100" title="Reset Filters">
+                  Reset
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Students Table -->
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="sm-students-table">
+              <thead class="table-light small text-muted text-uppercase">
+                <tr>
+                  <th style="min-width: 200px;">Student &amp; College</th>
+                  <th style="min-width: 170px;">📚 Preparing Topics</th>
+                  <th style="min-width: 150px;">🧠 Aptitude Tests</th>
+                  <th style="min-width: 140px;">🚀 Learning Progress</th>
+                  <th style="min-width: 120px;">🔥 Consistency</th>
+                  <th style="min-width: 130px;">📈 Trend</th>
+                  <th style="min-width: 150px;">🎯 Status</th>
+                  <th style="min-width: 110px;" class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="sm-students-table-body">
+                <tr>
+                  <td colspan="8" class="text-center py-4 text-muted">
+                    <div class="spinner-border spinner-border-sm text-success me-2" role="status"></div>
+                    Loading student career guidance &amp; aptitude telemetry...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -668,6 +807,36 @@
           </div>
         </div>
         <div class="modal-footer border-top bg-light p-3">
+          <button type="button" class="btn btn-secondary px-4 fw-semibold" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student Career Guidance & Learning Activity Inspection Modal -->
+  <div class="modal fade" id="studentActivityDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+        <div class="modal-header border-0 bg-dark text-white p-3">
+          <div class="d-flex align-items-center gap-2">
+            <span class="fs-4">🎓</span>
+            <div>
+              <h5 class="modal-title fw-bold mb-0" id="sad-modal-name">Student Activity &amp; Learning Telemetry</h5>
+              <small class="text-light opacity-75" id="sad-modal-subtitle">Career Guidance, Aptitude Test Performance &amp; Progress</small>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4" id="sad-modal-body">
+          <div class="text-center py-5">
+            <div class="spinner-border text-success" role="status"></div>
+            <p class="mt-2 text-muted">Loading detailed student activities...</p>
+          </div>
+        </div>
+        <div class="modal-footer border-top bg-light p-3 d-flex justify-content-between align-items-center">
+          <span class="small text-muted">
+            🔒 <strong>Strictly Read-Only Telemetry</strong>: Question generation is disabled for recruiters.
+          </span>
           <button type="button" class="btn btn-secondary px-4 fw-semibold" data-bs-dismiss="modal">Close</button>
         </div>
       </div>

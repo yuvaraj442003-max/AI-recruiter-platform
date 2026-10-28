@@ -6,7 +6,7 @@ candidates to the skills found in their resume.
 import uuid
 from typing import Optional
 
-from sqlalchemy import Float, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from app.core.db_types import GUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -48,6 +48,16 @@ class CandidateProfile(Base, TimestampMixin):
     github_url: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     other_links: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
+    # College Student & Academic Information
+    is_student: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    college_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    degree: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)  # B.Tech, BCA, MCA, B.Sc, M.Tech
+    branch: Mapped[Optional[str]] = mapped_column(String(150), nullable=True)  # Computer Science, IT, AI & Data Science
+    graduation_year: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # 2024, 2025, 2026, 2027
+    cgpa: Mapped[Optional[float]] = mapped_column(Float, nullable=True)  # 8.75
+    current_semester: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # 1 to 8
+    target_role: Mapped[Optional[str]] = mapped_column(String(150), nullable=True)  # SDE, Frontend, Data Analyst
+
     # Recruiter Upload & Source Tracking
     created_by_recruiter_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         GUID(), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
@@ -58,6 +68,9 @@ class CandidateProfile(Base, TimestampMixin):
         back_populates="candidate", cascade="all, delete-orphan"
     )
     user: Mapped["User"] = relationship(foreign_keys=[user_id])
+    portfolio: Mapped[Optional["Portfolio"]] = relationship(
+        "Portfolio", back_populates="candidate", uselist=False, cascade="all, delete-orphan"
+    )
 
     @property
     def full_name(self) -> str:

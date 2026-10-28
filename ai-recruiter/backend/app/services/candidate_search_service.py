@@ -153,7 +153,7 @@ def search_and_rank_candidates(
         cand_name = cand_user.name if cand_user else "Candidate"
         cand_email = cand_user.email if cand_user else ""
 
-        cand_headline = cand.headline or cand.current_role or "Software Professional"
+        cand_headline = cand.headline or cand.current_role or "Candidate"
         cand_location = cand.location or "Not Specified"
         exp_years = float(cand.experience_years or 0.0)
         cand_education = cand.education or ""

@@ -145,24 +145,29 @@ def evaluate_question_submission(
         is_hidden = tc.get("is_hidden", False)
         pts = tc.get("points", 10)
 
-        exec_res = execute_code(language, source_code, input_data=input_data, timeout_seconds=5.0)
-        max_exec_time = max(max_exec_time, exec_res.get("execution_time", 0.0))
-
-        actual_stdout = exec_res.get("stdout", "")
-        norm_actual = normalize_output(actual_stdout)
-        norm_expected = normalize_output(expected)
-
-        passed = (exec_res["status"] == "Success") and (norm_actual == norm_expected)
-        if not passed and norm_expected.upper() in ["A", "B", "C", "D"]:
-            import re
+        norm_expected = normalize_output(expected).upper()
+        if norm_expected in ["A", "B", "C", "D"]:
             cleaned_source = source_code.strip().strip("'\"").strip().upper()
             found_letter = None
-            # Check for print("X"), console.log("X"), Option X, or just X
             m = re.search(r'(?:print|console\.log|option|answer|\b)\s*\(?[\'"]?([A-D])[\'"]?\)?\b', cleaned_source, re.IGNORECASE)
             if m:
                 found_letter = m.group(1).upper()
-            if cleaned_source == norm_expected.upper() or norm_actual.strip().upper() == norm_expected.upper() or found_letter == norm_expected.upper():
-                passed = True
+            passed = (cleaned_source == norm_expected or found_letter == norm_expected)
+            exec_res = {
+                "status": "Success",
+                "stdout": found_letter or cleaned_source,
+                "stderr": "",
+                "execution_time": 0.001,
+                "memory_used": 0.0
+            }
+            norm_actual = found_letter or cleaned_source
+        else:
+            exec_res = execute_code(language, source_code, input_data=input_data, timeout_seconds=5.0)
+            max_exec_time = max(max_exec_time, exec_res.get("execution_time", 0.0))
+            actual_stdout = exec_res.get("stdout", "")
+            norm_actual = normalize_output(actual_stdout)
+            norm_expected_raw = normalize_output(expected)
+            passed = (exec_res["status"] == "Success") and (norm_actual == norm_expected_raw)
 
         if passed:
             passed_count += 1
@@ -239,6 +244,36 @@ def generate_ai_code_review(
     """
     Generates structured AI review of candidate code via LLM, with fallback template.
     """
+    cleaned = (source_code or "").strip()
+    # Fast path for empty or unedited starter code
+    if not cleaned or cleaned.startswith("# Write your code") or cleaned.startswith("# Solution for"):
+        return {
+            "code_quality": 0,
+            "readability": 0,
+            "maintainability": 0,
+            "efficiency": 0,
+            "time_complexity": "N/A",
+            "space_complexity": "N/A",
+            "strengths": [],
+            "weaknesses": ["No code was submitted for evaluation."],
+            "suggestions": ["Attempt to implement a solution using standard algorithms."]
+        }
+
+    # Fast path for multiple-choice aptitude options (e.g. print("A") or "A")
+    if cleaned.upper() in ["A", "B", "C", "D"] or re.match(r'^(?:print|console\.log)\s*\([\'"][A-D][\'"]\);?$', cleaned, re.IGNORECASE):
+        is_correct = functional_score >= 100.0
+        return {
+            "code_quality": 100 if is_correct else 50,
+            "readability": 100,
+            "maintainability": 100,
+            "efficiency": 100,
+            "time_complexity": "O(1)",
+            "space_complexity": "O(1)",
+            "strengths": ["Correct aptitude option selected" if is_correct else "Candidate response recorded"],
+            "weaknesses": [] if is_correct else ["Selected option does not match correct answer"],
+            "suggestions": [] if is_correct else ["Review quantitative and logical reasoning formulas"]
+        }
+
     system_prompt = "You are an expert technical interviewer and code reviewer. Provide concise, constructive JSON evaluation of candidate code."
     user_prompt = f"""
     Review this {language} solution for question '{question_title}'.

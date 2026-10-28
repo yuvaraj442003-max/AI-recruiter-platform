@@ -265,7 +265,7 @@
 
       let html = '<div class="d-flex flex-column gap-2">';
       messages.forEach((m) => {
-        const isMine = m.sender_id === currentUser.id;
+        const isMine = Boolean(currentUser && currentUser.id && m.sender_id === currentUser.id);
         const timeStr = new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
         html += `

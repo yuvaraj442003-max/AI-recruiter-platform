@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session, joinedload
 from app.core.database import get_db
 from app.core.deps import get_current_user, require_role
 from app.core.exceptions import NotFoundError, PermissionDeniedError
-from app.models.application import Application
+from app.models.application import Application, ApplicationStatus
 from app.models.candidate import CandidateProfile
 from app.models.coding import (
     CandidateCodingAttempt,
@@ -356,7 +356,7 @@ def candidate_list_assessments(
 
 @router.post("/candidate/assessments/{assessment_id}/start", response_model=APIResponse[CandidateCodingAttemptResponse])
 def start_assessment_attempt(
-    assessment_id: uuid.UUID,
+    assessment_id: str,
     reset: bool = Query(False, description="Reset attempt to fresh duration"),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.candidate))
@@ -366,10 +366,21 @@ def start_assessment_attempt(
     if not cand:
         raise NotFoundError("Candidate profile not found.")
 
-    assessment = db.scalar(select(CodingAssessment).where(CodingAssessment.id == assessment_id))
+    parsed_id = None
+    if assessment_id and assessment_id != "default":
+        try:
+            parsed_id = uuid.UUID(assessment_id)
+        except ValueError:
+            parsed_id = None
+
+    assessment = None
+    if parsed_id:
+        assessment = db.scalar(select(CodingAssessment).where(CodingAssessment.id == parsed_id))
+
     if not assessment:
         assessment = _seed_default_assessment_if_empty(db)
-        assessment_id = assessment.id
+
+    assessment_id = assessment.id
 
     # Check existing attempts
     attempt = db.scalar(
@@ -405,32 +416,21 @@ def start_assessment_attempt(
         db.commit()
         db.refresh(attempt)
     elif attempt.status == "Terminated":
-        # Check if duration allows resuming
-        started_utc = _to_utc_dt(attempt.started_at)
-        elapsed = max(0, int((datetime.now(timezone.utc) - started_utc).total_seconds())) if started_utc else 0
-        total_seconds = int((assessment.duration_minutes or 60) * 60)
-        remaining_seconds = min(total_seconds, max(0, total_seconds - elapsed))
-        if remaining_seconds > 0:
-            attempt.status = "In Progress"
-            db.commit()
-            db.refresh(attempt)
-        else:
-            remaining_seconds = 0
-            resp_data = CandidateCodingAttemptResponse(
-                id=attempt.id,
-                candidate_id=attempt.candidate_id,
-                assessment_id=attempt.assessment_id,
-                status="Terminated",
-                started_at=attempt.started_at,
-                submitted_at=attempt.submitted_at,
-                score=attempt.score or 0.0,
-                percentage=attempt.percentage or 0.0,
-                passed=False,
-                time_taken=attempt.time_taken,
-                remaining_seconds=0,
-                assessment=_format_assessment_response(assessment, db)
-            )
-            return APIResponse(success=False, message="Assessment session has expired.", data=resp_data)
+        resp_data = CandidateCodingAttemptResponse(
+            id=attempt.id,
+            candidate_id=attempt.candidate_id,
+            assessment_id=attempt.assessment_id,
+            status="Terminated",
+            started_at=attempt.started_at,
+            submitted_at=attempt.submitted_at,
+            score=attempt.score or 0.0,
+            percentage=attempt.percentage or 0.0,
+            passed=False,
+            time_taken=attempt.time_taken,
+            remaining_seconds=0,
+            assessment=_format_assessment_response(assessment, db)
+        )
+        return APIResponse(success=True, message="Assessment session was terminated.", data=resp_data)
 
     # Compute remaining time accurately using timezone-normalized UTC datetimes
     started_utc = _to_utc_dt(attempt.started_at)
@@ -547,9 +547,7 @@ def submit_candidate_assessment(
         raise NotFoundError("Assessment not found.")
 
     if attempt.status == "Terminated":
-        # Allow candidate to submit code evaluation without throwing 403; proctoring events remain recorded
-        attempt.status = "In Progress"
-        db.commit()
+        raise PermissionDeniedError("Assessment has been terminated due to an integrity violation.")
 
     now = datetime.now(timezone.utc)
     started_at = _to_utc_dt(attempt.started_at) or now
@@ -663,8 +661,13 @@ def submit_candidate_assessment(
         data={
             "attempt_id": str(attempt.id),
             "score": avg_percentage,
+            "percentage": avg_percentage,
             "passed": passed,
-            "status": attempt.status
+            "status": attempt.status,
+            "passing_score": assessment.passing_score if assessment else 60.0,
+            "time_taken": time_taken_sec,
+            "total_score": total_earned_score,
+            "total_possible": total_possible_points
         }
     )
 
@@ -814,7 +817,13 @@ def get_candidate_attempt_report(
 
     cand_name = "Candidate"
     if attempt.candidate:
-        cand_name = f"{attempt.candidate.first_name} {attempt.candidate.last_name}".strip() or "Candidate"
+        cand_user = db.scalar(select(User).where(User.id == attempt.candidate.user_id)) if attempt.candidate.user_id else None
+        if cand_user and cand_user.name:
+            cand_name = cand_user.name
+        elif cand_user and cand_user.email:
+            cand_name = cand_user.email
+        elif attempt.candidate.headline:
+            cand_name = attempt.candidate.headline
 
     from app.services.assessment_bank_service import classify_job_role
     job = assessment.job if assessment else None

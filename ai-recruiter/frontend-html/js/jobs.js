@@ -91,6 +91,7 @@
   }
 
   function jobCard(job, { matchScore, showApply = true } = {}) {
+    if (!job || !job.id) return "";
     jobsCache.set(String(job.id), job);
     const effectiveScore = matchScore != null ? matchScore : recommendationScoresMap.get(String(job.id));
 
@@ -144,6 +145,7 @@
   }
 
   function offcanvasJobCard(job) {
+    if (!job || !job.id) return "";
     jobsCache.set(String(job.id), job);
     const effectiveScore = recommendationScoresMap.get(String(job.id));
 
@@ -345,7 +347,7 @@
       });
 
       // Filter and render top recommendations
-      const topMatches = items.slice(0, 6);
+      const topMatches = items.filter(item => item && item.job && item.job.id).slice(0, 6);
       recommendedListEl.innerHTML = topMatches
         .map((item) => jobCard(item.job, { matchScore: item.match_score }))
         .join("");

@@ -6,6 +6,7 @@
   <title>Candidate Dashboard — AI Recruiter</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/candidate-learning-journey.css" />
 </head>
 <body data-required-role="candidate">
 
@@ -24,7 +25,27 @@
         </li>
         <li class="nav-item">
           <a href="candidate-dashboard.html" class="nav-link active text-nowrap d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color: #fff;">
-            <span>📊</span> Candidate Dashboard
+            <span>📊</span> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="aptitude-test.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🧠</span> Aptitude &amp; Tests
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="study-materials.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🎓</span> Campus Hub &amp; Textbooks
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="coding-assessment.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>💻</span> Coding Lab (DSA)
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="interview.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🎙️</span> AI Mock Interviews
           </a>
         </li>
         <li class="nav-item">
@@ -33,8 +54,13 @@
           </a>
         </li>
         <li class="nav-item">
+          <a href="portfolio-builder.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>✨</span> Portfolio
+          </a>
+        </li>
+        <li class="nav-item">
           <a href="jobs.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
-            <span>🔍</span> Find Jobs
+            <span>🔍</span> Find Jobs &amp; Drives
           </a>
         </li>
         <li class="nav-item">
@@ -77,19 +103,26 @@
               <div class="d-flex align-items-end gap-3">
                 <img id="cand-profile-photo" src="https://ui-avatars.com/api/?name=Candidate&background=4f46e5&color=fff&size=128" alt="Candidate Avatar" class="rounded-circle avatar-glow-indigo" style="width: 108px; height: 108px; margin-top: -54px; object-fit: cover;" />
                 <div class="mt-2">
-                  <h3 id="cand-name-display" class="fw-bold text-dark mb-0">Candidate Name</h3>
+                  <div class="d-flex align-items-center gap-2">
+                    <h3 id="cand-name-display" class="fw-bold text-dark mb-0">Candidate Name</h3>
+                    <span id="cand-student-badge" class="badge bg-primary-subtle text-primary border rounded-pill px-2.5 py-1 small">🎓 College Student</span>
+                  </div>
                   <p id="cand-headline-display" class="text-secondary fw-medium mb-1">Software Engineer | Full Stack Developer</p>
-                  <div class="d-flex align-items-center gap-2 text-muted small">
+                  <div class="d-flex align-items-center gap-2 text-muted small flex-wrap">
                     <span id="cand-location-display">📍 Location</span>
                     <span>•</span>
-                    <span id="cand-experience-display">💼 0 Years Exp</span>
+                    <span id="cand-college-display">🏛️ College / University</span>
+                    <span>•</span>
+                    <span id="cand-degree-display">Degree &amp; Branch</span>
+                    <span>•</span>
+                    <span id="cand-cgpa-display" class="badge bg-light text-dark border">CGPA: —</span>
                   </div>
                 </div>
               </div>
 
-              <div class="d-flex gap-2">
+              <div class="d-flex gap-2 flex-wrap">
                 <a href="upload-resume.html" class="btn btn-outline-primary fw-semibold px-3 py-2 hover-lift">📄 Manage Resume</a>
-                <button class="btn btn-primary fw-semibold px-3 py-2 hover-lift" data-bs-toggle="modal" data-bs-target="#editCandProfileModal" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); border: none;">✏️ Edit Profile</button>
+                <button class="btn btn-primary fw-semibold px-3 py-2 hover-lift" data-bs-toggle="modal" data-bs-target="#editCandProfileModal" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); border: none;">✏️ Edit Profile &amp; Academics</button>
               </div>
             </div>
 
@@ -108,8 +141,634 @@
           </div>
         </div>
 
+        <!-- ========================================================================= -->
+        <!-- CANDIDATE LEARNING ROADMAP & PLACEMENT JOURNEY DASHBOARD (Reference UI) -->
+        <!-- ========================================================================= -->
+        <div id="candidate-learning-journey-container" class="mb-5">
+          <!-- Top Next Step Guidance Banner -->
+          <div class="card border-0 shadow-sm p-3 px-4 mb-4 rounded-4" style="background: linear-gradient(135deg, #f8faff 0%, #ffffff 100%); border-left: 5px solid #4f46e5 !important;">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+              <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle p-2 px-3 text-white shadow-sm" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); font-size: 1.25rem;">
+                  🚀
+                </div>
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-0.5">
+                    <span class="badge bg-primary-subtle text-primary border rounded-pill px-2.5 py-0.5 small fw-bold">Stage-Gate Journey</span>
+                    <h6 class="fw-bold mb-0 text-dark" id="journey-next-step-title">Phase 1: Foundations (60% Completed)</h6>
+                  </div>
+                  <p class="text-muted small mb-0" id="journey-next-step-guidance">
+                    Strengthen your core concepts. Master beginner foundations first, then advance to Core Skills, Practical Projects, and Course Interview Prep.
+                  </p>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold shadow-sm" id="btn-advance-stage-progress" onclick="advanceActiveStageProgress()">
+                  ⚡ Advance Progress (+20%)
+                </button>
+                <button type="button" class="btn btn-sm btn-success rounded-pill px-3 fw-bold shadow-sm" id="btn-complete-stage-gate" onclick="completeCurrentStageGate()">
+                  🎓 Complete Stage &amp; Unlock Next
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5" title="Reset to reference dashboard state" onclick="resetLearningDashboard()">
+                  🔄 Reset
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Row: 3 Primary Cards (Your 90-Day Roadmap | Top Recommendations | Today's Plan) -->
+          <div class="row g-4 mb-4">
+            <!-- CARD 1: Your 90-Day Roadmap -->
+            <div class="col-12 col-lg-4">
+              <div class="journey-card">
+                <div class="journey-card-header">
+                  <h5 class="journey-card-title">Your 90-Day Roadmap</h5>
+                  <span class="badge bg-primary-subtle text-primary rounded-pill small fw-semibold" id="roadmap-overall-badge">15% Total</span>
+                </div>
+
+                <!-- Vertical Timeline -->
+                <div class="roadmap-timeline my-2 flex-grow-1" id="journey-roadmap-timeline">
+                  <!-- Dynamically rendered -->
+                  <div class="text-center py-4 text-muted small">Loading learning roadmap...</div>
+                </div>
+
+                <div class="mt-auto pt-3 border-top border-light">
+                  <a href="study-materials.html" class="journey-footer-link">
+                    <span>View Full Roadmap</span>
+                    <span>&rarr;</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 2: Top Recommendations for You -->
+            <div class="col-12 col-md-6 col-lg-4">
+              <div class="journey-card">
+                <div class="journey-card-header">
+                  <h5 class="journey-card-title">Top Recommendations for You</h5>
+                  <span class="badge bg-primary-subtle text-primary rounded-pill small fw-semibold" id="recommendations-overall-badge">40% Avg</span>
+                </div>
+
+                <!-- Recommendations List -->
+                <div class="d-flex flex-column gap-2.5 my-2 flex-grow-1" id="journey-recommendations-list">
+                  <!-- Dynamically rendered -->
+                  <div class="text-center py-4 text-muted small">Loading recommendations...</div>
+                </div>
+
+                <div class="mt-auto pt-3 border-top border-light">
+                  <a href="study-materials.html" class="journey-footer-link">
+                    <span>View All Recommendations</span>
+                    <span>&rarr;</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 3: Today's Plan -->
+            <div class="col-12 col-md-6 col-lg-4">
+              <div class="journey-card">
+                <div class="journey-card-header">
+                  <div class="d-flex align-items-center gap-2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <h5 class="journey-card-title">Today's Plan</h5>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-success-subtle text-success rounded-pill small fw-semibold" id="today-plan-progress-badge">50% Completed</span>
+                    <span class="text-muted small fw-medium" id="journey-today-date">Oct 28, 2026</span>
+                  </div>
+                </div>
+
+                <!-- Daily Plan Mini Progress Bar -->
+                <div class="progress mb-2" style="height: 4px; border-radius: 999px; background: #f1f5f9;">
+                  <div class="progress-bar bg-success" id="today-plan-progress-bar" style="width: 50%; border-radius: 999px;"></div>
+                </div>
+
+                <!-- Today's Plan Tasks -->
+                <div class="d-flex flex-column gap-2.5 my-2 flex-grow-1" id="journey-todays-plan-list">
+                  <!-- Dynamically rendered -->
+                  <div class="text-center py-4 text-muted small">Loading today's study plan...</div>
+                </div>
+
+                <div class="mt-auto pt-3 border-top border-light">
+                  <a href="study-materials.html" class="journey-footer-link">
+                    <span>View Full Plan</span>
+                    <span>&rarr;</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Row: Recent Progress & Strengths/Focus Areas -->
+          <div class="row g-4">
+            <!-- CARD 4: Recent Progress -->
+            <div class="col-12 col-lg-8">
+              <div class="journey-card">
+                <div class="journey-card-header mb-3">
+                  <h5 class="journey-card-title">Recent Progress</h5>
+                </div>
+
+                <div class="row g-3 py-1">
+                  <!-- Stat 1: Courses Completed -->
+                  <div class="col-6 col-sm-3">
+                    <div class="recent-stat-box">
+                      <div class="recent-stat-icon purple">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <div class="text-secondary small fw-medium" style="font-size: 0.78rem;">Courses Completed</div>
+                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;" id="journey-stat-courses">4</div>
+                        <div class="fw-semibold text-success" style="font-size: 0.72rem;">+1 this week</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Stat 2: Projects Built -->
+                  <div class="col-6 col-sm-3">
+                    <div class="recent-stat-box">
+                      <div class="recent-stat-icon purple">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <div class="text-secondary small fw-medium" style="font-size: 0.78rem;">Projects Built</div>
+                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;" id="journey-stat-projects">2</div>
+                        <div class="fw-semibold text-success" style="font-size: 0.72rem;">+1 this week</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Stat 3: Hours Learned -->
+                  <div class="col-6 col-sm-3">
+                    <div class="recent-stat-box">
+                      <div class="recent-stat-icon purple">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                      </div>
+                      <div>
+                        <div class="text-secondary small fw-medium" style="font-size: 0.78rem;">Hours Learned</div>
+                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;" id="journey-stat-hours">18.5</div>
+                        <div class="fw-semibold text-success" style="font-size: 0.72rem;">+4.5 this week</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Stat 4: Streak -->
+                  <div class="col-6 col-sm-3">
+                    <div class="recent-stat-box">
+                      <div class="recent-stat-icon orange">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <div class="text-secondary small fw-medium" style="font-size: 0.78rem;">Streak</div>
+                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;"><span id="journey-stat-streak">7</span> <span class="fw-normal text-muted" style="font-size: 0.95rem;">days</span></div>
+                        <div class="text-muted small" style="font-size: 0.72rem;">Active Daily Habit</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 5: Strengths & Focus Areas -->
+            <div class="col-12 col-lg-4">
+              <div class="journey-card">
+                <div class="mb-4">
+                  <h6 class="fw-bold text-dark mb-3" style="font-size: 0.95rem;">Strengths</h6>
+                  <div class="d-flex flex-wrap gap-2" id="journey-strengths-pills">
+                    <!-- Rendered dynamically -->
+                  </div>
+                </div>
+
+                <div>
+                  <h6 class="fw-bold text-dark mb-3" style="font-size: 0.95rem;">Focus Areas</h6>
+                  <div class="d-flex flex-wrap gap-2" id="journey-focus-areas-pills">
+                    <!-- Rendered dynamically -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STAGE-GATE DETAIL & INTERVIEW PREP MODAL -->
+        <div class="modal fade" id="stageGateDetailModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+              <div class="modal-header border-bottom p-4 pb-3">
+                <div class="d-flex align-items-center gap-3">
+                  <div id="stage-modal-icon" class="fs-3 p-2.5 rounded-3 bg-light shadow-sm" style="line-height: 1;">🚀</div>
+                  <div>
+                    <h5 class="modal-title fw-bold text-dark mb-0" id="stage-modal-title">Phase Details</h5>
+                    <span id="stage-modal-level-badge" class="badge bg-primary-subtle text-primary rounded-pill small">Beginner Level</span>
+                  </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-4" id="stage-modal-body">
+                <!-- Content dynamically injected -->
+              </div>
+              <div class="modal-footer border-top p-3 px-4 d-flex justify-content-between">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Close</button>
+                <div class="d-flex gap-2" id="stage-modal-actions">
+                  <!-- Dynamic action buttons -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campus Placement Readiness & Preparation Streak Banner -->
+        <div class="card border-0 shadow-sm mb-4 overflow-hidden" id="dash-readiness-card" style="border-radius: 20px; background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); border-left: 5px solid #10b981 !important;">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-4">
+              <div class="d-flex align-items-center gap-3">
+                <div class="p-3 rounded-circle text-white shadow-sm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); font-size: 1.75rem;">
+                  🎯
+                </div>
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <h5 class="fw-bold mb-0 text-dark">Placement Readiness Score</h5>
+                    <span id="readiness-score-badge" class="badge bg-success-subtle text-success border px-2.5 py-1 rounded-pill fw-bold">Calculating...</span>
+                    <span id="readiness-streak-badge" class="badge bg-warning-subtle text-warning border px-2.5 py-1 rounded-pill fw-bold">🔥 1 Day Streak</span>
+                  </div>
+                  <p class="text-muted small mb-0" id="readiness-summary-desc">
+                    Composite score based on Aptitude tests, Coding challenges, Resume ATS, and AI Mock Interviews.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Quick Action Buttons -->
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <a href="aptitude-test.html" class="btn btn-sm btn-primary fw-bold px-3 py-2 rounded-pill shadow-sm">
+                  🧠 Practice Aptitude &rarr;
+                </a>
+                <a href="study-materials.html" class="btn btn-sm btn-outline-primary fw-bold px-3 py-2 rounded-pill">
+                  📚 Study Materials &rarr;
+                </a>
+                <a href="coding-assessment.html" class="btn btn-sm btn-outline-secondary fw-semibold px-3 py-2 rounded-pill">
+                  💻 Coding Lab
+                </a>
+                <a href="interview.html" class="btn btn-sm btn-outline-secondary fw-semibold px-3 py-2 rounded-pill">
+                  🎙️ AI Mock Interview
+                </a>
+              </div>
+            </div>
+
+            <!-- Readiness Score Progress Bar & Stats -->
+            <div class="mt-4 pt-3 border-top">
+              <div class="d-flex justify-content-between small fw-bold text-muted mb-1">
+                <span>Placement Preparedness Gauge</span>
+                <span id="readiness-pct-text">0% Ready</span>
+              </div>
+              <div class="progress mb-3" style="height: 12px; border-radius: 6px;">
+                <div id="readiness-progress-bar" class="progress-bar bg-success" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+
+              <div class="row g-3 text-center">
+                <div class="col-6 col-md-3">
+                  <div class="p-2 bg-light rounded-3">
+                    <div class="fw-bold text-dark" id="stat-readiness-aptitude">0%</div>
+                    <div class="text-muted small" style="font-size: 0.75rem;">Avg Aptitude</div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="p-2 bg-light rounded-3">
+                    <div class="fw-bold text-dark" id="stat-readiness-tests">0 Tests</div>
+                    <div class="text-muted small" style="font-size: 0.75rem;">Aptitude Completed</div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="p-2 bg-light rounded-3">
+                    <div class="fw-bold text-dark" id="stat-readiness-coding">0 Solved</div>
+                    <div class="text-muted small" style="font-size: 0.75rem;">Coding Challenges</div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="p-2 bg-light rounded-3">
+                    <div class="fw-bold text-dark" id="stat-readiness-interviews">0 Done</div>
+                    <div class="text-muted small" style="font-size: 0.75rem;">Mock Interviews</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campus Placement Hub: Company Intelligence & 13 In-App Textbooks Banner -->
+        <div class="card border-0 shadow-sm mb-4 overflow-hidden" id="dash-campus-intelligence-card" style="border-radius: 20px; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #1e3a8a 100%); color: #ffffff;">
+          <div class="card-body p-4 p-md-5 position-relative">
+            <div class="position-absolute top-0 end-0 p-4 opacity-10 fs-1 d-none d-md-block" style="font-size: 8rem !important; line-height: 1; pointer-events: none;">🎓</div>
+            
+            <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+              <span class="badge bg-warning text-dark px-3 py-1.5 fw-bold rounded-pill shadow-sm" style="font-size: 0.8rem;">✨ ALL-IN-ONE CAMPUS PLATFORM</span>
+              <span class="badge bg-white bg-opacity-15 text-white px-3 py-1.5 rounded-pill border border-white border-opacity-25 fw-semibold">🏢 12 Top Companies Analyzed</span>
+              <span class="badge bg-white bg-opacity-15 text-white px-3 py-1.5 rounded-pill border border-white border-opacity-25 fw-semibold">📚 13 Prescribed Textbooks</span>
+              <span class="badge bg-success-subtle text-success px-2.5 py-1 rounded-pill fw-bold small">⚡ 30s Speed Protocols</span>
+            </div>
+
+            <div class="row align-items-center g-4">
+              <div class="col-lg-8">
+                <h3 class="fw-bold mb-2 text-white">Campus Interview Training Platform</h3>
+                <p class="text-white-50 mb-4" style="line-height: 1.6; max-width: 720px;">
+                  Complete structured learning experience with zero external searches. Analyze aptitude questions, sectional cutoffs, and 4-week preparation strategies for top recruiters (TCS, Infosys, Amazon, Google, Microsoft, Zoho, etc.), and read all 13 core computer science &amp; aptitude textbooks directly in our in-app reader.
+                </p>
+
+                <div class="row g-3 mb-4">
+                  <div class="col-sm-6 col-md-4">
+                    <div class="p-3 rounded-3 h-100" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.12);">
+                      <div class="fs-4 mb-1">🏢</div>
+                      <div class="fw-bold text-white small">Company Exam Patterns</div>
+                      <div class="text-white-50" style="font-size: 0.75rem;">Weightages, cutoffs, selection rounds &amp; analyzed questions</div>
+                    </div>
+                  </div>
+                  <div class="col-sm-6 col-md-4">
+                    <div class="p-3 rounded-3 h-100" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.12);">
+                      <div class="fs-4 mb-1">📖</div>
+                      <div class="fw-bold text-white small">In-App Textbook Reader</div>
+                      <div class="text-white-50" style="font-size: 0.75rem;">OS, CN, DBMS, DSA, SQL, Quant, Reasoning, Verbal &amp; Python</div>
+                    </div>
+                  </div>
+                  <div class="col-sm-6 col-md-4">
+                    <div class="p-3 rounded-3 h-100" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.12);">
+                      <div class="fs-4 mb-1">⚡</div>
+                      <div class="fw-bold text-white small">Timed Mock Tests</div>
+                      <div class="text-white-50" style="font-size: 0.75rem;">Strict 30s/question placement speed exam simulation</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                  <a href="study-materials.html" class="btn btn-warning fw-bold px-4 py-2.5 rounded-pill shadow text-dark d-inline-flex align-items-center gap-2 hover-lift">
+                    <span>🚀 Open Campus Learning Hub</span>
+                    <span>&rarr;</span>
+                  </a>
+                  <a href="study-materials.html#company-pane" class="btn btn-outline-light fw-semibold px-3 py-2.5 rounded-pill hover-lift">
+                    🏢 Company Intelligence &amp; Mocks
+                  </a>
+                  <a href="study-materials.html#my-track-pane" class="btn btn-outline-light fw-semibold px-3 py-2.5 rounded-pill hover-lift">
+                    📚 In-App Prescribed Books
+                  </a>
+                </div>
+              </div>
+
+              <div class="col-lg-4 text-center d-none d-lg-block">
+                <div class="p-4 rounded-4" style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.1);">
+                  <div class="text-white-50 small mb-2 text-uppercase fw-semibold" style="letter-spacing: 0.05em;">Placement Library Coverage</div>
+                  <div class="d-flex justify-content-around text-center py-2 mb-3">
+                    <div>
+                      <div class="fs-3 fw-bold text-warning">12</div>
+                      <div class="text-white-50 small" style="font-size: 0.72rem;">Top Companies</div>
+                    </div>
+                    <div>
+                      <div class="fs-3 fw-bold text-success">13</div>
+                      <div class="text-white-50 small" style="font-size: 0.72rem;">Core Books</div>
+                    </div>
+                    <div>
+                      <div class="fs-3 fw-bold text-info">100%</div>
+                      <div class="text-white-50 small" style="font-size: 0.72rem;">In-App Content</div>
+                    </div>
+                  </div>
+                  <div class="small text-white-50" style="font-size: 0.75rem; line-height: 1.5;">
+                    Covers TCS, Infosys, Cognizant, Accenture, Amazon, Google, Microsoft, and more with verified chapter-grounded practice banks.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Weekly Placement Arena: Weekly Aptitude & Weekly Coding Challenges -->
+        <div class="card border-0 shadow-sm mb-4 overflow-hidden" id="dash-weekly-arena-card" style="border-radius: 20px; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); color: #ffffff;">
+          <div class="card-body p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4 pb-3 border-bottom border-light border-opacity-10">
+              <div>
+                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                  <span class="badge bg-warning text-dark px-3 py-1.5 fw-bold rounded-pill shadow-sm" style="font-size: 0.8rem;">⚡ NEW WEEKLY CHALLENGES</span>
+                  <span id="weekly-week-badge" class="badge bg-white bg-opacity-10 text-white px-3 py-1.5 rounded-pill border border-white border-opacity-25 fw-semibold">Loading Week...</span>
+                  <span id="weekly-schedule-badge" class="badge bg-info-subtle text-info border border-info border-opacity-25 px-2.5 py-1 rounded-pill small">🔄 Updated Weekly Once (Every Monday 00:00 UTC)</span>
+                  <span class="badge bg-success-subtle text-success px-2.5 py-1 rounded-pill fw-bold small">Live Now</span>
+                </div>
+                <h3 class="fw-bold mb-1 text-white">Campus Placement Challenge Arena</h3>
+                <p class="text-white-50 small mb-0" style="max-width: 650px;">
+                  Updated automatically every week with fresh Quantitative, Logical, Verbal, and Algorithmic coding tasks.
+                  Test yourself, track weekly progress, and climb the competitive placement leaderboard.
+                </p>
+              </div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button id="dash-btn-weekly-leaderboard" class="btn btn-sm btn-outline-light px-3 py-2 rounded-pill fw-semibold shadow-sm d-flex align-items-center gap-1.5" data-bs-toggle="modal" data-bs-target="#weeklyLeaderboardModal">
+                  🏆 View Leaderboard
+                </button>
+                <button id="dash-btn-weekly-history" class="btn btn-sm btn-outline-light px-3 py-2 rounded-pill fw-semibold d-flex align-items-center gap-1.5" data-bs-toggle="modal" data-bs-target="#weeklyHistoryModal">
+                  📜 Weekly History
+                </button>
+              </div>
+            </div>
+
+            <!-- Two Sub-Sections: Weekly Aptitude & Weekly Coding -->
+            <div class="row g-4">
+              <!-- Sub-Section 1: Weekly Aptitude Practice -->
+              <div class="col-lg-6">
+                <div class="p-4 rounded-4 h-100 d-flex flex-column justify-content-between" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px);">
+                  <div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="fs-3 p-2 rounded-3" style="background: rgba(99, 102, 241, 0.25);">🧠</span>
+                        <div>
+                          <h5 class="fw-bold mb-0 text-white" id="dash-weekly-apt-title">Weekly Aptitude Practice</h5>
+                          <span class="text-white-50 small">Quant • Logical • Verbal • Analytical</span>
+                        </div>
+                      </div>
+                      <span id="dash-weekly-apt-status" class="badge bg-secondary px-2.5 py-1.5 rounded-pill small">Not Started</span>
+                    </div>
+
+                    <p class="text-white-50 small mb-3" id="dash-weekly-apt-desc">
+                      10 handpicked placement reasoning questions with comprehensive step-by-step solutions.
+                    </p>
+
+                    <div class="d-flex gap-2 flex-wrap mb-3">
+                      <span id="dash-weekly-apt-duration" class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-10 py-1 px-2.5 rounded-pill small">⏱️ 5 Mins (30s/q)</span>
+                      <span id="dash-weekly-apt-qcount" class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-10 py-1 px-2.5 rounded-pill small">📝 10 Questions</span>
+                      <span class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-10 py-1 px-2.5 rounded-pill small">📊 Easy, Med, Hard</span>
+                      <span class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-10 py-1 px-2.5 rounded-pill small">🎯 Pass: 60%</span>
+                    </div>
+
+                    <div class="p-3 rounded-3 mb-3" style="background: rgba(0, 0, 0, 0.25);">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-white-50 small">Your Week Score:</span>
+                        <span class="fw-bold text-white fs-5" id="dash-weekly-apt-score">—</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-2 pt-2">
+                    <a href="aptitude-test.html?mode=weekly" class="btn btn-primary fw-bold flex-grow-1 py-2.5 rounded-pill shadow-sm text-center" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); border: none;" id="dash-weekly-apt-action-btn">
+                      🚀 Start Weekly Aptitude &rarr;
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sub-Section 2: Weekly Coding Challenge -->
+              <div class="col-lg-6">
+                <div class="p-4 rounded-4 h-100 d-flex flex-column justify-content-between" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px);">
+                  <div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="fs-3 p-2 rounded-3" style="background: rgba(16, 185, 129, 0.25);">💻</span>
+                        <div>
+                          <h5 class="fw-bold mb-0 text-white" id="dash-weekly-coding-title">Weekly Coding Challenge</h5>
+                          <span class="text-white-50 small">Python • JavaScript • Java • C++</span>
+                        </div>
+                      </div>
+                      <span id="dash-weekly-coding-status" class="badge bg-secondary px-2.5 py-1.5 rounded-pill small">Not Started</span>
+                    </div>
+
+                    <p class="text-white-50 small mb-3" id="dash-weekly-coding-desc">
+                      3 multi-tier algorithmic challenges with constraints, sample cases, and automated sandbox scoring.
+                    </p>
+
+                    <div class="d-flex gap-2 flex-wrap mb-3">
+                      <span class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-10 py-1 px-2.5 rounded-pill small">⏱️ 60 Mins</span>
+                      <span class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-10 py-1 px-2.5 rounded-pill small">⚡ 3 Problems</span>
+                      <span class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-10 py-1 px-2.5 rounded-pill small">📊 Easy, Med, Hard</span>
+                      <span class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-10 py-1 px-2.5 rounded-pill small">🎯 Pass: 60%</span>
+                    </div>
+
+                    <div class="p-3 rounded-3 mb-3" style="background: rgba(0, 0, 0, 0.25);">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-white-50 small">Your Coding Score:</span>
+                        <span class="fw-bold text-white fs-5" id="dash-weekly-coding-score">—</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-2 pt-2">
+                    <a href="coding-assessment.html?mode=weekly" class="btn btn-success fw-bold flex-grow-1 py-2.5 rounded-pill shadow-sm text-center" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none;" id="dash-weekly-coding-action-btn">
+                      🚀 Start Coding Challenge &rarr;
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PROGRAMMING TOPICS FOR CODING PRACTICE (12 Structured Patterns) -->
+            <div class="pt-4 border-top border-light border-opacity-10 mt-4">
+              <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="fs-4">💻</span>
+                    <h5 class="fw-bold text-white mb-0">Programming Topics for Coding Practice</h5>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small">Multi-Language: Python • JS • Java • C++</span>
+                  </div>
+                  <p class="text-white-50 small mb-0">
+                    Structured problem catalog covering all core placement coding patterns with interactive sandbox editor and public test cases.
+                  </p>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <span id="dash-coding-topics-counter" class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-10 py-1.5 px-3 rounded-pill small">12 Topics Available</span>
+                  <a href="coding-assessment.html?mode=practice" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1.5 fw-semibold hover-lift">
+                    💻 Open Code Editor &rarr;
+                  </a>
+                </div>
+              </div>
+
+              <!-- Programming Topics Grid -->
+              <div class="row g-3" id="dash-programming-topics-grid">
+                <div class="col-12 text-center py-3 text-white-50">
+                  <div class="spinner-border spinner-border-sm text-light me-2" role="status"></div> Loading programming topics...
+                </div>
+              </div>
+            </div>
+
+            <!-- APTITUDE CONTENT PREPARATION (Structured Same Way) -->
+            <div class="pt-4 border-top border-light border-opacity-10 mt-4">
+              <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="fs-4">🧠</span>
+                    <h5 class="fw-bold text-white mb-0">Aptitude Content Preparation</h5>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill small">Weekly Updated Content</span>
+                  </div>
+                  <p class="text-white-50 small mb-0">
+                    Comprehensive campus aptitude tracks prepared in the exact same structured way with company focus &amp; detailed solutions.
+                  </p>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <span id="dash-aptitude-topics-counter" class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-10 py-1.5 px-3 rounded-pill small">4 Key Placement Tracks</span>
+                  <a href="aptitude-test.html" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1.5 fw-semibold hover-lift">
+                    📊 Open Aptitude Lab &rarr;
+                  </a>
+                </div>
+              </div>
+
+              <!-- Aptitude Topics Grid -->
+              <div class="row g-3" id="dash-aptitude-topics-grid">
+                <div class="col-12 text-center py-3 text-white-50">
+                  <div class="spinner-border spinner-border-sm text-light me-2" role="status"></div> Loading aptitude preparation tracks...
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
         <!-- Real-Time Selection & Shortlist Status Alert Banner -->
         <div id="dash-status-alert-banner" class="alert d-none py-3 px-4 mb-4 border-0 shadow-sm" role="alert" style="border-radius: 16px;"></div>
+
+        <!-- Candidate Portfolio Builder Status Card -->
+        <div class="card border-0 shadow-sm mb-4 overflow-hidden" id="dash-portfolio-card" style="border-radius: 18px; background: linear-gradient(135deg, #f8faff 0%, #ffffff 100%); border-left: 5px solid #4f46e5 !important;">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+              <div class="d-flex align-items-center gap-3">
+                <div class="p-3 rounded-circle text-white shadow-sm" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); font-size: 1.5rem;">
+                  🌐
+                </div>
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <h5 class="fw-bold mb-0 text-dark">Personal Portfolio Website</h5>
+                    <span id="dash-portfolio-status-badge" class="badge bg-secondary-subtle text-secondary px-2 py-1 small rounded-pill">Draft</span>
+                    <span id="dash-portfolio-theme-badge" class="badge bg-primary-subtle text-primary border px-2 py-1 small rounded-pill">Theme: Modern</span>
+                  </div>
+                  <p class="text-muted small mb-0" id="dash-portfolio-desc">
+                    AI-powered responsive website generator. Showcase your skills, experience, and projects to recruiters.
+                  </p>
+                  <div id="dash-portfolio-url-container" class="small mt-1 text-primary fw-semibold d-none">
+                    Public URL: <a id="dash-portfolio-url-link" href="#" target="_blank" class="text-decoration-underline text-primary">/portfolio/candidate</a>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button id="dash-btn-copy-link" class="btn btn-sm btn-outline-secondary fw-semibold d-none">
+                  📋 Copy Link
+                </button>
+                <a id="dash-btn-view-portfolio" href="#" target="_blank" class="btn btn-sm btn-outline-primary fw-semibold d-none">
+                  👁️ View Portfolio
+                </a>
+                <button id="dash-btn-delete-portfolio" class="btn btn-sm btn-outline-danger fw-semibold d-none" title="Delete Portfolio">
+                  🗑️ Delete
+                </button>
+                <a href="portfolio-builder.html" class="btn btn-sm btn-primary fw-bold px-3 shadow-sm d-flex align-items-center gap-1" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); border: none;">
+                  ✨ <span id="dash-portfolio-action-text">Manage Portfolio</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div class="row g-3 mb-4">
           <div class="col-6 col-xl-2 col-md-4">
@@ -454,6 +1113,34 @@
               </div>
             </div>
 
+            <!-- College & Academic Credentials -->
+            <h6 class="fw-bold text-dark border-bottom pb-2 mb-3 mt-4">🎓 College &amp; Academic Information</h6>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="edit-cand-college" class="form-label">College / University Name</label>
+                <input type="text" id="edit-cand-college" class="form-control" placeholder="e.g. Stanford University / IIT / NIT / State Univ" />
+              </div>
+              <div class="col-md-6">
+                <label for="edit-cand-degree" class="form-label">Degree</label>
+                <input type="text" id="edit-cand-degree" class="form-control" placeholder="e.g. B.Tech / B.E. / BCA / MCA / B.Sc" />
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <label for="edit-cand-branch" class="form-label">Major / Branch</label>
+                <input type="text" id="edit-cand-branch" class="form-control" placeholder="e.g. Computer Science & Eng" />
+              </div>
+              <div class="col-md-4">
+                <label for="edit-cand-grad-year" class="form-label">Graduation Year</label>
+                <input type="number" id="edit-cand-grad-year" class="form-control" placeholder="2025" min="2020" max="2032" />
+              </div>
+              <div class="col-md-4">
+                <label for="edit-cand-cgpa" class="form-label">CGPA / Percentage</label>
+                <input type="number" step="0.01" id="edit-cand-cgpa" class="form-control" placeholder="8.50" min="0" max="10" />
+              </div>
+            </div>
+
             <div class="row g-3 mb-3">
               <div class="col-md-6">
                 <label for="edit-cand-photo" class="form-label">Profile Photo URL</label>
@@ -535,6 +1222,173 @@
         <div class="modal-footer border-top bg-light p-3">
           <button type="button" class="btn btn-secondary px-4 fw-semibold" data-bs-dismiss="modal">Close</button>
         </div>
+  <!-- Weekly Leaderboard Modal -->
+  <div class="modal fade" id="weeklyLeaderboardModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+        <div class="modal-header border-bottom p-3 bg-white">
+          <div class="d-flex align-items-center gap-2">
+            <span class="fs-4">🏆</span>
+            <div>
+              <h5 class="modal-title fw-bold mb-0">Weekly Placement Arena Leaderboard</h5>
+              <span class="text-muted small">Real-time rankings based on score percentage and speed</span>
+            </div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <!-- Toggle Tabs: Aptitude vs Coding -->
+          <ul class="nav nav-pills nav-fill mb-3 p-1 bg-light rounded-pill" role="tablist">
+            <li class="nav-item">
+              <button class="nav-link active rounded-pill fw-bold" id="tab-btn-lb-apt" data-bs-toggle="pill" data-bs-target="#tab-lb-apt" type="button">
+                🧠 Aptitude Rankings
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link rounded-pill fw-bold" id="tab-btn-lb-coding" data-bs-toggle="pill" data-bs-target="#tab-lb-coding" type="button">
+                💻 Coding Rankings
+              </button>
+            </li>
+          </ul>
+
+          <div class="tab-content">
+            <!-- Aptitude Tab -->
+            <div class="tab-pane fade show active" id="tab-lb-apt" role="tabpanel">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light small">
+                    <tr>
+                      <th style="width: 70px;">Rank</th>
+                      <th>Candidate</th>
+                      <th>Score</th>
+                      <th>Time</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="lb-apt-tbody">
+                    <tr>
+                      <td colspan="5" class="text-center py-4 text-muted">
+                        <div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading aptitude leaderboard...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Coding Tab -->
+            <div class="tab-pane fade" id="tab-lb-coding" role="tabpanel">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light small">
+                    <tr>
+                      <th style="width: 70px;">Rank</th>
+                      <th>Candidate</th>
+                      <th>Score</th>
+                      <th>Time</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="lb-coding-tbody">
+                    <tr>
+                      <td colspan="5" class="text-center py-4 text-muted">
+                        <div class="spinner-border spinner-border-sm text-success me-2"></div>Loading coding leaderboard...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-top bg-light p-3 d-flex justify-content-between align-items-center">
+          <span class="text-muted small">🔒 Privacy: Real names are masked to other students when Anonymous mode is active.</span>
+          <button type="button" class="btn btn-secondary px-4 fw-semibold" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weekly History Modal -->
+  <div class="modal fade" id="weeklyHistoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+        <div class="modal-header border-bottom p-3 bg-white">
+          <div class="d-flex align-items-center gap-2">
+            <span class="fs-4">📜</span>
+            <div>
+              <h5 class="modal-title fw-bold mb-0">Your Weekly Challenge Progress History</h5>
+              <span class="text-muted small">Track your week-by-week score trends and placement growth</span>
+            </div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <!-- Toggle Tabs: Aptitude History vs Coding History -->
+          <ul class="nav nav-pills nav-fill mb-3 p-1 bg-light rounded-pill" role="tablist">
+            <li class="nav-item">
+              <button class="nav-link active rounded-pill fw-bold" id="tab-btn-hist-apt" data-bs-toggle="pill" data-bs-target="#tab-hist-apt" type="button">
+                🧠 Aptitude Practice History
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link rounded-pill fw-bold" id="tab-btn-hist-coding" data-bs-toggle="pill" data-bs-target="#tab-hist-coding" type="button">
+                💻 Coding Challenges History
+              </button>
+            </li>
+          </ul>
+
+          <div class="tab-content">
+            <!-- Aptitude History Tab -->
+            <div class="tab-pane fade show active" id="tab-hist-apt" role="tabpanel">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light small">
+                    <tr>
+                      <th>Week</th>
+                      <th>Challenge Title</th>
+                      <th>Score</th>
+                      <th>Correct / Total</th>
+                      <th>Time Spent</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="hist-apt-tbody">
+                    <tr>
+                      <td colspan="6" class="text-center py-4 text-muted">Loading your past aptitude attempts...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Coding History Tab -->
+            <div class="tab-pane fade" id="tab-hist-coding" role="tabpanel">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light small">
+                    <tr>
+                      <th>Week</th>
+                      <th>Challenge Title</th>
+                      <th>Score</th>
+                      <th>Result</th>
+                      <th>Time Spent</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="hist-coding-tbody">
+                    <tr>
+                      <td colspan="6" class="text-center py-4 text-muted">Loading your past coding attempts...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-top bg-light p-3">
+          <button type="button" class="btn btn-secondary px-4 fw-semibold" data-bs-dismiss="modal">Close</button>
+        </div>
       </div>
     </div>
   </div>
@@ -544,6 +1398,7 @@
   <script src="js/api.js"></script>
   <script src="js/auth-guard.js"></script>
   <script src="js/dashboard.js"></script>
+  <script src="js/candidate-learning-journey.js"></script>
   <script src="js/candidate-dashboard.js"></script>
   <script src="js/chat.js"></script>
   <script src="js/mobile-nav.js"></script>

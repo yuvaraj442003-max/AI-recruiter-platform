@@ -204,4 +204,5 @@ def test_candidate_can_delete_profile(client):
 
     # Verify profile is gone
     get_res = client.get("/api/v1/resumes/me", headers={"Authorization": f"Bearer {candidate_token}"})
-    assert get_res.status_code == 404
+    assert get_res.status_code == 200
+    assert get_res.json()["data"] is None
