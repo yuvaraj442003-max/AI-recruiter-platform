@@ -25,7 +25,6 @@ Each chapter strictly includes:
 import os
 import sys
 import json
-import sqlite3
 from pathlib import Path
 
 # Add backend directory to sys.path

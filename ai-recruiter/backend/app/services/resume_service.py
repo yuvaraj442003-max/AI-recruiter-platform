@@ -159,23 +159,88 @@ def process_resume(
     profile.education = new_education or profile.education
     profile.work_experience = new_work_exp or profile.work_experience
 
-    extracted_name = fields.get("name")
+    # Extract rich structured fields from resume as single source of truth
+    from app.services.resume_autofill_service import extract_candidate_autofill_fields
+    autofill = {}
+    try:
+        autofill = extract_candidate_autofill_fields(file_bytes, original_filename)
+    except Exception as e:
+        logger.warning(f"autofill extraction in process_resume failed: {e}")
+
+    extracted_name = autofill.get("name") or fields.get("name")
     if extracted_name and isinstance(extracted_name, str) and len(extracted_name.strip()) >= 2:
+        clean_name = extracted_name.strip()
+        profile.full_name = clean_name
         from app.models.user import User
         user_obj = profile.user or db.get(User, user_id)
-        if user_obj and (not user_obj.name or user_obj.name.strip() in ("", "Test User", "Candidate", "User")):
-            user_obj.name = extracted_name.strip()
+        if user_obj:
+            user_obj.name = clean_name
             db.add(user_obj)
 
     extracted_certs = fields.get("certifications_text") or fields.get("certifications")
     if extracted_certs:
         profile.certifications = ", ".join(extracted_certs) if isinstance(extracted_certs, list) else str(extracted_certs)
 
-    profile.headline = fields.get("headline") or profile.headline
-    profile.current_role = fields.get("current_role") or fields.get("headline") or profile.current_role
+    profile.headline = autofill.get("headline") or fields.get("headline") or profile.headline
+    profile.current_role = autofill.get("current_role") or fields.get("current_role") or fields.get("headline") or profile.current_role
     if not profile.headline and extracted_skills:
         profile.headline = f"{extracted_skills[0]} Specialist"
         profile.current_role = profile.headline
+
+    if autofill.get("location") or fields.get("location"):
+        profile.location = autofill.get("location") or fields.get("location")
+    if autofill.get("phone") or fields.get("phone"):
+        profile.phone = autofill.get("phone") or fields.get("phone")
+
+    # Academic credentials extracted from resume
+    if autofill.get("college"):
+        profile.college_name = autofill.get("college")
+    if autofill.get("degree"):
+        profile.degree = autofill.get("degree")
+    if autofill.get("branch"):
+        profile.branch = autofill.get("branch")
+    if autofill.get("graduation_year"):
+        try:
+            profile.graduation_year = int(str(autofill.get("graduation_year")).strip())
+        except (ValueError, TypeError):
+            pass
+    if autofill.get("cgpa"):
+        try:
+            profile.cgpa = float(str(autofill.get("cgpa")).strip())
+        except (ValueError, TypeError):
+            pass
+
+    # 12th Grade
+    if autofill.get("twelfth_school"):
+        profile.twelfth_school = autofill.get("twelfth_school")
+    if autofill.get("twelfth_board"):
+        profile.twelfth_board = autofill.get("twelfth_board")
+    if autofill.get("twelfth_year"):
+        try:
+            profile.twelfth_year = int(str(autofill.get("twelfth_year")).strip())
+        except (ValueError, TypeError):
+            pass
+    if autofill.get("twelfth_percentage"):
+        try:
+            profile.twelfth_percentage = float(str(autofill.get("twelfth_percentage")).strip())
+        except (ValueError, TypeError):
+            pass
+
+    # 10th Grade
+    if autofill.get("tenth_school"):
+        profile.tenth_school = autofill.get("tenth_school")
+    if autofill.get("tenth_board"):
+        profile.tenth_board = autofill.get("tenth_board")
+    if autofill.get("tenth_year"):
+        try:
+            profile.tenth_year = int(str(autofill.get("tenth_year")).strip())
+        except (ValueError, TypeError):
+            pass
+    if autofill.get("tenth_percentage"):
+        try:
+            profile.tenth_percentage = float(str(autofill.get("tenth_percentage")).strip())
+        except (ValueError, TypeError):
+            pass
 
     if fields.get("linkedin_url"):
         profile.linkedin_url = fields.get("linkedin_url")
@@ -302,10 +367,25 @@ def update_candidate_profile(
     if "work_experience" in update_data and update_data["work_experience"] is not None:
         profile.work_experience = update_data["work_experience"]
 
-    # LinkedIn-Style Professional Profile Fields
-    for field in ["profile_photo", "headline", "current_role", "certifications", "portfolio_url", "linkedin_url", "github_url", "other_links"]:
+    # LinkedIn-Style Professional Profile Fields & College/Academic Credentials
+    for field in [
+        "full_name", "profile_photo", "headline", "current_role", "certifications",
+        "portfolio_url", "linkedin_url", "github_url", "other_links",
+        "college_name", "degree", "branch", "graduation_year", "cgpa",
+        "twelfth_school", "twelfth_board", "twelfth_year", "twelfth_percentage",
+        "tenth_school", "tenth_board", "tenth_year", "tenth_percentage",
+    ]:
         if field in update_data and update_data[field] is not None:
             setattr(profile, field, update_data[field])
+
+    new_cand_name = update_data.get("full_name") or update_data.get("name")
+    if new_cand_name and isinstance(new_cand_name, str) and new_cand_name.strip():
+        profile.full_name = new_cand_name.strip()
+        from app.models.user import User
+        user_obj = profile.user or db.get(User, profile.user_id)
+        if user_obj:
+            user_obj.name = new_cand_name.strip()
+            db.add(user_obj)
 
     if "skills" in update_data and update_data["skills"] is not None:
         seed_skills(db)

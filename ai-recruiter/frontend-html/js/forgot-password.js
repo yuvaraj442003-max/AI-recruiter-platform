@@ -48,7 +48,14 @@
     setLoading(true);
     try {
       const res = await authAPI.forgotPassword(email);
-      showSuccess(res.message || "Password reset instructions have been sent to your email address.");
+      let successMsg = res.message || "Password reset instructions have been generated.";
+      if (res.data && res.data.reset_url) {
+        alertBox.className = "alert alert-success py-3 mb-4";
+        alertBox.innerHTML = `<div>${successMsg}</div><div class="mt-3"><a href="${res.data.reset_url}" class="btn btn-primary btn-sm w-100 fw-bold">Click here to Reset Password Now &rarr;</a></div>`;
+        alertBox.classList.remove("d-none");
+      } else {
+        showSuccess(successMsg);
+      }
     } catch (err) {
       showError(err.message || "Failed to process forgot password request.");
     } finally {

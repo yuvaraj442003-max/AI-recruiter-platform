@@ -680,14 +680,21 @@ _METRICS_IMPACT_RE = re.compile(
 def extract_certifications(text: str) -> list[str]:
     """Extract certifications list from CERTIFICATIONS section or keyword match."""
     certs_sec = extract_section_text(text, _CERTIFICATION_HEADING_RE)
-    found_certs = []
     if certs_sec:
-        for line in certs_sec.splitlines():
-            clean_l = clean_bullets(line).strip()
-            if clean_l and len(clean_l.split()) <= 15:
-                found_certs.append(clean_l)
-    if found_certs:
-        return found_certs[:8]
+        if re.search(r"[-*•▪]", certs_sec):
+            raw_chunks = [re.sub(r"\s+", " ", c).strip() for c in re.split(r"(?:^|\n)\s*[-*•▪\d.]+\s*", certs_sec) if c.strip()]
+        else:
+            raw_chunks = [clean_bullets(l).strip() for l in certs_sec.splitlines() if clean_bullets(l).strip()]
+
+        clean_certs = []
+        for c in raw_chunks:
+            if not c or len(c) < 3 or re.search(r"\b(cgpa|gpa|percentage|passed with|completed with|\d+%\b)", c, re.I):
+                continue
+            if not any(h in c.lower() for h in ["education", "experience", "skills", "projects", "languages"]):
+                clean_certs.append(c)
+
+        if clean_certs:
+            return clean_certs[:20]
 
     matches = set(_CERTIFICATION_RE.findall(text))
     return sorted([m.title() for m in matches])
@@ -1298,20 +1305,27 @@ def parse_education_items(edu_text: str, **kwargs) -> list[dict]:
     return clean_items
 
 
-def parse_certifications_items(cert_text: str, fallback_certs: Optional[str] = None, **kwargs) -> list[dict]:
+def parse_certifications_items(cert_text: str = "", fallback_certs: Optional[str] = None, cert_list: Optional[list] = None, **kwargs) -> list[dict]:
     """Parses Certifications section into structured certification objects."""
-    target_text = cert_text or fallback_certs or ""
-    if not target_text or not target_text.strip():
-        return []
-
-    raw_lines = [clean_bullets(l).strip() for l in target_text.splitlines() if clean_bullets(l).strip()]
     lines = []
-    for rl in raw_lines:
-        if ("," in rl or ";" in rl) and len(rl.split()) > 6:
-            parts = [p.strip() for p in re.split(r"[,;]+", rl) if p.strip()]
-            lines.extend(parts)
-        else:
-            lines.append(rl)
+    if cert_list and isinstance(cert_list, list):
+        lines = [clean_bullets(str(c)).strip() for c in cert_list if clean_bullets(str(c)).strip()]
+    elif fallback_certs and ("," in fallback_certs or ";" in fallback_certs):
+        parts = [clean_bullets(p).strip() for p in re.split(r"[,;]+", fallback_certs) if clean_bullets(p).strip()]
+        lines = parts
+    
+    if not lines:
+        target_text = cert_text or fallback_certs or ""
+        if not target_text or not target_text.strip():
+            return []
+
+        raw_lines = [clean_bullets(l).strip() for l in target_text.splitlines() if clean_bullets(l).strip()]
+        for rl in raw_lines:
+            if ("," in rl or ";" in rl) and len(rl.split()) > 6:
+                parts = [p.strip() for p in re.split(r"[,;]+", rl) if p.strip()]
+                lines.extend(parts)
+            else:
+                lines.append(rl)
 
     if not lines:
         return []
@@ -1326,24 +1340,35 @@ def parse_certifications_items(cert_text: str, fallback_certs: Optional[str] = N
         clean_l = year_re.sub("", line).strip(" ,-|()[]")
         org = ""
         name = clean_l
-        for delim in [" - ", " – ", " — ", " | ", " by ", " from ", ": "]:
+        for delim in [" in ", " through ", " from ", " by ", " | ", " - ", " – ", " — ", ": "]:
             if delim in clean_l:
                 p = clean_l.split(delim, 1)
                 p0 = p[0].strip()
                 p1 = p[1].strip()
-                known_orgs = ["aws", "amazon", "google", "microsoft", "coursera", "udemy", "oracle", "cisco", "scrum alliance", "pmi", "edx", "ibm"]
-                if any(ko in p0.lower() for ko in known_orgs):
+                known_orgs = ["aws", "amazon", "google", "microsoft", "coursera", "udemy", "oracle", "cisco", "scrum alliance", "pmi", "edx", "ibm", "red hat", "great learning", "futureskills", "naan mudhalvan"]
+                if delim in [" in ", " through ", " from ", " by "]:
+                    name = p0
+                    org = p1
+                elif any(ko in p0.lower() for ko in known_orgs):
                     org = p0
                     name = p1
+                elif any(ko in p1.lower() for ko in known_orgs):
+                    name = p0
+                    org = p1
                 else:
                     name = p0
                     org = p1
                 break
 
+        # Clean "Completed " or "Certified " prefix from title if present
+        clean_name = re.sub(r"^(?:completed|certified\s+in|certification\s+in)\s+", "", name, flags=re.I).strip()
+        if clean_name:
+            name = clean_name
+
         if name:
             items.append({
                 "name": name,
-                "organization": org,
+                "organization": org.strip(" .,"),
                 "year": y_match.group(0) if y_match else None,
             })
 
@@ -1403,7 +1428,7 @@ def parse_resume_fields(raw_text: str) -> dict:
     cert_sec_text = extract_section_text(text, _CERTIFICATION_HEADING_RE)
     if not cert_sec_text and certs:
         cert_sec_text = "\n".join(certs)
-    parsed_cert_items = parse_certifications_items(cert_sec_text, fallback_certs=", ".join(certs) if certs else None)
+    parsed_cert_items = parse_certifications_items(cert_sec_text, fallback_certs=", ".join(certs) if certs else None, cert_list=certs)
 
     return {
         "name": extract_name(text, entities),

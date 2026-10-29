@@ -96,6 +96,15 @@ class ToggleTaskRequest(BaseModel):
     task_id: str
 
 
+class SelectCourseTrackRequest(BaseModel):
+    course_id: str
+
+
+class CompleteTopicRequest(BaseModel):
+    topic_id: str
+    phase_num: int = 1
+
+
 @router.get("/learning-journey", response_model=APIResponse[Dict[str, Any]])
 def get_learning_journey(
     current_user: User = Depends(require_role(UserRole.candidate)),
@@ -156,6 +165,42 @@ def reset_learning_journey_dashboard(
     from app.services.candidate_learning_journey_service import reset_to_reference_dashboard
     data = reset_to_reference_dashboard(db, current_user.id)
     return APIResponse(success=True, message="Reset to reference dashboard state", data=data)
+
+
+@router.post("/learning-journey/select-course", response_model=APIResponse[Dict[str, Any]])
+def select_learning_course_track(
+    payload: SelectCourseTrackRequest,
+    current_user: User = Depends(require_role(UserRole.candidate)),
+    db: Session = Depends(get_db),
+):
+    """Switches the candidate's active learning roadmap & curriculum to the chosen course (e.g. Java, Python, DSA, Web Dev)."""
+    from app.services.candidate_learning_journey_service import select_candidate_course
+    data = select_candidate_course(db, current_user.id, payload.course_id)
+    return APIResponse(success=True, message=f"Selected course {payload.course_id}", data=data)
+
+
+@router.get("/learning-journey/curriculum/{course_id}", response_model=APIResponse[Dict[str, Any]])
+def get_course_curriculum_endpoint(
+    course_id: str,
+    current_user: User = Depends(require_role(UserRole.candidate)),
+    db: Session = Depends(get_db),
+):
+    """Returns complete 10-chapter curriculum, practical coding exercises, projects, and interview preparation for the course."""
+    from app.services.candidate_learning_journey_service import get_course_curriculum_details
+    data = get_course_curriculum_details(course_id)
+    return APIResponse(success=True, message=f"{course_id} course curriculum", data=data)
+
+
+@router.post("/learning-journey/complete-topic", response_model=APIResponse[Dict[str, Any]])
+def complete_learning_topic(
+    payload: CompleteTopicRequest,
+    current_user: User = Depends(require_role(UserRole.candidate)),
+    db: Session = Depends(get_db),
+):
+    """Marks a topic or exercise complete in the student's learning journey and dynamically advances progress."""
+    from app.services.candidate_learning_journey_service import complete_course_topic
+    res = complete_course_topic(db, current_user.id, payload.topic_id, payload.phase_num)
+    return APIResponse(success=True, message=res.get("message", "Topic status updated"), data=res)
 
 
 @router.get("/roadmaps/all", response_model=APIResponse[List[LearningRoadmapOut]])
@@ -720,6 +765,69 @@ PREDEFINED_AVAILABLE_TOPICS = [
         "description": "AWS, Azure, GCP core services, Cloud Design Patterns, Serverless (Lambda), Kubernetes, Microservices, Terraform (IaC).",
         "popular": True,
         "subtopics_preview": ["AWS Core Services (EC2, S3, RDS, IAM)", "Kubernetes (K8s) & Containers", "Serverless Architecture & Lambda", "Terraform & Cloud Security"],
+    },
+    {
+        "id": "aws",
+        "name": "AWS (Amazon Web Services)",
+        "category": "Web & Cloud Technologies",
+        "icon": "🚀",
+        "description": "AWS EC2, S3, RDS, DynamoDB, Lambda, VPC, IAM, API Gateway, CloudFront, Route53, and Solutions Architecture.",
+        "popular": True,
+        "subtopics_preview": ["Compute & Storage (EC2, S3, EBS)", "Networking & Security (VPC, IAM)", "Databases (RDS, Aurora, DynamoDB)", "Serverless Architecture (Lambda, API Gateway)"],
+    },
+    {
+        "id": "cybersecurity",
+        "name": "Cybersecurity & Ethical Hacking",
+        "category": "Security & Quality Assurance",
+        "icon": "🛡️",
+        "description": "Threat Modeling, OWASP Top 10, Network Defense, Cryptography, Identity & Access Management, SOC Analysis, and Incident Response.",
+        "popular": True,
+        "subtopics_preview": ["OWASP Top 10 Web Security", "Network Protocols & Defense", "Cryptography & PKI", "Incident Response & SOC Analysis"],
+    },
+    {
+        "id": "devops",
+        "name": "DevOps & SRE",
+        "category": "Web & Cloud Technologies",
+        "icon": "🔄",
+        "description": "Continuous Integration / Continuous Delivery (CI/CD), Docker, Kubernetes, Terraform, Helm, Monitoring (Prometheus/Grafana), and Site Reliability Engineering.",
+        "popular": True,
+        "subtopics_preview": ["CI/CD Pipelines (GitHub Actions/Jenkins)", "Docker Containerization", "Kubernetes (K8s) Cluster Orchestration", "Terraform Infrastructure as Code (IaC)"],
+    },
+    {
+        "id": "gen-ai",
+        "name": "Generative AI & LLMs",
+        "category": "AI, Data & Emerging Tech",
+        "icon": "✨",
+        "description": "Prompt Engineering, Few-Shot Prompting, Retrieval-Augmented Generation (RAG), LangChain, LlamaIndex, Vector Databases, and Autonomous Agents.",
+        "popular": True,
+        "subtopics_preview": ["Prompt Engineering & In-Context Learning", "Retrieval-Augmented Generation (RAG)", "Vector Embeddings & Chroma/FAISS", "Autonomous Agents & Function Calling"],
+    },
+    {
+        "id": "deep-learning",
+        "name": "Deep Learning & Neural Networks",
+        "category": "AI, Data & Emerging Tech",
+        "icon": "🧠",
+        "description": "Backpropagation, Optimization, Convolutional Neural Networks (CNNs), Recurrent Neural Networks (RNNs/LSTMs), Transformers, and PyTorch.",
+        "popular": True,
+        "subtopics_preview": ["Multi-Layer Perceptrons & Backpropagation", "PyTorch Tensors & Training Loops", "CNNs for Computer Vision", "Transformers & Self-Attention Mechanics"],
+    },
+    {
+        "id": "software-testing",
+        "name": "Software Testing & QA Automation",
+        "category": "Security & Quality Assurance",
+        "icon": "🧪",
+        "description": "Test Methodologies, Black/White Box, Selenium WebDriver, PyTest/JUnit, REST API Testing (Postman/RestAssured), Performance Testing, and CI Quality Gates.",
+        "popular": True,
+        "subtopics_preview": ["Unit & Integration Testing Principles", "Selenium WebDriver Test Automation", "REST API Automation (Postman/RestAssured)", "CI/CD Quality Gates & Test Reporting"],
+    },
+    {
+        "id": "data-science",
+        "name": "Data Science & Analytics",
+        "category": "AI, Data & Emerging Tech",
+        "icon": "📊",
+        "description": "Exploratory Data Analysis, Pandas, NumPy, Scikit-Learn, Feature Engineering, Hypothesis Testing, and Dashboards.",
+        "popular": True,
+        "subtopics_preview": ["Pandas & NumPy Data Wrangling", "Exploratory Data Analysis (EDA)", "Statistical Inference & A/B Testing", "Supervised Scikit-Learn Models"],
     },
 ]
 

@@ -1545,7 +1545,7 @@ def _seed_roadmaps(db: Session) -> None:
                                 "It executes once for the entire query before the outer query.",
                                 "It references columns from the outer query and executes once for each candidate row.",
                                 "It cannot contain WHERE clauses.",
-                                "It only works with SQLite."
+                                "It only works with temporary tables."
                             ],
                             "correct_option_index": 1,
                             "explanation": "A correlated subquery references values from the outer query row and is evaluated repeatedly for each row.",
@@ -1855,7 +1855,7 @@ def _seed_roadmaps(db: Session) -> None:
                     "week": 3,
                     "title": "Milestone 3: Database Design & ORM Modeling",
                     "subject": "Web Development",
-                    "description": "PostgreSQL / SQLite, SQLAlchemy ORM, Schema Migrations, and Indexing.",
+                    "description": "PostgreSQL, SQLAlchemy ORM, Schema Migrations, and Indexing.",
                     "topics": ["SQLAlchemy", "PostgreSQL", "Database Design"],
                     "subtopics": ["Declarative Base models", "One-to-Many & Many-to-Many relationships", "Alembic migrations", "Session management & connection pooling"],
                     "practice_questions": [

@@ -1,5 +1,5 @@
 /**
- * login.js — handles login form submit & inline 6-digit OTP email verification on login.html
+ * login.js — handles direct login form submit (Candidate & Recruiter) on login.html
  */
 (function () {
   // Already logged in? Skip straight to the right dashboard.
@@ -15,30 +15,20 @@
   const submitText = document.getElementById("login-submit-text");
   const spinner = document.getElementById("login-spinner");
 
-  // OTP Verification View Elements
-  const otpContainer = document.getElementById("otp-verification-container");
-  const otpInfoAlert = document.getElementById("otp-info-alert");
-  const otpForm = document.getElementById("login-otp-form");
-  const loginOtpBoxes = Array.from(document.querySelectorAll(".login-otp-box"));
-  const verifyOtpSubmit = document.getElementById("verify-otp-submit");
-  const verifyOtpBtnText = document.getElementById("verify-otp-btn-text");
-  const verifyOtpSpinner = document.getElementById("verify-otp-spinner");
-  const resendLoginOtpBtn = document.getElementById("resend-login-otp-btn");
-  const resendTimerSpan = document.getElementById("resend-timer-span");
-  const changeEmailBtn = document.getElementById("change-email-btn");
-  const roleSelectionContainer = document.querySelector("input[name='login-role']")?.closest(".mb-4");
-
-  let currentUnverifiedEmail = "";
-  let resendCountdownTimer = null;
-  let countdownSeconds = 60;
-
   function showError(message) {
     if (!message) {
       alertBox.classList.add("d-none");
       return;
     }
     alertBox.className = "alert alert-danger py-2 small fw-semibold";
-    alertBox.textContent = message;
+    if (message.includes("No account found") || message.includes("register a new account")) {
+      const selectedRole = document.querySelector('input[name="login-role"]:checked')?.value || "recruiter";
+      alertBox.innerHTML = `${message} <a href="register.html?role=${selectedRole}" class="alert-link text-decoration-underline ms-1">Register here &rarr;</a>`;
+    } else if (message.includes("Incorrect password")) {
+      alertBox.innerHTML = `${message} <a href="forgot-password.html" class="alert-link text-decoration-underline ms-1">Reset password &rarr;</a>`;
+    } else {
+      alertBox.textContent = message;
+    }
     alertBox.classList.remove("d-none");
   }
 
@@ -50,156 +40,6 @@
     submitBtn.disabled = isLoading;
     spinner.classList.toggle("d-none", !isLoading);
     submitText.textContent = isLoading ? "Signing in..." : "Sign In \u2192";
-  }
-
-  function startResendTimer() {
-    if (resendCountdownTimer) clearInterval(resendCountdownTimer);
-    countdownSeconds = 60;
-    if (resendLoginOtpBtn) resendLoginOtpBtn.disabled = true;
-    if (resendTimerSpan) resendTimerSpan.textContent = `(${countdownSeconds}s)`;
-
-    resendCountdownTimer = setInterval(() => {
-      countdownSeconds--;
-      if (countdownSeconds <= 0) {
-        clearInterval(resendCountdownTimer);
-        resendCountdownTimer = null;
-        if (resendLoginOtpBtn) resendLoginOtpBtn.disabled = false;
-        if (resendTimerSpan) resendTimerSpan.textContent = "";
-      } else {
-        if (resendTimerSpan) resendTimerSpan.textContent = `(${countdownSeconds}s)`;
-      }
-    }, 1000);
-  }
-
-  function showOTPSection(email) {
-    currentUnverifiedEmail = email;
-    hideError();
-    form.classList.add("d-none");
-    if (roleSelectionContainer) roleSelectionContainer.classList.add("d-none");
-
-    if (otpInfoAlert) {
-      otpInfoAlert.innerHTML = `📩 <strong>Email Not Verified:</strong> A 6-digit OTP code has been sent to <strong>${email}</strong>.`;
-    }
-
-    if (otpContainer) otpContainer.classList.remove("d-none");
-
-    loginOtpBoxes.forEach((b) => (b.value = ""));
-    if (loginOtpBoxes[0]) loginOtpBoxes[0].focus();
-
-    startResendTimer();
-  }
-
-  function hideOTPSection() {
-    if (resendCountdownTimer) clearInterval(resendCountdownTimer);
-    if (otpContainer) otpContainer.classList.add("d-none");
-    form.classList.remove("d-none");
-    if (roleSelectionContainer) roleSelectionContainer.classList.remove("d-none");
-    hideError();
-  }
-
-  if (changeEmailBtn) {
-    changeEmailBtn.addEventListener("click", () => {
-      hideOTPSection();
-      const emailField = document.getElementById("email");
-      if (emailField) {
-        emailField.focus();
-        emailField.select();
-      }
-    });
-  }
-
-  // OTP Box digit navigation
-  loginOtpBoxes.forEach((box, idx) => {
-    box.addEventListener("input", (e) => {
-      const val = e.target.value.replace(/[^0-9]/g, "");
-      e.target.value = val;
-      if (val && idx < loginOtpBoxes.length - 1) {
-        loginOtpBoxes[idx + 1].focus();
-      }
-    });
-
-    box.addEventListener("keydown", (e) => {
-      if (e.key === "Backspace" && !box.value && idx > 0) {
-        loginOtpBoxes[idx - 1].focus();
-      }
-    });
-
-    box.addEventListener("paste", (e) => {
-      e.preventDefault();
-      const pasteData = (e.clipboardData || window.clipboardData).getData("text").replace(/[^0-9]/g, "");
-      if (pasteData) {
-        for (let i = 0; i < loginOtpBoxes.length; i++) {
-          loginOtpBoxes[i].value = pasteData[i] || "";
-        }
-        if (pasteData.length >= 6) {
-          loginOtpBoxes[5].focus();
-        } else {
-          loginOtpBoxes[Math.min(pasteData.length, 5)].focus();
-        }
-      }
-    });
-  });
-
-  // Resend OTP handler with countdown timer reset
-  if (resendLoginOtpBtn) {
-    resendLoginOtpBtn.addEventListener("click", async () => {
-      if (!currentUnverifiedEmail) return;
-      resendLoginOtpBtn.disabled = true;
-      if (resendTimerSpan) resendTimerSpan.textContent = "(Sending...)";
-
-      try {
-        const res = await authAPI.resendOTP(currentUnverifiedEmail);
-        hideError();
-        if (otpInfoAlert) {
-          otpInfoAlert.innerHTML = `📩 <strong>New OTP Sent:</strong> A fresh 6-digit OTP code has been sent to <strong>${currentUnverifiedEmail}</strong>.`;
-        }
-        loginOtpBoxes.forEach((b) => (b.value = ""));
-        if (loginOtpBoxes[0]) loginOtpBoxes[0].focus();
-        startResendTimer();
-      } catch (err) {
-        showError(err.message || "Failed to resend OTP.");
-        resendLoginOtpBtn.disabled = false;
-        if (resendTimerSpan) resendTimerSpan.textContent = "";
-      }
-    });
-  }
-
-  // OTP Submit handler
-  if (otpForm) {
-    otpForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      hideError();
-
-      const otp = loginOtpBoxes.map((b) => b.value.trim()).join("");
-      if (otp.length < 6) {
-        showError("Please enter the complete 6-digit verification code.");
-        return;
-      }
-
-      verifyOtpSubmit.disabled = true;
-      if (verifyOtpSpinner) verifyOtpSpinner.classList.remove("d-none");
-      if (verifyOtpBtnText) verifyOtpBtnText.textContent = "Verifying...";
-
-      try {
-        const res = await authAPI.verifyOTP(currentUnverifiedEmail, otp);
-        Session.save(res.data);
-        const userRole = res.data?.user?.role || res.data?.role || "candidate";
-
-        alertBox.className = "alert alert-success py-2 mb-3 small fw-semibold";
-        alertBox.textContent = "🎉 Email verified successfully! Redirecting to your dashboard...";
-        alertBox.classList.remove("d-none");
-
-        setTimeout(() => {
-          window.location.href = dashboardUrlForRole(userRole);
-        }, 1200);
-      } catch (err) {
-        showError(err.message || "Invalid OTP. Please try again.");
-      } finally {
-        verifyOtpSubmit.disabled = false;
-        if (verifyOtpSpinner) verifyOtpSpinner.classList.add("d-none");
-        if (verifyOtpBtnText) verifyOtpBtnText.textContent = "Verify & Sign In \u2192";
-      }
-    });
   }
 
   // Auto-preselect login role from URL query param (e.g. login.html?role=recruiter)
@@ -249,14 +89,10 @@
     try {
       const res = await authAPI.login({ email, password, expected_role: expectedRole });
       Session.save(res.data);
-      const role = res.data.user.role;
+      const role = res.data?.user?.role || expectedRole;
       window.location.href = dashboardUrlForRole(role);
     } catch (err) {
-      if (err.errorCode === "EMAIL_NOT_VERIFIED" || (err.message && err.message.toLowerCase().includes("verify your email"))) {
-        window.location.href = `verify-email.html?email=${encodeURIComponent(email)}`;
-      } else {
-        showError(err.message);
-      }
+      showError(err.message || "Invalid email or password.");
     } finally {
       setLoading(false);
     }
@@ -304,69 +140,58 @@
           cancel_on_tap_outside: true,
         });
 
-        const signinContainer = document.getElementById("google-signin-container");
-        if (signinContainer) {
-          window.google.accounts.id.renderButton(signinContainer, {
-            theme: "outline",
-            size: "large",
-            text: "signin_with",
-            shape: "rectangular",
-            width: Math.min(signinContainer.offsetWidth || 340, 360),
-          });
-          const customBtn = document.getElementById("google-signin-btn");
-          if (customBtn && signinContainer.children.length > 0) {
-            customBtn.classList.add("d-none");
+        const btnContainer = document.getElementById("google-signin-container");
+        const customBtn = document.getElementById("google-signin-btn");
+
+        if (btnContainer) {
+          try {
+            window.google.accounts.id.renderButton(btnContainer, {
+              type: "standard",
+              shape: "rectangular",
+              theme: "outline",
+              text: "signin_with",
+              size: "large",
+              logo_alignment: "left",
+              width: 380,
+            });
+            if (customBtn) customBtn.classList.add("d-none");
+          } catch (renderErr) {
+            console.warn("Standard Google button render failed, falling back to custom button:", renderErr);
+            if (customBtn) customBtn.classList.remove("d-none");
           }
         }
         return true;
       };
 
       if (!setupGIS()) {
-        const interval = setInterval(() => {
-          if (setupGIS()) clearInterval(interval);
-        }, 300);
-        setTimeout(() => clearInterval(interval), 5000);
+        const checkInterval = setInterval(() => {
+          if (setupGIS()) clearInterval(checkInterval);
+        }, 100);
+        setTimeout(() => clearInterval(checkInterval), 4000);
       }
-    } catch (e) {
-      console.warn("Google Auth config init:", e);
+    } catch (err) {
+      console.warn("Could not load Google auth config:", err);
     }
   }
-  initGoogleGIS();
 
-  const googleBtn = document.getElementById("google-signin-btn");
-  if (googleBtn) {
-    googleBtn.addEventListener("click", () => {
-      if (!googleClientId) {
-        showError("Google Client ID is not configured on the server.");
-        return;
-      }
-
-      if (window.google?.accounts?.oauth2) {
-        const tokenClient = window.google.accounts.oauth2.initTokenClient({
-          client_id: googleClientId,
-          scope: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid",
-          callback: (tokenResp) => {
-            if (tokenResp && tokenResp.access_token) {
-              processGoogleAuth(tokenResp.access_token);
-            } else if (tokenResp?.error) {
-              showError("Google Sign-In was cancelled or failed: " + (tokenResp.error_description || tokenResp.error));
-            }
-          },
-          error_callback: (err) => {
-            console.error("Google OAuth error:", err);
-            if (err?.type === "popup_closed") {
-              showError("Google Sign-In popup was closed before completing.");
-            } else {
-              showError(`Google OAuth error: Please verify 'http://localhost:8000' is added to Authorized JavaScript origins in Google Cloud Console.`);
-            }
+  const customGoogleBtn = document.getElementById("google-signin-btn");
+  if (customGoogleBtn) {
+    customGoogleBtn.addEventListener("click", () => {
+      if (window.google?.accounts?.id && googleClientId) {
+        window.google.accounts.id.prompt((notification) => {
+          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            console.info("One Tap dismissed/skipped:", notification.getNotDisplayedReason?.() || notification.getSkippedReason?.());
           }
         });
-        tokenClient.requestAccessToken();
-      } else if (window.google?.accounts?.id) {
-        window.google.accounts.id.prompt();
       } else {
-        showError("Google Sign-In SDK is loading. Please try again in a moment.");
+        showError("Google Sign-In is currently unavailable. Please sign in with your email and password.");
       }
     });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initGoogleGIS);
+  } else {
+    initGoogleGIS();
   }
 })();

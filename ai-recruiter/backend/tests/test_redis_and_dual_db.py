@@ -1,9 +1,9 @@
 """
-test_redis_and_dual_db.py — Comprehensive tests for Redis Caching Layer & Dual Database Support.
+test_redis_and_dual_db.py — Comprehensive tests for Redis Caching Layer & PostgreSQL Database.
 Tests:
 1. Redis cache operations (set, get, set_json, get_json, delete, delete_pattern)
 2. Redis status reporting
-3. Database status & dialect reporting (PostgreSQL and SQLite)
+3. Database status & dialect reporting (PostgreSQL)
 4. GET /api/v1/system/status health endpoint
 """
 import pytest
@@ -85,7 +85,7 @@ def test_database_status():
     assert "dialect" in db_info
     assert "connected" in db_info
     assert db_info["connected"] is True
-    assert db_info["dialect"] in ["postgresql", "sqlite"]
+    assert db_info["dialect"] == "postgresql"
 
 
 def test_system_status_endpoint():

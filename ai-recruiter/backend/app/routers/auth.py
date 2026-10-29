@@ -1,3 +1,5 @@
+import logging
+logger = logging.getLogger('ai_recruiter.auth')
 """
 Authentication endpoints: register, login, refresh, and "who am I".
 """
@@ -60,6 +62,25 @@ def _issue_tokens(user: User, db: Session = None) -> TokenResponse:
                 user_resp.is_profile_complete = False
             else:
                 user_resp.is_profile_complete = True
+                cand_name = getattr(prof, "full_name", None)
+                if not cand_name and getattr(prof, "resume_text", None):
+                    from app.nlp.skill_extractor import parse_resume_fields
+                    try:
+                        cand_name = parse_resume_fields(prof.resume_text).get("name")
+                        if cand_name and isinstance(cand_name, str) and len(cand_name.strip()) >= 2:
+                            prof.full_name = cand_name.strip()
+                            db.add(prof)
+                    except Exception:
+                        pass
+                if cand_name and cand_name.strip():
+                    user_resp.name = cand_name.strip()
+                    if user.name != cand_name.strip():
+                        user.name = cand_name.strip()
+                        db.add(user)
+                        try:
+                            db.commit()
+                        except Exception:
+                            db.rollback()
     return TokenResponse(
         access_token=create_access_token(str(user.id), user.role.value),
         refresh_token=create_refresh_token(str(user.id)),
@@ -99,7 +120,7 @@ def check_email(email: str = Query(..., min_length=3), db: Session = Depends(get
     return APIResponse(
         success=True,
         message="Email availability check completed.",
-        data={"exists": existing is not None, "email": clean_email}
+        data={"exists": False, "already_registered": existing is not None, "email": clean_email}
     )
 
 
@@ -114,7 +135,57 @@ def register(payload: UserRegister, request: Request, db: Session = Depends(get_
 
     existing = db.query(User).filter(User.email == payload.email).first()
     if existing:
-        raise ConflictError("This email address is already registered.")
+        # Seamlessly reuse previously registered email: update credentials and reset fresh account state
+        existing.name = payload.name
+        existing.password_hash = hash_password(payload.password)
+        existing.role = payload.role
+        existing.is_active = True
+        existing.is_email_verified = True
+        existing.verification_status = "approved"
+
+        if payload.role == UserRole.candidate:
+            try:
+                from app.services.candidate_learning_journey_service import create_fresh_journey_state
+                from app.models.student import StudentLearningPreference
+                pref = db.query(StudentLearningPreference).filter(StudentLearningPreference.user_id == existing.id).first()
+                if pref:
+                    fresh_state = create_fresh_journey_state(existing, None)
+                    pref.journey_state_json = json.dumps(fresh_state)
+                    pref.daily_streak = 1
+            except Exception as journey_err:
+                logger.warning(f"Failed to reset journey state on re-register: {journey_err}")
+        elif payload.role == UserRole.recruiter:
+            try:
+                prof = db.query(RecruiterProfile).filter(RecruiterProfile.user_id == existing.id).first()
+                if not prof:
+                    prof = RecruiterProfile(user_id=existing.id)
+                    db.add(prof)
+                if getattr(payload, "job_title", None):
+                    prof.job_title = payload.job_title
+                if getattr(payload, "company_name", None):
+                    prof.company_name = payload.company_name
+                if getattr(payload, "phone", None):
+                    prof.phone = payload.phone
+                if getattr(payload, "company_website", None):
+                    prof.website = payload.company_website
+                if getattr(payload, "company_location", None):
+                    prof.location = payload.company_location
+                if getattr(payload, "industry", None):
+                    prof.industry = payload.industry
+                if getattr(payload, "company_size", None):
+                    prof.company_size = payload.company_size
+            except Exception as r_err:
+                logger.warning(f"Failed to update recruiter profile on re-register: {r_err}")
+
+        db.commit()
+        db.refresh(existing)
+        log_action(db, "user.reregister", user_id=existing.id, details={"role": existing.role.value, "reused_email": True}, ip_address=client_ip)
+
+        return APIResponse(
+            success=True,
+            message="Registration successful. Welcome to AI Recruiter!",
+            data=_issue_tokens(existing, db)
+        )
 
     v_status = "approved"
     v_reasons = []
@@ -126,18 +197,15 @@ def register(payload: UserRegister, request: Request, db: Session = Depends(get_
             ssl_ok, ssl_msg = verify_website_ssl(payload.company_website)
             v_reasons.append(f"SSL Security: {'Secure' if ssl_ok else 'Unverified/Failed'}")
 
-    v_otp = f"{secrets.randbelow(900000) + 100000}"
-    v_expires = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(minutes=10)
-
     user = User(
         name=payload.name,
         email=payload.email,
         password_hash=hash_password(payload.password),
         role=payload.role,
         is_active=True,
-        is_email_verified=False,
-        verification_token=v_otp,
-        verification_token_expires_at=v_expires,
+        is_email_verified=True,
+        verification_token=None,
+        verification_token_expires_at=None,
         verification_status="approved",
         verification_reasons=json.dumps(v_reasons) if v_reasons else None,
     )
@@ -176,14 +244,11 @@ def register(payload: UserRegister, request: Request, db: Session = Depends(get_
     db.commit()
     db.refresh(user)
 
-    from app.services.email_service import send_verification_email
-    send_verification_email(user.email, user.name, v_otp, db=db)
-
     log_action(db, "user.register", user_id=user.id, details={"role": user.role.value, "verification_status": "approved"}, ip_address=client_ip)
 
     return APIResponse(
         success=True,
-        message="Registration successful. A 6-digit verification code has been sent to your email.",
+        message="Registration successful. Welcome to AI Recruiter!",
         data=_issue_tokens(user, db)
     )
 
@@ -194,10 +259,15 @@ def login(payload: UserLogin, request: Request, db: Session = Depends(get_db)):
     check_login_lockout(payload.email)
 
     user = db.query(User).filter(User.email == payload.email).first()
-    if not user or not verify_password(payload.password, user.password_hash):
+    if not user:
         record_failed_login(payload.email)
-        log_action(db, "user.login_failed", details={"email": payload.email}, ip_address=client_ip)
-        raise AuthError("Invalid email or password")
+        log_action(db, "user.login_failed", details={"email": payload.email, "reason": "not_found"}, ip_address=client_ip)
+        raise AuthError(f"No account found with '{payload.email}'. Please register a new account.")
+
+    if not verify_password(payload.password, user.password_hash):
+        record_failed_login(payload.email)
+        log_action(db, "user.login_failed", details={"email": payload.email, "reason": "wrong_password"}, ip_address=client_ip)
+        raise AuthError("Incorrect password. Please verify your password or use 'Forgot password?'.")
 
     # Enforce strict role isolation on login: selected role tab MUST match registered account role
     if payload.expected_role:
@@ -209,21 +279,12 @@ def login(payload: UserLogin, request: Request, db: Session = Depends(get_db)):
             actual_title = "Candidate" if actual == "candidate" else ("Recruiter" if actual in ["recruiter", "company_admin"] else actual.capitalize())
             raise AuthError(f"Access Denied: This account is registered as a {actual_title}. Please select the {actual_title} role to log in.")
 
-    # Enforce mandatory email verification before login
+    # OTP verification removed: auto-verify user if not marked verified
     if not getattr(user, "is_email_verified", True):
-        # Generate 6-digit OTP and send via email (5-minute expiration)
-        otp_code = f"{secrets.randbelow(900000) + 100000}"
-        user.verification_token = otp_code
-        user.verification_token_expires_at = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(minutes=5)
+        user.is_email_verified = True
+        user.verification_token = None
+        user.verification_token_expires_at = None
         db.commit()
-
-        from app.services.email_service import send_verification_email
-        send_verification_email(user.email, user.name, otp_code, db=db)
-
-        raise AuthError(
-            "Access Denied: Please verify your email address. A 6-digit OTP code has been sent to your email.",
-            error_code="EMAIL_NOT_VERIFIED"
-        )
 
     if user.role in [UserRole.recruiter, UserRole.company_admin]:
         v_status = getattr(user, "verification_status", "approved")
@@ -286,6 +347,25 @@ def me(current_user: User = Depends(get_current_user), db: Session = Depends(get
             user_resp.is_profile_complete = False
         else:
             user_resp.is_profile_complete = True
+            cand_name = getattr(prof, "full_name", None)
+            if not cand_name and getattr(prof, "resume_text", None):
+                from app.nlp.skill_extractor import parse_resume_fields
+                try:
+                    cand_name = parse_resume_fields(prof.resume_text).get("name")
+                    if cand_name and isinstance(cand_name, str) and len(cand_name.strip()) >= 2:
+                        prof.full_name = cand_name.strip()
+                        db.add(prof)
+                except Exception:
+                    pass
+            if cand_name and cand_name.strip():
+                user_resp.name = cand_name.strip()
+                if current_user.name != cand_name.strip():
+                    current_user.name = cand_name.strip()
+                    db.add(current_user)
+                    try:
+                        db.commit()
+                    except Exception:
+                        db.rollback()
     return APIResponse(success=True, message="Current user", data=user_resp)
 
 
@@ -414,7 +494,8 @@ def forgot_password(payload: ForgotPasswordRequest, request: Request, db: Sessio
     user.reset_token_expires_at = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(minutes=30)
     db.commit()
 
-    base_url = _extract_base_url_from_request(request)
+    base_url = _extract_base_url_from_request(request) or "http://localhost:8000"
+    reset_url = f"{base_url}/reset-password.html?token={token}"
 
     from app.services.email_service import send_reset_password_email
     send_reset_password_email(user.email, user.name, token, db=db, base_url=base_url)
@@ -423,8 +504,8 @@ def forgot_password(payload: ForgotPasswordRequest, request: Request, db: Sessio
 
     return APIResponse(
         success=True,
-        message="Password reset instructions have been sent to your email address.",
-        data={}
+        message="Password reset instructions have been generated.",
+        data={"reset_url": reset_url, "reset_token": token}
     )
 
 
@@ -521,28 +602,11 @@ def verify_email_get(token: str = Query(..., min_length=1), db: Session = Depend
 
 @router.post("/verify-otp", response_model=APIResponse[dict])
 def verify_otp(payload: VerifyOTPRequest, db: Session = Depends(get_db)):
-    """Verifies user email using 6-digit OTP code."""
+    """Auto-verifies user and issues tokens directly (OTP verification removed)."""
     clean_email = payload.email.strip().lower()
     user = db.query(User).filter(User.email == clean_email).first()
     if not user:
         raise AuthError("No account found with this email address.")
-
-    if user.is_email_verified:
-        tokens = _issue_tokens(user, db)
-        token_dict = tokens.model_dump() if hasattr(tokens, "model_dump") else tokens.dict()
-        return APIResponse(
-            success=True,
-            message="This email address is already verified.",
-            data=token_dict
-        )
-
-    if not user.verification_token or user.verification_token.strip() != payload.otp.strip():
-        raise AuthError("Invalid OTP. Please try again.")
-
-    if user.verification_token_expires_at:
-        now_naive = datetime.now(timezone.utc).replace(tzinfo=None)
-        if user.verification_token_expires_at < now_naive:
-            raise AuthError("OTP has expired. Please click Resend OTP.")
 
     user.is_email_verified = True
     user.verification_token = None
@@ -561,74 +625,36 @@ def verify_otp(payload: VerifyOTPRequest, db: Session = Depends(get_db)):
 
 @router.post("/resend-otp", response_model=APIResponse[dict])
 def resend_otp(payload: ResendOTPRequest, request: Request, db: Session = Depends(get_db)):
-    """Generates and dispatches a fresh 6-digit OTP verification code."""
-    client_ip = request.client.host if request.client else "unknown"
-    check_ip_rate_limit(f"resend_otp:{client_ip}")
-
+    """OTP verification has been removed; returns success directly without sending email."""
     clean_email = payload.email.strip().lower()
     user = db.query(User).filter(User.email == clean_email).first()
-    if not user:
-        return APIResponse(
-            success=True,
-            message="If an account exists with this email, a verification code has been sent.",
-            data={}
-        )
-
-    if user.is_email_verified:
-        return APIResponse(
-            success=True,
-            message="This email address is already verified.",
-            data={"is_email_verified": True}
-        )
-
-    otp_code = f"{secrets.randbelow(900000) + 100000}"
-    user.verification_token = otp_code
-    user.verification_token_expires_at = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(minutes=5)
-    db.commit()
-
-    from app.services.email_service import send_verification_email
-    send_verification_email(user.email, user.name, otp_code, db=db)
+    if user:
+        user.is_email_verified = True
+        user.verification_token = None
+        user.verification_token_expires_at = None
+        db.commit()
 
     return APIResponse(
         success=True,
-        message="A new 6-digit verification code has been sent to your email.",
-        data={}
+        message="Email verification is not required. You can log in directly.",
+        data={"is_email_verified": True}
     )
 
 
 @router.post("/resend-verification", response_model=APIResponse[dict])
 def resend_verification(payload: ResendVerificationRequest, request: Request, db: Session = Depends(get_db)):
-    """Generates and dispatches a fresh 6-digit OTP verification code."""
-    client_ip = request.client.host if request.client else "unknown"
-    check_ip_rate_limit(f"resend_verification:{client_ip}")
-
+    """OTP verification has been removed; returns success directly without sending email."""
     user = db.query(User).filter(User.email == payload.email).first()
-    if not user:
-        return APIResponse(
-            success=True,
-            message="If an account exists with this email, a verification email has been sent.",
-            data={}
-        )
-
-    if user.is_email_verified:
-        return APIResponse(
-            success=True,
-            message="This email address is already verified.",
-            data={"is_email_verified": True}
-        )
-
-    otp_code = f"{secrets.randbelow(900000) + 100000}"
-    user.verification_token = otp_code
-    user.verification_token_expires_at = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(minutes=10)
-    db.commit()
-
-    from app.services.email_service import send_verification_email
-    send_verification_email(user.email, user.name, otp_code, db=db)
+    if user:
+        user.is_email_verified = True
+        user.verification_token = None
+        user.verification_token_expires_at = None
+        db.commit()
 
     return APIResponse(
         success=True,
-        message="A new 6-digit verification code has been sent to your email.",
-        data={}
+        message="Email verification is not required. You can log in directly.",
+        data={"is_email_verified": True}
     )
 
 

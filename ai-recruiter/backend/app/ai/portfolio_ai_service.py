@@ -338,6 +338,13 @@ def extract_structured_portfolio_data(raw_text: str, parsed_fields: dict) -> dic
     )
 
     name = (parsed_fields.get("name") or "").strip()
+    if not name and raw_text:
+        from app.nlp.skill_extractor import parse_resume_fields
+        try:
+            r_fields = parse_resume_fields(raw_text[:2500])
+            name = (r_fields.get("name") or "").strip()
+        except Exception:
+            pass
 
     # 1. Professional Headline — taken directly from resume, fallback to current_role or empty string
     selected_headline = (parsed_fields.get("headline") or parsed_fields.get("current_role") or "").strip()
@@ -382,7 +389,7 @@ def extract_structured_portfolio_data(raw_text: str, parsed_fields: dict) -> dic
     cert_items = parsed_fields.get("certifications_items")
     if not cert_items and (raw_text or parsed_fields.get("certifications")):
         fallback_c = parsed_fields.get("certifications_text") or (", ".join(parsed_fields.get("certifications")) if isinstance(parsed_fields.get("certifications"), list) else parsed_fields.get("certifications"))
-        cert_items = parse_certifications_items(raw_text, fallback_certs=fallback_c)
+        cert_items = parse_certifications_items(fallback_c or raw_text)
     if not cert_items:
         cert_items = []
 

@@ -127,6 +127,14 @@ def _auto_migrate_db(target_engine=None):
         ("candidate_profiles", "cgpa", "FLOAT"),
         ("candidate_profiles", "current_semester", "INTEGER"),
         ("candidate_profiles", "target_role", "VARCHAR(150)"),
+        ("candidate_profiles", "twelfth_school", "VARCHAR(255)"),
+        ("candidate_profiles", "twelfth_board", "VARCHAR(100)"),
+        ("candidate_profiles", "twelfth_year", "INTEGER"),
+        ("candidate_profiles", "twelfth_percentage", "FLOAT"),
+        ("candidate_profiles", "tenth_school", "VARCHAR(255)"),
+        ("candidate_profiles", "tenth_board", "VARCHAR(100)"),
+        ("candidate_profiles", "tenth_year", "INTEGER"),
+        ("candidate_profiles", "tenth_percentage", "FLOAT"),
 
         # ATS Screening & Composite Scores for applications
         ("applications", "ats_score", "FLOAT"),
@@ -313,7 +321,7 @@ async def lifespan(app: FastAPI):
         from scripts.rebalance_aptitude_options import rebalance_aptitude_options
         rebalance_aptitude_options(db)
         # Auto-seed demo accounts when the database is completely empty.
-        # Runs on both SQLite (local dev) and PostgreSQL (deployed).
+        # Runs on PostgreSQL database.
         # Only skipped when ENVIRONMENT is explicitly set to "production".
         is_production = getattr(settings, "ENVIRONMENT", "development").lower() == "production"
         if not is_production and db.query(user.User).count() == 0:
@@ -482,12 +490,11 @@ def system_status():
             "app_name": settings.APP_NAME,
             "environment": settings.ENVIRONMENT,
             "databases": {
-                "active_engine": db_info.get("dialect"),
-                "is_postgres_active": db_info.get("is_postgres"),
-                "is_sqlite_active": db_info.get("is_sqlite"),
-                "connected": db_info.get("connected"),
+                "active_engine": "postgresql",
+                "is_postgres_active": db_info.get("is_postgres", True),
+                "connected": db_info.get("connected", True),
                 "active_url": db_info.get("active_url"),
-                "supported": ["postgresql", "sqlite"],
+                "supported": ["postgresql"],
             },
             "redis_cache": {
                 "enabled": redis_info.get("enabled"),

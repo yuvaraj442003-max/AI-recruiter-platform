@@ -8,7 +8,7 @@ Pipeline:
 3. Index vector representations into Qdrant (collection: aptitude_book_knowledge).
 4. Retrieve relevant textbook context dynamically for the weekly curriculum focus.
 5. Generate verified, fresh MCQs using Gemini LLM (with robust mathematical fallback synthesis).
-6. Rotate and update the active Weekly Aptitude Challenge in SQLite/PostgreSQL and Qdrant.
+6. Rotate and update the active Weekly Aptitude Challenge in PostgreSQL and Qdrant.
 """
 
 import copy

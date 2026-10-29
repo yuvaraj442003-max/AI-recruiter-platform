@@ -1,11 +1,6 @@
 """
-db_types.py — a database-agnostic UUID column type.
-
-The app defaults to SQLite (see core/config.py), but this same type
-works unchanged on PostgreSQL too, so switching DATABASE_URL back to a
-Postgres connection string later requires no model/migration changes.
-On PostgreSQL it uses the native UUID type; everywhere else (SQLite,
-etc.) it stores the UUID as a 32-character hex string.
+db_types.py — PostgreSQL GUID/UUID column type.
+Uses native PostgreSQL UUID for high-performance indexing and storage.
 """
 import uuid
 

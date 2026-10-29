@@ -749,8 +749,24 @@ def build_portfolio_from_candidate_profile(
     # 3. Check for existing portfolio
     existing = get_candidate_portfolio(db, candidate.id)
 
-    # Determine unique slug
-    cand_name = candidate.full_name or parsed_fields.get("name") or "candidate"
+    # Determine candidate name directly from uploaded resume details
+    # Strict Guarantee: Do NOT use registration name; extract directly from uploaded resume
+    cand_name = parsed_fields.get("name")
+    if not cand_name and raw_text:
+        from app.nlp.skill_extractor import extract_name
+        try:
+            cand_name = extract_name(raw_text, {})
+        except Exception:
+            pass
+    if not cand_name and candidate:
+        cand_name = candidate.full_name
+    if not cand_name:
+        cand_name = "Candidate"
+
+    if cand_name and candidate and candidate.user and cand_name != "Candidate":
+        candidate.user.name = cand_name
+        db.add(candidate.user)
+
     cand_role = candidate.current_role or parsed_fields.get("current_role") or ""
     slug_seed = f"{cand_name} {cand_role}".strip()
 
@@ -954,7 +970,17 @@ def get_public_portfolio(db: Session, slug: str) -> Tuple[Portfolio, str]:
     portfolio.views_count += 1
     db.commit()
 
-    cand_name = portfolio.candidate.full_name if portfolio.candidate else "Professional Portfolio"
+    cand_name = None
+    if portfolio.candidate and portfolio.candidate.resume_text:
+        from app.nlp.skill_extractor import parse_resume_fields
+        try:
+            r_fields = parse_resume_fields(portfolio.candidate.resume_text[:2500])
+            if r_fields.get("name") and len(r_fields["name"].strip()) >= 2:
+                cand_name = r_fields["name"].strip()
+        except Exception:
+            pass
+    if not cand_name:
+        cand_name = portfolio.candidate.full_name if portfolio.candidate else "Professional Portfolio"
     return portfolio, cand_name
 
 
@@ -968,7 +994,23 @@ def format_portfolio_dict(portfolio: Portfolio, public_only: bool = False, db: O
 
     cand = portfolio.candidate
     cand_user = cand.user if cand else None
-    cand_name = cand.full_name if cand else "Candidate"
+    # Strict Guarantee: The portfolio MUST be created based on the resume uploaded by the candidate.
+    # Do NOT create the portfolio using the name entered during candidate registration.
+    # Instead, extract the candidate's name directly from the uploaded resume!
+    cand_name = None
+    if cand and cand.resume_text:
+        from app.nlp.skill_extractor import parse_resume_fields
+        try:
+            r_fields = parse_resume_fields(cand.resume_text[:2500])
+            if r_fields.get("name") and len(r_fields["name"].strip()) >= 2:
+                cand_name = r_fields["name"].strip()
+        except Exception:
+            pass
+
+    if not cand_name and cand:
+        cand_name = cand.full_name
+    if not cand_name:
+        cand_name = "Candidate"
 
     def safe_json_load(text_val: Optional[str], default_val: Any) -> Any:
         if not text_val:

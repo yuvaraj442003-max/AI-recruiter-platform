@@ -124,24 +124,17 @@
 
     setLoading(true);
     try {
-      // 1. Pre-check email duplication
-      const checkRes = await authAPI.checkEmail(email).catch(() => null);
-      if (checkRes && checkRes.data && checkRes.data.exists) {
-        showError("This email address is already registered.");
-        setLoading(false);
-        return;
-      }
-
       const res = await authAPI.register(payload);
       Session.save(res.data);
+      const userRole = res.data?.user?.role || role;
 
       alertBox.className = "alert alert-success py-3 mb-4";
-      alertBox.textContent = "🎉 Registration successful! A 6-digit verification code has been sent to your email. Redirecting to verification...";
+      alertBox.textContent = "🎉 Registration successful! Redirecting to your dashboard...";
       alertBox.classList.remove("d-none");
 
       setTimeout(() => {
-        window.location.href = `verify-email.html?email=${encodeURIComponent(payload.email)}`;
-      }, 1200);
+        window.location.href = dashboardUrlForRole(userRole);
+      }, 1000);
     } catch (err) {
       showError(err.message || "Registration failed. Please try again.");
       setLoading(false);

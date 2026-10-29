@@ -154,8 +154,9 @@ def generate_portfolio_from_prompt_endpoint(
         parsed_fields = parse_resume_fields(raw_text) if raw_text else {}
         extracted = extract_structured_portfolio_data(raw_text, parsed_fields) if raw_text else {}
 
+        resume_name = extracted.get("name") or (cand.full_name if cand else current_user.name) or "Candidate"
         candidate_context = {
-            "name": current_user.name or extracted.get("name") or "Candidate",
+            "name": resume_name,
             "headline": extracted.get("professional_headline") or cand.headline or cand.current_role or "",
             "skills": [cs.skill.skill_name for cs in cand.candidate_skills if cs.skill] if cand.candidate_skills else list(extracted.get("skills", {}).values()),
             "summary": extracted.get("about") or cand.summary or cand.ai_summary or "",
@@ -174,7 +175,7 @@ def generate_portfolio_from_prompt_endpoint(
     # Generate with Gemini AI
     gen_data = generate_portfolio_from_prompt(
         prompt=payload.prompt,
-        candidate_name=current_user.name or "Candidate",
+        candidate_name=(candidate_context.get("name") if candidate_context else (cand.full_name if cand else current_user.name)) or "Candidate",
         candidate_context=candidate_context,
         previous_portfolio=prev_dict,
         is_refinement=payload.refinement,
@@ -337,7 +338,14 @@ def get_my_portfolio_endpoint(
 
     portfolio = get_candidate_portfolio(db, cand.id)
     if not portfolio:
-        return APIResponse(success=True, message="No portfolio generated yet", data=None)
+        # Auto-build portfolio if candidate has resume or profile details
+        if cand.resume_path or cand.resume_text or cand.headline or cand.college_name or cand.candidate_skills:
+            try:
+                portfolio = build_portfolio_from_candidate_profile(db=db, candidate=cand)
+            except Exception as e:
+                logger.warning(f"Auto-generating portfolio on GET /me failed: {e}")
+        if not portfolio:
+            return APIResponse(success=True, message="No portfolio generated yet", data=None)
 
     data = format_portfolio_dict(portfolio, public_only=False, db=db)
     return APIResponse(success=True, message="Candidate portfolio retrieved", data=PortfolioResponse(**data))

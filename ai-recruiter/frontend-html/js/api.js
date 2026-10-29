@@ -60,6 +60,11 @@ const Session = {
       return null;
     }
   },
+  setUser(user) {
+    if (user) {
+      safeStorage.setItem(TOKEN_KEYS.user, typeof user === "string" ? user : JSON.stringify(user));
+    }
+  },
   save(data) {
     if (!data) return;
     const { access_token, refresh_token, user } = data;
@@ -284,6 +289,26 @@ const resumeAPI = {
   analyzeDomain: (targetDomain) =>
     api.post(`/resumes/analyze-domain?target_domain=${encodeURIComponent(targetDomain)}`),
   getBestRole: () => api.get("/resumes/best-role"),
+  extractDetails: async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const token = Session.getAccessToken();
+    let response;
+    try {
+      response = await fetch(`${API_BASE_URL}/resumes/extract-details`, {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      });
+    } catch {
+      throw new ApiError("Could not reach the server. Is the backend running?", "NETWORK_ERROR", 0);
+    }
+    const payload = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new ApiError(payload?.message || "Resume extraction failed.", payload?.error_code || "UNKNOWN_ERROR", response.status);
+    }
+    return payload;
+  },
   completeRegistration: async (formData) => {
     const token = Session.getAccessToken();
     let response;
@@ -595,6 +620,9 @@ const studyMaterialsAPI = {
   advanceLearningPhase: (payload) => api.post("/study-materials/learning-journey/advance-phase", payload),
   toggleDailyTask: (payload) => api.post("/study-materials/learning-journey/toggle-task", payload),
   resetLearningJourney: () => api.post("/study-materials/learning-journey/reset", {}),
+  selectCourseTrack: (payload) => api.post("/study-materials/learning-journey/select-course", payload),
+  getCourseCurriculum: (courseId) => api.get(`/study-materials/learning-journey/curriculum/${encodeURIComponent(courseId)}`),
+  completeTopic: (payload) => api.post("/study-materials/learning-journey/complete-topic", payload),
   getCompanies: () => api.get("/study-materials/companies"),
   getCompanyDetail: (slug) => api.get(`/study-materials/companies/${encodeURIComponent(slug)}`),
   startCompanyMockTest: (slug) => api.post(`/study-materials/companies/${encodeURIComponent(slug)}/start-test`, {}),
@@ -661,12 +689,9 @@ function dashboardUrlForRole(role) {
     return "recruiter-portal.html";
   }
   if (role === "candidate") {
-    if (user && user.is_profile_complete === false) {
-      return "complete-registration.html?onboarding=required";
-    }
-    return "candidate-portal.html";
+    return "candidate-dashboard.html";
   }
-  return "candidate-portal.html";
+  return "candidate-dashboard.html";
 }
 
 
@@ -687,8 +712,9 @@ function dashboardUrlForRole(role) {
     if (reqRole === "candidate" && userRole === "candidate") {
       const rawFile = (window.location.pathname.split("/").pop() || "").toLowerCase();
       const currentClean = rawFile.replace(/\.html$/, "");
-      if (user?.is_profile_complete === false && currentClean !== "complete-registration") {
-        window.location.href = "complete-registration.html?onboarding=required";
+      // Allow candidates to use candidate-dashboard directly without force redirecting
+      if (user?.is_profile_complete === false && currentClean !== "complete-registration" && currentClean !== "candidate-dashboard") {
+        window.location.href = "candidate-dashboard.html?onboarding=1";
       }
     } else if (reqRole === "candidate" && userRole !== "candidate") {
       alert("Access Denied: This area is restricted to Candidate accounts. Redirecting to your Recruiter Portal...");

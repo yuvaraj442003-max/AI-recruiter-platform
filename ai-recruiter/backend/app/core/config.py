@@ -27,10 +27,9 @@ class Settings(BaseSettings):
         "evan@example.com",
     ]
 
-    # --- Database (PostgreSQL is Primary; SQLite fallback for offline development) ---
-    DATABASE_URL: str = "postgresql+psycopg2://postgres:postgres234@localhost:5432/ai_recruiter"
-    POSTGRES_DATABASE_URL: str = "postgresql+psycopg2://postgres:postgres234@localhost:5432/ai_recruiter"
-    SQLITE_DATABASE_URL: str = "sqlite:///./ai_recruiter.db"
+    # --- Database (PostgreSQL is the Sole Database) ---
+    DATABASE_URL: str = "postgresql+psycopg2://postgres:postgres234@127.0.0.1:5432/ai_recruiter"
+    POSTGRES_DATABASE_URL: str = "postgresql+psycopg2://postgres:postgres234@127.0.0.1:5432/ai_recruiter"
 
     # --- Redis & Caching Layer ---
     REDIS_HOST: str = "localhost"

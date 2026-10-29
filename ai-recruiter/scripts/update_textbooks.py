@@ -1,5 +1,5 @@
 """
-Script to wire master textbooks into book_curriculum_service.py and seed them into SQLite database.
+Script to wire master textbooks into book_curriculum_service.py and seed them into PostgreSQL database.
 """
 import ast
 import os

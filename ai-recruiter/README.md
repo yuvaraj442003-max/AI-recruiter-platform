@@ -163,16 +163,14 @@ dashboards, and the admin panel + production hardening below.
 ## 3. Architecture
 
 ```
-HTML/CSS/JS  →  REST API (/api/v1)  →  FastAPI  →  SQLite
+HTML/CSS/JS  →  REST API (/api/v1)  →  FastAPI  →  PostgreSQL
 ```
 
 ## 4. Technology Stack
 
 **Frontend:** Plain HTML5, CSS3, JavaScript (no build step), Bootstrap 5 via CDN
 **Backend:** FastAPI, SQLAlchemy 2.0, Alembic, Pydantic v2, python-jose (JWT), passlib/bcrypt
-**Database:** SQLite by default (single file, zero setup) — swap `DATABASE_URL` to a
-PostgreSQL connection string if you'd rather; every model/migration uses a
-dialect-agnostic UUID type (`app/core/db_types.py`), so nothing else needs to change
+**Database:** PostgreSQL (primary production database) — configured via `DATABASE_URL` / `POSTGRES_DATABASE_URL`
 **Infra:** Docker, docker-compose (frontend served by nginx)
 
 ## 5. Project Structure

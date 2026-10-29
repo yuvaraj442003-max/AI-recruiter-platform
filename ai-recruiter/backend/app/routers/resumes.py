@@ -14,7 +14,8 @@ from sqlalchemy.orm import Session, joinedload
 
 from app.ai.resume_summarizer import generate_resume_summary
 from app.core.database import get_db
-from app.core.deps import require_role, oauth2_scheme, get_current_user
+from app.core.deps import require_role, oauth2_scheme, get_current_user, get_optional_user
+from app.services.resume_autofill_service import extract_candidate_autofill_fields
 from app.core.exceptions import NotFoundError, AuthError, PermissionDeniedError, AppError
 from app.core.security import decode_token
 from app.models.application import Application
@@ -41,6 +42,134 @@ except ImportError:
     pisa = None
 
 router = APIRouter(prefix="/resumes", tags=["Resumes"])
+
+
+
+@router.post("/extract-details", response_model=APIResponse[dict])
+async def extract_resume_details_endpoint(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_optional_user),
+):
+    """
+    Uploads a resume (PDF, DOCX, TXT) and returns extracted personal details and basic
+    academic/professional information to auto-fill the candidate profile wizard.
+    """
+    if not file or not file.filename:
+        raise AppError("Please select a resume file to upload.", "NO_FILE", 400)
+
+    filename_lower = file.filename.lower()
+    if not (filename_lower.endswith(".pdf") or filename_lower.endswith(".docx") or filename_lower.endswith(".txt")):
+        raise AppError("Unsupported file format. Please upload a PDF, DOCX, or TXT file.", "INVALID_FORMAT", 400)
+
+    file_bytes = await file.read()
+    if not file_bytes:
+        raise AppError("The uploaded file is empty.", "EMPTY_FILE", 400)
+
+    fallback_email = current_user.email if current_user else None
+    try:
+        extracted = extract_candidate_autofill_fields(file_bytes, file.filename, fallback_email=fallback_email)
+    except Exception as err:
+        logger.error(f"Error extracting resume autofill fields: {err}")
+        raise AppError(f"Could not extract information from resume: {err}", "EXTRACTION_FAILED", 422)
+
+    # If current user is a candidate, sync resume file, full text, and automatically build portfolio!
+    if current_user and current_user.role == UserRole.candidate:
+        try:
+            cand = db.query(CandidateProfile).filter(CandidateProfile.user_id == current_user.id).first()
+            if not cand:
+                cand = CandidateProfile(
+                    user_id=current_user.id,
+                    headline=extracted.get("headline") or "Candidate",
+                    current_role=extracted.get("current_role"),
+                    phone=extracted.get("phone"),
+                    location=extracted.get("location"),
+                    summary=extracted.get("summary"),
+                    experience_years=extracted.get("experience_years") or 0.0,
+                    certifications=extracted.get("certifications"),
+                    college_name=extracted.get("college"),
+                    degree=extracted.get("degree"),
+                    branch=extracted.get("branch"),
+                    graduation_year=int(extracted["graduation_year"]) if extracted.get("graduation_year") and str(extracted["graduation_year"]).isdigit() else None,
+                    cgpa=float(extracted["cgpa"]) if extracted.get("cgpa") else None,
+                    twelfth_school=extracted.get("twelfth_school"),
+                    twelfth_board=extracted.get("twelfth_board"),
+                    twelfth_year=int(extracted["twelfth_year"]) if extracted.get("twelfth_year") and str(extracted["twelfth_year"]).isdigit() else None,
+                    twelfth_percentage=float(extracted["twelfth_percentage"]) if extracted.get("twelfth_percentage") else None,
+                    tenth_school=extracted.get("tenth_school"),
+                    tenth_board=extracted.get("tenth_board"),
+                    tenth_year=int(extracted["tenth_year"]) if extracted.get("tenth_year") and str(extracted["tenth_year"]).isdigit() else None,
+                    tenth_percentage=float(extracted["tenth_percentage"]) if extracted.get("tenth_percentage") else None,
+                    linkedin_url=extracted.get("linkedin_url"),
+                    github_url=extracted.get("github_url"),
+                    portfolio_url=extracted.get("portfolio_url"),
+                )
+                db.add(cand)
+            else:
+                for k, v in {
+                    "headline": extracted.get("headline"),
+                    "current_role": extracted.get("current_role"),
+                    "phone": extracted.get("phone"),
+                    "location": extracted.get("location"),
+                    "summary": extracted.get("summary"),
+                    "experience_years": extracted.get("experience_years"),
+                    "certifications": extracted.get("certifications"),
+                    "college_name": extracted.get("college"),
+                    "degree": extracted.get("degree"),
+                    "branch": extracted.get("branch"),
+                    "graduation_year": int(extracted["graduation_year"]) if extracted.get("graduation_year") and str(extracted["graduation_year"]).isdigit() else None,
+                    "cgpa": float(extracted["cgpa"]) if extracted.get("cgpa") else None,
+                    "twelfth_school": extracted.get("twelfth_school"),
+                    "twelfth_board": extracted.get("twelfth_board"),
+                    "twelfth_year": int(extracted["twelfth_year"]) if extracted.get("twelfth_year") and str(extracted["twelfth_year"]).isdigit() else None,
+                    "twelfth_percentage": float(extracted["twelfth_percentage"]) if extracted.get("twelfth_percentage") else None,
+                    "tenth_school": extracted.get("tenth_school"),
+                    "tenth_board": extracted.get("tenth_board"),
+                    "tenth_year": int(extracted["tenth_year"]) if extracted.get("tenth_year") and str(extracted["tenth_year"]).isdigit() else None,
+                    "tenth_percentage": float(extracted["tenth_percentage"]) if extracted.get("tenth_percentage") else None,
+                    "linkedin_url": extracted.get("linkedin_url"),
+                    "github_url": extracted.get("github_url"),
+                    "portfolio_url": extracted.get("portfolio_url"),
+                }.items():
+                    if v is not None:
+                        setattr(cand, k, v)
+
+            if extracted.get("name") and len(extracted["name"].strip()) >= 2:
+                current_user.name = extracted["name"].strip()
+                db.add(current_user)
+
+            saved_path = save_uploaded_file(file_bytes, file.filename)
+            cand.resume_path = saved_path
+            cand.resume_original_filename = file.filename
+            from app.nlp.resume_parser import extract_resume_text
+            full_text = extract_resume_text(file_bytes, file.filename)
+            cand.resume_text = full_text
+
+            if extracted.get("skills"):
+                skill_list = [s.strip() for s in extracted["skills"].split(",") if s.strip()]
+                seed_skills(db)
+                _sync_candidate_skills(db, cand, skill_list)
+
+            db.commit()
+            db.refresh(cand)
+
+            # Auto-generate or update candidate's portfolio with verbatim extracted resume details
+            from app.services.portfolio_service import build_portfolio_from_candidate_profile
+            build_portfolio_from_candidate_profile(
+                db=db,
+                candidate=cand,
+                file_bytes=file_bytes,
+                filename=file.filename,
+            )
+        except Exception as e:
+            db.rollback()
+            logger.warning(f"Could not auto-generate portfolio during extract-details: {e}")
+
+    return APIResponse(
+        success=True,
+        message="Resume information extracted successfully",
+        data=extracted,
+    )
 
 
 @router.post("/upload", response_model=APIResponse[CandidateProfileResponse])
@@ -463,6 +592,26 @@ def get_my_profile(
     if not profile:
         return APIResponse(success=True, message="No resume uploaded yet", data=None)
 
+    # Ensure profile.full_name is populated from the uploaded resume (single source of truth)
+    cand_name = getattr(profile, "full_name", None)
+    if not cand_name and getattr(profile, "resume_text", None):
+        from app.nlp.skill_extractor import parse_resume_fields
+        try:
+            cand_name = parse_resume_fields(profile.resume_text).get("name")
+            if cand_name and isinstance(cand_name, str) and len(cand_name.strip()) >= 2:
+                profile.full_name = cand_name.strip()
+                db.add(profile)
+        except Exception:
+            pass
+
+    if cand_name and current_user.name != cand_name.strip():
+        current_user.name = cand_name.strip()
+        db.add(current_user)
+        try:
+            db.commit()
+        except Exception:
+            db.rollback()
+
     return APIResponse(success=True, message="Candidate profile", data=CandidateProfileResponse.from_profile(profile))
 
 
@@ -482,6 +631,7 @@ def update_my_profile(
     if not profile:
         profile = CandidateProfile(
             user_id=current_user.id,
+            full_name=body.full_name or body.name or current_user.name,
             headline=body.headline or "Candidate",
             current_role=body.current_role,
             location=body.location,
@@ -499,6 +649,12 @@ def update_my_profile(
         db.refresh(profile)
 
     update_dict = body.model_dump(exclude_unset=True)
+    new_name = body.name or body.full_name
+    if new_name and isinstance(new_name, str) and new_name.strip():
+        current_user.name = new_name.strip()
+        profile.full_name = new_name.strip()
+        db.add(current_user)
+
     profile = update_candidate_profile(
         db,
         profile,
@@ -513,6 +669,13 @@ def update_my_profile(
         .filter(CandidateProfile.id == profile.id)
         .first()
     )
+
+    # Auto-sync candidate's portfolio with updated profile fields
+    try:
+        from app.services.portfolio_service import build_portfolio_from_candidate_profile
+        build_portfolio_from_candidate_profile(db=db, candidate=profile)
+    except Exception as e:
+        logger.warning(f"Could not auto-sync portfolio in update_my_profile: {e}")
 
     return APIResponse(
         success=True,

@@ -28,12 +28,21 @@ def _extract_pdf_pymupdf(file_bytes: bytes) -> str:
     with pymupdf.open(stream=file_bytes, filetype="pdf") as doc:
         for page in doc:
             try:
-                page_text = page.get_text("text", sort=True)
+                # Use block-level extraction so multi-column layouts (e.g. Education left, Certifications right)
+                # are preserved in natural reading flow rather than interleaving lines by vertical coordinates
+                blocks = page.get_text("blocks")
+                page_blocks = [b[4].strip() for b in blocks if len(b) > 4 and b[4].strip()]
+                if page_blocks:
+                    text_parts.append("\n\n".join(page_blocks))
+                else:
+                    page_text = page.get_text()
+                    if page_text and page_text.strip():
+                        text_parts.append(page_text.strip())
             except Exception:
                 page_text = page.get_text()
-            if page_text and page_text.strip():
-                text_parts.append(page_text.strip())
-    return "\n".join(text_parts)
+                if page_text and page_text.strip():
+                    text_parts.append(page_text.strip())
+    return "\n\n".join(text_parts)
 
 
 def _extract_pdf_pdfplumber(file_bytes: bytes) -> str:

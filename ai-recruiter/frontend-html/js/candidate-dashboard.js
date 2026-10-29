@@ -452,8 +452,11 @@
       const p = res.data;
       const user = Session.getUser();
 
+      // Candidate name MUST come directly from the uploaded resume as single source of truth
+      const candidateName = p.name || p.full_name || (user ? user.name : "Candidate");
+
       const nameEl = document.getElementById("cand-name-display");
-      if (nameEl) nameEl.textContent = user ? user.name : "Candidate";
+      if (nameEl) nameEl.textContent = candidateName;
       const headlineEl = document.getElementById("cand-headline-display");
       if (headlineEl) headlineEl.textContent = p.headline || p.current_role || "";
       const locEl = document.getElementById("cand-location-display");
@@ -466,9 +469,22 @@
         if (p.profile_photo) {
           photoEl.src = p.profile_photo;
         } else {
-          const name = encodeURIComponent(user ? user.name : "Candidate");
-          photoEl.src = `https://ui-avatars.com/api/?name=${name}&background=2f5fff&color=fff&size=128`;
+          const nameEnc = encodeURIComponent(candidateName);
+          photoEl.src = `https://ui-avatars.com/api/?name=${nameEnc}&background=2f5fff&color=fff&size=128`;
         }
+      }
+
+      // Update header greeting with candidate resume name
+      const greeting = document.getElementById("user-greeting");
+      if (greeting) {
+        greeting.textContent = `${candidateName} • Candidate`;
+        greeting.classList.remove("skeleton");
+      }
+
+      // Synchronize session user name with resume name throughout app
+      if (user && candidateName && user.name !== candidateName) {
+        user.name = candidateName;
+        Session.setUser(user);
       }
 
       // Social Links
@@ -510,6 +526,8 @@
           const el = document.getElementById(id);
           if (el && document.activeElement !== el) el.value = val || "";
         };
+        setVal("edit-cand-name", candidateName);
+        setVal("edit-cand-email", user ? user.email : "");
         setVal("edit-cand-headline", p.headline);
         setVal("edit-cand-role", p.current_role);
         setVal("edit-cand-photo", p.profile_photo);
@@ -517,6 +535,7 @@
         setVal("edit-cand-summary", p.summary);
         setVal("edit-cand-phone", p.phone);
         setVal("edit-cand-exp", p.experience_years);
+        setVal("edit-cand-skills", (p.skills && p.skills.length) ? p.skills.join(", ") : "");
         setVal("edit-cand-certifications", p.certifications);
         setVal("edit-cand-linkedin", p.linkedin_url);
         setVal("edit-cand-github", p.github_url);
@@ -528,6 +547,14 @@
         const studRes = await api.student.getProfile();
         const sp = studRes?.data;
         if (sp) {
+          if (sp.name && sp.name !== "Candidate") {
+            const nameEl = document.getElementById("cand-name-display");
+            if (nameEl) nameEl.textContent = sp.name;
+            const photoEl = document.getElementById("cand-profile-photo");
+            if (photoEl && !p.profile_photo) {
+              photoEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(sp.name)}&background=2f5fff&color=fff&size=128`;
+            }
+          }
           const colEl = document.getElementById("cand-college-display");
           if (colEl) colEl.textContent = sp.college_name ? `🏛️ ${sp.college_name}` : "🏛️ College / University";
           const degEl = document.getElementById("cand-degree-display");
@@ -544,6 +571,14 @@
           setVal("edit-cand-branch", sp.branch);
           setVal("edit-cand-grad-year", sp.graduation_year);
           setVal("edit-cand-cgpa", sp.cgpa);
+          setVal("edit-cand-12th-school", sp.twelfth_school);
+          setVal("edit-cand-12th-board", sp.twelfth_board);
+          setVal("edit-cand-12th-year", sp.twelfth_year);
+          setVal("edit-cand-12th-marks", sp.twelfth_percentage);
+          setVal("edit-cand-10th-school", sp.tenth_school);
+          setVal("edit-cand-10th-board", sp.tenth_board);
+          setVal("edit-cand-10th-year", sp.tenth_year);
+          setVal("edit-cand-10th-marks", sp.tenth_percentage);
         }
       } catch (e) {
         // Fallback
@@ -583,61 +618,378 @@
     }
   }
 
-  const candForm = document.getElementById("edit-cand-profile-form");
-  if (candForm) {
-    candForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const saveBtn = document.getElementById("save-cand-profile-btn");
-      saveBtn.disabled = true;
-      saveBtn.textContent = "Saving...";
+  // =========================================================================
+  // Candidate Profile 2-Step Navigation (Personal Details -> Basic Information)
+  // Retains form data seamlessly without page refresh
+  // =========================================================================
+  let currentProfileStep = 1;
 
-      const expVal = document.getElementById("edit-cand-exp")?.value;
+  function switchCandidateProfileStep(step) {
+    currentProfileStep = step;
+    const sec1 = document.getElementById("section-personal-details");
+    const sec2 = document.getElementById("section-basic-info");
+    const tab1 = document.getElementById("tab-step-personal");
+    const tab2 = document.getElementById("tab-step-basic");
+    const badge1 = document.getElementById("badge-step-1");
+    const badge2 = document.getElementById("badge-step-2");
+    const subtitle = document.getElementById("profile-step-subtitle");
 
-      const payload = {
-        headline: document.getElementById("edit-cand-headline")?.value?.trim() || null,
-        current_role: document.getElementById("edit-cand-role")?.value?.trim() || null,
-        profile_photo: document.getElementById("edit-cand-photo")?.value?.trim() || null,
-        location: document.getElementById("edit-cand-location")?.value?.trim() || null,
-        summary: document.getElementById("edit-cand-summary")?.value?.trim() || null,
-        phone: document.getElementById("edit-cand-phone")?.value?.trim() || null,
-        experience_years: expVal ? Number(expVal) : null,
-        certifications: document.getElementById("edit-cand-certifications")?.value?.trim() || null,
-        linkedin_url: document.getElementById("edit-cand-linkedin")?.value?.trim() || null,
-        github_url: document.getElementById("edit-cand-github")?.value?.trim() || null,
-        portfolio_url: document.getElementById("edit-cand-portfolio")?.value?.trim() || null,
-      };
+    if (step === 1) {
+      if (sec1) sec1.classList.remove("d-none");
+      if (sec2) sec2.classList.add("d-none");
+      if (tab1) {
+        tab1.className = "btn btn-sm rounded-pill fw-bold flex-fill py-2 btn-primary text-white shadow-sm";
+      }
+      if (tab2) {
+        tab2.className = "btn btn-sm rounded-pill fw-bold flex-fill py-2 btn-outline-secondary border-0 text-muted";
+      }
+      if (badge1) {
+        badge1.className = "badge bg-white text-primary rounded-circle me-1";
+      }
+      if (badge2) {
+        badge2.className = "badge bg-secondary text-white rounded-circle me-1";
+      }
+      if (subtitle) {
+        subtitle.textContent = "Step 1 of 2: Enter Personal Details, then proceed to Basic Information";
+      }
+    } else {
+      if (sec1) sec1.classList.add("d-none");
+      if (sec2) sec2.classList.remove("d-none");
+      if (tab1) {
+        tab1.className = "btn btn-sm rounded-pill fw-bold flex-fill py-2 btn-outline-secondary border-0 text-muted";
+      }
+      if (tab2) {
+        tab2.className = "btn btn-sm rounded-pill fw-bold flex-fill py-2 btn-primary text-white shadow-sm";
+      }
+      if (badge1) {
+        badge1.className = "badge bg-secondary text-white rounded-circle me-1";
+      }
+      if (badge2) {
+        badge2.className = "badge bg-white text-primary rounded-circle me-1";
+      }
+      if (subtitle) {
+        subtitle.textContent = "Step 2 of 2: Professional & Academic Information";
+      }
+    }
 
-      const collegeVal = document.getElementById("edit-cand-college")?.value?.trim() || null;
-      const degreeVal = document.getElementById("edit-cand-degree")?.value?.trim() || null;
-      const branchVal = document.getElementById("edit-cand-branch")?.value?.trim() || null;
-      const gradYearVal = document.getElementById("edit-cand-grad-year")?.value ? Number(document.getElementById("edit-cand-grad-year").value) : null;
-      const cgpaVal = document.getElementById("edit-cand-cgpa")?.value ? Number(document.getElementById("edit-cand-cgpa").value) : null;
+    const modalBody = document.querySelector("#editCandProfileModal .modal-body");
+    if (modalBody) {
+      modalBody.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }
+
+  // Next: Basic Information Button (No page refresh, retains all form data)
+  const nextToBasicBtn = document.getElementById("btn-next-to-basic");
+  if (nextToBasicBtn) {
+    nextToBasicBtn.addEventListener("click", (e) => {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      const nameVal = document.getElementById("edit-cand-name")?.value?.trim();
+      const user = Session.getUser();
+      if (nameVal && user) {
+        user.name = nameVal;
+      }
+      switchCandidateProfileStep(2);
+    });
+  }
+
+  // Back: Personal Details Button (No page refresh, retains all form data)
+  const backToPersonalBtn = document.getElementById("btn-back-to-personal");
+  if (backToPersonalBtn) {
+    backToPersonalBtn.addEventListener("click", (e) => {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      switchCandidateProfileStep(1);
+    });
+  }
+
+  // Direct pill tab clicks
+  const tabPersonal = document.getElementById("tab-step-personal");
+  if (tabPersonal) {
+    tabPersonal.addEventListener("click", (e) => {
+      if (e) e.preventDefault();
+      switchCandidateProfileStep(1);
+    });
+  }
+  const tabBasic = document.getElementById("tab-step-basic");
+  if (tabBasic) {
+    tabBasic.addEventListener("click", (e) => {
+      if (e) e.preventDefault();
+      switchCandidateProfileStep(2);
+    });
+  }
+
+  // Resume Upload Auto-Fill for Candidate Profile & Details Modal
+  function initResumeAutofillInModal() {
+    const triggerBtn = document.getElementById("btn-trigger-resume-autofill");
+    const fileInput = document.getElementById("autofill-resume-file");
+    const btnText = document.getElementById("autofill-btn-text");
+    const spinner = document.getElementById("autofill-spinner");
+    const statusAlert = document.getElementById("autofill-status-alert");
+    const statusMsg = document.getElementById("autofill-status-msg");
+
+    if (!triggerBtn || !fileInput) return;
+
+    triggerBtn.addEventListener("click", () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      if (statusAlert) statusAlert.classList.add("d-none");
+      if (triggerBtn) triggerBtn.disabled = true;
+      if (btnText) btnText.textContent = "Extracting Info...";
+      if (spinner) spinner.classList.remove("d-none");
 
       try {
-        await API.put("/resumes/me", payload);
-        await api.student.updateProfile({
-          college_name: collegeVal,
-          degree: degreeVal,
-          branch: branchVal,
-          graduation_year: gradYearVal,
-          cgpa: cgpaVal,
-          is_student: true,
-        });
-
-        alert("Candidate profile and academic details updated successfully!");
-        const modalEl = document.getElementById("editCandProfileModal");
-        if (window.bootstrap && modalEl) {
-          const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-          modal.hide();
+        const resAPI = window.resumesAPI || window.resumeAPI;
+        if (!resAPI || !resAPI.extractDetails) {
+          throw new Error("Resume extraction service is unavailable.");
         }
-        loadCandidateProfileData();
+        const res = await resAPI.extractDetails(file);
+        const data = res?.data || {};
+
+        let filledCount = 0;
+        const setVal = (id, val) => {
+          const el = document.getElementById(id);
+          if (el && val !== undefined && val !== null && String(val).trim() !== "") {
+            el.value = val;
+            el.classList.add("border-success", "bg-success-subtle", "bg-opacity-10");
+            setTimeout(() => el.classList.remove("border-success", "bg-success-subtle", "bg-opacity-10"), 4000);
+            filledCount++;
+          }
+        };
+
+        // Populate Step 1 (Personal Details)
+        setVal("edit-cand-name", data.name);
+        if (data.email) setVal("edit-cand-email", data.email);
+        setVal("edit-cand-phone", data.phone);
+        setVal("edit-cand-location", data.location);
+        setVal("edit-cand-linkedin", data.linkedin_url);
+        setVal("edit-cand-github", data.github_url);
+        setVal("edit-cand-portfolio", data.portfolio_url);
+
+        // Populate Step 2 (Basic Professional & Academic Information)
+        setVal("edit-cand-headline", data.headline);
+        setVal("edit-cand-role", data.current_role);
+        setVal("edit-cand-exp", data.experience_years);
+        setVal("edit-cand-skills", data.skills);
+        setVal("edit-cand-summary", data.summary);
+        setVal("edit-cand-certifications", data.certifications);
+        setVal("edit-cand-college", data.college);
+        setVal("edit-cand-degree", data.degree);
+        setVal("edit-cand-branch", data.branch);
+        setVal("edit-cand-grad-year", data.graduation_year);
+        setVal("edit-cand-cgpa", data.cgpa);
+
+        // Populate 12th & 10th Grade Credentials
+        setVal("edit-cand-12th-school", data.twelfth_school);
+        setVal("edit-cand-12th-board", data.twelfth_board);
+        setVal("edit-cand-12th-year", data.twelfth_year);
+        setVal("edit-cand-12th-marks", data.twelfth_percentage);
+
+        setVal("edit-cand-10th-school", data.tenth_school);
+        setVal("edit-cand-10th-board", data.tenth_board);
+        setVal("edit-cand-10th-year", data.tenth_year);
+        setVal("edit-cand-10th-marks", data.tenth_percentage);
+
+        // Update Session user name if extracted
+        const user = Session.getUser();
+        if (user && data.name) {
+          user.name = data.name;
+          if (typeof Session.setUser === "function") {
+            Session.setUser(user);
+          } else if (typeof Session.save === "function") {
+            Session.save({ user });
+          } else if (typeof safeStorage !== "undefined") {
+            safeStorage.setItem("ar_user", JSON.stringify(user));
+          }
+        }
+
+        if (statusAlert && statusMsg) {
+          statusAlert.className = "alert alert-success py-2 px-3 mb-0 mt-3 d-flex align-items-center justify-content-between small shadow-xs";
+          statusMsg.innerHTML = `<span><strong>🎉 Resume Extracted!</strong> Successfully auto-filled <strong>${filledCount} fields</strong> and generated your portfolio.</span>`;
+          statusAlert.classList.remove("d-none");
+        }
+
+        // Live update portfolio status on dashboard
+        loadCandidatePortfolioStatus();
       } catch (err) {
-        alert(err.message);
+        if (statusAlert && statusMsg) {
+          statusAlert.className = "alert alert-danger py-2 px-3 mb-0 mt-3 d-flex align-items-center justify-content-between small shadow-xs";
+          statusMsg.innerHTML = `<span><strong>Extraction failed:</strong> ${err.message || "Could not read resume. Please verify the file is a valid PDF or DOCX."}</span>`;
+          statusAlert.classList.remove("d-none");
+        }
       } finally {
-        saveBtn.disabled = false;
-        saveBtn.textContent = "Save Profile";
+        if (triggerBtn) triggerBtn.disabled = false;
+        if (btnText) btnText.textContent = "Upload Resume";
+        if (spinner) spinner.classList.add("d-none");
+        fileInput.value = "";
       }
     });
+  }
+
+  initResumeAutofillInModal();
+
+
+  // Reset to Step 1 whenever modal opens
+  const editModalEl = document.getElementById("editCandProfileModal");
+  if (editModalEl) {
+    editModalEl.addEventListener("show.bs.modal", () => {
+      switchCandidateProfileStep(1);
+    });
+  }
+
+  // Auto-prompt candidate profile wizard on first onboarding or incomplete profile
+  setTimeout(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const u = Session.getUser();
+    if (urlParams.get("onboarding") === "1" || (u && u.is_profile_complete === false)) {
+      const modalEl = document.getElementById("editCandProfileModal");
+      if (modalEl && window.bootstrap) {
+        const m = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        m.show();
+      }
+    }
+  }, 600);
+
+  // Form submission handler (saves both sections without refreshing the page)
+  const candForm = document.getElementById("edit-cand-profile-form");
+  async function handleCandidateProfileSave(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const saveBtn = document.getElementById("save-cand-profile-btn");
+    const saveText = document.getElementById("save-cand-profile-text");
+    const saveSpinner = document.getElementById("save-cand-profile-spinner");
+    if (saveBtn) saveBtn.disabled = true;
+    if (saveText) saveText.textContent = "Saving...";
+    if (saveSpinner) saveSpinner.classList.remove("d-none");
+
+    const expVal = document.getElementById("edit-cand-exp")?.value;
+    const nameVal = document.getElementById("edit-cand-name")?.value?.trim() || null;
+    const skillsStr = document.getElementById("edit-cand-skills")?.value?.trim() || "";
+    const skillsArr = skillsStr ? skillsStr.split(",").map(s => s.trim()).filter(Boolean) : undefined;
+
+    const payload = {
+      name: nameVal,
+      full_name: nameVal,
+      headline: document.getElementById("edit-cand-headline")?.value?.trim() || null,
+      current_role: document.getElementById("edit-cand-role")?.value?.trim() || null,
+      profile_photo: document.getElementById("edit-cand-photo")?.value?.trim() || null,
+      location: document.getElementById("edit-cand-location")?.value?.trim() || null,
+      summary: document.getElementById("edit-cand-summary")?.value?.trim() || null,
+      phone: document.getElementById("edit-cand-phone")?.value?.trim() || null,
+      experience_years: expVal ? Number(expVal) : null,
+      skills: skillsArr,
+      certifications: document.getElementById("edit-cand-certifications")?.value?.trim() || null,
+      linkedin_url: document.getElementById("edit-cand-linkedin")?.value?.trim() || null,
+      github_url: document.getElementById("edit-cand-github")?.value?.trim() || null,
+      portfolio_url: document.getElementById("edit-cand-portfolio")?.value?.trim() || null,
+    };
+
+    const collegeVal = document.getElementById("edit-cand-college")?.value?.trim() || null;
+    const degreeVal = document.getElementById("edit-cand-degree")?.value?.trim() || null;
+    const branchVal = document.getElementById("edit-cand-branch")?.value?.trim() || null;
+    const gradYearVal = document.getElementById("edit-cand-grad-year")?.value ? Number(document.getElementById("edit-cand-grad-year").value) : null;
+    const cgpaVal = document.getElementById("edit-cand-cgpa")?.value ? Number(document.getElementById("edit-cand-cgpa").value) : null;
+
+    const twelfthSchoolVal = document.getElementById("edit-cand-12th-school")?.value?.trim() || null;
+    const twelfthBoardVal = document.getElementById("edit-cand-12th-board")?.value?.trim() || null;
+    const twelfthYearVal = document.getElementById("edit-cand-12th-year")?.value ? Number(document.getElementById("edit-cand-12th-year").value) : null;
+    const twelfthMarksVal = document.getElementById("edit-cand-12th-marks")?.value ? Number(document.getElementById("edit-cand-12th-marks").value) : null;
+
+    const tenthSchoolVal = document.getElementById("edit-cand-10th-school")?.value?.trim() || null;
+    const tenthBoardVal = document.getElementById("edit-cand-10th-board")?.value?.trim() || null;
+    const tenthYearVal = document.getElementById("edit-cand-10th-year")?.value ? Number(document.getElementById("edit-cand-10th-year").value) : null;
+    const tenthMarksVal = document.getElementById("edit-cand-10th-marks")?.value ? Number(document.getElementById("edit-cand-10th-marks").value) : null;
+
+    payload.college_name = collegeVal;
+    payload.degree = degreeVal;
+    payload.branch = branchVal;
+    payload.graduation_year = gradYearVal;
+    payload.cgpa = cgpaVal;
+    payload.twelfth_school = twelfthSchoolVal;
+    payload.twelfth_board = twelfthBoardVal;
+    payload.twelfth_year = twelfthYearVal;
+    payload.twelfth_percentage = twelfthMarksVal;
+    payload.tenth_school = tenthSchoolVal;
+    payload.tenth_board = tenthBoardVal;
+    payload.tenth_year = tenthYearVal;
+    payload.tenth_percentage = tenthMarksVal;
+
+    try {
+      await API.put("/resumes/me", payload);
+      await api.student.updateProfile({
+        college_name: collegeVal,
+        degree: degreeVal,
+        branch: branchVal,
+        graduation_year: gradYearVal,
+        cgpa: cgpaVal,
+        twelfth_school: twelfthSchoolVal,
+        twelfth_board: twelfthBoardVal,
+        twelfth_year: twelfthYearVal,
+        twelfth_percentage: twelfthMarksVal,
+        tenth_school: tenthSchoolVal,
+        tenth_board: tenthBoardVal,
+        tenth_year: tenthYearVal,
+        tenth_percentage: tenthMarksVal,
+        target_role: payload.headline || payload.current_role,
+        is_student: true,
+      });
+
+      // Update session with new name and is_profile_complete flag
+      const curUser = Session.getUser() || {};
+      const newName = document.getElementById("edit-cand-name")?.value?.trim();
+      if (newName) curUser.name = newName;
+      curUser.is_profile_complete = true;
+      Session.save({
+        access_token: Session.getAccessToken(),
+        refresh_token: (typeof safeStorage !== "undefined" ? safeStorage.getItem("ar_refresh_token") : localStorage.getItem("ar_refresh_token")),
+        user: curUser,
+      });
+
+      // Gracefully close modal without reloading the page
+      const modalEl = document.getElementById("editCandProfileModal");
+      if (window.bootstrap && modalEl) {
+        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modal.hide();
+      }
+
+      // Live update dashboard UI
+      loadCandidateProfileData();
+      await loadCandidatePortfolioStatus();
+
+      // Show in-page success alert
+      const dashAlert = document.getElementById("dashboard-alert");
+      if (dashAlert) {
+        dashAlert.className = "alert alert-success alert-dismissible fade show py-2 mb-4 fw-semibold shadow-sm";
+        dashAlert.innerHTML = `🎉 Candidate profile and academic details saved successfully! <button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+        dashAlert.classList.remove("d-none");
+        setTimeout(() => dashAlert.classList.add("d-none"), 5000);
+      }
+    } catch (err) {
+      alert(err.message || "Failed to save profile. Please try again.");
+    } finally {
+      if (saveBtn) saveBtn.disabled = false;
+      if (saveText) saveText.textContent = "Save Profile ✓";
+      if (saveSpinner) saveSpinner.classList.add("d-none");
+    }
+  }
+
+  if (candForm) {
+    candForm.addEventListener("submit", handleCandidateProfileSave);
+  }
+  const saveProfileBtn = document.getElementById("save-cand-profile-btn");
+  if (saveProfileBtn) {
+    saveProfileBtn.addEventListener("click", handleCandidateProfileSave);
   }
 
   const dashSearchBtn = document.getElementById("dash-search-btn");

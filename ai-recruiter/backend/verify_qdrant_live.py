@@ -66,14 +66,14 @@ del_ok = qdrant_service.delete_document("jobs", "test-job-verify-999")
 print(f"  Delete test point: {del_ok}")
 
 print("\n" + "=" * 65)
-print("6. DATABASE SYNC CHECK (Sync SQLite to Qdrant)")
+print("6. DATABASE SYNC CHECK (Sync PostgreSQL to Qdrant)")
 print("=" * 65)
 db = SessionLocal()
 try:
     sync_stats = qdrant_service.sync_all_from_db(db)
     print(f"  Status: {sync_stats.get('status')}")
     print(f"  Message: {sync_stats.get('message')}")
-    print(f"  Records synchronized from SQLite to Qdrant:")
+    print(f"  Records synchronized from PostgreSQL to Qdrant:")
     for coll, count in sync_stats.get("counts", {}).items():
         print(f"    - {coll:22} : {count} points indexed")
 finally:

@@ -122,6 +122,86 @@
         <!-- CANDIDATE LEARNING ROADMAP & PLACEMENT JOURNEY DASHBOARD (Reference UI) -->
         <!-- ========================================================================= -->
         <div id="candidate-learning-journey-container" class="mb-5">
+          <!-- TARGET COURSE SELECTION & CAREER TRACK SELECTOR -->
+          <div class="card border-0 shadow-sm p-3.5 px-4 mb-4 rounded-4" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #1e3a8a 100%); color: #ffffff;">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+              <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle p-2.5 text-white shadow-sm d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.15); font-size: 1.6rem; width: 54px; height: 54px; flex-shrink: 0;">
+                  <span id="active-course-icon">☕</span>
+                </div>
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                    <span class="badge bg-warning text-dark fw-bold px-2.5 py-0.5 rounded-pill small">Target Course Track</span>
+                    <span class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-10 py-0.5 px-2 rounded-pill small" id="active-course-role-badge">Java Backend Developer / SDE-1</span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle py-0.5 px-2 rounded-pill small fw-semibold">Beginner &rarr; Placement Ready</span>
+                  </div>
+                  <h5 class="fw-bold mb-0 text-white" id="active-course-title">Java Programming: Beginner to Placement Ready</h5>
+                  <p class="text-white-50 small mb-0 mt-1" id="active-course-desc" style="max-width: 780px;">
+                    Complete step-by-step guidance from Java basics and JVM memory management to Collections, Concurrency, Spring Boot REST microservices, real-world projects, and campus placement interviews.
+                  </p>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center gap-2 flex-wrap flex-shrink-0">
+                <!-- Course Selector Dropdown -->
+                <div class="dropdown">
+                  <button class="btn btn-light fw-bold px-3 py-2 rounded-pill shadow-sm dropdown-toggle d-flex align-items-center gap-2" type="button" id="courseTrackDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span>📚 Switch Course</span>
+                  </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2 rounded-3" id="courseTrackDropdownList" aria-labelledby="courseTrackDropdown" style="min-width: 320px; max-width: 380px;">
+                    <li class="px-2 pb-2 pt-1 border-bottom border-light mb-2">
+                      <div class="d-flex align-items-center justify-content-between mb-1">
+                        <span class="dropdown-header text-uppercase fw-bold text-muted p-0" style="font-size: 0.74rem; letter-spacing: 0.8px;">CHOOSE TARGET COURSE TRACK</span>
+                        <span class="badge bg-light text-secondary rounded-pill border" style="font-size: 0.68rem;">14 Tracks</span>
+                      </div>
+                      <div class="input-group input-group-sm mt-1">
+                        <span class="input-group-text bg-white border-end-0 py-1 ps-2 pe-1 text-muted"><i class="bi bi-search" style="font-size: 0.75rem;"></i></span>
+                        <input type="text" class="form-control form-control-sm border-start-0 py-1 shadow-none" id="searchCourseTrackInput" placeholder="Search track or skill..." oninput="filterCourseTracks(this.value)" onclick="event.stopPropagation();" style="font-size: 0.8rem; background: #fff;">
+                      </div>
+                    </li>
+                    <div id="courseTrackOptionsList">
+                      <li class="course-track-item" data-search="java programming most popular for placements"><a class="dropdown-item active" href="#" onclick="switchCandidateCourse('java'); return false;"><span class="course-icon">☕</span><div class="flex-grow-1"><div class="course-title">Java Programming</div><small class="course-subtitle">Most Popular for Placements</small></div><span class="ms-2 text-white small"><i class="bi bi-check2"></i></span></a></li>
+                      <li class="course-track-item" data-search="python full-stack ai & fast-track"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('python'); return false;"><span class="course-icon">🐍</span><div class="flex-grow-1"><div class="course-title">Python Full-Stack</div><small class="course-subtitle">AI & Fast-Track</small></div></a></li>
+                      <li class="course-track-item" data-search="dsa placement mastery placement essential"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('dsa'); return false;"><span class="course-icon">⚡</span><div class="flex-grow-1"><div class="course-title">DSA Placement Mastery</div><small class="course-subtitle">Placement Essential</small></div></a></li>
+                      <li class="course-track-item" data-search="full-stack web dev high demand"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('web_dev'); return false;"><span class="course-icon">🌐</span><div class="flex-grow-1"><div class="course-title">Full-Stack Web Dev</div><small class="course-subtitle">High Demand</small></div></a></li>
+                      <li class="course-track-item" data-search="ai and machine learning future-ready ai"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('ai_ml'); return false;"><span class="course-icon">🤖</span><div class="flex-grow-1"><div class="course-title">AI and Machine Learning</div><small class="course-subtitle">Future-Ready AI</small></div></a></li>
+                      <li class="course-track-item" data-search="data science high salary roles"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('data_science'); return false;"><span class="course-icon">📊</span><div class="flex-grow-1"><div class="course-title">Data Science</div><small class="course-subtitle">High Salary Roles</small></div></a></li>
+                      <li class="course-track-item" data-search="cloud computing cloud architect track"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('cloud_computing'); return false;"><span class="course-icon">☁️</span><div class="flex-grow-1"><div class="course-title">Cloud Computing</div><small class="course-subtitle">Cloud Architect Track</small></div></a></li>
+                      <li class="course-track-item" data-search="aws (amazon web services) top cloud certification"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('aws'); return false;"><span class="course-icon">🚀</span><div class="flex-grow-1"><div class="course-title">AWS (Amazon Web Services)</div><small class="course-subtitle">Top Cloud Certification</small></div></a></li>
+                      <li class="course-track-item" data-search="cybersecurity high demand security"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('cybersecurity'); return false;"><span class="course-icon">🛡️</span><div class="flex-grow-1"><div class="course-title">Cybersecurity</div><small class="course-subtitle">High Demand Security</small></div></a></li>
+                      <li class="course-track-item" data-search="devops ci/cd & kubernetes mastery"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('devops'); return false;"><span class="course-icon">🔄</span><div class="flex-grow-1"><div class="course-title">DevOps</div><small class="course-subtitle">CI/CD & Kubernetes Mastery</small></div></a></li>
+                      <li class="course-track-item" data-search="sql & database management core placement skill"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('sql_db'); return false;"><span class="course-icon">🗄️</span><div class="flex-grow-1"><div class="course-title">SQL & Database Management</div><small class="course-subtitle">Core Placement Skill</small></div></a></li>
+                      <li class="course-track-item" data-search="generative ai cutting-edge & high salary"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('gen_ai'); return false;"><span class="course-icon">✨</span><div class="flex-grow-1"><div class="course-title">Generative AI</div><small class="course-subtitle">Cutting-Edge & High Salary</small></div></a></li>
+                      <li class="course-track-item" data-search="deep learning advanced ai & research"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('deep_learning'); return false;"><span class="course-icon">🧠</span><div class="flex-grow-1"><div class="course-title">Deep Learning</div><small class="course-subtitle">Advanced AI & Research</small></div></a></li>
+                      <li class="course-track-item" data-search="software testing & qa qa automation & sdet"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('software_testing'); return false;"><span class="course-icon">🧪</span><div class="flex-grow-1"><div class="course-title">Software Testing & QA</div><small class="course-subtitle">QA Automation & SDET</small></div></a></li>
+                      <li id="courseTrackEmptyNotice" class="text-center py-3 text-muted small" style="display: none;">No tracks found matching your search.</li>
+                    </div>
+                  </ul>
+                </div>
+
+                <button type="button" class="btn btn-outline-light rounded-pill px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-1.5" onclick="openCourseCurriculumModal()">
+                  <span>📖 Full Syllabus &amp; Materials</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Course Track Highlights Bar -->
+            <div class="row g-2 mt-2 pt-2 border-top border-white border-opacity-10 text-white-50 small">
+              <div class="col-6 col-md-3 d-flex align-items-center gap-2">
+                <span>📘</span> <span class="text-white-50"><strong class="text-white">10 Chapters</strong> &amp; Study Notes</span>
+              </div>
+              <div class="col-6 col-md-3 d-flex align-items-center gap-2">
+                <span>💻</span> <span class="text-white-50"><strong class="text-white">Practical Coding</strong> Exercises</span>
+              </div>
+              <div class="col-6 col-md-3 d-flex align-items-center gap-2">
+                <span>🚀</span> <span class="text-white-50"><strong class="text-white">Real-World Projects</strong> (Spring Boot)</span>
+              </div>
+              <div class="col-6 col-md-3 d-flex align-items-center gap-2">
+                <span>🎯</span> <span class="text-white-50"><strong class="text-white">Campus Placement</strong> Training</span>
+              </div>
+            </div>
+          </div>
+
           <!-- Top Next Step Guidance Banner -->
           <div class="card border-0 shadow-sm p-3 px-4 mb-4 rounded-4" style="background: linear-gradient(135deg, #f8faff 0%, #ffffff 100%); border-left: 5px solid #4f46e5 !important;">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
@@ -132,7 +212,7 @@
                 <div>
                   <div class="d-flex align-items-center gap-2 mb-0.5">
                     <span class="badge bg-primary-subtle text-primary border rounded-pill px-2.5 py-0.5 small fw-bold">Stage-Gate Journey</span>
-                    <h6 class="fw-bold mb-0 text-dark" id="journey-next-step-title">Phase 1: Foundations (60% Completed)</h6>
+                    <h6 class="fw-bold mb-0 text-dark" id="journey-next-step-title">Phase 1: Foundations (0% Completed)</h6>
                   </div>
                   <p class="text-muted small mb-0" id="journey-next-step-guidance">
                     Strengthen your core concepts. Master beginner foundations first, then advance to Core Skills, Practical Projects, and Course Interview Prep.
@@ -160,7 +240,7 @@
               <div class="journey-card">
                 <div class="journey-card-header">
                   <h5 class="journey-card-title">Your 90-Day Roadmap</h5>
-                  <span class="badge bg-primary-subtle text-primary rounded-pill small fw-semibold" id="roadmap-overall-badge">15% Total</span>
+                  <span class="badge bg-primary-subtle text-primary rounded-pill small fw-semibold" id="roadmap-overall-badge">0% Total</span>
                 </div>
 
                 <!-- Vertical Timeline -->
@@ -183,7 +263,7 @@
               <div class="journey-card">
                 <div class="journey-card-header">
                   <h5 class="journey-card-title">Top Recommendations for You</h5>
-                  <span class="badge bg-primary-subtle text-primary rounded-pill small fw-semibold" id="recommendations-overall-badge">40% Avg</span>
+                  <span class="badge bg-primary-subtle text-primary rounded-pill small fw-semibold" id="recommendations-overall-badge">0% Avg</span>
                 </div>
 
                 <!-- Recommendations List -->
@@ -215,14 +295,14 @@
                     <h5 class="journey-card-title">Today's Plan</h5>
                   </div>
                   <div class="d-flex align-items-center gap-2">
-                    <span class="badge bg-success-subtle text-success rounded-pill small fw-semibold" id="today-plan-progress-badge">50% Completed</span>
+                    <span class="badge bg-success-subtle text-success rounded-pill small fw-semibold" id="today-plan-progress-badge">0% Completed</span>
                     <span class="text-muted small fw-medium" id="journey-today-date">Oct 28, 2026</span>
                   </div>
                 </div>
 
                 <!-- Daily Plan Mini Progress Bar -->
                 <div class="progress mb-2" style="height: 4px; border-radius: 999px; background: #f1f5f9;">
-                  <div class="progress-bar bg-success" id="today-plan-progress-bar" style="width: 50%; border-radius: 999px;"></div>
+                  <div class="progress-bar bg-success" id="today-plan-progress-bar" style="width: 0%; border-radius: 999px;"></div>
                 </div>
 
                 <!-- Today's Plan Tasks -->
@@ -262,7 +342,7 @@
                       </div>
                       <div>
                         <div class="text-secondary small fw-medium" style="font-size: 0.78rem;">Courses Completed</div>
-                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;" id="journey-stat-courses">4</div>
+                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;" id="journey-stat-courses">0</div>
                         <div class="fw-semibold text-success" style="font-size: 0.72rem;">+1 this week</div>
                       </div>
                     </div>
@@ -278,7 +358,7 @@
                       </div>
                       <div>
                         <div class="text-secondary small fw-medium" style="font-size: 0.78rem;">Projects Built</div>
-                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;" id="journey-stat-projects">2</div>
+                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;" id="journey-stat-projects">0</div>
                         <div class="fw-semibold text-success" style="font-size: 0.72rem;">+1 this week</div>
                       </div>
                     </div>
@@ -295,7 +375,7 @@
                       </div>
                       <div>
                         <div class="text-secondary small fw-medium" style="font-size: 0.78rem;">Hours Learned</div>
-                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;" id="journey-stat-hours">18.5</div>
+                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;" id="journey-stat-hours">0.0</div>
                         <div class="fw-semibold text-success" style="font-size: 0.72rem;">+4.5 this week</div>
                       </div>
                     </div>
@@ -311,7 +391,7 @@
                       </div>
                       <div>
                         <div class="text-secondary small fw-medium" style="font-size: 0.78rem;">Streak</div>
-                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;"><span id="journey-stat-streak">7</span> <span class="fw-normal text-muted" style="font-size: 0.95rem;">days</span></div>
+                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;"><span id="journey-stat-streak">1</span> <span class="fw-normal text-muted" style="font-size: 0.95rem;">days</span></div>
                         <div class="text-muted small" style="font-size: 0.72rem;">Active Daily Habit</div>
                       </div>
                     </div>
@@ -375,6 +455,39 @@
           <div class="col-md-6 col-lg-3">
             <div class="card feature-card p-4 border-0 shadow-sm hover-lift" style="border-radius: 20px;">
               <div class="feature-icon mb-3">📊</div>
+
+        <!-- COURSE CURRICULUM, EXERCISES & PLACEMENT GUIDANCE MODAL -->
+        <div class="modal fade" id="courseCurriculumModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
+              <div class="modal-header border-bottom p-4 pb-3" style="background: linear-gradient(135deg, #f8faff 0%, #ffffff 100%);">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="fs-3 p-2.5 rounded-3 bg-white border shadow-sm" style="line-height: 1;">📚</div>
+                  <div>
+                    <h5 class="modal-title fw-bold text-dark mb-0" id="curriculum-modal-title">Course Learning Roadmap &amp; Guidance</h5>
+                    <span id="curriculum-modal-role" class="badge bg-primary-subtle text-primary rounded-pill small mt-1">Placement Ready Track</span>
+                  </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-4" id="curriculum-modal-body">
+                <!-- Content dynamically injected via renderCurriculumModalContent -->
+              </div>
+              <div class="modal-footer border-top p-3 px-4 d-flex justify-content-between">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                <div class="d-flex gap-2">
+                  <a href="study-materials.html" class="btn btn-outline-primary rounded-pill px-3 fw-semibold">
+                    📖 Open Study Library
+                  </a>
+                  <a href="coding-assessment.html" class="btn btn-primary rounded-pill px-4 fw-bold">
+                    💻 Open Coding Lab &rarr;
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
               <h5 class="fw-bold mb-2">Candidate Dashboard</h5>
               <p class="text-secondary small mb-3 flex-grow-1" style="line-height: 1.6;">
                 View application progress, ATS match scores, profile status, and evaluation summaries.

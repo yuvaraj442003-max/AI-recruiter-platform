@@ -13,9 +13,12 @@ import app.models  # noqa: F401
 from app.core.config import settings
 from app.core.database import Base, get_db
 
-TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "sqlite:///./test_ai_recruiter.db")
+TEST_DATABASE_URL = os.getenv(
+    "TEST_DATABASE_URL", 
+    "postgresql+psycopg2://postgres:postgres234@127.0.0.1:5432/ai_recruiter_test"
+)
 
-engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
+engine = create_engine(TEST_DATABASE_URL, pool_pre_ping=True)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

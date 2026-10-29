@@ -1,5 +1,5 @@
 """
-Seed all 13 prescribed textbooks into the SQLite database and verify contents.
+Seed all 13 prescribed textbooks into the PostgreSQL database and verify contents.
 """
 import os
 import sys
@@ -31,7 +31,7 @@ for topic, qs in TOPIC_QUESTION_BANKS.items():
     print(f"  {topic}: {len(qs)} questions")
     assert len(qs) > 0, f"No questions for {topic}"
 
-print("\n=== SEEDING TO SQLITE DATABASE ===")
+print("\n=== SEEDING TO POSTGRESQL DATABASE ===")
 db = SessionLocal()
 seed_prescribed_books_to_db(db)
 

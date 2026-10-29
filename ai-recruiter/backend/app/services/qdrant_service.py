@@ -17,7 +17,7 @@ Design Principles:
    - Embedded local disk storage via QDRANT_STORAGE_PATH (./qdrant_storage)
    - Transparent in-memory fallback (:memory:) if disk locking or permissions fail.
 3. Strict Metadata Filtering: Topic, difficulty, role, company, and content type.
-4. Clean Separation: Original relational records stay in SQLite/PostgreSQL; Qdrant holds
+4. Clean Separation: Original relational records stay in PostgreSQL; Qdrant holds
    embeddings, identifiers, and retrieval metadata.
 """
 import hashlib

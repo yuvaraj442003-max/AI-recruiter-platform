@@ -2412,20 +2412,61 @@
           s.includes("dsa") ||
           s.includes("data structures") ||
           s.includes("javascript") ||
+          s.includes("typescript") ||
+          s.includes("web") ||
           s.includes("c++") ||
           s.includes("cpp") ||
           s.includes("golang") ||
-          s.includes("go") ||
+          s.includes("go ") ||
           s.includes("rust") ||
           s.includes("c programming") ||
           s === "c"
         );
+      } else if (cat === "cloud") {
+        return (
+          s.includes("cloud") ||
+          s.includes("aws") ||
+          s.includes("amazon") ||
+          s.includes("devops") ||
+          s.includes("sre")
+        );
+      } else if (cat === "ai_data" || cat === "data") {
+        return (
+          s.includes("ai") ||
+          s.includes("machine learning") ||
+          s.includes("generative") ||
+          s.includes("deep learning") ||
+          s.includes("data science") ||
+          s.includes("data engineering") ||
+          s.includes("big data")
+        );
+      } else if (cat === "security_testing") {
+        return (
+          s.includes("cyber") ||
+          s.includes("security") ||
+          s.includes("testing") ||
+          s.includes("qa") ||
+          s.includes("software testing")
+        );
       } else if (cat === "core") {
-        return s.includes("operating") || s.includes("os") || s.includes("network") || s.includes("cn") || s.includes("dbms") || s.includes("sql") || s.includes("database");
+        return (
+          s.includes("operating") ||
+          s.includes("os") ||
+          s.includes("network") ||
+          s.includes("cn") ||
+          s.includes("dbms") ||
+          s.includes("sql") ||
+          s.includes("database")
+        );
       } else if (cat === "apt") {
-        return s.includes("quant") || s.includes("aptitude") || s.includes("logical") || s.includes("reasoning") || s.includes("verbal") || s.includes("english");
-      } else if (cat === "data") {
-        return s.includes("ai") || s.includes("machine learning") || s.includes("data engineering") || s.includes("big data");
+        return (
+          s.includes("quant") ||
+          s.includes("aptitude") ||
+          s.includes("logical") ||
+          s.includes("reasoning") ||
+          s.includes("verbal") ||
+          s.includes("english")
+        );
       }
       return true;
     });
@@ -2489,6 +2530,38 @@
         icon = "🌐";
         accentColor = "#eab308";
         gradient = "linear-gradient(135deg, rgba(234, 179, 8, 0.15) 0%, rgba(249, 115, 22, 0.1) 100%)";
+      } else if (subLower.includes("aws") || subLower.includes("amazon")) {
+        icon = "🚀";
+        accentColor = "#f59e0b";
+        gradient = "linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.12) 100%)";
+      } else if (subLower.includes("cloud computing") || (subLower.includes("cloud") && !subLower.includes("aws"))) {
+        icon = "☁️";
+        accentColor = "#38bdf8";
+        gradient = "linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(14, 165, 233, 0.12) 100%)";
+      } else if (subLower.includes("cybersecurity") || subLower.includes("security")) {
+        icon = "🛡️";
+        accentColor = "#06b6d4";
+        gradient = "linear-gradient(135deg, rgba(6, 182, 212, 0.2) 0%, rgba(14, 165, 233, 0.12) 100%)";
+      } else if (subLower.includes("devops") || subLower.includes("sre")) {
+        icon = "🔄";
+        accentColor = "#3b82f6";
+        gradient = "linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(99, 102, 241, 0.12) 100%)";
+      } else if (subLower.includes("generative") || subLower.includes("gen ai")) {
+        icon = "✨";
+        accentColor = "#a855f7";
+        gradient = "linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(192, 132, 252, 0.12) 100%)";
+      } else if (subLower.includes("deep learning")) {
+        icon = "🧠";
+        accentColor = "#ec4899";
+        gradient = "linear-gradient(135deg, rgba(236, 72, 153, 0.2) 0%, rgba(219, 39, 119, 0.12) 100%)";
+      } else if (subLower.includes("software testing") || subLower.includes("testing") || subLower.includes("qa")) {
+        icon = "🧪";
+        accentColor = "#10b981";
+        gradient = "linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.12) 100%)";
+      } else if (subLower.includes("data science")) {
+        icon = "📊";
+        accentColor = "#6366f1";
+        gradient = "linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.12) 100%)";
       } else if (subLower.includes("data engineering") || subLower.includes("big data")) {
         icon = "📊";
         accentColor = "#0284c7";
@@ -2772,6 +2845,14 @@
     else if (subLower.includes("java") && !subLower.includes("javascript")) icon = "☕";
     else if (subLower.includes("python")) icon = "🐍";
     else if (subLower.includes("dsa") || subLower.includes("data structures")) icon = "💻";
+    else if (subLower.includes("aws") || subLower.includes("amazon")) icon = "🚀";
+    else if (subLower.includes("cloud computing") || (subLower.includes("cloud") && !subLower.includes("aws"))) icon = "☁️";
+    else if (subLower.includes("cybersecurity") || subLower.includes("security")) icon = "🛡️";
+    else if (subLower.includes("devops") || subLower.includes("sre")) icon = "🔄";
+    else if (subLower.includes("generative") || subLower.includes("gen ai")) icon = "✨";
+    else if (subLower.includes("deep learning")) icon = "🧠";
+    else if (subLower.includes("software testing") || subLower.includes("testing") || subLower.includes("qa")) icon = "🧪";
+    else if (subLower.includes("data science")) icon = "📊";
     else if (subLower.includes("sql") || subLower.includes("database")) icon = "🗄️";
     else if (subLower.includes("quant") || subLower.includes("aptitude")) icon = "📐";
     else if (subLower.includes("logical") || subLower.includes("reasoning")) icon = "🧩";

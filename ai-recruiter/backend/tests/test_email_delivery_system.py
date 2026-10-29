@@ -30,7 +30,7 @@ client = TestClient(app)
 def test_email_verification_flow(db_session: Session):
     email = f"test_verify_{uuid.uuid4().hex[:6]}@gmail.com"
     
-    # 1. Register candidate
+    # 1. Register candidate (direct registration without OTP)
     reg_resp = client.post("/api/v1/auth/register", json={
         "name": "Verify Test User",
         "email": email,
@@ -41,37 +41,17 @@ def test_email_verification_flow(db_session: Session):
     
     user = db_session.query(User).filter(User.email == email).first()
     assert user is not None
-    assert user.is_email_verified is False
-    assert user.verification_token is not None
-    token = user.verification_token
+    assert user.is_email_verified is True
+    assert user.verification_token is None
 
-    # Verify real _send_smtp_email records EmailLog in DB
-    _send_smtp_email(email, "Test Subject", "<h1>Test</h1>", "Test", email_type="verification", db=db_session)
-    email_log = db_session.query(EmailLog).filter(EmailLog.to_email == email, EmailLog.email_type == "verification").first()
-    assert email_log is not None
-    assert email_log.status in ["Sent", "Pending", "Failed"]
-
-    # 2. Login before verification -> should fail
+    # 2. Login directly without OTP requirement -> succeeds
     login_resp = client.post("/api/v1/auth/login", json={
         "email": email,
         "password": "SecurePassword123!",
         "expected_role": "candidate"
     })
-    assert login_resp.status_code == 401
-    assert "EMAIL_NOT_VERIFIED" in login_resp.text or "verify your email" in login_resp.text.lower()
-
-    # 3. Click verification link
-    verify_resp = client.get(f"/api/v1/auth/verify-email?token={token}")
-    assert verify_resp.status_code == 200
-    assert "verified successfully" in verify_resp.json()["message"].lower()
-
-    db_session.refresh(user)
-    assert user.is_email_verified is True
-    assert user.verification_token is None  # Single-use: cleared after verification
-
-    # 4. Attempt token reuse -> should fail
-    reuse_resp = client.get(f"/api/v1/auth/verify-email?token={token}")
-    assert reuse_resp.status_code == 401
+    assert login_resp.status_code == 200
+    assert "access_token" in login_resp.json()["data"]
 
 
 def test_password_reset_flow(db_session: Session):

@@ -20,6 +20,14 @@ class StudentAcademicProfileUpdate(BaseModel):
     cgpa: Optional[float] = None
     current_semester: Optional[int] = None
     target_role: Optional[str] = None
+    twelfth_school: Optional[str] = None
+    twelfth_board: Optional[str] = None
+    twelfth_year: Optional[int] = None
+    twelfth_percentage: Optional[float] = None
+    tenth_school: Optional[str] = None
+    tenth_board: Optional[str] = None
+    tenth_year: Optional[int] = None
+    tenth_percentage: Optional[float] = None
 
 
 class StudentAcademicProfileResponse(BaseModel):
@@ -41,6 +49,14 @@ class StudentAcademicProfileResponse(BaseModel):
     portfolio_url: Optional[str] = None
     linkedin_url: Optional[str] = None
     github_url: Optional[str] = None
+    twelfth_school: Optional[str] = None
+    twelfth_board: Optional[str] = None
+    twelfth_year: Optional[int] = None
+    twelfth_percentage: Optional[float] = None
+    tenth_school: Optional[str] = None
+    tenth_board: Optional[str] = None
+    tenth_year: Optional[int] = None
+    tenth_percentage: Optional[float] = None
 
 
 class StudentReadinessStats(BaseModel):

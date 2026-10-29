@@ -145,6 +145,86 @@
         <!-- CANDIDATE LEARNING ROADMAP & PLACEMENT JOURNEY DASHBOARD (Reference UI) -->
         <!-- ========================================================================= -->
         <div id="candidate-learning-journey-container" class="mb-5">
+          <!-- TARGET COURSE SELECTION & CAREER TRACK SELECTOR -->
+          <div class="card border-0 shadow-sm p-3.5 px-4 mb-4 rounded-4" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #1e3a8a 100%); color: #ffffff;">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+              <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle p-2.5 text-white shadow-sm d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.15); font-size: 1.6rem; width: 54px; height: 54px; flex-shrink: 0;">
+                  <span id="active-course-icon">☕</span>
+                </div>
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                    <span class="badge bg-warning text-dark fw-bold px-2.5 py-0.5 rounded-pill small">Target Course Track</span>
+                    <span class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-10 py-0.5 px-2 rounded-pill small" id="active-course-role-badge">Java Backend Developer / SDE-1</span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle py-0.5 px-2 rounded-pill small fw-semibold">Beginner &rarr; Placement Ready</span>
+                  </div>
+                  <h5 class="fw-bold mb-0 text-white" id="active-course-title">Java Programming: Beginner to Placement Ready</h5>
+                  <p class="text-white-50 small mb-0 mt-1" id="active-course-desc" style="max-width: 780px;">
+                    Complete step-by-step guidance from Java basics and JVM memory management to Collections, Concurrency, Spring Boot REST microservices, real-world projects, and campus placement interviews.
+                  </p>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center gap-2 flex-wrap flex-shrink-0">
+                <!-- Course Selector Dropdown -->
+                <div class="dropdown">
+                  <button class="btn btn-light fw-bold px-3 py-2 rounded-pill shadow-sm dropdown-toggle d-flex align-items-center gap-2" type="button" id="courseTrackDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span>📚 Switch Course</span>
+                  </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2 rounded-3" id="courseTrackDropdownList" aria-labelledby="courseTrackDropdown" style="min-width: 320px; max-width: 380px;">
+                    <li class="px-2 pb-2 pt-1 border-bottom border-light mb-2">
+                      <div class="d-flex align-items-center justify-content-between mb-1">
+                        <span class="dropdown-header text-uppercase fw-bold text-muted p-0" style="font-size: 0.74rem; letter-spacing: 0.8px;">CHOOSE TARGET COURSE TRACK</span>
+                        <span class="badge bg-light text-secondary rounded-pill border" style="font-size: 0.68rem;">14 Tracks</span>
+                      </div>
+                      <div class="input-group input-group-sm mt-1">
+                        <span class="input-group-text bg-white border-end-0 py-1 ps-2 pe-1 text-muted"><i class="bi bi-search" style="font-size: 0.75rem;"></i></span>
+                        <input type="text" class="form-control form-control-sm border-start-0 py-1 shadow-none" id="searchCourseTrackInput" placeholder="Search track or skill..." oninput="filterCourseTracks(this.value)" onclick="event.stopPropagation();" style="font-size: 0.8rem; background: #fff;">
+                      </div>
+                    </li>
+                    <div id="courseTrackOptionsList">
+                      <li class="course-track-item" data-search="java programming most popular for placements"><a class="dropdown-item active" href="#" onclick="switchCandidateCourse('java'); return false;"><span class="course-icon">☕</span><div class="flex-grow-1"><div class="course-title">Java Programming</div><small class="course-subtitle">Most Popular for Placements</small></div><span class="ms-2 text-white small"><i class="bi bi-check2"></i></span></a></li>
+                      <li class="course-track-item" data-search="python full-stack ai & fast-track"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('python'); return false;"><span class="course-icon">🐍</span><div class="flex-grow-1"><div class="course-title">Python Full-Stack</div><small class="course-subtitle">AI & Fast-Track</small></div></a></li>
+                      <li class="course-track-item" data-search="dsa placement mastery placement essential"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('dsa'); return false;"><span class="course-icon">⚡</span><div class="flex-grow-1"><div class="course-title">DSA Placement Mastery</div><small class="course-subtitle">Placement Essential</small></div></a></li>
+                      <li class="course-track-item" data-search="full-stack web dev high demand"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('web_dev'); return false;"><span class="course-icon">🌐</span><div class="flex-grow-1"><div class="course-title">Full-Stack Web Dev</div><small class="course-subtitle">High Demand</small></div></a></li>
+                      <li class="course-track-item" data-search="ai and machine learning future-ready ai"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('ai_ml'); return false;"><span class="course-icon">🤖</span><div class="flex-grow-1"><div class="course-title">AI and Machine Learning</div><small class="course-subtitle">Future-Ready AI</small></div></a></li>
+                      <li class="course-track-item" data-search="data science high salary roles"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('data_science'); return false;"><span class="course-icon">📊</span><div class="flex-grow-1"><div class="course-title">Data Science</div><small class="course-subtitle">High Salary Roles</small></div></a></li>
+                      <li class="course-track-item" data-search="cloud computing cloud architect track"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('cloud_computing'); return false;"><span class="course-icon">☁️</span><div class="flex-grow-1"><div class="course-title">Cloud Computing</div><small class="course-subtitle">Cloud Architect Track</small></div></a></li>
+                      <li class="course-track-item" data-search="aws (amazon web services) top cloud certification"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('aws'); return false;"><span class="course-icon">🚀</span><div class="flex-grow-1"><div class="course-title">AWS (Amazon Web Services)</div><small class="course-subtitle">Top Cloud Certification</small></div></a></li>
+                      <li class="course-track-item" data-search="cybersecurity high demand security"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('cybersecurity'); return false;"><span class="course-icon">🛡️</span><div class="flex-grow-1"><div class="course-title">Cybersecurity</div><small class="course-subtitle">High Demand Security</small></div></a></li>
+                      <li class="course-track-item" data-search="devops ci/cd & kubernetes mastery"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('devops'); return false;"><span class="course-icon">🔄</span><div class="flex-grow-1"><div class="course-title">DevOps</div><small class="course-subtitle">CI/CD & Kubernetes Mastery</small></div></a></li>
+                      <li class="course-track-item" data-search="sql & database management core placement skill"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('sql_db'); return false;"><span class="course-icon">🗄️</span><div class="flex-grow-1"><div class="course-title">SQL & Database Management</div><small class="course-subtitle">Core Placement Skill</small></div></a></li>
+                      <li class="course-track-item" data-search="generative ai cutting-edge & high salary"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('gen_ai'); return false;"><span class="course-icon">✨</span><div class="flex-grow-1"><div class="course-title">Generative AI</div><small class="course-subtitle">Cutting-Edge & High Salary</small></div></a></li>
+                      <li class="course-track-item" data-search="deep learning advanced ai & research"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('deep_learning'); return false;"><span class="course-icon">🧠</span><div class="flex-grow-1"><div class="course-title">Deep Learning</div><small class="course-subtitle">Advanced AI & Research</small></div></a></li>
+                      <li class="course-track-item" data-search="software testing & qa qa automation & sdet"><a class="dropdown-item " href="#" onclick="switchCandidateCourse('software_testing'); return false;"><span class="course-icon">🧪</span><div class="flex-grow-1"><div class="course-title">Software Testing & QA</div><small class="course-subtitle">QA Automation & SDET</small></div></a></li>
+                      <li id="courseTrackEmptyNotice" class="text-center py-3 text-muted small" style="display: none;">No tracks found matching your search.</li>
+                    </div>
+                  </ul>
+                </div>
+
+                <button type="button" class="btn btn-outline-light rounded-pill px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-1.5" onclick="openCourseCurriculumModal()">
+                  <span>📖 Full Syllabus &amp; Materials</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Course Track Highlights Bar -->
+            <div class="row g-2 mt-2 pt-2 border-top border-white border-opacity-10 text-white-50 small">
+              <div class="col-6 col-md-3 d-flex align-items-center gap-2">
+                <span>📘</span> <span class="text-white-50"><strong class="text-white">10 Chapters</strong> &amp; Study Notes</span>
+              </div>
+              <div class="col-6 col-md-3 d-flex align-items-center gap-2">
+                <span>💻</span> <span class="text-white-50"><strong class="text-white">Practical Coding</strong> Exercises</span>
+              </div>
+              <div class="col-6 col-md-3 d-flex align-items-center gap-2">
+                <span>🚀</span> <span class="text-white-50"><strong class="text-white">Real-World Projects</strong> (Spring Boot)</span>
+              </div>
+              <div class="col-6 col-md-3 d-flex align-items-center gap-2">
+                <span>🎯</span> <span class="text-white-50"><strong class="text-white">Campus Placement</strong> Training</span>
+              </div>
+            </div>
+          </div>
+
           <!-- Top Next Step Guidance Banner -->
           <div class="card border-0 shadow-sm p-3 px-4 mb-4 rounded-4" style="background: linear-gradient(135deg, #f8faff 0%, #ffffff 100%); border-left: 5px solid #4f46e5 !important;">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
@@ -155,7 +235,7 @@
                 <div>
                   <div class="d-flex align-items-center gap-2 mb-0.5">
                     <span class="badge bg-primary-subtle text-primary border rounded-pill px-2.5 py-0.5 small fw-bold">Stage-Gate Journey</span>
-                    <h6 class="fw-bold mb-0 text-dark" id="journey-next-step-title">Phase 1: Foundations (60% Completed)</h6>
+                    <h6 class="fw-bold mb-0 text-dark" id="journey-next-step-title">Phase 1: Foundations (0% Completed)</h6>
                   </div>
                   <p class="text-muted small mb-0" id="journey-next-step-guidance">
                     Strengthen your core concepts. Master beginner foundations first, then advance to Core Skills, Practical Projects, and Course Interview Prep.
@@ -183,7 +263,7 @@
               <div class="journey-card">
                 <div class="journey-card-header">
                   <h5 class="journey-card-title">Your 90-Day Roadmap</h5>
-                  <span class="badge bg-primary-subtle text-primary rounded-pill small fw-semibold" id="roadmap-overall-badge">15% Total</span>
+                  <span class="badge bg-primary-subtle text-primary rounded-pill small fw-semibold" id="roadmap-overall-badge">0% Total</span>
                 </div>
 
                 <!-- Vertical Timeline -->
@@ -206,7 +286,7 @@
               <div class="journey-card">
                 <div class="journey-card-header">
                   <h5 class="journey-card-title">Top Recommendations for You</h5>
-                  <span class="badge bg-primary-subtle text-primary rounded-pill small fw-semibold" id="recommendations-overall-badge">40% Avg</span>
+                  <span class="badge bg-primary-subtle text-primary rounded-pill small fw-semibold" id="recommendations-overall-badge">0% Avg</span>
                 </div>
 
                 <!-- Recommendations List -->
@@ -238,14 +318,14 @@
                     <h5 class="journey-card-title">Today's Plan</h5>
                   </div>
                   <div class="d-flex align-items-center gap-2">
-                    <span class="badge bg-success-subtle text-success rounded-pill small fw-semibold" id="today-plan-progress-badge">50% Completed</span>
+                    <span class="badge bg-success-subtle text-success rounded-pill small fw-semibold" id="today-plan-progress-badge">0% Completed</span>
                     <span class="text-muted small fw-medium" id="journey-today-date">Oct 28, 2026</span>
                   </div>
                 </div>
 
                 <!-- Daily Plan Mini Progress Bar -->
                 <div class="progress mb-2" style="height: 4px; border-radius: 999px; background: #f1f5f9;">
-                  <div class="progress-bar bg-success" id="today-plan-progress-bar" style="width: 50%; border-radius: 999px;"></div>
+                  <div class="progress-bar bg-success" id="today-plan-progress-bar" style="width: 0%; border-radius: 999px;"></div>
                 </div>
 
                 <!-- Today's Plan Tasks -->
@@ -285,7 +365,7 @@
                       </div>
                       <div>
                         <div class="text-secondary small fw-medium" style="font-size: 0.78rem;">Courses Completed</div>
-                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;" id="journey-stat-courses">4</div>
+                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;" id="journey-stat-courses">0</div>
                         <div class="fw-semibold text-success" style="font-size: 0.72rem;">+1 this week</div>
                       </div>
                     </div>
@@ -301,7 +381,7 @@
                       </div>
                       <div>
                         <div class="text-secondary small fw-medium" style="font-size: 0.78rem;">Projects Built</div>
-                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;" id="journey-stat-projects">2</div>
+                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;" id="journey-stat-projects">0</div>
                         <div class="fw-semibold text-success" style="font-size: 0.72rem;">+1 this week</div>
                       </div>
                     </div>
@@ -318,7 +398,7 @@
                       </div>
                       <div>
                         <div class="text-secondary small fw-medium" style="font-size: 0.78rem;">Hours Learned</div>
-                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;" id="journey-stat-hours">18.5</div>
+                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;" id="journey-stat-hours">0.0</div>
                         <div class="fw-semibold text-success" style="font-size: 0.72rem;">+4.5 this week</div>
                       </div>
                     </div>
@@ -334,7 +414,7 @@
                       </div>
                       <div>
                         <div class="text-secondary small fw-medium" style="font-size: 0.78rem;">Streak</div>
-                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;"><span id="journey-stat-streak">7</span> <span class="fw-normal text-muted" style="font-size: 0.95rem;">days</span></div>
+                        <div class="fw-bold text-dark lh-1 my-1" style="font-size: 1.5rem;"><span id="journey-stat-streak">1</span> <span class="fw-normal text-muted" style="font-size: 0.95rem;">days</span></div>
                         <div class="text-muted small" style="font-size: 0.72rem;">Active Daily Habit</div>
                       </div>
                     </div>
@@ -399,6 +479,39 @@
                 <div class="p-3 rounded-circle text-white shadow-sm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); font-size: 1.75rem;">
                   🎯
                 </div>
+
+        <!-- COURSE CURRICULUM, EXERCISES & PLACEMENT GUIDANCE MODAL -->
+        <div class="modal fade" id="courseCurriculumModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
+              <div class="modal-header border-bottom p-4 pb-3" style="background: linear-gradient(135deg, #f8faff 0%, #ffffff 100%);">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="fs-3 p-2.5 rounded-3 bg-white border shadow-sm" style="line-height: 1;">📚</div>
+                  <div>
+                    <h5 class="modal-title fw-bold text-dark mb-0" id="curriculum-modal-title">Course Learning Roadmap &amp; Guidance</h5>
+                    <span id="curriculum-modal-role" class="badge bg-primary-subtle text-primary rounded-pill small mt-1">Placement Ready Track</span>
+                  </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-4" id="curriculum-modal-body">
+                <!-- Content dynamically injected via renderCurriculumModalContent -->
+              </div>
+              <div class="modal-footer border-top p-3 px-4 d-flex justify-content-between">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                <div class="d-flex gap-2">
+                  <a href="study-materials.html" class="btn btn-outline-primary rounded-pill px-3 fw-semibold">
+                    📖 Open Study Library
+                  </a>
+                  <a href="coding-assessment.html" class="btn btn-primary rounded-pill px-4 fw-bold">
+                    💻 Open Coding Lab &rarr;
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
                 <div>
                   <div class="d-flex align-items-center gap-2 mb-1">
                     <h5 class="fw-bold mb-0 text-dark">Placement Readiness Score</h5>
@@ -1092,106 +1205,251 @@
     </main>
   </div>
 
-  <!-- Edit Candidate Profile Modal -->
-  <div class="modal fade" id="editCandProfileModal" tabindex="-1" aria-hidden="true">
+  <!-- Edit Candidate Profile Modal with 2-Step Wizard (Personal Details -> Basic Information) -->
+  <div class="modal fade" id="editCandProfileModal" tabindex="-1" aria-labelledby="editCandProfileModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content border-0 shadow" style="border-radius: 16px;">
-        <div class="modal-header border-0 pb-0">
-          <h5 class="modal-title fw-bold">Edit Candidate Profile</h5>
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+        <div class="modal-header border-bottom bg-light px-4 py-3">
+          <div>
+            <h5 class="modal-title fw-bold text-dark mb-0" id="editCandProfileModalLabel">👤 Candidate Profile &amp; Details</h5>
+            <small class="text-muted" id="profile-step-subtitle">Step 1 of 2: Enter Personal Details, then proceed to Basic Information</small>
+          </div>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+
         <div class="modal-body p-4">
-          <form id="edit-cand-profile-form">
-            <div class="row g-3 mb-3">
-              <div class="col-md-6">
-                <label for="edit-cand-headline" class="form-label">Professional Headline</label>
-                <input type="text" id="edit-cand-headline" class="form-control" placeholder="Senior Full Stack Engineer | Python, React, AI" />
+          <!-- Step Indicator Navigation (Pill Tabs) -->
+          <div class="d-flex align-items-center justify-content-between mb-4 p-1 bg-light rounded-pill border">
+            <button type="button" class="btn btn-sm rounded-pill fw-bold flex-fill py-2 btn-primary text-white shadow-sm" id="tab-step-personal">
+              <span class="badge bg-white text-primary rounded-circle me-1" id="badge-step-1">1</span> 👤 Personal Details
+            </button>
+            <button type="button" class="btn btn-sm rounded-pill fw-bold flex-fill py-2 btn-outline-secondary border-0 text-muted" id="tab-step-basic">
+              <span class="badge bg-secondary text-white rounded-circle me-1" id="badge-step-2">2</span> 📋 Basic Information
+            </button>
+          </div>
+
+          <form id="edit-cand-profile-form" novalidate onsubmit="return false;">
+
+            <!-- ========================================== -->
+            <!-- SECTION 1: PERSONAL DETAILS                -->
+            <!-- ========================================== -->
+            <div id="section-personal-details" class="profile-step-section">
+              <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                <h6 class="fw-bold text-dark mb-0">👤 Personal &amp; Contact Details</h6>
+                <span class="badge bg-primary-subtle text-primary border rounded-pill px-2.5 py-1 small">Step 1 of 2</span>
               </div>
-              <div class="col-md-6">
-                <label for="edit-cand-role" class="form-label">Current / Desired Job Role</label>
-                <input type="text" id="edit-cand-role" class="form-control" placeholder="Python AI Developer" />
+
+              <!-- Auto-Fill from Resume Upload Section -->
+              <div class="card border border-primary border-opacity-25 bg-primary bg-opacity-10 rounded-3 p-3 mb-3 shadow-xs" id="resume-autofill-banner">
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 44px; height: 44px; min-width: 44px;">
+                      <i class="bi bi-file-earmark-arrow-up-fill fs-5"></i>
+                    </div>
+                    <div>
+                      <div class="fw-bold text-dark d-flex align-items-center gap-2">
+                        <span>Auto-Fill from Resume</span>
+                        <span class="badge bg-primary text-white rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">AI Auto-Extract</span>
+                      </div>
+                      <small class="text-muted d-block">Upload your resume (PDF or DOCX) to automatically extract and fill Personal Details &amp; Basic Information.</small>
+                    </div>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <input type="file" id="autofill-resume-file" accept=".pdf,.docx,.txt" class="d-none" />
+                    <button type="button" class="btn btn-primary px-3 py-2 fw-semibold rounded-pill shadow-sm d-flex align-items-center gap-2" id="btn-trigger-resume-autofill">
+                      <i class="bi bi-cloud-arrow-up"></i>
+                      <span id="autofill-btn-text">Upload Resume</span>
+                      <span id="autofill-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                </div>
+                <div id="autofill-status-alert" class="alert alert-success py-2 px-3 mb-0 mt-3 d-none align-items-center justify-content-between small">
+                  <span id="autofill-status-msg"></span>
+                  <button type="button" class="btn-close btn-close-sm" onclick="this.parentElement.classList.add('d-none')"></button>
+                </div>
+              </div>
+
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label for="edit-cand-name" class="form-label fw-semibold small">Full Name *</label>
+                  <input type="text" id="edit-cand-name" class="form-control" placeholder="e.g. Yuvaraj Sharma" required />
+                </div>
+                <div class="col-md-6">
+                  <label for="edit-cand-email" class="form-label fw-semibold small">Email Address</label>
+                  <input type="email" id="edit-cand-email" class="form-control bg-light" placeholder="e.g. user@example.com" readonly />
+                </div>
+              </div>
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label for="edit-cand-phone" class="form-label fw-semibold small">Phone Number *</label>
+                  <input type="tel" id="edit-cand-phone" class="form-control" placeholder="+1 (555) 000-0000" />
+                </div>
+                <div class="col-md-6">
+                  <label for="edit-cand-location" class="form-label fw-semibold small">Preferred Location / City *</label>
+                  <input type="text" id="edit-cand-location" class="form-control" placeholder="San Francisco, CA / Remote" />
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="edit-cand-photo" class="form-label fw-semibold small">Profile Photo URL</label>
+                <input type="url" id="edit-cand-photo" class="form-control" placeholder="https://images.unsplash.com/... or https://example.com/avatar.jpg" />
+                <div class="form-text small">Provide a direct image URL or leave blank to use your initialed avatar.</div>
+              </div>
+
+              <h6 class="fw-bold text-dark border-bottom pb-2 mb-3 mt-4">🔗 Social &amp; Portfolio Links (Optional)</h6>
+              <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                  <label for="edit-cand-linkedin" class="form-label fw-semibold small">LinkedIn URL</label>
+                  <input type="url" id="edit-cand-linkedin" class="form-control" placeholder="https://linkedin.com/in/username" />
+                </div>
+                <div class="col-md-4">
+                  <label for="edit-cand-github" class="form-label fw-semibold small">GitHub URL</label>
+                  <input type="url" id="edit-cand-github" class="form-control" placeholder="https://github.com/username" />
+                </div>
+                <div class="col-md-4">
+                  <label for="edit-cand-portfolio" class="form-label fw-semibold small">Portfolio Website URL</label>
+                  <input type="url" id="edit-cand-portfolio" class="form-control" placeholder="https://myportfolio.com" />
+                </div>
+              </div>
+
+              <!-- Step 1 Footer Navigation -->
+              <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
+                <button type="button" class="btn btn-secondary px-4 fw-semibold" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary px-4 py-2 fw-bold shadow-sm" id="btn-next-to-basic">
+                  Next: Basic Information &rarr;
+                </button>
               </div>
             </div>
 
-            <!-- College & Academic Credentials -->
-            <h6 class="fw-bold text-dark border-bottom pb-2 mb-3 mt-4">🎓 College &amp; Academic Information</h6>
-            <div class="row g-3 mb-3">
-              <div class="col-md-6">
-                <label for="edit-cand-college" class="form-label">College / University Name</label>
-                <input type="text" id="edit-cand-college" class="form-control" placeholder="e.g. Stanford University / IIT / NIT / State Univ" />
+            <!-- ========================================== -->
+            <!-- SECTION 2: BASIC INFORMATION               -->
+            <!-- ========================================== -->
+            <div id="section-basic-info" class="profile-step-section d-none">
+              <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                <h6 class="fw-bold text-dark mb-0">📋 Basic Professional &amp; Academic Information</h6>
+                <span class="badge bg-success-subtle text-success border rounded-pill px-2.5 py-1 small">Step 2 of 2</span>
               </div>
-              <div class="col-md-6">
-                <label for="edit-cand-degree" class="form-label">Degree</label>
-                <input type="text" id="edit-cand-degree" class="form-control" placeholder="e.g. B.Tech / B.E. / BCA / MCA / B.Sc" />
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label for="edit-cand-headline" class="form-label fw-semibold small">Professional Headline *</label>
+                  <input type="text" id="edit-cand-headline" class="form-control" placeholder="e.g. Full Stack Engineer | Python, React, AI" required />
+                </div>
+                <div class="col-md-6">
+                  <label for="edit-cand-role" class="form-label fw-semibold small">Current / Desired Job Role</label>
+                  <input type="text" id="edit-cand-role" class="form-control" placeholder="e.g. Python Developer / Software Engineer" />
+                </div>
+              </div>
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label for="edit-cand-exp" class="form-label fw-semibold small">Years of Work Experience</label>
+                  <input type="number" step="0.5" min="0" max="40" id="edit-cand-exp" class="form-control" placeholder="e.g. 2.5" />
+                </div>
+                <div class="col-md-6">
+                  <label for="edit-cand-skills" class="form-label fw-semibold small">Key Skills (comma-separated)</label>
+                  <input type="text" id="edit-cand-skills" class="form-control" placeholder="Python, FastAPI, React, SQL, Docker, Git" />
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="edit-cand-summary" class="form-label fw-semibold small">About / Professional Summary</label>
+                <textarea id="edit-cand-summary" class="form-control" rows="3" placeholder="Brief summary of your background, technical expertise, and career aspirations..."></textarea>
+              </div>
+
+              <div class="mb-3">
+                <label for="edit-cand-certifications" class="form-label fw-semibold small">Certifications &amp; Licenses</label>
+                <input type="text" id="edit-cand-certifications" class="form-control" placeholder="e.g. AWS Certified Developer, Meta React Specialization" />
+              </div>
+
+              <!-- College & Academic Credentials -->
+              <h6 class="fw-bold text-dark border-bottom pb-2 mb-3 mt-4">🎓 College &amp; Academic Credentials</h6>
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label for="edit-cand-college" class="form-label fw-semibold small">College / University Name</label>
+                  <input type="text" id="edit-cand-college" class="form-control" placeholder="e.g. Stanford University / IIT / NIT / State Univ" />
+                </div>
+                <div class="col-md-6">
+                  <label for="edit-cand-degree" class="form-label fw-semibold small">Degree</label>
+                  <input type="text" id="edit-cand-degree" class="form-control" placeholder="e.g. B.Tech / B.E. / BCA / MCA / B.Sc" />
+                </div>
+              </div>
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                  <label for="edit-cand-branch" class="form-label fw-semibold small">Major / Branch</label>
+                  <input type="text" id="edit-cand-branch" class="form-control" placeholder="e.g. Computer Science &amp; Engineering" />
+                </div>
+                <div class="col-md-4">
+                  <label for="edit-cand-grad-year" class="form-label fw-semibold small">College Graduation Year</label>
+                  <input type="number" id="edit-cand-grad-year" class="form-control" placeholder="e.g. 2024" min="2000" max="2035" />
+                </div>
+                <div class="col-md-4">
+                  <label for="edit-cand-cgpa" class="form-label fw-semibold small">College CGPA / Percentage</label>
+                  <input type="number" step="0.01" id="edit-cand-cgpa" class="form-control" placeholder="e.g. 7.32" min="0" max="100" />
+                </div>
+              </div>
+
+              <!-- 12th Grade / HSC / Intermediate / Diploma Credentials -->
+              <h6 class="fw-bold text-dark border-bottom pb-2 mb-3 mt-4">🏫 12th Grade / HSC / Intermediate Credentials</h6>
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label for="edit-cand-12th-school" class="form-label fw-semibold small">12th School / Junior College Name</label>
+                  <input type="text" id="edit-cand-12th-school" class="form-control" placeholder="e.g. Model Higher Secondary School" />
+                </div>
+                <div class="col-md-6">
+                  <label for="edit-cand-12th-board" class="form-label fw-semibold small">12th Board / Stream</label>
+                  <input type="text" id="edit-cand-12th-board" class="form-control" placeholder="e.g. State Board / CBSE / ICSE / HSC / Diploma" />
+                </div>
+              </div>
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label for="edit-cand-12th-year" class="form-label fw-semibold small">12th Completion Year</label>
+                  <input type="number" id="edit-cand-12th-year" class="form-control" placeholder="e.g. 2020" min="2000" max="2035" />
+                </div>
+                <div class="col-md-6">
+                  <label for="edit-cand-12th-marks" class="form-label fw-semibold small">12th Percentage / Marks (%)</label>
+                  <input type="number" step="0.01" id="edit-cand-12th-marks" class="form-control" placeholder="e.g. 85.50" min="0" max="100" />
+                </div>
+              </div>
+
+              <!-- 10th Grade / SSLC Credentials -->
+              <h6 class="fw-bold text-dark border-bottom pb-2 mb-3 mt-4">🏫 10th Grade / SSLC Credentials</h6>
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label for="edit-cand-10th-school" class="form-label fw-semibold small">10th School Name</label>
+                  <input type="text" id="edit-cand-10th-school" class="form-control" placeholder="e.g. Saint Paul High School" />
+                </div>
+                <div class="col-md-6">
+                  <label for="edit-cand-10th-board" class="form-label fw-semibold small">10th Board</label>
+                  <input type="text" id="edit-cand-10th-board" class="form-control" placeholder="e.g. State Board / CBSE / ICSE / SSLC / Matriculation" />
+                </div>
+              </div>
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label for="edit-cand-10th-year" class="form-label fw-semibold small">10th Completion Year</label>
+                  <input type="number" id="edit-cand-10th-year" class="form-control" placeholder="e.g. 2018" min="2000" max="2035" />
+                </div>
+                <div class="col-md-6">
+                  <label for="edit-cand-10th-marks" class="form-label fw-semibold small">10th Percentage / Marks (%)</label>
+                  <input type="number" step="0.01" id="edit-cand-10th-marks" class="form-control" placeholder="e.g. 88.00" min="0" max="100" />
+                </div>
+              </div>
+
+              <!-- Step 2 Footer Navigation -->
+              <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
+                <button type="button" class="btn btn-outline-secondary px-4 py-2 fw-semibold" id="btn-back-to-personal">
+                  &larr; Back to Personal Details
+                </button>
+                <button type="submit" class="btn btn-primary px-4 py-2 fw-bold shadow-sm" id="save-cand-profile-btn">
+                  <span id="save-cand-profile-text">Save Profile ✓</span>
+                  <span id="save-cand-profile-spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+                </button>
               </div>
             </div>
 
-            <div class="row g-3 mb-3">
-              <div class="col-md-4">
-                <label for="edit-cand-branch" class="form-label">Major / Branch</label>
-                <input type="text" id="edit-cand-branch" class="form-control" placeholder="e.g. Computer Science & Eng" />
-              </div>
-              <div class="col-md-4">
-                <label for="edit-cand-grad-year" class="form-label">Graduation Year</label>
-                <input type="number" id="edit-cand-grad-year" class="form-control" placeholder="2025" min="2020" max="2032" />
-              </div>
-              <div class="col-md-4">
-                <label for="edit-cand-cgpa" class="form-label">CGPA / Percentage</label>
-                <input type="number" step="0.01" id="edit-cand-cgpa" class="form-control" placeholder="8.50" min="0" max="10" />
-              </div>
-            </div>
-
-            <div class="row g-3 mb-3">
-              <div class="col-md-6">
-                <label for="edit-cand-photo" class="form-label">Profile Photo URL</label>
-                <input type="url" id="edit-cand-photo" class="form-control" placeholder="https://example.com/my-photo.jpg" />
-              </div>
-              <div class="col-md-6">
-                <label for="edit-cand-location" class="form-label">Location</label>
-                <input type="text" id="edit-cand-location" class="form-control" placeholder="San Francisco, CA / Remote" />
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <label for="edit-cand-summary" class="form-label">About / Professional Summary</label>
-              <textarea id="edit-cand-summary" class="form-control" rows="3" placeholder="Brief summary of your background, technical expertise, and career goals..."></textarea>
-            </div>
-
-            <div class="row g-3 mb-3">
-              <div class="col-md-6">
-                <label for="edit-cand-phone" class="form-label">Phone</label>
-                <input type="text" id="edit-cand-phone" class="form-control" placeholder="+1 (555) 000-0000" />
-              </div>
-              <div class="col-md-6">
-                <label for="edit-cand-exp" class="form-label">Years of Experience</label>
-                <input type="number" step="0.5" id="edit-cand-exp" class="form-control" placeholder="4.5" />
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <label for="edit-cand-certifications" class="form-label">Certifications</label>
-              <input type="text" id="edit-cand-certifications" class="form-control" placeholder="AWS Certified Developer, TensorFlow Developer" />
-            </div>
-
-            <div class="row g-3 mb-3">
-              <div class="col-md-4">
-                <label for="edit-cand-linkedin" class="form-label">LinkedIn Profile URL</label>
-                <input type="url" id="edit-cand-linkedin" class="form-control" placeholder="https://linkedin.com/in/username" />
-              </div>
-              <div class="col-md-4">
-                <label for="edit-cand-github" class="form-label">GitHub Profile URL</label>
-                <input type="url" id="edit-cand-github" class="form-control" placeholder="https://github.com/username" />
-              </div>
-              <div class="col-md-4">
-                <label for="edit-cand-portfolio" class="form-label">Portfolio Website URL</label>
-                <input type="url" id="edit-cand-portfolio" class="form-control" placeholder="https://myportfolio.com" />
-              </div>
-            </div>
-
-            <div class="text-end border-top pt-3 mt-3">
-              <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-primary px-4" id="save-cand-profile-btn">Save Profile</button>
-            </div>
           </form>
         </div>
       </div>

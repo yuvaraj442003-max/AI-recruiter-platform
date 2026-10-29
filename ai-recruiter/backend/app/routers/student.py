@@ -53,10 +53,32 @@ def get_student_profile(
 
     skills_list = [cs.skill.skill_name for cs in profile.candidate_skills if cs.skill]
 
+    # Ensure profile.full_name and current_user.name reflect resume name
+    cand_name = getattr(profile, "full_name", None)
+    if not cand_name and getattr(profile, "resume_text", None):
+        from app.nlp.skill_extractor import parse_resume_fields
+        try:
+            cand_name = parse_resume_fields(profile.resume_text).get("name")
+            if cand_name and isinstance(cand_name, str) and len(cand_name.strip()) >= 2:
+                profile.full_name = cand_name.strip()
+                db.add(profile)
+        except Exception:
+            pass
+    if not cand_name:
+        cand_name = current_user.name
+
+    if cand_name and current_user.name != cand_name.strip():
+        current_user.name = cand_name.strip()
+        db.add(current_user)
+        try:
+            db.commit()
+        except Exception:
+            db.rollback()
+
     data = StudentAcademicProfileResponse(
         id=profile.id,
         user_id=profile.user_id,
-        name=current_user.name,
+        name=cand_name,
         email=current_user.email,
         is_student=profile.is_student if profile.is_student is not None else True,
         college_name=profile.college_name,
@@ -72,6 +94,14 @@ def get_student_profile(
         portfolio_url=profile.portfolio_url,
         linkedin_url=profile.linkedin_url,
         github_url=profile.github_url,
+        twelfth_school=getattr(profile, "twelfth_school", None),
+        twelfth_board=getattr(profile, "twelfth_board", None),
+        twelfth_year=getattr(profile, "twelfth_year", None),
+        twelfth_percentage=getattr(profile, "twelfth_percentage", None),
+        tenth_school=getattr(profile, "tenth_school", None),
+        tenth_board=getattr(profile, "tenth_board", None),
+        tenth_year=getattr(profile, "tenth_year", None),
+        tenth_percentage=getattr(profile, "tenth_percentage", None),
     )
     return APIResponse(success=True, message="Student academic profile", data=data)
 
@@ -82,7 +112,7 @@ def update_student_profile(
     current_user: User = Depends(require_role(UserRole.candidate)),
     db: Session = Depends(get_db),
 ):
-    """Updates academic details: college name, degree, branch, graduation year, CGPA, target role."""
+    """Updates academic details: college name, degree, branch, graduation year, CGPA, target role, 10th & 12th credentials."""
     profile = db.query(CandidateProfile).filter(CandidateProfile.user_id == current_user.id).first()
     if not profile:
         profile = CandidateProfile(user_id=current_user.id)
@@ -107,15 +137,55 @@ def update_student_profile(
         if not profile.headline:
             profile.headline = payload.target_role.strip()
 
+    if payload.twelfth_school is not None:
+        profile.twelfth_school = payload.twelfth_school.strip()
+    if payload.twelfth_board is not None:
+        profile.twelfth_board = payload.twelfth_board.strip()
+    if payload.twelfth_year is not None:
+        profile.twelfth_year = payload.twelfth_year
+    if payload.twelfth_percentage is not None:
+        profile.twelfth_percentage = payload.twelfth_percentage
+
+    if payload.tenth_school is not None:
+        profile.tenth_school = payload.tenth_school.strip()
+    if payload.tenth_board is not None:
+        profile.tenth_board = payload.tenth_board.strip()
+    if payload.tenth_year is not None:
+        profile.tenth_year = payload.tenth_year
+    if payload.tenth_percentage is not None:
+        profile.tenth_percentage = payload.tenth_percentage
+
     db.commit()
     db.refresh(profile)
 
     skills_list = [cs.skill.skill_name for cs in profile.candidate_skills if cs.skill]
 
+    # Ensure profile.full_name and current_user.name reflect resume name
+    cand_name = getattr(profile, "full_name", None)
+    if not cand_name and getattr(profile, "resume_text", None):
+        from app.nlp.skill_extractor import parse_resume_fields
+        try:
+            cand_name = parse_resume_fields(profile.resume_text).get("name")
+            if cand_name and isinstance(cand_name, str) and len(cand_name.strip()) >= 2:
+                profile.full_name = cand_name.strip()
+                db.add(profile)
+        except Exception:
+            pass
+    if not cand_name:
+        cand_name = current_user.name
+
+    if cand_name and current_user.name != cand_name.strip():
+        current_user.name = cand_name.strip()
+        db.add(current_user)
+        try:
+            db.commit()
+        except Exception:
+            db.rollback()
+
     data = StudentAcademicProfileResponse(
         id=profile.id,
         user_id=profile.user_id,
-        name=current_user.name,
+        name=cand_name,
         email=current_user.email,
         is_student=profile.is_student,
         college_name=profile.college_name,
@@ -131,6 +201,14 @@ def update_student_profile(
         portfolio_url=profile.portfolio_url,
         linkedin_url=profile.linkedin_url,
         github_url=profile.github_url,
+        twelfth_school=getattr(profile, "twelfth_school", None),
+        twelfth_board=getattr(profile, "twelfth_board", None),
+        twelfth_year=getattr(profile, "twelfth_year", None),
+        twelfth_percentage=getattr(profile, "twelfth_percentage", None),
+        tenth_school=getattr(profile, "tenth_school", None),
+        tenth_board=getattr(profile, "tenth_board", None),
+        tenth_year=getattr(profile, "tenth_year", None),
+        tenth_percentage=getattr(profile, "tenth_percentage", None),
     )
     return APIResponse(success=True, message="Student academic profile updated successfully", data=data)
 

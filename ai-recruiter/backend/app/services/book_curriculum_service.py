@@ -119,6 +119,14 @@ from app.services.comprehensive_curriculum.curriculum_c import C_CHAPTERS
 from app.services.comprehensive_curriculum.curriculum_cpp import CPP_CHAPTERS
 from app.services.comprehensive_curriculum.curriculum_go import GOLANG_CHAPTERS
 from app.services.comprehensive_curriculum.curriculum_rust import RUST_CHAPTERS
+from app.services.comprehensive_curriculum.curriculum_cloud_computing import CLOUD_COMPUTING_CHAPTERS
+from app.services.comprehensive_curriculum.curriculum_aws import AWS_CHAPTERS
+from app.services.comprehensive_curriculum.curriculum_cybersecurity import CYBERSECURITY_CHAPTERS
+from app.services.comprehensive_curriculum.curriculum_devops import DEVOPS_CHAPTERS
+from app.services.comprehensive_curriculum.curriculum_gen_ai import GEN_AI_CHAPTERS
+from app.services.comprehensive_curriculum.curriculum_deep_learning import DEEP_LEARNING_CHAPTERS
+from app.services.comprehensive_curriculum.curriculum_software_testing import SOFTWARE_TESTING_CHAPTERS
+from app.services.comprehensive_curriculum.curriculum_data_science import DATA_SCIENCE_CHAPTERS
 
 logger = logging.getLogger("ai_recruiter.book_curriculum")
 
@@ -482,24 +490,193 @@ RUST_TEXTBOOK = {
     ),
 }
 
+
+CLOUD_COMPUTING_TEXTBOOK = {
+    "slug": "cloud-computing-prescribed-textbook",
+    "title": "Cloud Computing: Architecture, Virtualization & Multi-Cloud Systems (Prescribed Textbook)",
+    "subject": "Cloud Computing",
+    "edition": "2026 Campus Placement Edition",
+    "author": "Prescribed Courseware Architectural Board",
+    "description": (
+        "Authoritative campus placement textbook covering Cloud Computing from hypervisors and service models (IaaS/PaaS/SaaS) "
+        "to object/block storage, multi-tier VPC networking, autoscaling, serverless FaaS, IAM/KMS security, and multi-cloud migration."
+    ),
+    "chapters": CLOUD_COMPUTING_CHAPTERS,
+    "full_textbook_markdown": assemble_full_textbook_markdown(
+        "Cloud Computing: Architecture, Virtualization & Multi-Cloud Systems (Prescribed Textbook)",
+        "Cloud Computing",
+        "2026 Campus Placement Edition",
+        "Authoritative campus placement textbook covering Cloud Computing from hypervisors and service models (IaaS/PaaS/SaaS) to object/block storage, multi-tier VPC networking, autoscaling, serverless FaaS, IAM/KMS security, and multi-cloud migration.",
+        CLOUD_COMPUTING_CHAPTERS
+    ),
+}
+
+AWS_TEXTBOOK = {
+    "slug": "aws-cloud-prescribed-textbook",
+    "title": "AWS Cloud Mastery: Solutions Architect & Serverless Systems (Prescribed Textbook)",
+    "subject": "AWS (Amazon Web Services)",
+    "edition": "2026 Campus Placement Edition",
+    "author": "Prescribed Courseware Architectural Board",
+    "description": (
+        "Comprehensive campus placement textbook covering Amazon Web Services (AWS) from global infrastructure, EC2, and S3 "
+        "to VPC networking, Aurora/DynamoDB databases, Lambda serverless, IAM/WAF security, and CloudFormation/CDK IaC."
+    ),
+    "chapters": AWS_CHAPTERS,
+    "full_textbook_markdown": assemble_full_textbook_markdown(
+        "AWS Cloud Mastery: Solutions Architect & Serverless Systems (Prescribed Textbook)",
+        "AWS (Amazon Web Services)",
+        "2026 Campus Placement Edition",
+        "Comprehensive campus placement textbook covering Amazon Web Services (AWS) from global infrastructure, EC2, and S3 to VPC networking, Aurora/DynamoDB databases, Lambda serverless, IAM/WAF security, and CloudFormation/CDK IaC.",
+        AWS_CHAPTERS
+    ),
+}
+
+CYBERSECURITY_TEXTBOOK = {
+    "slug": "cybersecurity-prescribed-textbook",
+    "title": "Cybersecurity & Ethical Hacking: Network Defense & SOC (Prescribed Textbook)",
+    "subject": "Cybersecurity",
+    "edition": "2026 Campus Placement Edition",
+    "author": "Prescribed Courseware Architectural Board",
+    "description": (
+        "Authoritative campus placement textbook covering Cybersecurity foundations, the CIA Triad, network security, firewalls, "
+        "applied cryptography, OWASP Top 10 web vulnerabilities, OAuth 2.0 / Zero Trust, SIEM/SOC incident response, and penetration testing."
+    ),
+    "chapters": CYBERSECURITY_CHAPTERS,
+    "full_textbook_markdown": assemble_full_textbook_markdown(
+        "Cybersecurity & Ethical Hacking: Network Defense & SOC (Prescribed Textbook)",
+        "Cybersecurity",
+        "2026 Campus Placement Edition",
+        "Authoritative campus placement textbook covering Cybersecurity foundations, the CIA Triad, network security, firewalls, applied cryptography, OWASP Top 10 web vulnerabilities, OAuth 2.0 / Zero Trust, SIEM/SOC incident response, and penetration testing.",
+        CYBERSECURITY_CHAPTERS
+    ),
+}
+
+DEVOPS_TEXTBOOK = {
+    "slug": "devops-prescribed-textbook",
+    "title": "DevOps & SRE: CI/CD, Docker, Kubernetes & Terraform (Prescribed Textbook)",
+    "subject": "DevOps",
+    "edition": "2026 Campus Placement Edition",
+    "author": "Prescribed Courseware Architectural Board",
+    "description": (
+        "Complete campus placement textbook covering DevOps culture, DORA metrics, CI/CD pipelines (GitHub Actions, Jenkins), "
+        "Docker containerization, Kubernetes cluster orchestration, Terraform IaC, Ansible automation, Prometheus observability, and SRE."
+    ),
+    "chapters": DEVOPS_CHAPTERS,
+    "full_textbook_markdown": assemble_full_textbook_markdown(
+        "DevOps & SRE: CI/CD, Docker, Kubernetes & Terraform (Prescribed Textbook)",
+        "DevOps",
+        "2026 Campus Placement Edition",
+        "Complete campus placement textbook covering DevOps culture, DORA metrics, CI/CD pipelines (GitHub Actions, Jenkins), Docker containerization, Kubernetes cluster orchestration, Terraform IaC, Ansible automation, Prometheus observability, and SRE.",
+        DEVOPS_CHAPTERS
+    ),
+}
+
+GEN_AI_TEXTBOOK = {
+    "slug": "generative-ai-prescribed-textbook",
+    "title": "Generative AI & LLMs: Prompt Engineering, RAG & Agents (Prescribed Textbook)",
+    "subject": "Generative AI",
+    "edition": "2026 Campus Placement Edition",
+    "author": "Prescribed Courseware Architectural Board",
+    "description": (
+        "Authoritative campus placement textbook covering Generative AI from the Transformer architecture and self-attention "
+        "to LLM tokenization, advanced prompt engineering, RAG vector retrieval, PEFT/LoRA fine-tuning, autonomous agents, and multimodal AI."
+    ),
+    "chapters": GEN_AI_CHAPTERS,
+    "full_textbook_markdown": assemble_full_textbook_markdown(
+        "Generative AI & LLMs: Prompt Engineering, RAG & Agents (Prescribed Textbook)",
+        "Generative AI",
+        "2026 Campus Placement Edition",
+        "Authoritative campus placement textbook covering Generative AI from the Transformer architecture and self-attention to LLM tokenization, advanced prompt engineering, RAG vector retrieval, PEFT/LoRA fine-tuning, autonomous agents, and multimodal AI.",
+        GEN_AI_CHAPTERS
+    ),
+}
+
+DEEP_LEARNING_TEXTBOOK = {
+    "slug": "deep-learning-prescribed-textbook",
+    "title": "Deep Learning: Neural Networks, PyTorch & Transformers (Prescribed Textbook)",
+    "subject": "Deep Learning",
+    "edition": "2026 Campus Placement Edition",
+    "author": "Prescribed Courseware Architectural Board",
+    "description": (
+        "Comprehensive campus placement textbook covering Deep Neural Networks from perceptrons and backpropagation "
+        "to optimizers (AdamW), PyTorch pipelines, CNN backbones, RNNs/LSTMs, Vision Transformers (ViT), VAEs/GANs, and distributed DDP training."
+    ),
+    "chapters": DEEP_LEARNING_CHAPTERS,
+    "full_textbook_markdown": assemble_full_textbook_markdown(
+        "Deep Learning: Neural Networks, PyTorch & Transformers (Prescribed Textbook)",
+        "Deep Learning",
+        "2026 Campus Placement Edition",
+        "Comprehensive campus placement textbook covering Deep Neural Networks from perceptrons and backpropagation to optimizers (AdamW), PyTorch pipelines, CNN backbones, RNNs/LSTMs, Vision Transformers (ViT), VAEs/GANs, and distributed DDP training.",
+        DEEP_LEARNING_CHAPTERS
+    ),
+}
+
+SOFTWARE_TESTING_TEXTBOOK = {
+    "slug": "software-testing-prescribed-textbook",
+    "title": "Software Testing & QA: Automation, Selenium & API Testing (Prescribed Textbook)",
+    "subject": "Software Testing & QA",
+    "edition": "2026 Campus Placement Edition",
+    "author": "Prescribed Courseware Architectural Board",
+    "description": (
+        "Authoritative campus placement textbook covering the Software Testing Life Cycle (STLC), black-box/white-box test design, "
+        "Selenium WebDriver with Page Object Model, REST API automation with REST Assured, PyTest frameworks, JMeter load testing, and Playwright."
+    ),
+    "chapters": SOFTWARE_TESTING_CHAPTERS,
+    "full_textbook_markdown": assemble_full_textbook_markdown(
+        "Software Testing & QA: Automation, Selenium & API Testing (Prescribed Textbook)",
+        "Software Testing & QA",
+        "2026 Campus Placement Edition",
+        "Authoritative campus placement textbook covering the Software Testing Life Cycle (STLC), black-box/white-box test design, Selenium WebDriver with Page Object Model, REST API automation with REST Assured, PyTest frameworks, JMeter load testing, and Playwright.",
+        SOFTWARE_TESTING_CHAPTERS
+    ),
+}
+
+DATA_SCIENCE_TEXTBOOK = {
+    "slug": "data-science-prescribed-textbook",
+    "title": "Data Science & Analytics: Python, Statistics, ML & Big Data (Prescribed Textbook)",
+    "subject": "Data Science",
+    "edition": "2026 Campus Placement Edition",
+    "author": "Prescribed Courseware Architectural Board",
+    "description": (
+        "Comprehensive campus placement textbook covering the Data Science lifecycle (CRISP-DM), NumPy/Pandas manipulation, "
+        "EDA and outlier capping, hypothesis testing (P-values, t-tests, ANOVA), Scikit-Learn pipelines, XGBoost, clustering, and SHAP explainability."
+    ),
+    "chapters": DATA_SCIENCE_CHAPTERS,
+    "full_textbook_markdown": assemble_full_textbook_markdown(
+        "Data Science & Analytics: Python, Statistics, ML & Big Data (Prescribed Textbook)",
+        "Data Science",
+        "2026 Campus Placement Edition",
+        "Comprehensive campus placement textbook covering the Data Science lifecycle (CRISP-DM), NumPy/Pandas manipulation, EDA and outlier capping, hypothesis testing (P-values, t-tests, ANOVA), Scikit-Learn pipelines, XGBoost, clustering, and SHAP explainability.",
+        DATA_SCIENCE_CHAPTERS
+    ),
+}
+
 ALL_PRESCRIBED_TEXTBOOKS = [
+    JAVA_TEXTBOOK,
+    PYTHON_TEXTBOOK,
+    DSA_TEXTBOOK,
+    JAVASCRIPT_TEXTBOOK,
+    AI_ML_TEXTBOOK,
+    DATA_SCIENCE_TEXTBOOK,
+    CLOUD_COMPUTING_TEXTBOOK,
+    AWS_TEXTBOOK,
+    CYBERSECURITY_TEXTBOOK,
+    DEVOPS_TEXTBOOK,
+    SQL_TEXTBOOK,
+    GEN_AI_TEXTBOOK,
+    DEEP_LEARNING_TEXTBOOK,
+    SOFTWARE_TESTING_TEXTBOOK,
+    DATA_ENG_TEXTBOOK,
+    OS_TEXTBOOK,
+    CN_TEXTBOOK,
+    DBMS_TEXTBOOK,
+    QUANT_TEXTBOOK,
+    LOGICAL_TEXTBOOK,
+    VERBAL_TEXTBOOK,
     C_TEXTBOOK,
     CPP_TEXTBOOK,
     GOLANG_TEXTBOOK,
     RUST_TEXTBOOK,
-    DSA_TEXTBOOK,
-    SQL_TEXTBOOK,
-    QUANT_TEXTBOOK,
-    LOGICAL_TEXTBOOK,
-    JAVA_TEXTBOOK,
-    PYTHON_TEXTBOOK,
-    JAVASCRIPT_TEXTBOOK,
-    OS_TEXTBOOK,
-    CN_TEXTBOOK,
-    DBMS_TEXTBOOK,
-    VERBAL_TEXTBOOK,
-    DATA_ENG_TEXTBOOK,
-    AI_ML_TEXTBOOK,
 ]
 
 SUBJECT_TO_TEXTBOOK: Dict[str, Dict[str, Any]] = {
@@ -541,6 +718,10 @@ SUBJECT_TO_TEXTBOOK: Dict[str, Dict[str, Any]] = {
     "data engineering": DATA_ENG_TEXTBOOK,
     "big data": DATA_ENG_TEXTBOOK,
     "artificial intelligence & machine learning (ai / ml)": AI_ML_TEXTBOOK,
+    "ai_ml": AI_ML_TEXTBOOK,
+    "ai and machine learning": AI_ML_TEXTBOOK,
+    "sql_db": SQL_TEXTBOOK,
+    "sql & database management": SQL_TEXTBOOK,
     "ai / ml": AI_ML_TEXTBOOK,
     "machine learning": AI_ML_TEXTBOOK,
     "ai": AI_ML_TEXTBOOK,
@@ -559,6 +740,52 @@ SUBJECT_TO_TEXTBOOK: Dict[str, Dict[str, Any]] = {
     "rust systems programming": RUST_TEXTBOOK,
     "rust": RUST_TEXTBOOK,
     "rust programming": RUST_TEXTBOOK,
+    # Cloud Computing
+    "cloud computing": CLOUD_COMPUTING_TEXTBOOK,
+    "cloud": CLOUD_COMPUTING_TEXTBOOK,
+    "cloud_computing": CLOUD_COMPUTING_TEXTBOOK,
+    "cloud-computing-prescribed-textbook": CLOUD_COMPUTING_TEXTBOOK,
+    # AWS
+    "aws (amazon web services)": AWS_TEXTBOOK,
+    "aws": AWS_TEXTBOOK,
+    "amazon web services": AWS_TEXTBOOK,
+    "aws-cloud-prescribed-textbook": AWS_TEXTBOOK,
+    # Cybersecurity
+    "cybersecurity": CYBERSECURITY_TEXTBOOK,
+    "security": CYBERSECURITY_TEXTBOOK,
+    "cyber": CYBERSECURITY_TEXTBOOK,
+    "cybersecurity-prescribed-textbook": CYBERSECURITY_TEXTBOOK,
+    # DevOps
+    "devops": DEVOPS_TEXTBOOK,
+    "sre": DEVOPS_TEXTBOOK,
+    "ci/cd": DEVOPS_TEXTBOOK,
+    "devops-prescribed-textbook": DEVOPS_TEXTBOOK,
+    # Generative AI
+    "generative ai": GEN_AI_TEXTBOOK,
+    "gen ai": GEN_AI_TEXTBOOK,
+    "gen_ai": GEN_AI_TEXTBOOK,
+    "generative-ai-prescribed-textbook": GEN_AI_TEXTBOOK,
+    # Deep Learning
+    "deep learning": DEEP_LEARNING_TEXTBOOK,
+    "deep_learning": DEEP_LEARNING_TEXTBOOK,
+    "deep-learning-prescribed-textbook": DEEP_LEARNING_TEXTBOOK,
+    # Software Testing
+    "software testing & qa": SOFTWARE_TESTING_TEXTBOOK,
+    "software testing": SOFTWARE_TESTING_TEXTBOOK,
+    "software_testing": SOFTWARE_TESTING_TEXTBOOK,
+    "testing": SOFTWARE_TESTING_TEXTBOOK,
+    "qa": SOFTWARE_TESTING_TEXTBOOK,
+    "sdet": SOFTWARE_TESTING_TEXTBOOK,
+    "software-testing-prescribed-textbook": SOFTWARE_TESTING_TEXTBOOK,
+    # Data Science
+    "data science": DATA_SCIENCE_TEXTBOOK,
+    "data_science": DATA_SCIENCE_TEXTBOOK,
+    "data-science-prescribed-textbook": DATA_SCIENCE_TEXTBOOK,
+    # Full-Stack Web Dev aliases
+    "full-stack web dev": JAVASCRIPT_TEXTBOOK,
+    "web dev": JAVASCRIPT_TEXTBOOK,
+    "web_dev": JAVASCRIPT_TEXTBOOK,
+    "full-stack": JAVASCRIPT_TEXTBOOK,
 }
 
 

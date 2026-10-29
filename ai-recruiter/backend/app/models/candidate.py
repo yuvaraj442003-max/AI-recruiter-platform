@@ -22,6 +22,7 @@ class CandidateProfile(Base, TimestampMixin):
         GUID(), ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
     )
 
+    _full_name: Mapped[Optional[str]] = mapped_column("full_name", String(255), nullable=True)  # Extracted from resume (source of truth)
     phone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     location: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     address: Mapped[Optional[str]] = mapped_column(Text, nullable=True)          # full address block
@@ -58,6 +59,18 @@ class CandidateProfile(Base, TimestampMixin):
     current_semester: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # 1 to 8
     target_role: Mapped[Optional[str]] = mapped_column(String(150), nullable=True)  # SDE, Frontend, Data Analyst
 
+    # 12th Grade / HSC / Intermediate Credentials
+    twelfth_school: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    twelfth_board: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    twelfth_year: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    twelfth_percentage: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+
+    # 10th Grade / SSLC Credentials
+    tenth_school: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    tenth_board: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    tenth_year: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    tenth_percentage: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+
     # Recruiter Upload & Source Tracking
     created_by_recruiter_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         GUID(), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
@@ -74,7 +87,23 @@ class CandidateProfile(Base, TimestampMixin):
 
     @property
     def full_name(self) -> str:
+        # Strict Guarantee: Extract candidate name directly from uploaded resume as single source of truth
+        val = getattr(self, "_full_name", None)
+        if val and isinstance(val, str) and val.strip():
+            return val.strip()
+        if self.resume_text:
+            try:
+                from app.nlp.skill_extractor import parse_resume_fields
+                fields = parse_resume_fields(self.resume_text[:2500])
+                if fields.get("name") and len(fields["name"].strip()) >= 2:
+                    return fields["name"].strip()
+            except Exception:
+                pass
         return self.user.name if (self.user and self.user.name) else "Candidate"
+
+    @full_name.setter
+    def full_name(self, value: Optional[str]):
+        self._full_name = value.strip() if (value and isinstance(value, str)) else None
 
     def __repr__(self) -> str:
         return f"<CandidateProfile user_id={self.user_id}>"

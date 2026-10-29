@@ -179,7 +179,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         renderLivePreview();
         if (portfolioReadyBanner) portfolioReadyBanner.classList.remove("d-none");
       } else {
-        // If candidate doesn't have a portfolio yet, provide initial starter preview
+        // Attempt to auto-generate portfolio from existing resume/profile
+        try {
+          const genRes = await portfolioAPI.generatePortfolio({ theme_id: "auto" });
+          if (genRes && genRes.data) {
+            currentPortfolio = genRes.data;
+            syncDataToUI();
+            renderLivePreview();
+            if (portfolioReadyBanner) portfolioReadyBanner.classList.remove("d-none");
+            return;
+          }
+        } catch (genErr) {
+          console.warn("Auto portfolio generation failed, falling back to starter:", genErr);
+        }
         setupInitialDefaultPortfolio(user);
       }
     } catch (err) {
