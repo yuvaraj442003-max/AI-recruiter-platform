@@ -80,6 +80,12 @@ def get_student_profile(
         user_id=profile.user_id,
         name=cand_name,
         email=current_user.email,
+        phone=getattr(profile, "phone", None),
+        location=getattr(profile, "location", None),
+        summary=getattr(profile, "summary", None),
+        experience_years=getattr(profile, "experience_years", None),
+        current_role=getattr(profile, "current_role", None) or getattr(profile, "headline", None),
+        certifications=getattr(profile, "certifications", None),
         is_student=profile.is_student if profile.is_student is not None else True,
         college_name=profile.college_name,
         degree=profile.degree,
@@ -120,6 +126,25 @@ def update_student_profile(
 
     if payload.is_student is not None:
         profile.is_student = payload.is_student
+    if payload.name:
+        clean_name = payload.name.strip()
+        current_user.name = clean_name
+        profile.full_name = clean_name
+        db.add(current_user)
+    if payload.phone is not None:
+        profile.phone = payload.phone.strip() if payload.phone else None
+    if payload.location is not None:
+        profile.location = payload.location.strip() if payload.location else None
+    if payload.summary is not None:
+        profile.summary = payload.summary.strip() if payload.summary else None
+    if payload.experience_years is not None:
+        profile.experience_years = payload.experience_years
+    if payload.certifications is not None:
+        profile.certifications = payload.certifications.strip() if payload.certifications else None
+    if payload.skills is not None:
+        from app.services.resume_service import seed_skills, _sync_candidate_skills
+        seed_skills(db)
+        _sync_candidate_skills(db, profile, payload.skills)
     if payload.college_name is not None:
         profile.college_name = payload.college_name.strip()
     if payload.degree is not None:
@@ -187,6 +212,12 @@ def update_student_profile(
         user_id=profile.user_id,
         name=cand_name,
         email=current_user.email,
+        phone=getattr(profile, "phone", None),
+        location=getattr(profile, "location", None),
+        summary=getattr(profile, "summary", None),
+        experience_years=getattr(profile, "experience_years", None),
+        current_role=getattr(profile, "current_role", None) or getattr(profile, "headline", None),
+        certifications=getattr(profile, "certifications", None),
         is_student=profile.is_student,
         college_name=profile.college_name,
         degree=profile.degree,

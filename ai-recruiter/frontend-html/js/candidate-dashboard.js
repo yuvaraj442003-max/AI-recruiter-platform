@@ -522,31 +522,10 @@
         }
       }
 
-      // Populate Edit Form (do not overwrite if candidate is actively editing/typing)
-      const editModal = document.getElementById("editCandProfileModal");
-      const isEditing = editModal && editModal.classList.contains("show");
-      if (!isEditing) {
-        const setVal = (id, val) => {
-          const el = document.getElementById(id);
-          if (el && document.activeElement !== el) el.value = val || "";
-        };
-        setVal("edit-cand-name", candidateName);
-        setVal("edit-cand-email", user ? user.email : "");
-        setVal("edit-cand-headline", p.headline);
-        setVal("edit-cand-role", p.current_role);
-        setVal("edit-cand-photo", p.profile_photo);
-        setVal("edit-cand-location", p.location);
-        setVal("edit-cand-summary", p.summary);
-        setVal("edit-cand-phone", p.phone);
-        setVal("edit-cand-exp", p.experience_years);
-        setVal("edit-cand-skills", (p.skills && p.skills.length) ? p.skills.join(", ") : "");
-        setVal("edit-cand-certifications", p.certifications);
-        setVal("edit-cand-linkedin", p.linkedin_url);
-        setVal("edit-cand-github", p.github_url);
-        setVal("edit-cand-portfolio", p.portfolio_url);
-      }
+      // Populate Edit Form with all candidate and academic credentials
+      await populateEditModalFromProfile();
 
-      // Load College Student Academic Details
+      // Load College Student Academic Details Display
       try {
         const studRes = await api.student.getProfile();
         const sp = studRes?.data;
@@ -560,29 +539,11 @@
             }
           }
           const colEl = document.getElementById("cand-college-display");
-          if (colEl) colEl.textContent = sp.college_name ? `🏛️ ${sp.college_name}` : "🏛️ College / University";
+          if (colEl) colEl.textContent = sp.college_name ? `🏛️ ${cleanInstitutionName(sp.college_name)}` : "🏛️ College / University";
           const degEl = document.getElementById("cand-degree-display");
           if (degEl) degEl.textContent = sp.degree && sp.branch ? `${sp.degree} (${sp.branch})` : (sp.degree || "Degree & Branch");
           const cgpaEl = document.getElementById("cand-cgpa-display");
           if (cgpaEl) cgpaEl.textContent = sp.cgpa ? `CGPA: ${sp.cgpa}` : "CGPA: —";
-
-          const setVal = (id, val) => {
-            const el = document.getElementById(id);
-            if (el && document.activeElement !== el) el.value = val || "";
-          };
-          setVal("edit-cand-college", sp.college_name);
-          setVal("edit-cand-degree", sp.degree);
-          setVal("edit-cand-branch", sp.branch);
-          setVal("edit-cand-grad-year", sp.graduation_year);
-          setVal("edit-cand-cgpa", sp.cgpa);
-          setVal("edit-cand-12th-school", sp.twelfth_school);
-          setVal("edit-cand-12th-board", sp.twelfth_board);
-          setVal("edit-cand-12th-year", sp.twelfth_year);
-          setVal("edit-cand-12th-marks", sp.twelfth_percentage);
-          setVal("edit-cand-10th-school", sp.tenth_school);
-          setVal("edit-cand-10th-board", sp.tenth_board);
-          setVal("edit-cand-10th-year", sp.tenth_year);
-          setVal("edit-cand-10th-marks", sp.tenth_percentage);
         }
       } catch (e) {
         // Fallback
@@ -727,6 +688,91 @@
     });
   }
 
+  // Helper to clean institution/school names (removes trailing commas, hyphens, dangling dates)
+  function cleanInstitutionName(val) {
+    if (!val || typeof val !== "string") return "";
+    let s = val.trim();
+    s = s.replace(/^(?:college|university|school|institution)\s*[:\-–—]?\s*/i, "");
+    s = s.replace(/[\s,–—|•;:/]+\s*(?:from|between|during)?\s*(?:19\d{2}|20\d{2})\s*[-–—to]+\s*(?:19\d{2}|20\d{2}|present|current)?\b.*$/i, "");
+    s = s.replace(/[\s,–—|•;:/]+\s*(?:from|between|during)\b.*$/i, "");
+    s = s.replace(/[\s,–—|•;:.\\]+$/g, "");
+    return s.trim();
+  }
+
+  // Auto-populates all candidate personal and academic fields in modal from backend profiles
+  async function populateEditModalFromProfile() {
+    try {
+      const user = Session.getUser() || {};
+      let p = {};
+      try {
+        const res = await API.get("/resumes/me");
+        p = res?.data || {};
+      } catch (e) {
+        p = {};
+      }
+
+      let sp = {};
+      try {
+        const studRes = await api.student.getProfile();
+        sp = studRes?.data || {};
+      } catch (e) {
+        sp = {};
+      }
+
+      const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (document.activeElement === el) return;
+        el.value = (val !== undefined && val !== null) ? val : "";
+      };
+
+      const candidateName = p.full_name || p.name || sp.name || user.name || "";
+      const email = user.email || p.email || sp.email || "";
+
+      // Step 1: Personal Details
+      setVal("edit-cand-name", candidateName);
+      setVal("edit-cand-email", email);
+      setVal("edit-cand-phone", p.phone || sp.phone || "");
+      setVal("edit-cand-location", p.location || sp.location || "");
+      setVal("edit-cand-photo", p.profile_photo || "");
+      setVal("edit-cand-linkedin", p.linkedin_url || sp.linkedin_url || "");
+      setVal("edit-cand-github", p.github_url || sp.github_url || "");
+      setVal("edit-cand-portfolio", p.portfolio_url || sp.portfolio_url || "");
+
+      // Step 2: Basic Professional & Academic Information
+      setVal("edit-cand-headline", p.headline || sp.current_role || "");
+      setVal("edit-cand-role", p.current_role || sp.current_role || p.headline || "");
+      setVal("edit-cand-exp", p.experience_years !== undefined && p.experience_years !== null ? p.experience_years : (sp.experience_years !== undefined ? sp.experience_years : ""));
+      const skillsVal = (p.skills && p.skills.length) ? p.skills.join(", ") : ((sp.skills && sp.skills.length) ? sp.skills.join(", ") : "");
+      setVal("edit-cand-skills", skillsVal);
+      setVal("edit-cand-summary", p.summary || sp.summary || "");
+      setVal("edit-cand-certifications", p.certifications || sp.certifications || "");
+
+      // College & Academics
+      const rawCollege = p.college_name || sp.college_name || "";
+      setVal("edit-cand-college", cleanInstitutionName(rawCollege));
+      setVal("edit-cand-degree", p.degree || sp.degree || "");
+      setVal("edit-cand-branch", p.branch || sp.branch || "");
+      setVal("edit-cand-grad-year", p.graduation_year || sp.graduation_year || "");
+      setVal("edit-cand-cgpa", p.cgpa !== undefined && p.cgpa !== null ? p.cgpa : (sp.cgpa !== undefined ? sp.cgpa : ""));
+
+      // 12th & 10th
+      const raw12School = p.twelfth_school || sp.twelfth_school || "";
+      setVal("edit-cand-12th-school", cleanInstitutionName(raw12School));
+      setVal("edit-cand-12th-board", p.twelfth_board || sp.twelfth_board || "");
+      setVal("edit-cand-12th-year", p.twelfth_year || sp.twelfth_year || "");
+      setVal("edit-cand-12th-marks", p.twelfth_percentage !== undefined && p.twelfth_percentage !== null ? p.twelfth_percentage : (sp.twelfth_percentage !== undefined ? sp.twelfth_percentage : ""));
+
+      const raw10School = p.tenth_school || sp.tenth_school || "";
+      setVal("edit-cand-10th-school", cleanInstitutionName(raw10School));
+      setVal("edit-cand-10th-board", p.tenth_board || sp.tenth_board || "");
+      setVal("edit-cand-10th-year", p.tenth_year || sp.tenth_year || "");
+      setVal("edit-cand-10th-marks", p.tenth_percentage !== undefined && p.tenth_percentage !== null ? p.tenth_percentage : (sp.tenth_percentage !== undefined ? sp.tenth_percentage : ""));
+    } catch (err) {
+      console.warn("Could not populate edit modal:", err);
+    }
+  }
+
   // Resume Upload Auto-Fill for Candidate Profile & Details Modal
   function initResumeAutofillInModal() {
     const triggerBtn = document.getElementById("btn-trigger-resume-autofill");
@@ -786,19 +832,19 @@
         setVal("edit-cand-skills", data.skills);
         setVal("edit-cand-summary", data.summary);
         setVal("edit-cand-certifications", data.certifications);
-        setVal("edit-cand-college", data.college);
+        setVal("edit-cand-college", cleanInstitutionName(data.college));
         setVal("edit-cand-degree", data.degree);
         setVal("edit-cand-branch", data.branch);
         setVal("edit-cand-grad-year", data.graduation_year);
         setVal("edit-cand-cgpa", data.cgpa);
 
         // Populate 12th & 10th Grade Credentials
-        setVal("edit-cand-12th-school", data.twelfth_school);
+        setVal("edit-cand-12th-school", cleanInstitutionName(data.twelfth_school));
         setVal("edit-cand-12th-board", data.twelfth_board);
         setVal("edit-cand-12th-year", data.twelfth_year);
         setVal("edit-cand-12th-marks", data.twelfth_percentage);
 
-        setVal("edit-cand-10th-school", data.tenth_school);
+        setVal("edit-cand-10th-school", cleanInstitutionName(data.tenth_school));
         setVal("edit-cand-10th-board", data.tenth_board);
         setVal("edit-cand-10th-year", data.tenth_year);
         setVal("edit-cand-10th-marks", data.tenth_percentage);
@@ -882,19 +928,19 @@
       setVal("edit-cand-skills", data.skills);
       setVal("edit-cand-summary", data.summary);
       setVal("edit-cand-certifications", data.certifications);
-      setVal("edit-cand-college", data.college);
+      setVal("edit-cand-college", cleanInstitutionName(data.college));
       setVal("edit-cand-degree", data.degree);
       setVal("edit-cand-branch", data.branch);
       setVal("edit-cand-grad-year", data.graduation_year);
       setVal("edit-cand-cgpa", data.cgpa);
 
       // Populate 12th & 10th Grade Credentials
-      setVal("edit-cand-12th-school", data.twelfth_school);
+      setVal("edit-cand-12th-school", cleanInstitutionName(data.twelfth_school));
       setVal("edit-cand-12th-board", data.twelfth_board);
       setVal("edit-cand-12th-year", data.twelfth_year);
       setVal("edit-cand-12th-marks", data.twelfth_percentage);
 
-      setVal("edit-cand-10th-school", data.tenth_school);
+      setVal("edit-cand-10th-school", cleanInstitutionName(data.tenth_school));
       setVal("edit-cand-10th-board", data.tenth_board);
       setVal("edit-cand-10th-year", data.tenth_year);
       setVal("edit-cand-10th-marks", data.tenth_percentage);
@@ -914,11 +960,12 @@
   checkPendingResumeAutofill();
 
 
-  // Reset to Step 1 whenever modal opens
+  // Reset to Step 1 and re-populate latest details whenever modal opens
   const editModalEl = document.getElementById("editCandProfileModal");
   if (editModalEl) {
     editModalEl.addEventListener("show.bs.modal", () => {
       switchCandidateProfileStep(1);
+      populateEditModalFromProfile();
     });
   }
 
@@ -1004,6 +1051,13 @@
     try {
       await API.put("/resumes/me", payload);
       await api.student.updateProfile({
+        name: nameVal,
+        phone: payload.phone,
+        location: payload.location,
+        summary: payload.summary,
+        experience_years: payload.experience_years,
+        skills: payload.skills,
+        certifications: payload.certifications,
         college_name: collegeVal,
         degree: degreeVal,
         branch: branchVal,

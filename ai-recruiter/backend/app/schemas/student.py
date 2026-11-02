@@ -13,6 +13,13 @@ from pydantic import BaseModel, Field
 
 class StudentAcademicProfileUpdate(BaseModel):
     is_student: Optional[bool] = True
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    location: Optional[str] = None
+    summary: Optional[str] = None
+    experience_years: Optional[float] = None
+    certifications: Optional[str] = None
+    skills: Optional[list[str]] = None
     college_name: Optional[str] = None
     degree: Optional[str] = None
     branch: Optional[str] = None
@@ -35,6 +42,12 @@ class StudentAcademicProfileResponse(BaseModel):
     user_id: uuid.UUID
     name: str
     email: str
+    phone: Optional[str] = None
+    location: Optional[str] = None
+    summary: Optional[str] = None
+    experience_years: Optional[float] = None
+    current_role: Optional[str] = None
+    certifications: Optional[str] = None
     is_student: bool
     college_name: Optional[str] = None
     degree: Optional[str] = None

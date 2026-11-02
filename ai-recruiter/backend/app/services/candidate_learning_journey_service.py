@@ -970,7 +970,7 @@ def create_course_journey_state(
     norm_id = course_id.lower().strip() if course_id else "java"
     track = COURSE_TRACKS.get(norm_id, COURSE_TRACKS["java"])
 
-    start_date = user_rec.created_at if (user_rec and user_rec.created_at) else datetime.now()
+    start_date = datetime.now()
     phases = copy.deepcopy(track["phases"])
     dynamic_schedules = compute_dynamic_phase_schedules(start_date)
     for idx, p in enumerate(phases):
@@ -1000,6 +1000,8 @@ def create_course_journey_state(
         "strengths": strengths,
         "focus_areas": copy.deepcopy(track.get("focus_areas", DEFAULT_FOCUS_AREAS)),
         "completed_topics": [],
+        "course_started_at": start_date.isoformat(),
+        "is_started": False,
     }
 
 
@@ -1017,7 +1019,6 @@ def get_candidate_learning_journey(db: Session, user_id: Any) -> Dict[str, Any]:
     user_uuid = uuid.UUID(str(user_id)) if not isinstance(user_id, uuid.UUID) else user_id
     user_rec = db.query(User).filter(User.id == user_uuid).first()
     cand_prof = db.query(CandidateProfile).filter(CandidateProfile.user_id == user_uuid).first()
-    user_reg_date = user_rec.created_at if (user_rec and user_rec.created_at) else datetime.now()
 
     # 1. Fetch or initialize StudentLearningPreference for this specific user
     pref = db.query(StudentLearningPreference).filter(StudentLearningPreference.user_id == user_uuid).first()
@@ -1072,6 +1073,27 @@ def get_candidate_learning_journey(db: Session, user_id: Any) -> Dict[str, Any]:
         strengths = state.get("strengths", copy.deepcopy(DEFAULT_STRENGTHS))
         focus_areas = state.get("focus_areas", copy.deepcopy(active_track.get("focus_areas", DEFAULT_FOCUS_AREAS)))
         completed_topics = state.get("completed_topics", [])
+
+    # Validate phase track consistency: Ensure loaded phases match currently selected course
+    track_mismatch = False
+    if phases and phases[0].get("courses") and phases[0]["courses"]:
+        first_c_id = phases[0]["courses"][0].get("id", "")
+        if selected_course == "python" and not first_c_id.startswith("py-"):
+            track_mismatch = True
+        elif selected_course == "java" and not first_c_id.startswith("java-"):
+            track_mismatch = True
+        elif selected_course == "dsa" and not first_c_id.startswith("dsa-"):
+            track_mismatch = True
+    elif phases and phases[0].get("subtitle"):
+        sub = phases[0]["subtitle"].lower()
+        if selected_course == "python" and "java" in sub:
+            track_mismatch = True
+
+    if track_mismatch:
+        phases = copy.deepcopy(active_track["phases"])
+        recommendations = copy.deepcopy(active_track["recommendations"])
+        today_plan = copy.deepcopy(active_track["today_plan"])
+        focus_areas = copy.deepcopy(active_track.get("focus_areas", DEFAULT_FOCUS_AREAS))
 
     # 3. Synchronize with candidate's actual assessment history & interview scores
     _sync_live_candidate_performance(
@@ -1211,10 +1233,20 @@ def get_candidate_learning_journey(db: Session, user_id: Any) -> Dict[str, Any]:
             "action_label": "Start AI Mock Interview →",
         }
 
-    # Format today's date and dynamic 90-day phase timeline
+    # Format today's date and dynamic 90-day phase timeline anchored to actual course start date
     now = datetime.now()
     formatted_date = now.strftime("%b %d, %Y")
-    dynamic_schedules = compute_dynamic_phase_schedules(user_reg_date)
+
+    course_start_dt = None
+    if state and state.get("course_started_at"):
+        try:
+            course_start_dt = datetime.fromisoformat(state["course_started_at"])
+        except Exception:
+            course_start_dt = None
+    if not course_start_dt:
+        course_start_dt = now
+
+    dynamic_schedules = compute_dynamic_phase_schedules(course_start_dt)
     for idx, p in enumerate(phases):
         if idx < len(dynamic_schedules):
             p["date_range"] = dynamic_schedules[idx]
@@ -1262,6 +1294,7 @@ def get_candidate_learning_journey(db: Session, user_id: Any) -> Dict[str, Any]:
         "focus_areas": focus_areas,
         "completed_topics": completed_topics,
         "is_started": state.get("is_started", False),
+        "course_started_at": course_start_dt.isoformat(),
         "next_step": next_step_action,
         "stage_gate_policy": {
             "rule": "Strict Stage-Gate: Foundations (Beginner) -> Core Skills (Advanced) -> Practical Projects -> Placement Ready (Interviews & Tests)",
@@ -1284,6 +1317,7 @@ def get_candidate_learning_journey(db: Session, user_id: Any) -> Dict[str, Any]:
     state["strengths"] = strengths
     state["focus_areas"] = focus_areas
     state["completed_topics"] = completed_topics
+    state["course_started_at"] = course_start_dt.isoformat()
     pref.journey_state_json = json.dumps(state)
     try:
         db.commit()
@@ -1344,15 +1378,19 @@ def start_course_journey(db: Session, user_id: Any, course_id: Optional[str] = N
     phases = state.get("phases", [])
     if phases:
         p1 = phases[0]
-        if p1.get("progress_percent", 0.0) == 0.0:
-            p1["progress_percent"] = 10.0
-            p1["status"] = "In Progress"
-            for c in p1.get("courses", []):
-                if c.get("progress_percent", 0.0) == 0.0:
-                    c["progress_percent"] = 10.0
-                    c["status"] = "In Progress"
+        p1["status"] = "In Progress"
+        for c in p1.get("courses", []):
+            if c.get("status") == "Not Started":
+                c["status"] = "In Progress"
 
+    now = datetime.now()
     state["is_started"] = True
+    state["course_started_at"] = now.isoformat()
+    dynamic_schedules = compute_dynamic_phase_schedules(now)
+    for idx, p in enumerate(phases):
+        if idx < len(dynamic_schedules):
+            p["date_range"] = dynamic_schedules[idx]
+    state["phases"] = phases
     pref.journey_state_json = json.dumps(state)
     db.commit()
 
@@ -1797,8 +1835,16 @@ def reset_to_reference_dashboard(db: Session, user_id: Any) -> Dict[str, Any]:
         pref = StudentLearningPreference(user_id=user_uuid, daily_streak=1)
         db.add(pref)
 
-    selected_course = "java"
+    cur_state = {}
+    if pref.journey_state_json:
+        try:
+            cur_state = json.loads(pref.journey_state_json)
+        except Exception:
+            cur_state = {}
+    selected_course = cur_state.get("selected_course", "java") if cur_state else "java"
     state = create_course_journey_state(selected_course, user_rec, cand_prof)
+    state["course_started_at"] = datetime.now().isoformat()
+    state["is_started"] = False
     pref.journey_state_json = json.dumps(state)
     pref.daily_streak = 1
     db.commit()

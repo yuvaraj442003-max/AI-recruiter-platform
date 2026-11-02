@@ -46,6 +46,32 @@ var escapeHtml = window.escapeHtml;
     software_testing: "(Selenium, Playwright & SDET Automation)"
   };
 
+  function computeClientPhaseDates(startDate) {
+    const d = startDate ? new Date(startDate) : new Date();
+    const addDays = (base, n) => {
+      const res = new Date(base);
+      res.setDate(res.getDate() + n);
+      return res;
+    };
+    const fmt = (dt) => dt.toLocaleDateString("en-US", { month: "short", day: "2-digit" });
+    const p1_start = d;
+    const p1_end = addDays(d, 21);
+    const p2_start = addDays(p1_end, 1);
+    const p2_end = addDays(d, 44);
+    const p3_start = addDays(p2_end, 1);
+    const p3_end = addDays(d, 67);
+    const p4_start = addDays(p3_end, 1);
+    const p4_end = addDays(d, 89);
+    return [
+      `${fmt(p1_start)} - ${fmt(p1_end)}`,
+      `${fmt(p2_start)} - ${fmt(p2_end)}`,
+      `${fmt(p3_start)} - ${fmt(p3_end)}`,
+      `${fmt(p4_start)} - ${fmt(p4_end)}`,
+    ];
+  }
+
+  const initialDynamicSchedules = computeClientPhaseDates(new Date());
+
   const FALLBACK_JOURNEY = {
     roadmap_title: "Your 90-Day Roadmap — Java Programming",
     target_track: "Java Programming: Beginner to Placement Ready",
@@ -277,6 +303,17 @@ var escapeHtml = window.escapeHtml;
 
   function renderLearningJourneyDashboard(data) {
     if (!data) return;
+
+    // Calibrate all phase schedules dynamically starting from course start date or today
+    if (data.phases && data.phases.length) {
+      const startBase = data.course_started_at ? new Date(data.course_started_at) : new Date();
+      const dynDates = computeClientPhaseDates(startBase);
+      data.phases.forEach((p, idx) => {
+        if (dynDates[idx]) {
+          p.date_range = dynDates[idx];
+        }
+      });
+    }
 
     // 0. Render Target Course Selector Header
     renderCourseTrackSelector(data);
@@ -720,6 +757,88 @@ var escapeHtml = window.escapeHtml;
         };
         activeJourneyData.roadmap_title = `Your 90-Day Roadmap — ${courseObj.name}`;
         activeJourneyData.target_track = `${courseObj.name}: Beginner to Placement Ready`;
+        if (courseId === "python" && (!activeJourneyData.phases || !activeJourneyData.phases.length || (activeJourneyData.phases[0].subtitle && activeJourneyData.phases[0].subtitle.includes("Java")))) {
+          const dynDates = computeClientPhaseDates(new Date());
+          activeJourneyData.phases = [
+            {
+              id: "phase-1",
+              phase_num: 1,
+              name: "Phase 1: Foundations",
+              date_range: dynDates[0],
+              subtitle: "Master Python syntax, memory model & functional basics",
+              progress_percent: 0.0,
+              status: "In Progress",
+              is_locked: false,
+              icon: "layers",
+              topics_covered: ["Python Syntax, Dynamic Typing & Memory", "List Comprehensions & Dictionaries", "Functions, Closures & Decorators", "Object-Oriented Python (Dunder Methods)"],
+              courses: [
+                { id: "py-101", name: "Python Syntax, Data Types & Scope", progress_percent: 0.0, status: "Not Started" },
+                { id: "py-102", name: "List Comprehensions, Tuples & Sets", progress_percent: 0.0, status: "Not Started" },
+                { id: "py-103", name: "Functions, Lambda & Decorators", progress_percent: 0.0, status: "Not Started" },
+                { id: "py-104", name: "Object-Oriented Python & Magic Methods", progress_percent: 0.0, status: "Not Started" },
+              ],
+              action_url: "python-course-learning.html",
+              action_text: "Study Python Foundations",
+            },
+            {
+              id: "phase-2",
+              phase_num: 2,
+              name: "Phase 2: Core Skills",
+              date_range: dynDates[1],
+              subtitle: "Advanced Data Structures, Asyncio & FastAPI",
+              progress_percent: 0.0,
+              status: "Upcoming",
+              is_locked: true,
+              icon: "code",
+              topics_covered: ["Python Generators & Memory Profiling", "Asyncio & High-Concurrency I/O", "FastAPI & Pydantic REST APIs", "SQLAlchemy ORM & Database Indexing"],
+              courses: [
+                { id: "py-201", name: "Advanced Python Data Structures & Algorithmic Patterns", progress_percent: 0.0, status: "Upcoming" },
+                { id: "py-202", name: "Asynchronous Programming with Asyncio", progress_percent: 0.0, status: "Upcoming" },
+                { id: "py-203", name: "FastAPI Production REST Architectures", progress_percent: 0.0, status: "Upcoming" },
+                { id: "py-204", name: "PostgreSQL & SQLAlchemy Asynchronous Session", progress_percent: 0.0, status: "Upcoming" },
+              ],
+              action_url: "coding-assessment.html?lang=python",
+              action_text: "Core Python Lab",
+            },
+            {
+              id: "phase-3",
+              phase_num: 3,
+              name: "Phase 3: Advanced & Projects",
+              date_range: dynDates[2],
+              subtitle: "Build production AI agents and distributed backends",
+              progress_percent: 0.0,
+              status: "Upcoming",
+              is_locked: true,
+              icon: "briefcase",
+              topics_covered: ["FastAPI Microservices Architecture", "Redis Asynchronous Caching & Rate Limiting", "Celery Task Queue & Distributed Workers", "LangChain & AI Agent Orchestration"],
+              courses: [
+                { id: "py-301", name: "Distributed Microservices with FastAPI & Docker", progress_percent: 0.0, status: "Upcoming" },
+                { id: "py-302", name: "Asynchronous Redis & Celery Background Queues", progress_percent: 0.0, status: "Upcoming" },
+                { id: "py-303", name: "Autonomous AI Agents with OpenAI & LangChain", progress_percent: 0.0, status: "Upcoming" },
+              ],
+              action_url: "coding-assessment.html?mode=projects",
+              action_text: "Build Python Projects",
+            },
+            {
+              id: "phase-4",
+              phase_num: 4,
+              name: "Phase 4: Placement Ready",
+              date_range: dynDates[3],
+              subtitle: "Python technical interview questions & AI mock interviews",
+              progress_percent: 0.0,
+              status: "Upcoming",
+              is_locked: true,
+              icon: "award",
+              topics_covered: ["Top 50 Python Interview Coding Challenges", "GIL, Memory Management & Deep Internals", "REST API System Design for Python Engineers", "Full-Length Proctored AI Mock Placement Interviews"],
+              courses: [
+                { id: "py-401", name: "Placement Coding Patterns & GIL Deep Dive", progress_percent: 0.0, status: "Upcoming" },
+                { id: "py-402", name: "AI Proctored Python Placement Mock Interview", progress_percent: 0.0, status: "Upcoming" },
+              ],
+              action_url: "interview.html?track=python",
+              action_text: "Python Mock Interview",
+            }
+          ];
+        }
         if (activeJourneyData.next_step) {
           activeJourneyData.next_step.title = "Phase 1: Foundations (0% Completed)";
           if (courseId === "python") {

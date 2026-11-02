@@ -3,7 +3,6 @@ Resume endpoints: upload (candidate-only), and fetch the parsed profile.
 """
 import io
 import json
-import logging
 import os
 import uuid
 import zipfile
@@ -12,8 +11,6 @@ from typing import Optional, List
 from fastapi import APIRouter, Depends, UploadFile, File, Query, Form
 from fastapi.responses import FileResponse, HTMLResponse, Response
 from sqlalchemy.orm import Session, joinedload
-
-logger = logging.getLogger(__name__)
 
 from app.ai.resume_summarizer import generate_resume_summary
 from app.core.database import get_db
@@ -108,7 +105,6 @@ async def extract_resume_details_endpoint(
                     portfolio_url=extracted.get("portfolio_url"),
                 )
                 db.add(cand)
-                db.flush()
             else:
                 for k, v in {
                     "headline": extracted.get("headline"),

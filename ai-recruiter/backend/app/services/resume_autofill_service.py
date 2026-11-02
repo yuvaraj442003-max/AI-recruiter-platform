@@ -195,7 +195,9 @@ def extract_candidate_autofill_fields(file_bytes: bytes, filename: str, fallback
     year_re = re.compile(r"\b(19\d{2}|20\d{2})\b")
     pct_re = re.compile(r"(\d+(?:\.\d+)?)\s*%")
     cgpa_num_re = re.compile(r"\b(?:cgpa|gpa|grade|score)?\s*[:\-–—]?\s*([2-9]\.\d{1,2}|10\.0)\b", re.I)
-    explicit_gpa_re = re.compile(r"\b(?:cgpa|gpa)\s*[:\-–—]?\s*([0-9]\.\d{1,2})\b", re.I)
+    explicit_gpa_re = re.compile(r"\b(?:cgpa|gpa)\s*(?:of|is|:|\-|=)?\s*([0-9]\.\d{1,2})(?:\s*/\s*(?:10|4)(?:\.0)?)?\b", re.I)
+    suffix_gpa_re = re.compile(r"\b([0-9]\.\d{1,2})(?:\s*/\s*(?:10|4)(?:\.0)?)?\s*(?:cgpa|gpa)\b", re.I)
+    score_pct_re = re.compile(r"\b(?:percentage|marks?|aggregate)\s*(?:of|is|:|\-|=)?\s*([4-9]\d(?:\.\d+)?)\s*%?\b", re.I)
 
     for item in edu_items:
         deg_str = str(item.get("degree") or "").strip()
@@ -285,19 +287,21 @@ def extract_candidate_autofill_fields(file_bytes: bytes, filename: str, fallback
                 college = clean_inst
 
             # Separate degree & branch if combined
-            cand_deg = deg_str
+            cand_deg = re.sub(r"^(?:degree|qualification|program)\s*[:\-–—]?\s*", "", deg_str, flags=re.I).strip()
             cand_branch = field_str
-            if " in " in cand_deg:
-                parts = cand_deg.split(" in ", 1)
-                cand_deg = parts[0].strip()
-                if not cand_branch:
-                    cand_branch = parts[1].strip()
             if "(" in cand_deg and ")" in cand_deg:
                 m_br = re.search(r"^(.*?)\s*\(([^)]+)\)", cand_deg)
                 if m_br:
                     cand_deg = m_br.group(1).strip()
                     if not cand_branch:
                         cand_branch = m_br.group(2).strip()
+            if " in " in cand_deg:
+                parts = cand_deg.split(" in ", 1)
+                cand_deg = parts[0].strip()
+                if not cand_branch:
+                    cand_branch = parts[1].strip()
+            if cand_branch:
+                cand_branch = re.sub(r"^(?:B\.?Tech|B\.?E\.?|M\.?Tech|B\.?Sc|Bachelor(?:\s+of\s+[A-Za-z]+)?)\s+(?:in|of)\s+", "", cand_branch, flags=re.I).strip()
 
             if not degree or degree.lower() in ("degree", "academic degree", "-"):
                 degree = cand_deg
@@ -305,7 +309,16 @@ def extract_candidate_autofill_fields(file_bytes: bytes, filename: str, fallback
                 branch = cand_branch
 
             if not cgpa:
-                cg_m = explicit_gpa_re.search(item_score) or explicit_gpa_re.search(full_item_text) or cgpa_num_re.search(item_score) or pct_re.search(item_score)
+                cg_m = (
+                    explicit_gpa_re.search(item_score)
+                    or suffix_gpa_re.search(item_score)
+                    or explicit_gpa_re.search(full_item_text)
+                    or suffix_gpa_re.search(full_item_text)
+                    or score_pct_re.search(item_score)
+                    or score_pct_re.search(full_item_text)
+                    or cgpa_num_re.search(item_score)
+                    or pct_re.search(item_score)
+                )
                 if cg_m:
                     cgpa = cg_m.group(1)
             if item_end_year:
@@ -347,7 +360,13 @@ def extract_candidate_autofill_fields(file_bytes: bytes, filename: str, fallback
             branch = m_br.group(1).strip()
 
     if not cgpa:
-        m_cg = explicit_gpa_re.search(edu_text) or cgpa_num_re.search(edu_text) or pct_re.search(edu_text)
+        m_cg = (
+            explicit_gpa_re.search(edu_text)
+            or suffix_gpa_re.search(edu_text)
+            or score_pct_re.search(edu_text)
+            or cgpa_num_re.search(edu_text)
+            or pct_re.search(edu_text)
+        )
         if m_cg:
             cgpa = m_cg.group(1)
 

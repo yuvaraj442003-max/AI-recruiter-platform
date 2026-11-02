@@ -1145,8 +1145,8 @@ def clean_institution_name(text: str) -> str:
     """Cleans school/college name by removing leading degree prefixes, trailing scores, years, and boards."""
     if not text:
         return ""
-    # Strip leading generic headers
-    text = re.sub(r"^(?:education|academics?|qualifications?|senior\s+secondary\s+school|senior\s+secondary|higher\s+secondary|high\s+school|secondary\s+school)\s*[:\-–—|/]?\s*", "", text, flags=re.I)
+    # Strip leading generic headers and prefixes (e.g. "College:", "University:", "School:")
+    text = re.sub(r"^(?:education|academics?|qualifications?|college|university|school|institution|senior\s+secondary\s+school|senior\s+secondary|higher\s+secondary|high\s+school|secondary\s+school)\s*[:\-–—|/]?\s*", "", text, flags=re.I)
     # 1. Remove leading degree / exam type prefix: e.g. "B.Tech (Information Technology), ", "HSC (12th), ", "SSLC (10th), "
     text = re.sub(
         r"^(?:[\s*•\-–—]*)(?:b\.?tech|b\.?e\.?|m\.?tech|bca|mca|b\.?sc|m\.?sc|bba|mba|ph\.?d|bachelor[^\,\(\)]*|master[^\,\(\)]*|hsc|sslc|12th(?:\s+grade|\s+std)?|10th(?:\s+grade|\s+std)?|class\s+xii|class\s+x|intermediate|secondary\s+school\s+leaving(?:\s+certificate)?|higher\s+secondary(?:\s+certificate)?)\s*(?:\([^\)]*\))?\s*[\,\:\-–—|/]\s*",
@@ -1154,18 +1154,23 @@ def clean_institution_name(text: str) -> str:
         text,
         flags=re.I,
     )
-    # 2. Remove trailing score / CGPA / percentage: e.g. ", 89.2%", ", CGPA: 8.62"
+    # 2. Remove date ranges and phrases like "from 2018–2022", "2018 - 2022", "from 2018 to 2022"
+    text = re.sub(r"[\s,–—|•;:/]+\s*(?:from|between|during)?\s*(?:19\d{2}|20\d{2})\s*[-–—to]+\s*(?:19\d{2}|20\d{2}|present|current)?\b.*$", "", text, flags=re.I)
+    text = re.sub(r"[\s,–—|•;:/]+\s*(?:from|between|during)\b.*$", "", text, flags=re.I)
+    # 3. Remove trailing score / CGPA / percentage: e.g. ", 89.2%", ", CGPA: 8.62"
     text = re.sub(
         r"[\s*•\-–—|,/]+\s*(?:cgpa|gpa|percentage|marks|grade|score)?\s*[:=]?\s*\d+(?:\.\d+)?\s*(?:/\s*\d+)?\s*%?.*$",
         "",
         text,
         flags=re.I,
     )
-    # 3. Remove trailing years / graduated / completion: e.g. ", 2024", ", Graduated: 2023", "Year of Completion: 2023"
+    # 4. Remove trailing years / graduated / completion: e.g. ", 2024", ", Graduated: 2023", "Year of Completion: 2023"
     text = re.sub(r"[\s*•\-–—|,/]+\s*(?:year\s+of\s+completion|year\s+of\s+passing|completion|graduated|passed|completed)?\s*[:=]?\s*(?:19\d{2}|20\d{2})\b.*$", "", text, flags=re.I)
     text = re.sub(r"[\s*•\-–—|,/]+\s*(?:year\s+of\s+completion|year\s+of\s+passing|completion|graduated|passed|completed)\b.*$", "", text, flags=re.I)
-    # 4. Remove trailing board
+    # 5. Remove trailing board
     text = re.sub(r"[\s*•\-–—|,/]+\s*(?:state\s+board|cbse|icse|matriculation|sslc|hsc|diploma)\b.*$", "", text, flags=re.I)
+    # 6. Remove trailing punctuation: commas, hyphens, en-dash, em-dash, semicolons, colons, bullets, periods, backslashes
+    text = re.sub(r"[\s,–—|•;:.\\]+$", "", text)
     return text.strip(" ,-|.:;•\t\r\n")
 
 
@@ -1204,15 +1209,9 @@ def parse_education_items(edu_text: str, **kwargs) -> list[dict]:
 
     if qual_line and (college_line or uni_line):
         deg_raw = qual_line.split(":", 1)[1].strip()
-        inst_parts = []
-        if college_line:
-            inst_parts.append(college_line.split(":", 1)[1].strip())
-        if uni_line:
-            inst_parts.append(uni_line.split(":", 1)[1].strip())
-        full_inst = ", ".join(inst_parts)
-        years = year_re.findall(full_inst + " " + deg_raw)
-        clean_inst = year_re.sub("", full_inst).replace("from", "").replace("to", "").strip(" ,-|.")
-        clean_inst = header_re.sub("", clean_inst).strip(" ,-|.")
+        target_inst = college_line.split(":", 1)[1].strip() if college_line else uni_line.split(":", 1)[1].strip()
+        clean_inst = clean_institution_name(target_inst)
+        years = year_re.findall(deg_raw + " " + target_inst)
         field = deg_raw.split("(")[1].rstrip("). ") if "(" in deg_raw else None
         deg_clean = deg_raw.split("(")[0].strip() if "(" in deg_raw else deg_raw
         return [{
