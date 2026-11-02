@@ -230,8 +230,9 @@ def extract_candidate_autofill_fields(file_bytes: bytes, filename: str, fallback
                 tenth_board = "CBSE"
             elif "icse" in full_lower:
                 tenth_board = "ICSE"
-            else:
-                tenth_board = tenth_board or "State Board / SSLC"
+            elif "state" in full_lower or "stateboard" in full_lower:
+                tenth_board = "State Board / SSLC"
+            # else: leave blank — board not mentioned in resume
 
             if item_end_year:
                 tenth_year = item_end_year
@@ -261,8 +262,9 @@ def extract_candidate_autofill_fields(file_bytes: bytes, filename: str, fallback
                 twelfth_board = "CBSE"
             elif "icse" in full_lower:
                 twelfth_board = "ICSE"
-            else:
-                twelfth_board = twelfth_board or "State Board / HSC"
+            elif "state" in full_lower or "stateboard" in full_lower:
+                twelfth_board = "State Board / HSC"
+            # else: leave blank — board not mentioned in resume
 
             if item_end_year:
                 twelfth_year = item_end_year

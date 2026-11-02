@@ -76,6 +76,7 @@ var escapeHtml = window.escapeHtml;
     roadmap_title: "Your 90-Day Roadmap — Java Programming",
     target_track: "Java Programming: Beginner to Placement Ready",
     selected_course: "java",
+    is_started: false,
     course_track: {
       id: "java",
       name: "Java Programming",
@@ -119,10 +120,10 @@ var escapeHtml = window.escapeHtml;
         id: "phase-1",
         phase_num: 1,
         name: "Phase 1: Foundations",
-        date_range: "Day 1 - 22",
+        date_range: "",
         subtitle: "Master Java syntax, JVM runtime & core OOP principles",
         progress_percent: 0.0,
-        status: "In Progress",
+        status: "Not Started",
         is_locked: false,
         icon: "layers",
         level: "Beginner Level",
@@ -140,7 +141,7 @@ var escapeHtml = window.escapeHtml;
         id: "phase-2",
         phase_num: 2,
         name: "Phase 2: Core Skills",
-        date_range: "Day 23 - 45",
+        date_range: "",
         subtitle: "Collections Framework, Concurrency & Modern Streams API",
         progress_percent: 0.0,
         status: "Upcoming",
@@ -161,7 +162,7 @@ var escapeHtml = window.escapeHtml;
         id: "phase-3",
         phase_num: 3,
         name: "Phase 3: Advanced & Projects",
-        date_range: "Day 46 - 68",
+        date_range: "",
         subtitle: "Build production enterprise applications with Spring Boot",
         progress_percent: 0.0,
         status: "Upcoming",
@@ -182,7 +183,7 @@ var escapeHtml = window.escapeHtml;
         id: "phase-4",
         phase_num: 4,
         name: "Phase 4: Placement Ready",
-        date_range: "Day 69 - 90",
+        date_range: "",
         subtitle: "Company Java technical interview questions & AI mock interviews",
         progress_percent: 0.0,
         status: "Upcoming",
@@ -304,14 +305,26 @@ var escapeHtml = window.escapeHtml;
   function renderLearningJourneyDashboard(data) {
     if (!data) return;
 
-    // Calibrate all phase schedules dynamically starting from course start date or today
-    if (data.phases && data.phases.length) {
+    // Calibrate phase schedules ONLY when candidate has actually started the course
+    const isCourseStarted = Boolean(
+      data.is_started ||
+      (data.completed_topics && data.completed_topics.length > 0) ||
+      (data.overall_progress_percent && data.overall_progress_percent > 0)
+    );
+    if (isCourseStarted && data.phases && data.phases.length) {
       const startBase = data.course_started_at ? new Date(data.course_started_at) : new Date();
       const dynDates = computeClientPhaseDates(startBase);
       data.phases.forEach((p, idx) => {
         if (dynDates[idx]) {
           p.date_range = dynDates[idx];
         }
+      });
+    } else if (data.phases && data.phases.length) {
+      // Course not started — clear dates so they don't show stale/fake dates
+      data.phases.forEach((p) => {
+        p.date_range = "";
+        p.status = p.phase_num === 1 ? "Not Started" : "Locked";
+        p.progress_percent = 0;
       });
     }
 
@@ -321,22 +334,46 @@ var escapeHtml = window.escapeHtml;
     // 1. Next Step Guidance Banner
     const nextStepTitle = document.getElementById("journey-next-step-title");
     const nextStepGuidance = document.getElementById("journey-next-step-guidance");
-    if (nextStepTitle && data.next_step) {
-      nextStepTitle.textContent = data.next_step.title;
-    }
-    if (nextStepGuidance && data.next_step) {
-      nextStepGuidance.textContent = data.next_step.guidance;
+    const courseName = (data.course_track && data.course_track.name) || data.selected_course || "your selected course";
+    if (isCourseStarted) {
+      if (nextStepTitle && data.next_step) nextStepTitle.textContent = data.next_step.title;
+      if (nextStepGuidance && data.next_step) nextStepGuidance.textContent = data.next_step.guidance;
+    } else {
+      if (nextStepTitle) nextStepTitle.textContent = "Ready to Start? Your Journey Begins Now";
+      if (nextStepGuidance) nextStepGuidance.textContent = `Click "Start Course" to begin ${escapeHtml(courseName)}. Your 90-day roadmap, progress, phase schedule, and study plan will be dynamically built from your first day of learning.`;
     }
 
     // 2. CARD 1: Your 90-Day Roadmap Header Overall Badge & Timeline
     const overallBadge = document.getElementById("roadmap-overall-badge");
     if (overallBadge) {
-      const overallPct = Math.round(data.overall_progress_percent !== undefined ? data.overall_progress_percent : 0);
-      overallBadge.textContent = `${overallPct}% Total`;
+      if (isCourseStarted) {
+        const overallPct = Math.round(data.overall_progress_percent !== undefined ? data.overall_progress_percent : 0);
+        overallBadge.textContent = `${overallPct}% Total`;
+        overallBadge.style.background = "#dbeafe";
+        overallBadge.style.color = "#1e40af";
+      } else {
+        overallBadge.textContent = "Not Started";
+        overallBadge.style.background = "#f1f5f9";
+        overallBadge.style.color = "#64748b";
+      }
     }
 
     const timelineContainer = document.getElementById("journey-roadmap-timeline");
-    if (timelineContainer && data.phases) {
+
+    // If course not started, show a clear "Start your learning journey" CTA — no fake roadmap
+    if (timelineContainer && !isCourseStarted) {
+      const courseName = (data.course_track && data.course_track.name) || data.selected_course || "your course";
+      timelineContainer.innerHTML = `
+        <div class="d-flex flex-column align-items-center justify-content-center py-4 text-center" style="gap: 12px; min-height: 180px;">
+          <div style="background: #f0fdf4; border-radius: 50%; width: 56px; height: 56px; display:flex; align-items:center; justify-content:center; font-size: 1.6rem;">🚀</div>
+          <div>
+            <div class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">Your 90-Day Roadmap Awaits</div>
+            <div class="text-muted" style="font-size: 0.8rem; max-width: 260px;">Click <strong>Start Course</strong> to begin your ${escapeHtml(courseName)} learning journey. Your roadmap, progress, and phase schedule will appear here.</div>
+          </div>
+          <button class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm" onclick="startCurrentCourse()" style="font-size: 0.85rem;">▶ Start Course</button>
+        </div>
+      `;
+    } else if (timelineContainer && data.phases) {
       timelineContainer.innerHTML = data.phases.map((p) => {
         const isCurrentActive = (data.active_phase_num === p.phase_num);
         const isCompleted = (p.status === "Completed" || p.progress_percent >= 100);
@@ -414,17 +451,32 @@ var escapeHtml = window.escapeHtml;
           </div>
         `;
       }).join("");
-    }
+    }  // end else-if (isCourseStarted)
 
     // 3. CARD 2: Top Recommendations for You
     const recOverallBadge = document.getElementById("recommendations-overall-badge");
     if (recOverallBadge) {
-      const recAvg = Math.round(data.recommendations_progress_percent !== undefined ? data.recommendations_progress_percent : 0);
-      recOverallBadge.textContent = `${recAvg}% Avg Progress`;
+      if (isCourseStarted) {
+        const recAvg = Math.round(data.recommendations_progress_percent !== undefined ? data.recommendations_progress_percent : 0);
+        recOverallBadge.textContent = `${recAvg}% Avg Progress`;
+        recOverallBadge.style.background = "#dbeafe";
+        recOverallBadge.style.color = "#1e40af";
+      } else {
+        recOverallBadge.textContent = "Not Started";
+        recOverallBadge.style.background = "#f1f5f9";
+        recOverallBadge.style.color = "#64748b";
+      }
     }
 
     const recsContainer = document.getElementById("journey-recommendations-list");
-    if (recsContainer && data.recommendations) {
+    if (recsContainer && !isCourseStarted) {
+      recsContainer.innerHTML = `
+        <div class="text-center py-3 text-muted" style="font-size: 0.82rem;">
+          <span style="font-size: 1.2rem;">📚</span><br>
+          Personalized recommendations will appear once you start the course.
+        </div>
+      `;
+    } else if (recsContainer && data.recommendations) {
       recsContainer.innerHTML = data.recommendations.map(r => {
         let iconBg = "#e7f5ff";
         let iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#228be6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>`;
@@ -472,22 +524,34 @@ var escapeHtml = window.escapeHtml;
     // 4. CARD 3: Today's Plan
     const todayDateEl = document.getElementById("journey-today-date");
     if (todayDateEl) {
-      todayDateEl.textContent = data.today_date || new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      // Only show the actual date once the candidate has started
+      if (isCourseStarted) {
+        todayDateEl.textContent = data.today_date || new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      } else {
+        todayDateEl.textContent = "—";
+      }
     }
 
     const todayPlanBadge = document.getElementById("today-plan-progress-badge");
-    const todayPct = Math.round(data.today_plan_progress_percent !== undefined ? data.today_plan_progress_percent : 0);
+    const todayPct = isCourseStarted ? Math.round(data.today_plan_progress_percent !== undefined ? data.today_plan_progress_percent : 0) : 0;
     if (todayPlanBadge) {
-      todayPlanBadge.textContent = `${todayPct}% Completed`;
+      todayPlanBadge.textContent = isCourseStarted ? `${todayPct}% Completed` : "Not Started";
     }
 
     const todayProgressBar = document.getElementById("today-plan-progress-bar");
     if (todayProgressBar) {
-      todayProgressBar.style.width = `${todayPct}%`;
+      todayProgressBar.style.width = isCourseStarted ? `${todayPct}%` : "0%";
     }
 
     const planContainer = document.getElementById("journey-todays-plan-list");
-    if (planContainer && data.today_plan) {
+    if (planContainer && !isCourseStarted) {
+      planContainer.innerHTML = `
+        <div class="text-center py-3 text-muted" style="font-size: 0.82rem;">
+          <span style="font-size: 1.2rem;">📋</span><br>
+          Your daily study plan will appear here once you start the course.
+        </div>
+      `;
+    } else if (planContainer && data.today_plan) {
       planContainer.innerHTML = data.today_plan.map(t => {
         const isDone = (t.status === "Completed");
         const isInProgress = (t.status === "In Progress");
