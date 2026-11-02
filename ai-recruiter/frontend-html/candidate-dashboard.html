@@ -1370,9 +1370,12 @@
                   <input type="text" id="edit-cand-name" class="form-control" placeholder="e.g. Yuvaraj Sharma" required />
                 </div>
                 <div class="col-md-6">
-                  <label for="edit-cand-email" class="form-label fw-semibold small">Account Registration Email</label>
-                  <input type="email" id="edit-cand-email" class="form-control bg-light" placeholder="e.g. user@example.com" readonly />
-                  <div class="form-text small text-muted">Account login &amp; registration email.</div>
+                  <label for="edit-cand-email" class="form-label fw-semibold small">Email Address</label>
+                  <input type="email" id="edit-cand-email" class="form-control" placeholder="e.g. candidate@example.com" />
+                  <div class="form-text small text-muted d-flex justify-content-between align-items-center mt-1">
+                    <span>Contact email extracted from resume.</span>
+                    <span class="badge bg-light text-secondary border">Account: <span id="cand-account-login-email"></span></span>
+                  </div>
                 </div>
               </div>
 
@@ -1429,22 +1432,15 @@
 
               <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                  <label for="edit-cand-resume-email" class="form-label fw-semibold small">Resume Email Address</label>
-                  <input type="email" id="edit-cand-resume-email" class="form-control" placeholder="e.g. candidate.resume@email.com" />
-                  <div class="form-text small text-muted">Contact email extracted from uploaded resume (kept separate from registration email).</div>
+                  <label for="edit-cand-headline" class="form-label fw-semibold small">Professional Headline *</label>
+                  <input type="text" id="edit-cand-headline" class="form-control" placeholder="e.g. Full Stack Engineer | Python, React, AI" required />
                 </div>
                 <div class="col-md-6">
                   <label for="edit-cand-role" class="form-label fw-semibold small">Current / Desired Job Role</label>
                   <input type="text" id="edit-cand-role" class="form-control" placeholder="e.g. Python Developer / Software Engineer" />
                 </div>
               </div>
-
-              <div class="row g-3 mb-3">
-                <div class="col-md-12">
-                  <label for="edit-cand-headline" class="form-label fw-semibold small">Professional Headline *</label>
-                  <input type="text" id="edit-cand-headline" class="form-control" placeholder="e.g. Full Stack Engineer | Python, React, AI" required />
-                </div>
-              </div>
+              <input type="hidden" id="edit-cand-resume-email" />
 
               <div class="row g-3 mb-3">
                 <div class="col-md-6">
