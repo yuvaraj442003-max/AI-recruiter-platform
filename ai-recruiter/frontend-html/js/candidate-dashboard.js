@@ -727,11 +727,12 @@
       };
 
       const candidateName = p.full_name || p.name || sp.name || user.name || "";
-      const email = user.email || p.email || sp.email || "";
+      const regEmail = user.email || "";
+      const resumeEmail = p.resume_email || sp.resume_email || (p.email && p.email !== regEmail ? p.email : "");
 
       // Step 1: Personal Details
       setVal("edit-cand-name", candidateName);
-      setVal("edit-cand-email", email);
+      setVal("edit-cand-email", regEmail);
       setVal("edit-cand-phone", p.phone || sp.phone || "");
       setVal("edit-cand-location", p.location || sp.location || "");
       setVal("edit-cand-photo", p.profile_photo || "");
@@ -740,6 +741,7 @@
       setVal("edit-cand-portfolio", p.portfolio_url || sp.portfolio_url || "");
 
       // Step 2: Basic Professional & Academic Information
+      setVal("edit-cand-resume-email", resumeEmail);
       setVal("edit-cand-headline", p.headline || sp.current_role || "");
       setVal("edit-cand-role", p.current_role || sp.current_role || p.headline || "");
       setVal("edit-cand-exp", p.experience_years !== undefined && p.experience_years !== null ? p.experience_years : (sp.experience_years !== undefined ? sp.experience_years : ""));
@@ -818,7 +820,8 @@
 
         // Populate Step 1 (Personal Details)
         setVal("edit-cand-name", data.name);
-        if (data.email) setVal("edit-cand-email", data.email);
+        // Do NOT overwrite account registration email with resume email
+        if (data.email) setVal("edit-cand-resume-email", data.email);
         setVal("edit-cand-phone", data.phone);
         setVal("edit-cand-location", data.location);
         setVal("edit-cand-linkedin", data.linkedin_url);
@@ -914,7 +917,8 @@
 
       // Populate Step 1 (Personal Details)
       setVal("edit-cand-name", data.name);
-      if (data.email) setVal("edit-cand-email", data.email);
+      // Do NOT overwrite account registration email with resume email
+      if (data.email) setVal("edit-cand-resume-email", data.email);
       setVal("edit-cand-phone", data.phone);
       setVal("edit-cand-location", data.location);
       setVal("edit-cand-linkedin", data.linkedin_url);
@@ -1033,7 +1037,9 @@
     const tenthBoardVal = document.getElementById("edit-cand-10th-board")?.value?.trim() || null;
     const tenthYearVal = document.getElementById("edit-cand-10th-year")?.value ? Number(document.getElementById("edit-cand-10th-year").value) : null;
     const tenthMarksVal = document.getElementById("edit-cand-10th-marks")?.value ? Number(document.getElementById("edit-cand-10th-marks").value) : null;
+    const resumeEmailVal = document.getElementById("edit-cand-resume-email")?.value?.trim() || null;
 
+    payload.resume_email = resumeEmailVal;
     payload.college_name = collegeVal;
     payload.degree = degreeVal;
     payload.branch = branchVal;
@@ -1052,6 +1058,7 @@
       await API.put("/resumes/me", payload);
       await api.student.updateProfile({
         name: nameVal,
+        resume_email: resumeEmailVal,
         phone: payload.phone,
         location: payload.location,
         summary: payload.summary,

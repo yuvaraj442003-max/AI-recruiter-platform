@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field
 class StudentAcademicProfileUpdate(BaseModel):
     is_student: Optional[bool] = True
     name: Optional[str] = None
+    resume_email: Optional[str] = None
     phone: Optional[str] = None
     location: Optional[str] = None
     summary: Optional[str] = None
@@ -41,7 +42,8 @@ class StudentAcademicProfileResponse(BaseModel):
     id: uuid.UUID
     user_id: uuid.UUID
     name: str
-    email: str
+    email: str  # Account registration email
+    resume_email: Optional[str] = None  # Contact email extracted from resume
     phone: Optional[str] = None
     location: Optional[str] = None
     summary: Optional[str] = None

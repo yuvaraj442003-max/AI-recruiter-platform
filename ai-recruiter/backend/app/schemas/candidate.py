@@ -19,6 +19,7 @@ class SkillOut(BaseModel):
 class CandidateProfileUpdate(BaseModel):
     name: Optional[str] = None
     full_name: Optional[str] = None
+    resume_email: Optional[str] = None
     phone: Optional[str] = None
     location: Optional[str] = None
     address: Optional[str] = None
@@ -63,6 +64,7 @@ class CandidateProfileResponse(BaseModel):
     user_id: uuid.UUID
     name: Optional[str] = None
     full_name: Optional[str] = None
+    resume_email: Optional[str] = None
     phone: Optional[str] = None
     location: Optional[str] = None
     address: Optional[str] = None
@@ -133,6 +135,7 @@ class CandidateProfileResponse(BaseModel):
             user_id=profile.user_id,
             name=cand_name,
             full_name=cand_name,
+            resume_email=getattr(profile, "resume_email", None),
             phone=profile.phone,
             location=profile.location,
             address=getattr(profile, "address", None),

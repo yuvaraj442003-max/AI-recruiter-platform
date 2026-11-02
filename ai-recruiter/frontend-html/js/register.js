@@ -87,12 +87,9 @@
             nameInput.classList.add("border-success", "bg-success-subtle", "bg-opacity-10");
           }
         }
+        // Do NOT populate account registration email from resume; keep registration email & resume email separate
         if (data.email) {
-          const emailInput = document.getElementById("email");
-          if (emailInput && (!emailInput.value || emailInput.value === "name@company.com")) {
-            emailInput.value = data.email;
-            emailInput.classList.add("border-success", "bg-success-subtle", "bg-opacity-10");
-          }
+          data.resume_email = data.email;
         }
 
         // Cache structured data for dashboard auto-fill
@@ -153,8 +150,8 @@
       showError("Please fill out all required basic fields.");
       return;
     }
-    if (!emailRegex.test(email) || email.includes("..") || email.endsWith(".test") || email.endsWith(".localhost")) {
-      showError(`Invalid email address format: '${email}'. Please enter a valid email address (e.g. user@example.com).`);
+    if (!emailRegex.test(email) || email.includes("..")) {
+      showError(`Invalid email address format: '${email}'. Please enter a valid email address.`);
       return;
     }
 

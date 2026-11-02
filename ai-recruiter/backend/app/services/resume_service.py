@@ -374,7 +374,7 @@ def update_candidate_profile(
 
     # LinkedIn-Style Professional Profile Fields & College/Academic Credentials
     for field in [
-        "full_name", "profile_photo", "headline", "current_role", "certifications",
+        "full_name", "resume_email", "profile_photo", "headline", "current_role", "certifications",
         "portfolio_url", "linkedin_url", "github_url", "other_links",
         "college_name", "degree", "branch", "graduation_year", "cgpa",
         "twelfth_school", "twelfth_board", "twelfth_year", "twelfth_percentage",

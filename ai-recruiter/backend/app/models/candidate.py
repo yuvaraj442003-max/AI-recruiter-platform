@@ -23,6 +23,7 @@ class CandidateProfile(Base, TimestampMixin):
     )
 
     _full_name: Mapped[Optional[str]] = mapped_column("full_name", String(255), nullable=True)  # Extracted from resume (source of truth)
+    resume_email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)  # Extracted from resume, separate from account registration email
     phone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     location: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     address: Mapped[Optional[str]] = mapped_column(Text, nullable=True)          # full address block

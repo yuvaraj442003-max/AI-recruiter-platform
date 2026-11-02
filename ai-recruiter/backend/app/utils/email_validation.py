@@ -48,8 +48,8 @@ def validate_strict_email(email: str) -> str:
         raise AppError(f"Email domain '{domain}' is incomplete or missing a valid domain extension.", "INVALID_EMAIL", 400)
 
     tld = domain_parts[-1]
-    if tld in INVALID_TLDS:
-        raise AppError(f"Email domain '.{tld}' is not a valid email server domain. Please use a valid email address.", "INVALID_EMAIL", 400)
+    if len(tld) < 2:
+        raise AppError(f"Email domain '.{tld}' is missing a valid domain extension.", "INVALID_EMAIL", 400)
 
     return cleaned
 
@@ -64,11 +64,27 @@ PUBLIC_EMAIL_DOMAINS = {
 def validate_role_email(email: str, role_str: str) -> str:
     """
     Validates email format and enforces role-specific domain rules:
+    - Candidate: Can register with any valid email address format without unnecessary restrictions.
     - Recruiter: Must use a company domain (not in PUBLIC_EMAIL_DOMAINS).
-    - Candidate: Personal / public domains like @gmail.com are permitted.
     """
-    cleaned = validate_strict_email(email)
-    domain = cleaned.split("@")[1].lower()
+    if not email or not isinstance(email, str):
+        raise AppError("Email address is required.", "INVALID_EMAIL", 400)
+
+    cleaned = email.strip().lower()
+
+    # Basic RFC email pattern check
+    if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", cleaned) or ".." in cleaned:
+        raise AppError(
+            f"Invalid email address format: '{email}'. Please enter a valid email address.",
+            "INVALID_EMAIL",
+            400,
+        )
+
+    parts = cleaned.split("@")
+    if len(parts) != 2 or "." not in parts[1]:
+        raise AppError("Email address must contain a valid domain (e.g. user@domain.com).", "INVALID_EMAIL", 400)
+
+    domain = parts[1].lower()
 
     if role_str in ["recruiter", "company_admin"]:
         if domain in PUBLIC_EMAIL_DOMAINS:

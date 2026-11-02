@@ -66,9 +66,8 @@ async def extract_resume_details_endpoint(
     if not file_bytes:
         raise AppError("The uploaded file is empty.", "EMPTY_FILE", 400)
 
-    fallback_email = current_user.email if current_user else None
     try:
-        extracted = extract_candidate_autofill_fields(file_bytes, file.filename, fallback_email=fallback_email)
+        extracted = extract_candidate_autofill_fields(file_bytes, file.filename, fallback_email=None)
     except Exception as err:
         logger.error(f"Error extracting resume autofill fields: {err}")
         raise AppError(f"Could not extract information from resume: {err}", "EXTRACTION_FAILED", 422)
@@ -80,6 +79,7 @@ async def extract_resume_details_endpoint(
             if not cand:
                 cand = CandidateProfile(
                     user_id=current_user.id,
+                    resume_email=extracted.get("email"),
                     headline=extracted.get("headline") or "Candidate",
                     current_role=extracted.get("current_role"),
                     phone=extracted.get("phone"),
@@ -107,6 +107,7 @@ async def extract_resume_details_endpoint(
                 db.add(cand)
             else:
                 for k, v in {
+                    "resume_email": extracted.get("email"),
                     "headline": extracted.get("headline"),
                     "current_role": extracted.get("current_role"),
                     "phone": extracted.get("phone"),

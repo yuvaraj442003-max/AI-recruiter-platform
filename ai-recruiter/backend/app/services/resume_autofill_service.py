@@ -404,6 +404,7 @@ def extract_candidate_autofill_fields(file_bytes: bytes, filename: str, fallback
     result = {
         "name": name,
         "email": email,
+        "resume_email": email,
         "phone": phone,
         "location": location,
         "linkedin_url": linkedin_url,

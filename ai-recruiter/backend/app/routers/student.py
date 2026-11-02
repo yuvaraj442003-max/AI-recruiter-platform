@@ -80,6 +80,7 @@ def get_student_profile(
         user_id=profile.user_id,
         name=cand_name,
         email=current_user.email,
+        resume_email=getattr(profile, "resume_email", None),
         phone=getattr(profile, "phone", None),
         location=getattr(profile, "location", None),
         summary=getattr(profile, "summary", None),
@@ -131,6 +132,8 @@ def update_student_profile(
         current_user.name = clean_name
         profile.full_name = clean_name
         db.add(current_user)
+    if payload.resume_email is not None:
+        profile.resume_email = payload.resume_email.strip() if payload.resume_email else None
     if payload.phone is not None:
         profile.phone = payload.phone.strip() if payload.phone else None
     if payload.location is not None:
@@ -212,6 +215,7 @@ def update_student_profile(
         user_id=profile.user_id,
         name=cand_name,
         email=current_user.email,
+        resume_email=getattr(profile, "resume_email", None),
         phone=getattr(profile, "phone", None),
         location=getattr(profile, "location", None),
         summary=getattr(profile, "summary", None),
