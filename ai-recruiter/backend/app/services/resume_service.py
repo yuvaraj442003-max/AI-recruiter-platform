@@ -177,9 +177,19 @@ def process_resume(
             user_obj.name = clean_name
             db.add(user_obj)
 
-    extracted_certs = fields.get("certifications_text") or fields.get("certifications")
-    if extracted_certs:
+    if autofill.get("certifications"):
+        profile.certifications = autofill.get("certifications")
+    elif extracted_certs:
         profile.certifications = ", ".join(extracted_certs) if isinstance(extracted_certs, list) else str(extracted_certs)
+
+    if autofill.get("summary"):
+        profile.summary = autofill.get("summary")
+
+    if autofill.get("experience_years") is not None:
+        try:
+            profile.experience_years = float(autofill["experience_years"])
+        except (ValueError, TypeError):
+            pass
 
     profile.headline = autofill.get("headline") or fields.get("headline") or profile.headline
     profile.current_role = autofill.get("current_role") or fields.get("current_role") or fields.get("headline") or profile.current_role
@@ -242,14 +252,9 @@ def process_resume(
         except (ValueError, TypeError):
             pass
 
-    if fields.get("linkedin_url"):
-        profile.linkedin_url = fields.get("linkedin_url")
-    if fields.get("github_url"):
-        profile.github_url = fields.get("github_url")
-    if fields.get("portfolio_url"):
-        profile.portfolio_url = fields.get("portfolio_url")
-    if fields.get("phone"):
-        profile.phone = fields.get("phone")
+    profile.linkedin_url = autofill.get("linkedin_url") or fields.get("linkedin_url") or profile.linkedin_url
+    profile.github_url = autofill.get("github_url") or fields.get("github_url") or profile.github_url
+    profile.portfolio_url = autofill.get("portfolio_url") or fields.get("portfolio_url") or profile.portfolio_url
 
     if recruiter_id:
         profile.created_by_recruiter_id = recruiter_id

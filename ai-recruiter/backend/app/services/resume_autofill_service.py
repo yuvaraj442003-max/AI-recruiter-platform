@@ -206,15 +206,15 @@ def extract_candidate_autofill_fields(file_bytes: bytes, filename: str, fallback
         full_item_text = f"{deg_str} {inst_str} {field_str} {item_score} {item.get('details') or ''}"
         full_lower = full_item_text.lower()
 
-        # Classify degree / level
-        is_10th = bool(re.search(r"\b(sslc|10th(?:\s+grade|\s+std)?|class\s+x\b|secondary\s+school\s+leaving)\b", full_lower))
-        is_12th = not is_10th and bool(re.search(r"\b(hsc|12th(?:\s+grade|\s+std)?|class\s+xii\b|higher\s+secondary(?:\s+certificate)?|intermediate|diploma|plus\s+two|high\s+school)\b", full_lower))
+        # Classify degree / level (check 12th / Senior Secondary first to avoid collision with 10th / Secondary)
+        is_12th = bool(re.search(r"\b(hsc|12th(?:\s+grade|\s+std)?|class\s+xii\b|higher\s+secondary(?:\s+certificate)?|senior\s+secondary|intermediate|diploma|plus\s+two)\b", full_lower))
+        is_10th = not is_12th and bool(re.search(r"\b(sslc|10th(?:\s+grade|\s+std)?|class\s+x\b|secondary\s+school\s+leaving|matriculation)\b", full_lower))
 
         if not is_10th and not is_12th:
-            if re.search(r"\b(sslc|10th\b|secondary\s+education)\b", full_lower):
-                is_10th = True
-            elif re.search(r"\b(hsc|12th\b|higher\s+secondary)\b", full_lower):
+            if re.search(r"\b(senior\s+secondary|higher\s+secondary|hsc|12th\b)\b", full_lower):
                 is_12th = True
+            elif re.search(r"\b(secondary\s+education|sslc|10th\b)\b", full_lower) and "senior" not in full_lower:
+                is_10th = True
             elif re.search(r"\b(high\s+school)\b", full_lower):
                 is_12th = True
 

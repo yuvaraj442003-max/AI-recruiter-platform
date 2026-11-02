@@ -447,12 +447,16 @@
 
   async function loadCandidateProfileData() {
     try {
-      const res = await API.get("/resumes/me");
-      if (!res || !res.data) return;
-      const p = res.data;
+      let p = {};
+      try {
+        const res = await API.get("/resumes/me");
+        p = res?.data || {};
+      } catch (e) {
+        p = {};
+      }
       const user = Session.getUser();
 
-      // Candidate name MUST come directly from the uploaded resume as single source of truth
+      // Candidate name MUST come directly from the uploaded resume as single source of truth, fallback to registered user name
       const candidateName = p.name || p.full_name || (user ? user.name : "Candidate");
 
       const nameEl = document.getElementById("cand-name-display");
@@ -836,6 +840,78 @@
   }
 
   initResumeAutofillInModal();
+
+  function checkPendingResumeAutofill() {
+    let raw = null;
+    if (typeof safeStorage !== "undefined") {
+      raw = safeStorage.getItem("pending_resume_autofill");
+      safeStorage.removeItem("pending_resume_autofill");
+    } else {
+      try {
+        raw = localStorage.getItem("pending_resume_autofill");
+        localStorage.removeItem("pending_resume_autofill");
+      } catch (e) {}
+    }
+    if (!raw) return;
+
+    try {
+      const data = JSON.parse(raw);
+      if (!data) return;
+
+      const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el && val !== undefined && val !== null && String(val).trim() !== "") {
+          el.value = val;
+          el.classList.add("border-success", "bg-success-subtle", "bg-opacity-10");
+        }
+      };
+
+      // Populate Step 1 (Personal Details)
+      setVal("edit-cand-name", data.name);
+      if (data.email) setVal("edit-cand-email", data.email);
+      setVal("edit-cand-phone", data.phone);
+      setVal("edit-cand-location", data.location);
+      setVal("edit-cand-linkedin", data.linkedin_url);
+      setVal("edit-cand-github", data.github_url);
+      setVal("edit-cand-portfolio", data.portfolio_url);
+
+      // Populate Step 2 (Basic Professional & Academic Information)
+      setVal("edit-cand-headline", data.headline);
+      setVal("edit-cand-role", data.current_role);
+      setVal("edit-cand-exp", data.experience_years);
+      setVal("edit-cand-skills", data.skills);
+      setVal("edit-cand-summary", data.summary);
+      setVal("edit-cand-certifications", data.certifications);
+      setVal("edit-cand-college", data.college);
+      setVal("edit-cand-degree", data.degree);
+      setVal("edit-cand-branch", data.branch);
+      setVal("edit-cand-grad-year", data.graduation_year);
+      setVal("edit-cand-cgpa", data.cgpa);
+
+      // Populate 12th & 10th Grade Credentials
+      setVal("edit-cand-12th-school", data.twelfth_school);
+      setVal("edit-cand-12th-board", data.twelfth_board);
+      setVal("edit-cand-12th-year", data.twelfth_year);
+      setVal("edit-cand-12th-marks", data.twelfth_percentage);
+
+      setVal("edit-cand-10th-school", data.tenth_school);
+      setVal("edit-cand-10th-board", data.tenth_board);
+      setVal("edit-cand-10th-year", data.tenth_year);
+      setVal("edit-cand-10th-marks", data.tenth_percentage);
+
+      const statusAlert = document.getElementById("autofill-status-alert");
+      const statusMsg = document.getElementById("autofill-status-msg");
+      if (statusAlert && statusMsg) {
+        statusAlert.className = "alert alert-success py-2 px-3 mb-0 mt-3 d-flex align-items-center justify-content-between small shadow-xs";
+        statusMsg.innerHTML = `<span><strong>🎉 Welcome!</strong> Details extracted from your resume have been populated into Personal Details & Basic Information.</span>`;
+        statusAlert.classList.remove("d-none");
+      }
+    } catch (e) {
+      console.warn("Could not parse pending resume autofill:", e);
+    }
+  }
+
+  checkPendingResumeAutofill();
 
 
   // Reset to Step 1 whenever modal opens

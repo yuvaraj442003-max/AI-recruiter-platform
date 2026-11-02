@@ -30,6 +30,7 @@
   }
 
   const recruiterContainer = document.getElementById("recruiter-fields-container");
+  const candResumeContainer = document.getElementById("candidate-resume-container");
   const roleCandidateRadio = document.getElementById("role-candidate");
   const roleRecruiterRadio = document.getElementById("role-recruiter");
   const authCard = document.querySelector(".auth-card");
@@ -37,15 +38,88 @@
   function toggleRoleFields() {
     if (roleRecruiterRadio.checked) {
       recruiterContainer.classList.remove("d-none");
+      if (candResumeContainer) candResumeContainer.classList.add("d-none");
       if (authCard) authCard.style.maxWidth = "640px";
     } else {
       recruiterContainer.classList.add("d-none");
+      if (candResumeContainer) candResumeContainer.classList.remove("d-none");
       if (authCard) authCard.style.maxWidth = "460px";
     }
   }
 
   roleCandidateRadio.addEventListener("change", toggleRoleFields);
   roleRecruiterRadio.addEventListener("change", toggleRoleFields);
+
+  // Resume Upload Pre-Extraction for Candidates on Registration Page
+  const regResumeBtn = document.getElementById("btn-reg-cand-resume");
+  const regResumeInput = document.getElementById("reg-cand-resume-file");
+  const regResumeBtnText = document.getElementById("reg-cand-resume-btn-text");
+  const regResumeSpinner = document.getElementById("reg-cand-resume-spinner");
+  const regResumeStatus = document.getElementById("reg-resume-status");
+
+  let pendingUploadedResume = null;
+
+  if (regResumeBtn && regResumeInput) {
+    regResumeBtn.addEventListener("click", () => regResumeInput.click());
+
+    regResumeInput.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      pendingUploadedResume = file;
+      if (regResumeBtn) regResumeBtn.disabled = true;
+      if (regResumeBtnText) regResumeBtnText.textContent = "Analyzing...";
+      if (regResumeSpinner) regResumeSpinner.classList.remove("d-none");
+      if (regResumeStatus) regResumeStatus.classList.add("d-none");
+
+      try {
+        const resAPI = window.resumesAPI || window.resumeAPI;
+        if (!resAPI || !resAPI.extractDetails) {
+          throw new Error("Resume extraction is temporarily unavailable.");
+        }
+        const res = await resAPI.extractDetails(file);
+        const data = res?.data || {};
+
+        if (data.name) {
+          const nameInput = document.getElementById("name");
+          if (nameInput) {
+            nameInput.value = data.name;
+            nameInput.classList.add("border-success", "bg-success-subtle", "bg-opacity-10");
+          }
+        }
+        if (data.email) {
+          const emailInput = document.getElementById("email");
+          if (emailInput && (!emailInput.value || emailInput.value === "name@company.com")) {
+            emailInput.value = data.email;
+            emailInput.classList.add("border-success", "bg-success-subtle", "bg-opacity-10");
+          }
+        }
+
+        // Cache structured data for dashboard auto-fill
+        if (typeof safeStorage !== "undefined") {
+          safeStorage.setItem("pending_resume_autofill", JSON.stringify(data));
+        } else {
+          try { localStorage.setItem("pending_resume_autofill", JSON.stringify(data)); } catch (err) {}
+        }
+
+        if (regResumeStatus) {
+          regResumeStatus.className = "alert alert-success py-1.5 px-2.5 mb-0 mt-2 small";
+          regResumeStatus.innerHTML = `<span><strong>🎉 Auto-filled!</strong> Verified details for <strong>${data.name || file.name}</strong>.</span>`;
+          regResumeStatus.classList.remove("d-none");
+        }
+      } catch (err) {
+        if (regResumeStatus) {
+          regResumeStatus.className = "alert alert-danger py-1.5 px-2.5 mb-0 mt-2 small";
+          regResumeStatus.innerHTML = `<span>Could not extract resume: ${err.message || "Invalid file format"}</span>`;
+          regResumeStatus.classList.remove("d-none");
+        }
+      } finally {
+        if (regResumeBtn) regResumeBtn.disabled = false;
+        if (regResumeBtnText) regResumeBtnText.textContent = "Upload Resume";
+        if (regResumeSpinner) regResumeSpinner.classList.add("d-none");
+      }
+    });
+  }
 
   // Auto-preselect role from URL parameter (e.g. register.html?role=recruiter)
   const urlRole = new URLSearchParams(window.location.search).get("role");
@@ -127,6 +201,17 @@
       const res = await authAPI.register(payload);
       Session.save(res.data);
       const userRole = res.data?.user?.role || role;
+
+      if (pendingUploadedResume && userRole === "candidate") {
+        try {
+          const resAPI = window.resumesAPI || window.resumeAPI;
+          if (resAPI && resAPI.upload) {
+            await resAPI.upload(pendingUploadedResume);
+          }
+        } catch (uErr) {
+          console.warn("Background resume upload note:", uErr);
+        }
+      }
 
       alertBox.className = "alert alert-success py-3 mb-4";
       alertBox.textContent = "🎉 Registration successful! Redirecting to your dashboard...";

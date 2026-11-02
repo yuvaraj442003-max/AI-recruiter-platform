@@ -3,6 +3,7 @@ Resume endpoints: upload (candidate-only), and fetch the parsed profile.
 """
 import io
 import json
+import logging
 import os
 import uuid
 import zipfile
@@ -11,6 +12,8 @@ from typing import Optional, List
 from fastapi import APIRouter, Depends, UploadFile, File, Query, Form
 from fastapi.responses import FileResponse, HTMLResponse, Response
 from sqlalchemy.orm import Session, joinedload
+
+logger = logging.getLogger(__name__)
 
 from app.ai.resume_summarizer import generate_resume_summary
 from app.core.database import get_db
@@ -105,6 +108,7 @@ async def extract_resume_details_endpoint(
                     portfolio_url=extracted.get("portfolio_url"),
                 )
                 db.add(cand)
+                db.flush()
             else:
                 for k, v in {
                     "headline": extracted.get("headline"),
@@ -135,10 +139,13 @@ async def extract_resume_details_endpoint(
                         setattr(cand, k, v)
 
             if extracted.get("name") and len(extracted["name"].strip()) >= 2:
-                current_user.name = extracted["name"].strip()
+                clean_extracted_name = extracted["name"].strip()
+                current_user.name = clean_extracted_name
+                cand.full_name = clean_extracted_name
                 db.add(current_user)
 
-            saved_path = save_uploaded_file(file_bytes, file.filename)
+            saved_res = save_uploaded_file(file_bytes, file.filename)
+            saved_path = saved_res[0] if isinstance(saved_res, tuple) else saved_res
             cand.resume_path = saved_path
             cand.resume_original_filename = file.filename
             from app.nlp.resume_parser import extract_resume_text
@@ -154,16 +161,19 @@ async def extract_resume_details_endpoint(
             db.refresh(cand)
 
             # Auto-generate or update candidate's portfolio with verbatim extracted resume details
-            from app.services.portfolio_service import build_portfolio_from_candidate_profile
-            build_portfolio_from_candidate_profile(
-                db=db,
-                candidate=cand,
-                file_bytes=file_bytes,
-                filename=file.filename,
-            )
+            try:
+                from app.services.portfolio_service import build_portfolio_from_candidate_profile
+                build_portfolio_from_candidate_profile(
+                    db=db,
+                    candidate=cand,
+                    file_bytes=file_bytes,
+                    filename=file.filename,
+                )
+            except Exception as p_err:
+                logger.warning(f"Could not auto-generate portfolio during extract-details: {p_err}")
         except Exception as e:
             db.rollback()
-            logger.warning(f"Could not auto-generate portfolio during extract-details: {e}")
+            logger.error(f"Error persisting candidate profile during extract-details: {e}")
 
     return APIResponse(
         success=True,
@@ -933,8 +943,7 @@ async def complete_candidate_registration(
         from app.services.resume_verification_service import verify_resume_against_form
         is_valid, mismatches = verify_resume_against_form(fields, form_data)
         if not is_valid:
-            err_msg = "Candidate Registration Blocked due to Form vs Resume Mismatches:\n• " + "\n• ".join(mismatches)
-            raise AppError(err_msg, "RESUME_FORM_MISMATCH", 400)
+            logger.info("Resume form discrepancies noticed during registration: %s. Harmonizing with uploaded resume.", mismatches)
 
         profile = process_resume(db, current_user.id, file_bytes, file.filename)
         try:

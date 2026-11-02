@@ -1146,7 +1146,7 @@ def clean_institution_name(text: str) -> str:
     if not text:
         return ""
     # Strip leading generic headers
-    text = re.sub(r"^(?:education|academics?|qualifications?|high\s+school|secondary\s+school)\s*[:\-–—|/]?\s*", "", text, flags=re.I)
+    text = re.sub(r"^(?:education|academics?|qualifications?|senior\s+secondary\s+school|senior\s+secondary|higher\s+secondary|high\s+school|secondary\s+school)\s*[:\-–—|/]?\s*", "", text, flags=re.I)
     # 1. Remove leading degree / exam type prefix: e.g. "B.Tech (Information Technology), ", "HSC (12th), ", "SSLC (10th), "
     text = re.sub(
         r"^(?:[\s*•\-–—]*)(?:b\.?tech|b\.?e\.?|m\.?tech|bca|mca|b\.?sc|m\.?sc|bba|mba|ph\.?d|bachelor[^\,\(\)]*|master[^\,\(\)]*|hsc|sslc|12th(?:\s+grade|\s+std)?|10th(?:\s+grade|\s+std)?|class\s+xii|class\s+x|intermediate|secondary\s+school\s+leaving(?:\s+certificate)?|higher\s+secondary(?:\s+certificate)?)\s*(?:\([^\)]*\))?\s*[\,\:\-–—|/]\s*",
@@ -1161,9 +1161,9 @@ def clean_institution_name(text: str) -> str:
         text,
         flags=re.I,
     )
-    # 3. Remove trailing years / graduated: e.g. ", 2024", ", Graduated: 2023"
-    text = re.sub(r"[\s*•\-–—|,/]+\s*(?:graduated|passed|completed)?\s*[:=]?\s*(?:19\d{2}|20\d{2})\b.*$", "", text, flags=re.I)
-    text = re.sub(r"[\s*•\-–—|,/]+\s*(?:graduated|passed|completed)\b.*$", "", text, flags=re.I)
+    # 3. Remove trailing years / graduated / completion: e.g. ", 2024", ", Graduated: 2023", "Year of Completion: 2023"
+    text = re.sub(r"[\s*•\-–—|,/]+\s*(?:year\s+of\s+completion|year\s+of\s+passing|completion|graduated|passed|completed)?\s*[:=]?\s*(?:19\d{2}|20\d{2})\b.*$", "", text, flags=re.I)
+    text = re.sub(r"[\s*•\-–—|,/]+\s*(?:year\s+of\s+completion|year\s+of\s+passing|completion|graduated|passed|completed)\b.*$", "", text, flags=re.I)
     # 4. Remove trailing board
     text = re.sub(r"[\s*•\-–—|,/]+\s*(?:state\s+board|cbse|icse|matriculation|sslc|hsc|diploma)\b.*$", "", text, flags=re.I)
     return text.strip(" ,-|.:;•\t\r\n")
@@ -1181,7 +1181,7 @@ def parse_education_items(edu_text: str, **kwargs) -> list[dict]:
     degree_kw = re.compile(
         r"\b(bachelor(?:['’]s)?(?:\s+of\s+[A-Za-z\s]+)?|master(?:['’]s)?(?:\s+of\s+[A-Za-z\s]+)?|"
         r"b\.?tech|m\.?tech|b\.?sc|m\.?sc|bsc|msc|ph\.?d|mba|mca|bca|bba|diploma|"
-        r"b\.?e\.?|associate|hsc|sslc|higher\s+secondary|secondary\s+school|12th|10th)\b",
+        r"b\.?e\.?|associate|senior\s+secondary|higher\s+secondary|hsc|sslc|secondary\s+school|class\s+xii|class\s+x|12th|10th)\b",
         re.I
     )
 
@@ -1275,7 +1275,7 @@ def parse_education_items(edu_text: str, **kwargs) -> list[dict]:
         for l in b_lines:
             if header_re.match(l):
                 continue
-            if re.search(r"\b(completed|cgpa|gpa|percentage|passed|scored|grade|graduated|graduation\s+year)\b|\d+%", l, re.I):
+            if re.search(r"\b(completion|completed|cgpa|gpa|percentage|passed|scored|grade|graduated|graduation\s+year|year\s+of|board|cbse|icse|matriculation|state\s+board)\b|\d+%", l, re.I):
                 desc_lines.append(l)
             elif degree_kw.search(l) and not any(kw in l.lower() for kw in ["college", "university", "institute", "school"]):
                 deg_lines.append(l)
@@ -1312,15 +1312,28 @@ def parse_education_items(edu_text: str, **kwargs) -> list[dict]:
         start_year = years[0] if len(years) >= 2 else None
         end_year = years[-1] if years else None
 
-        # Field of study
+        # Field of study / Branch
         field = None
-        if " in " in full_block.lower():
-            m_in = re.search(r"\b(?:in|of)\s+([A-Za-z\s&/]+?)(?:\s+with|\s+in\s+\d|\s+from|\s*\(|\.|$)", full_block, re.I)
+        # First check degree line specifically (e.g. "Bachelor of Technology in Computer Science and Engineering")
+        if deg:
+            m_deg_in = re.search(r"\bin\s+([A-Za-z\s&/-]+?)(?:\s+with|\s+from|\s*\(|\.|\n|$)", deg, re.I)
+            if m_deg_in:
+                cand_field = m_deg_in.group(1).strip()
+                if cand_field and len(cand_field.split()) <= 6 and not any(kw in cand_field.lower() for kw in ["college", "school", "university", "institute", "completed"]):
+                    field = cand_field
+            elif "(" in deg and ")" in deg:
+                m_deg_par = re.search(r"\(([^)]+)\)", deg)
+                if m_deg_par:
+                    cand_field = m_deg_par.group(1).strip()
+                    if cand_field and not any(kw in cand_field.lower() for kw in ["college", "school", "university", "institute"]):
+                        field = cand_field
+        if not field and " in " in full_block.lower():
+            m_in = re.search(r"\b(?:degree\s+in|majoring\s+in|major\s+in|specialization\s+in|b\.?e\.?\s+in|b\.?tech\s+in|b\.?sc\s+in|\bin)\s+([A-Za-z\s&/-]+?)(?:\s+with|\s+from|\s*\(|\.|\n|$)", full_block, re.I)
             if m_in:
                 cand_field = m_in.group(1).strip()
-                if cand_field and len(cand_field.split()) <= 6 and not any(kw in cand_field.lower() for kw in ["college", "school", "university", "completed", "malco", "paavai"]):
+                if cand_field and len(cand_field.split()) <= 6 and not any(kw in cand_field.lower() for kw in ["college", "school", "university", "institute", "completed"]):
                     field = cand_field
-        elif "(" in inst_text and ")" in inst_text:
+        elif not field and "(" in inst_text and ")" in inst_text:
             m_par = re.search(r"\(([^)]+)\)", inst_text)
             if m_par:
                 field = m_par.group(1).strip()
@@ -1349,22 +1362,22 @@ def parse_education_items(edu_text: str, **kwargs) -> list[dict]:
                 deg = "Bachelor's Degree"
 
         if not field:
-            if "HSC" in deg.upper() or "HIGHER SECONDARY" in deg.upper():
+            if "HSC" in deg.upper() or "HIGHER SECONDARY" in deg.upper() or "SENIOR SECONDARY" in deg.upper() or "12TH" in deg.upper() or "CLASS XII" in deg.upper():
                 field = "Higher Secondary (12th)"
                 deg = "Higher Secondary Certificate (HSC)"
-            elif "SSLC" in deg.upper() or "SECONDARY" in deg.upper():
+            elif "SSLC" in deg.upper() or ("SECONDARY" in deg.upper() and "SENIOR" not in deg.upper()) or "10TH" in deg.upper() or "CLASS X" in deg.upper():
                 field = "Secondary Education (10th)"
                 deg = "Secondary School Leaving Certificate (SSLC)"
 
-        if "HSC" in deg.upper() or "HIGHER SECONDARY" in deg.upper():
+        if "HSC" in deg.upper() or "HIGHER SECONDARY" in deg.upper() or "SENIOR SECONDARY" in deg.upper() or "12TH" in deg.upper() or "CLASS XII" in deg.upper():
             deg = "Higher Secondary Certificate (HSC)"
             if not inst or inst == "-" or "higher secondary certificate" in inst.lower():
                 inst = "State Board / Higher Secondary School"
-        elif "SSLC" in deg.upper() or "SECONDARY" in deg.upper():
+        elif "SSLC" in deg.upper() or ("SECONDARY" in deg.upper() and "SENIOR" not in deg.upper()) or "10TH" in deg.upper() or "CLASS X" in deg.upper():
             deg = "Secondary School Leaving Certificate (SSLC)"
             if not inst or inst == "-" or "secondary school leaving" in inst.lower():
                 inst = "State Board / Secondary School"
-        elif "higher secondary certificate" in inst.lower():
+        elif "higher secondary certificate" in inst.lower() or "senior secondary" in inst.lower():
             inst = "State Board / Higher Secondary School"
 
         items.append({

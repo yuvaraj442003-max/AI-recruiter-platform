@@ -79,6 +79,48 @@
           if (sp.tenth_percentage && document.getElementById("cand-10th-marks")) document.getElementById("cand-10th-marks").value = sp.tenth_percentage;
         }
       } catch (err) {}
+      try {
+        let rawPending = null;
+        if (typeof safeStorage !== "undefined") {
+          rawPending = safeStorage.getItem("pending_resume_autofill");
+        } else {
+          try { rawPending = localStorage.getItem("pending_resume_autofill"); } catch (e) {}
+        }
+        if (rawPending) {
+          const pData = JSON.parse(rawPending);
+          if (pData) {
+            const setVal = (id, val) => {
+              const el = document.getElementById(id);
+              if (el && val !== undefined && val !== null && String(val).trim() !== "") {
+                el.value = val;
+                el.classList.add("border-success", "bg-success-subtle", "bg-opacity-10");
+              }
+            };
+            setVal("cand-name", pData.name);
+            setVal("cand-phone", pData.phone);
+            setVal("cand-location", pData.location);
+            setVal("cand-exp", pData.experience_years);
+            setVal("cand-linkedin", pData.linkedin_url);
+            setVal("cand-github", pData.github_url);
+            setVal("cand-portfolio", pData.portfolio_url);
+            setVal("cand-headline", pData.headline || pData.current_role);
+            setVal("cand-summary", pData.summary);
+            setVal("cand-skills", pData.skills);
+            setVal("cand-college", pData.college);
+            setVal("cand-degree", pData.degree);
+            setVal("cand-grad-year", pData.graduation_year);
+            setVal("cand-cgpa", pData.cgpa);
+            setVal("cand-12th-school", pData.twelfth_school);
+            setVal("cand-12th-board", pData.twelfth_board);
+            setVal("cand-12th-year", pData.twelfth_year);
+            setVal("cand-12th-marks", pData.twelfth_percentage);
+            setVal("cand-10th-school", pData.tenth_school);
+            setVal("cand-10th-board", pData.tenth_board);
+            setVal("cand-10th-year", pData.tenth_year);
+            setVal("cand-10th-marks", pData.tenth_percentage);
+          }
+        }
+      } catch (e) {}
     } catch (e) {
       // No existing profile yet
     }

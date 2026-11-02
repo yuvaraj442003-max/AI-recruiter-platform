@@ -6,7 +6,7 @@ import uuid
 
 from app.core.exceptions import AppError
 
-ALLOWED_EXTENSIONS = {".pdf", ".docx"}
+ALLOWED_EXTENSIONS = {".pdf", ".docx", ".txt"}
 
 
 class FileValidationError(AppError):

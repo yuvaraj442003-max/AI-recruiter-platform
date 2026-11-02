@@ -134,6 +134,11 @@ def extract_resume_text(file_bytes: bytes, filename: str) -> str:
         return extract_pdf_text(file_bytes)
     if lower.endswith(".docx"):
         return extract_docx_text(file_bytes)
+    if lower.endswith(".txt"):
+        try:
+            return file_bytes.decode("utf-8").strip()
+        except UnicodeDecodeError:
+            return file_bytes.decode("latin-1", errors="replace").strip()
     if lower.endswith(".doc"):
         raise ResumeParsingError(
             "Legacy .doc files are not supported — please re-save the resume as .docx or .pdf."

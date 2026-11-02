@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Create Account — AI Recruiter</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="bg-light" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311b92 100%);">
@@ -49,6 +50,34 @@
 
               <input type="radio" class="btn-check" name="role" id="role-recruiter" value="recruiter" />
               <label class="btn btn-outline-primary border-0 rounded-2 fw-semibold py-2" for="role-recruiter">💼 Recruiter</label>
+            </div>
+          </div>
+
+          <!-- Candidate Resume Auto-Extract Banner (Optional) -->
+          <div id="candidate-resume-container" class="mb-3">
+            <div class="card border border-primary border-opacity-25 bg-primary bg-opacity-10 rounded-3 p-3 shadow-xs">
+              <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 36px; height: 36px; min-width: 36px;">
+                    <i class="bi bi-file-earmark-arrow-up-fill fs-6"></i>
+                  </div>
+                  <div>
+                    <div class="fw-bold text-dark small d-flex align-items-center gap-1">
+                      <span>Upload Resume (Optional)</span>
+                      <span class="badge bg-primary text-white rounded-pill px-1.5 py-0.5" style="font-size: 0.65rem;">AI Auto-Fill</span>
+                    </div>
+                    <small class="text-muted" style="font-size: 0.78rem;">Upload your resume (PDF, DOCX, TXT) to automatically fill your details.</small>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-1">
+                  <input type="file" id="reg-cand-resume-file" accept=".pdf,.docx,.txt" class="d-none" />
+                  <button type="button" class="btn btn-sm btn-primary px-3 py-1.5 fw-semibold rounded-pill shadow-sm" id="btn-reg-cand-resume">
+                    <span id="reg-cand-resume-btn-text">Upload Resume</span>
+                    <span id="reg-cand-resume-spinner" class="spinner-border spinner-border-sm d-none ms-1" role="status"></span>
+                  </button>
+                </div>
+              </div>
+              <div id="reg-resume-status" class="alert alert-success py-1.5 px-2.5 mb-0 mt-2 d-none small"></div>
             </div>
           </div>
 
