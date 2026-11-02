@@ -293,11 +293,16 @@ var escapeHtml = window.escapeHtml;
   window.filterDirectoryStage = function (stage, btn) {
     activeFilterStage = String(stage);
     document.querySelectorAll(".filter-stage-btn").forEach(b => {
-      b.classList.remove("btn-primary", "btn-success", "btn-warning", "btn-danger", "active");
-      b.classList.add("btn-outline-secondary");
+      b.classList.remove("active", "btn-primary", "btn-success", "btn-warning", "btn-danger", "text-white");
     });
-    btn.classList.remove("btn-outline-secondary");
-    btn.classList.add("btn-primary", "active");
+    if (btn) {
+      btn.classList.add("active");
+      if (stage === "1") btn.classList.add("btn-success");
+      else if (stage === "2") btn.classList.add("btn-primary");
+      else if (stage === "3") btn.classList.add("btn-warning");
+      else if (stage === "4") btn.classList.add("btn-danger");
+      else btn.classList.add("btn-primary");
+    }
 
     const cards = document.querySelectorAll(".dir-module-card");
     cards.forEach(c => {

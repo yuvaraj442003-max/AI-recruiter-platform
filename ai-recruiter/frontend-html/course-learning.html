@@ -108,6 +108,75 @@
       border-color: #ef4444 !important;
       background: #fef2f2 !important;
     }
+    /* Segmented Mode Tabs */
+    .course-mode-tabs-wrapper {
+      max-width: 680px;
+      margin: 0 auto 1.5rem auto;
+      background: #ffffff;
+      padding: 6px;
+      border-radius: 9999px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+    }
+    .course-mode-tabs-nav {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: 6px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      width: 100%;
+    }
+    .course-mode-tabs-nav .nav-item {
+      flex: 1 1 50%;
+      min-width: 0;
+    }
+    .course-mode-tabs-nav .nav-link {
+      width: 100%;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 10px 16px;
+      color: #64748b;
+      background: transparent;
+      border: 1px solid transparent;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .course-mode-tabs-nav .nav-link:hover {
+      color: #0f172a;
+      background: #f8fafc;
+    }
+    .course-mode-tabs-nav .nav-link.active {
+      background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%) !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    }
+    .filter-stage-btn {
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      transition: all 0.15s ease;
+      border: 1px solid #e2e8f0;
+      color: #475569;
+      background: #ffffff;
+    }
+    .filter-stage-btn:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    .filter-stage-btn.active {
+      color: #ffffff !important;
+    }
   </style>
 </head>
 <body data-required-role="candidate">
@@ -127,7 +196,7 @@
           <div>
             <div class="d-flex align-items-center gap-2 flex-wrap mb-0.5">
               <span class="badge bg-warning text-dark px-2.5 py-0.5 rounded-pill small fw-bold" id="page-stage-badge">Target Track</span>
-              <span class="badge bg-white bg-opacity-15 text-white border border-white border-opacity-20 rounded-pill px-2.5 py-0.5 small" id="page-module-badge">Loading...</span>
+              <span class="badge rounded-pill px-2.5 py-0.5 small fw-semibold" id="page-module-badge" style="background: rgba(255,255,255,0.18); color: #ffffff; border: 1px solid rgba(255,255,255,0.25);">Loading...</span>
               <span class="badge bg-success text-white rounded-pill px-2 py-0.5 small" id="page-topic-status-badge">In Progress</span>
             </div>
             <h5 class="fw-bold text-white mb-0" id="page-course-title">Python Programming: Beginner to Placement Ready</h5>
@@ -169,20 +238,22 @@
   <main class="container-fluid py-4 px-3 px-lg-5">
     
     <!-- MODE TOGGLE TABS (ALL TOPICS DIRECTORY vs STEP-BY-STEP STUDIO) -->
-    <ul class="nav nav-pills gap-2 mb-4 bg-white p-2 rounded-4 border shadow-sm" id="courseModeTabs" role="tablist">
-      <li class="nav-item flex-grow-1" role="presentation">
-        <button class="nav-link active rounded-pill fw-bold py-2.5 w-100 d-flex align-items-center justify-content-center gap-2" id="tab-all-topics-btn" data-bs-toggle="pill" data-bs-target="#tab-all-topics-pane" type="button" role="tab">
-          <span>📑</span>
-          <span>All Course Topics &amp; Modules (<span id="all-topics-count-badge">Loading...</span>)</span>
-        </button>
-      </li>
-      <li class="nav-item flex-grow-1" role="presentation">
-        <button class="nav-link rounded-pill fw-bold py-2.5 w-100 d-flex align-items-center justify-content-center gap-2" id="tab-lesson-studio-btn" data-bs-toggle="pill" data-bs-target="#tab-lesson-studio-pane" type="button" role="tab">
-          <span>💡</span>
-          <span id="active-lesson-tab-label">Step-by-Step Lesson Studio</span>
-        </button>
-      </li>
-    </ul>
+    <div class="course-mode-tabs-wrapper">
+      <ul class="course-mode-tabs-nav" id="courseModeTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="tab-all-topics-btn" data-bs-toggle="pill" data-bs-target="#tab-all-topics-pane" type="button" role="tab" aria-controls="tab-all-topics-pane" aria-selected="true">
+            <span>📑</span>
+            <span>All Course Topics (<span id="all-topics-count-badge">Loading...</span>)</span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-lesson-studio-btn" data-bs-toggle="pill" data-bs-target="#tab-lesson-studio-pane" type="button" role="tab" aria-controls="tab-lesson-studio-pane" aria-selected="false">
+            <span>💡</span>
+            <span id="active-lesson-tab-label">Lesson Studio</span>
+          </button>
+        </li>
+      </ul>
+    </div>
 
     <!-- TAB CONTENTS -->
     <div class="tab-content" id="courseModeTabsContent">
