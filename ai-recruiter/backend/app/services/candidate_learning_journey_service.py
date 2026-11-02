@@ -1139,21 +1139,49 @@ def get_candidate_learning_journey(db: Session, user_id: Any) -> Dict[str, Any]:
     p1_pct = round(float(p1.get("progress_percent", 0.0)), 1)
     if p1_pct < 100.0:
         active_phase = p1
+        tid = active_track.get("id", "").lower()
+        if "python" in tid:
+            topic_desc = "syntax, dynamic typing, variables, and core data structures"
+        elif "dsa" in tid:
+            topic_desc = "algorithmic complexity, asymptotic Big-O bounds, and fundamental arrays"
+        elif "web" in tid:
+            topic_desc = "HTML5, CSS3 layout, DOM manipulation, and modern JavaScript"
+        elif "ai" in tid or "machine" in tid:
+            topic_desc = "linear algebra, probability, Python numerical libraries, and ML algorithms"
+        elif "data" in tid:
+            topic_desc = "data manipulation, Pandas, SQL data querying, and exploratory data analysis"
+        elif "cloud" in tid or "aws" in tid:
+            topic_desc = "cloud architecture models, compute instances, storage, and networking"
+        elif "cyber" in tid:
+            topic_desc = "network protocols, threat surfaces, encryption, and security essentials"
+        elif "devops" in tid:
+            topic_desc = "Linux command line, Git workflows, CI/CD pipelines, and containerization"
+        elif "sql" in tid:
+            topic_desc = "relational schema design, SELECT queries, JOINs, and aggregation functions"
+        elif "gen" in tid:
+            topic_desc = "prompt engineering, LLM tokenization, embeddings, and API integrations"
+        elif "deep" in tid:
+            topic_desc = "neural network forward/backpropagation, activation functions, and PyTorch tensors"
+        elif "testing" in tid:
+            topic_desc = "software test lifecycle, test case design, unit testing, and automation fundamentals"
+        else:
+            topic_desc = "syntax, variables, JVM memory model, and object-oriented principles"
+
         if p1_pct == 0.0:
             next_step_action = {
                 "title": f"Phase 1: Foundations (0% Completed)",
-                "guidance": f"Welcome to {active_track['name']}! Begin with beginner core concepts, variables, and JVM/runtime mechanics to build strong foundational competence.",
+                "guidance": f"Welcome to {active_track['name']}! Begin with beginner core concepts, {topic_desc} to build strong foundational competence.",
                 "target_phase": 1,
-                "action_url": p1.get("action_url", "study-materials.html"),
-                "action_label": "Start Foundations →",
+                "action_url": f"course-learning.html?course={selected_course}",
+                "action_label": "Start Course →",
             }
         else:
             next_step_action = {
                 "title": f"Complete Phase 1: Foundations ({int(p1_pct)}% completed)",
                 "guidance": f"Keep going! Finish foundational topics and practice drills in {active_track['name']} to unlock Phase 2: Core Skills.",
                 "target_phase": 1,
-                "action_url": p1.get("action_url", "study-materials.html"),
-                "action_label": "Continue Foundations →",
+                "action_url": f"course-learning.html?course={selected_course}",
+                "action_label": "Continue Learning →",
             }
     elif p2["progress_percent"] < 100.0:
         active_phase = p2
@@ -1233,6 +1261,7 @@ def get_candidate_learning_journey(db: Session, user_id: Any) -> Dict[str, Any]:
         "strengths": strengths,
         "focus_areas": focus_areas,
         "completed_topics": completed_topics,
+        "is_started": state.get("is_started", False),
         "next_step": next_step_action,
         "stage_gate_policy": {
             "rule": "Strict Stage-Gate: Foundations (Beginner) -> Core Skills (Advanced) -> Practical Projects -> Placement Ready (Interviews & Tests)",
@@ -1282,6 +1311,48 @@ def select_candidate_course(db: Session, user_id: Any, course_id: str) -> Dict[s
 
     # Create fresh state for this chosen course
     state = create_course_journey_state(norm_id, user_rec, cand_prof)
+    pref.journey_state_json = json.dumps(state)
+    db.commit()
+
+    return get_candidate_learning_journey(db, user_uuid)
+
+
+def start_course_journey(db: Session, user_id: Any, course_id: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Activates and begins the chosen course track for the student, advancing initial progress
+    from 0% and marking Phase 1: Foundations as active 'In Progress', so the student can
+    immediately learn topics step by step.
+    """
+    user_uuid = uuid.UUID(str(user_id)) if not isinstance(user_id, uuid.UUID) else user_id
+    pref = db.query(StudentLearningPreference).filter(StudentLearningPreference.user_id == user_uuid).first()
+    if not pref:
+        get_candidate_learning_journey(db, user_uuid)
+        pref = db.query(StudentLearningPreference).filter(StudentLearningPreference.user_id == user_uuid).first()
+
+    state = json.loads(pref.journey_state_json) if pref.journey_state_json else {}
+
+    # If course_id is passed, ensure it is selected
+    if course_id:
+        norm_id = course_id.lower().strip() if course_id else "java"
+        if norm_id not in COURSE_TRACKS:
+            norm_id = "java"
+        if state.get("selected_course") != norm_id:
+            select_candidate_course(db, user_uuid, norm_id)
+            pref = db.query(StudentLearningPreference).filter(StudentLearningPreference.user_id == user_uuid).first()
+            state = json.loads(pref.journey_state_json) if pref.journey_state_json else {}
+
+    phases = state.get("phases", [])
+    if phases:
+        p1 = phases[0]
+        if p1.get("progress_percent", 0.0) == 0.0:
+            p1["progress_percent"] = 10.0
+            p1["status"] = "In Progress"
+            for c in p1.get("courses", []):
+                if c.get("progress_percent", 0.0) == 0.0:
+                    c["progress_percent"] = 10.0
+                    c["status"] = "In Progress"
+
+    state["is_started"] = True
     pref.journey_state_json = json.dumps(state)
     db.commit()
 
@@ -1535,6 +1606,24 @@ def get_course_curriculum_details(course_id: str) -> Dict[str, Any]:
             }
         }
 
+    from app.services.course_real_world_pedagogy import get_chapter_pedagogy, get_course_progression_overview
+
+    enriched_chapters = []
+    for ch in chapters:
+        ch_copy = dict(ch)
+        num = ch_copy.get("chapter_num", 1)
+        title = ch_copy.get("title", "")
+        ped = get_chapter_pedagogy(norm, num, title, len(chapters))
+        ch_copy["progression_stage"] = ped.get("stage_num", 1)
+        ch_copy["stage_title"] = ped.get("stage_title", "Foundations")
+        ch_copy["stage_badge"] = ped.get("stage_badge", "Fundamentals")
+        ch_copy["stage_color"] = ped.get("stage_color", "success")
+        ch_copy["stage_guidance"] = ped.get("guidance", "")
+        ch_copy["real_world_application"] = ped.get("real_world_application", {})
+        enriched_chapters.append(ch_copy)
+
+    progression_overview = get_course_progression_overview(norm, track["name"], len(chapters))
+
     return {
         "course_id": track["id"],
         "course_name": track["name"],
@@ -1544,7 +1633,8 @@ def get_course_curriculum_details(course_id: str) -> Dict[str, Any]:
         "target_role": track["target_role"],
         "description": track["description"],
         "chapters_count": len(chapters),
-        "chapters": chapters,
+        "progression_overview": progression_overview,
+        "chapters": enriched_chapters,
         "practical_exercises": practical_exercises,
         "real_world_projects": real_world_projects,
         "placement_training": placement_training,

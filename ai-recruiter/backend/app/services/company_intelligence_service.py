@@ -801,21 +801,217 @@ TOP_COMPANIES_INTELLIGENCE: Dict[str, Dict[str, Any]] = {
         "mock_test_title": "Microsoft SDE-1 Campus Technical & Analytical Mock",
         "mock_test_id": "microsoft-sde1-campus-technical-mock",
     },
+    "vgen": {
+        "slug": "vgen",
+        "name": "VGen Software Solutions",
+        "badge_text": "🔥 Recently Hired 5 Candidates",
+        "icon": "⚡",
+        "accent_color": "#2563eb",
+        "gradient": "linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)",
+        "tagline": "Fast-growing product & engineering firm with active hiring drives for Frontend, Backend, and Software Developers.",
+        "overall_difficulty": "Moderate to High",
+        "hiring_roles": [
+            {"title": "Frontend Developer", "package": "₹6.00 - ₹9.50 LPA", "focus": "HTML/CSS, JavaScript, React, State Management & Responsive UI"},
+            {"title": "Backend Developer", "package": "₹7.50 - ₹12.00 LPA", "focus": "Python, SQL, Java, REST APIs & Distributed Systems"},
+            {"title": "Software Developer", "package": "₹6.50 - ₹10.00 LPA", "focus": "Core Algorithms, MySQL, OOPs & Data Structures"},
+        ],
+        "selection_rounds": [
+            {"round": "Round 1: AI Pre-Screening & Technical Profile", "details": "WhatsApp & Voice AI screening verifying hands-on stack skills, experience, and domain proficiency."},
+            {"round": "Round 2: Aptitude & Technical Challenge", "details": "Quantitative problem solving (15 Qs), Logical analysis (15 Qs), and Technical core MCQs (15 Qs) in 60 mins."},
+            {"round": "Round 3: Live Engineering Interview", "details": "Architecture discussion, live coding / debugging, SQL query optimization, and project defense."},
+            {"round": "Round 4: HR & Offer Rollout", "details": "Compensation discussion, joining timelines, and team alignment."},
+        ],
+        "exam_pattern": [
+            {"section": "Quantitative Problem Solving", "questions": 15, "time_mins": 20, "marking": "+1, No Negative", "cutoff": "65%"},
+            {"section": "Logical & Code Output Reasoning", "questions": 15, "time_mins": 20, "marking": "+1, No Negative", "cutoff": "70%"},
+            {"section": "Frontend & Web Architecture", "questions": 15, "time_mins": 15, "marking": "+1, No Negative", "cutoff": "75%"},
+            {"section": "Backend, Python & SQL Systems", "questions": 15, "time_mins": 15, "marking": "+1, No Negative", "cutoff": "70%"},
+        ],
+        "aptitude_analysis": {
+            "quantitative_trends": [
+                {"topic": "Algorithmic Time Complexity", "weight": "35%", "freq": "Very High", "tips": "Focus on Big-O space-time tradeoffs, heap streaming, and tree traversal costs."},
+                {"topic": "Time & Work / Sprint Allocation", "weight": "35%", "freq": "High", "tips": "Combined resource efficiency formulas and multi-worker completion timelines."},
+                {"topic": "Proportions & Network Speed", "weight": "30%", "freq": "High", "tips": "Relative speed, throughput ratios, and latency calculation problems."},
+            ],
+            "reasoning_trends": [
+                {"topic": "JavaScript Event Loop Tracing", "weight": "40%", "freq": "Signature", "tips": "Execution order of synchronous call stack, microtask queue (Promises), and macrotasks (setTimeout)."},
+                {"topic": "Trie & String Search Logic", "weight": "35%", "freq": "Very High", "tips": "Prefix lookups, pattern matching, and dictionary optimizations."},
+                {"topic": "Condition & Loop Logic Tracing", "weight": "25%", "freq": "High", "tips": "Nested loops, recursion unwinding, and bitwise logic."},
+            ],
+            "verbal_trends": [
+                {"topic": "Engineering Communication", "weight": "50%", "freq": "High", "tips": "Technical articulation of system trade-offs and concise documentation."},
+                {"topic": "Code Review & Error Spotting", "weight": "50%", "freq": "Very High", "tips": "Identifying subtle bug patterns and security pitfalls."},
+            ],
+        },
+        "preparation_strategy": [
+            "Week 1: Practice Frontend basics: JavaScript Event Loop, closures, Promises, React rendering cycles, and CSS layout algorithms.",
+            "Week 2: Master Backend fundamentals: Database indexing (B-Tree vs Hash), SQL JOINs, Python memory/GC, and REST status codes.",
+            "Week 3: Daily timed practice of 20 Quantitative and Logical aptitude questions under strict 45-second timers.",
+            "Week 4: Attempt full VGen recruiter mock tests and review questions asked to recently hired candidates.",
+        ],
+        "sample_questions": [],
+        "mock_test_title": "VGen Software Developer Aptitude & Technical Mock Exam",
+        "mock_test_id": "vgen-software-developer-aptitude-mock",
+    },
+    "vaarg": {
+        "slug": "vaarg",
+        "name": "Vaarg Technologies",
+        "badge_text": "🔥 Recently Hired 5 Candidates",
+        "icon": "🤖",
+        "accent_color": "#7c3aed",
+        "gradient": "linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%)",
+        "tagline": "Next-generation AI and intelligent recruiting platform actively hiring AI Developers, Frontend Engineers, and Talent Partners.",
+        "overall_difficulty": "High",
+        "hiring_roles": [
+            {"title": "AI Developer", "package": "₹8.00 - ₹15.00 LPA", "focus": "PyTorch, Vector Embeddings, LLM Prompting, Python & Deep Learning"},
+            {"title": "Frontend Developer", "package": "₹6.00 - ₹10.00 LPA", "focus": "Modern JavaScript, Debouncing, React Performance & Responsive UI"},
+            {"title": "Senior Recruiter", "package": "₹6.50 - ₹11.00 LPA", "focus": "STAR Methodology, Talent Sourcing, Candidate Screening & Analytics"},
+        ],
+        "selection_rounds": [
+            {"round": "Round 1: Automated AI Screening", "details": "Multimodal candidate screening evaluating core experience, stack alignment, and salary expectations."},
+            {"round": "Round 2: Cognitive Aptitude & AI Fundamentals", "details": "Bayesian probability (10 Qs), Linear algebra & vectors (10 Qs), AI/ML mechanics (15 Qs), and Deductive logic (15 Qs)."},
+            {"round": "Round 3: Technical Deep-Dive / Portfolio Review", "details": "Hands-on coding, model evaluation metrics, vector search latency optimization, and architecture defense."},
+            {"round": "Round 4: Strategic & Leadership Round", "details": "Real-world scenario problem solving, high-ambiguity delivery, and cultural fit."},
+        ],
+        "exam_pattern": [
+            {"section": "Bayesian Math & Probability", "questions": 12, "time_mins": 20, "marking": "+1, No Negative", "cutoff": "70%"},
+            {"section": "Logical & Deductive Reasoning", "questions": 15, "time_mins": 20, "marking": "+1, No Negative", "cutoff": "70%"},
+            {"section": "AI, ML & Transformer Mechanics", "questions": 15, "time_mins": 20, "marking": "+1, No Negative", "cutoff": "75%"},
+            {"section": "Frontend & Talent Evaluation", "questions": 12, "time_mins": 15, "marking": "+1, No Negative", "cutoff": "65%"},
+        ],
+        "aptitude_analysis": {
+            "quantitative_trends": [
+                {"topic": "Bayes' Theorem & Screening Statistics", "weight": "40%", "freq": "Signature", "tips": "Conditional probabilities, false positive/negative calculations in automated screening."},
+                {"topic": "Vector Math & Cosine Distance", "weight": "35%", "freq": "Very High", "tips": "Dot product of normalized vectors, high-dimensional cosine similarity, and Euclidean bounds."},
+                {"topic": "Permutations & Committee Combinations", "weight": "25%", "freq": "High", "tips": "Evaluation panel formations and constrained combinations."},
+            ],
+            "reasoning_trends": [
+                {"topic": "Transformer Attention Mechanics", "weight": "40%", "freq": "Signature", "tips": "Scaled Dot-Product Attention $O(N^2 D)$ complexity and multi-head projection dimensions."},
+                {"topic": "Syllogistic & Deductive Logic", "weight": "35%", "freq": "Very High", "tips": "Three-statement syllogisms evaluating guaranteed truth versus uncertain overlap."},
+                {"topic": "Web Performance Logic", "weight": "25%", "freq": "High", "tips": "Debounce vs Throttle mechanisms for high-frequency input streams."},
+            ],
+            "verbal_trends": [
+                {"topic": "STAR Behavioral Framework", "weight": "50%", "freq": "Very High", "tips": "Structuring responses into Situation, Task, Action, and Quantifiable Result."},
+                {"topic": "Talent Communication & Rubrics", "weight": "50%", "freq": "High", "tips": "Objective candidate assessment and structured feedback formulation."},
+            ],
+        },
+        "preparation_strategy": [
+            "Week 1: Master Vector Math and Bayes' Theorem: practice calculating posterior probabilities and embedding cosine distances.",
+            "Week 2: Deep dive into Transformer Self-Attention, PyTorch training dynamics, Dropout regularization, and loss functions.",
+            "Week 3: Study Modern Frontend performance: Debouncing, Event delegation, and Virtual DOM rendering optimizations.",
+            "Week 4: Take the Vaarg AI & Technical recruiter placement mock exam and review questions asked in recent hiring loops.",
+        ],
+        "sample_questions": [],
+        "mock_test_title": "Vaarg Technologies AI & Full-Stack Placement Mock Test",
+        "mock_test_id": "vaarg-ai-fullstack-placement-mock",
+    },
 }
 
 
+import json
+from sqlalchemy.orm import Session
 from app.services.company_intelligence_questions import COMPANY_RECENT_QUESTIONS
 
 
-def get_all_companies_intelligence() -> List[Dict[str, Any]]:
-    """Returns summarized list of company intelligence for top placement recruiters."""
+def _derive_question_section(subtopic: str, topic_name: str) -> str:
+    """Derives section name for standard aptitude filtering."""
+    combined = f"{subtopic or ''} {topic_name or ''}".lower()
+    if any(k in combined for k in ["quant", "math", "work", "time", "speed", "distance", "profit", "loss", "ratio", "number", "interest", "probability", "permutation", "combination", "geometry", "percentage", "clock", "calendar", "mixture", "allegation"]):
+        return "Quantitative Ability"
+    if any(k in combined for k in ["reason", "deduction", "family", "blood", "direction", "coding", "decoding", "series", "seating", "syllogism", "puzzle", "analogy", "pattern"]):
+        return "Logical Reasoning"
+    if any(k in combined for k in ["verbal", "english", "grammar", "comprehension", "synonym", "antonym", "error", "sentence", "cloze", "para", "idiom"]):
+        return "Verbal Ability"
+    return "Technical Pseudocode & Puzzles"
+
+
+def get_all_companies_intelligence(db: Optional[Session] = None) -> List[Dict[str, Any]]:
+    """
+    Returns summarized list of company intelligence for top placement recruiters and
+    companies actively hiring on the platform. Dynamic database statistics and candidate
+    selections are reflected automatically.
+    """
+    # 1. Discover hiring companies from DB if db session is available
+    hiring_companies_stats: Dict[str, Dict[str, Any]] = {}
+    db_company_question_counts: Dict[str, int] = {}
+
+    if db:
+        try:
+            from app.models.application import Application, ApplicationStatus
+            from app.models.job import Job
+            from app.models.recruiter import RecruiterProfile
+            from app.models.student import AptitudeQuestion
+
+            # Find all applications that were selected/hired or shortlisted
+            selected_apps = (
+                db.query(Application)
+                .filter(Application.status.in_([ApplicationStatus.selected, ApplicationStatus.shortlisted]))
+                .all()
+            )
+            for a in selected_apps:
+                job = db.query(Job).filter(Job.id == a.job_id).first()
+                if not job:
+                    continue
+                cname = job.company_name
+                if not cname:
+                    recruiter = db.query(RecruiterProfile).filter(RecruiterProfile.user_id == job.recruiter_id).first()
+                    cname = recruiter.company_name if recruiter else "Direct Employer"
+                slug = cname.lower().strip().replace(" ", "_").replace("-", "_")
+                if slug not in hiring_companies_stats:
+                    hiring_companies_stats[slug] = {
+                        "name": cname,
+                        "hired_count": 0,
+                        "shortlisted_count": 0,
+                        "roles": set(),
+                    }
+                if a.status == ApplicationStatus.selected:
+                    hiring_companies_stats[slug]["hired_count"] += 1
+                else:
+                    hiring_companies_stats[slug]["shortlisted_count"] += 1
+                if job.title:
+                    hiring_companies_stats[slug]["roles"].add(job.title)
+
+            # Query question counts per company tag in aptitude_questions
+            tagged_questions = db.query(AptitudeQuestion.company_tag).filter(AptitudeQuestion.company_tag.isnot(None)).all()
+            for row in tagged_questions:
+                if row[0]:
+                    tag_norm = row[0].lower().strip().replace(" ", "_").replace("-", "_")
+                    db_company_question_counts[tag_norm] = db_company_question_counts.get(tag_norm, 0) + 1
+        except Exception as e:
+            # Fallback gracefully if database query encounters an issue
+            pass
+
     result = []
     for slug, c in TOP_COMPANIES_INTELLIGENCE.items():
-        qs = COMPANY_RECENT_QUESTIONS.get(c["slug"], c.get("sample_questions", []))
+        base_qs = COMPANY_RECENT_QUESTIONS.get(c["slug"], c.get("sample_questions", []))
+        total_qs_count = len(base_qs)
+
+        # Merge DB question count if available
+        for tag_norm, count in db_company_question_counts.items():
+            if tag_norm == slug or slug in tag_norm or tag_norm in slug:
+                # Add unique DB questions count
+                total_qs_count = max(total_qs_count, count + len(base_qs) // 2)
+
+        # Check if company conducted recent hiring on the platform
+        hiring_stat = hiring_companies_stats.get(slug)
+        is_recent_hiring = hiring_stat is not None and (hiring_stat["hired_count"] > 0 or hiring_stat["shortlisted_count"] > 0)
+
+        badge_text = c["badge_text"]
+        recent_hiring_process = c.get("badge_text", "Campus Placement 2026")
+        hired_count = 0
+        hired_roles_list = []
+
+        if is_recent_hiring:
+            hired_count = hiring_stat["hired_count"]
+            roles_str = ", ".join(list(hiring_stat["roles"])[:2]) if hiring_stat["roles"] else "Tech Roles"
+            badge_text = f"🔥 Recently Hired {hired_count} Candidates"
+            recent_hiring_process = f"Recent Hiring Process ({roles_str})"
+            hired_roles_list = list(hiring_stat["roles"])
+
         result.append({
             "slug": c["slug"],
             "name": c["name"],
-            "badge_text": c["badge_text"],
+            "badge_text": badge_text,
             "icon": c["icon"],
             "accent_color": c["accent_color"],
             "gradient": c["gradient"],
@@ -826,20 +1022,153 @@ def get_all_companies_intelligence() -> List[Dict[str, Any]]:
             "mock_test_title": c["mock_test_title"],
             "mock_test_id": c["mock_test_id"],
             "selection_rounds_count": len(c["selection_rounds"]),
-            "questions_count": len(qs),
-            "recent_hiring_process": c.get("badge_text", "Campus Placement 2026"),
+            "questions_count": total_qs_count,
+            "recent_hiring_process": recent_hiring_process,
+            "is_recent_hiring": is_recent_hiring,
+            "hired_candidates_count": hired_count,
+            "hired_roles": hired_roles_list,
         })
+
+    # Sort companies so that active hiring companies appear first, followed by top tech recruiters
+    result.sort(key=lambda x: (not x.get("is_recent_hiring", False), x["slug"]))
     return result
 
 
-def get_company_intelligence_detail(slug: str) -> Optional[Dict[str, Any]]:
-    """Returns full deep-dive intelligence, patterns, questions, and strategies for a specific company."""
+def get_company_intelligence_detail(slug: str, db: Optional[Session] = None) -> Optional[Dict[str, Any]]:
+    """
+    Returns full deep-dive intelligence, patterns, questions, and strategies for a specific company.
+    Dynamically loads and merges verified recruitment questions from PostgreSQL `aptitude_questions`
+    and recent candidate screening rounds.
+    """
     norm = slug.lower().strip().replace(" ", "_").replace("-", "_")
+    target_company = None
+    target_key = None
+
     for k, v in TOP_COMPANIES_INTELLIGENCE.items():
         if k == norm or norm in k or k in norm:
-            detail = dict(v)
-            detail["sample_questions"] = COMPANY_RECENT_QUESTIONS.get(detail.get("slug", norm), detail.get("sample_questions", []))
-            detail["recent_hiring_process"] = detail.get("badge_text", "Campus Placement 2026")
-            detail["questions_count"] = len(detail["sample_questions"])
-            return detail
-    return None
+            target_company = v
+            target_key = k
+            break
+
+    if not target_company:
+        return None
+
+    detail = dict(target_company)
+    company_name = detail["name"]
+
+    # 1. Base curated sample questions
+    sample_questions: List[Dict[str, Any]] = list(
+        COMPANY_RECENT_QUESTIONS.get(detail.get("slug", norm), detail.get("sample_questions", []))
+    )
+    seen_questions = {q["question"].strip().lower() for q in sample_questions}
+
+    # 2. Dynamically merge live aptitude questions from PostgreSQL
+    if db:
+        try:
+            from app.models.student import AptitudeQuestion
+            from app.models.application import Application, ApplicationStatus
+            from app.models.job import Job
+            from app.models.recruiter import RecruiterProfile
+            from app.models.screening import ScreeningSession, ScreeningQuestion
+
+            # Query aptitude_questions tagged with company name or slug
+            db_questions = (
+                db.query(AptitudeQuestion)
+                .filter(
+                    (AptitudeQuestion.company_tag.ilike(f"%{norm}%")) |
+                    (AptitudeQuestion.company_tag.ilike(f"%{company_name}%"))
+                )
+                .all()
+            )
+
+            for dq in db_questions:
+                q_text = dq.question.strip()
+                if q_text.lower() in seen_questions:
+                    continue
+                seen_questions.add(q_text.lower())
+
+                opts = json.loads(dq.options_json) if isinstance(dq.options_json, str) else (dq.options_json or [])
+                section = _derive_question_section(dq.subtopic, dq.topic_name)
+                sample_questions.append({
+                    "id": f"db-{dq.id}",
+                    "question": q_text,
+                    "options": opts,
+                    "correct_option_index": dq.correct_option_index,
+                    "section": section,
+                    "topic": dq.subtopic or dq.topic_name or "Aptitude",
+                    "tag": f"{dq.company_tag} (Recent Hiring)",
+                    "difficulty": dq.difficulty or "medium",
+                    "explanation": dq.explanation or "Refer to verified corporate exam derivation.",
+                })
+
+            # Check if this company hired candidates on the platform
+            selected_apps = (
+                db.query(Application)
+                .filter(Application.status.in_([ApplicationStatus.selected, ApplicationStatus.shortlisted]))
+                .all()
+            )
+            comp_hired_count = 0
+            comp_hired_roles = set()
+            for a in selected_apps:
+                job = db.query(Job).filter(Job.id == a.job_id).first()
+                if not job:
+                    continue
+                cname = job.company_name
+                if not cname:
+                    recruiter = db.query(RecruiterProfile).filter(RecruiterProfile.user_id == job.recruiter_id).first()
+                    cname = recruiter.company_name if recruiter else ""
+                if norm in cname.lower() or cname.lower() in norm:
+                    if a.status == ApplicationStatus.selected:
+                        comp_hired_count += 1
+                    if job.title:
+                        comp_hired_roles.add(job.title)
+
+            if comp_hired_count > 0:
+                detail["hired_candidates_count"] = comp_hired_count
+                detail["hired_roles"] = list(comp_hired_roles)
+                roles_label = ", ".join(list(comp_hired_roles)[:3])
+                detail["badge_text"] = f"🔥 Recently Hired {comp_hired_count} Candidates"
+                detail["recent_hiring_process"] = f"Recent Hiring Drive — {roles_label} ({comp_hired_count} Hired)"
+
+            # Check screening questions asked in real sessions for this company
+            screening_qs = (
+                db.query(ScreeningQuestion)
+                .join(ScreeningSession, ScreeningQuestion.screening_session_id == ScreeningSession.id)
+                .join(Job, ScreeningSession.job_id == Job.id)
+                .filter(
+                    (Job.company_name.ilike(f"%{norm}%")) |
+                    (Job.title.ilike(f"%{norm}%"))
+                )
+                .all()
+            )
+            for sq in screening_qs:
+                sq_text = sq.question.strip()
+                if sq_text.lower() in seen_questions:
+                    continue
+                seen_questions.add(sq_text.lower())
+                # Format into a question
+                exp = sq.expected_answer or "Demonstrate verified production experience and clear technical articulation."
+                sample_questions.append({
+                    "id": f"screening-{sq.id}",
+                    "question": f"[Screening Interview Round] {sq_text}",
+                    "options": [
+                        exp,
+                        "Theoretical understanding without hands-on implementation",
+                        "Beginner / academic knowledge only",
+                        "No direct experience in this technology",
+                    ],
+                    "correct_option_index": 0,
+                    "section": "Technical Pseudocode & Puzzles" if sq.question_type == "technical" else "Verbal Ability",
+                    "topic": f"Screening: {sq.question_type.title()}",
+                    "tag": f"{detail['name']} Screening",
+                    "difficulty": "medium",
+                    "explanation": f"Evaluation Criterion asked during recent hiring: {exp}",
+                })
+        except Exception as e:
+            # Continue with base questions if database lookup encounters any transient exception
+            pass
+
+    detail["sample_questions"] = sample_questions
+    detail["recent_hiring_process"] = detail.get("recent_hiring_process") or detail.get("badge_text", "Campus Placement 2026")
+    detail["questions_count"] = len(sample_questions)
+    return detail

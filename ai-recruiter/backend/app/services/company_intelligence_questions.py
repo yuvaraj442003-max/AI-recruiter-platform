@@ -1581,5 +1581,280 @@ COMPANY_RECENT_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
             ),
         },
     ],
+    "vgen": [
+        {
+            "id": "vgen-q1",
+            "question": "In VGen's backend engineering pipeline, a developer needs to process a high-throughput stream of N incoming recruiter metrics and maintain the top K largest elements in real time. What is the optimal time complexity per incoming element using a min-heap?",
+            "options": ["O(log K)", "O(log N)", "O(K)", "O(1)"],
+            "correct_option_index": 0,
+            "section": "Quantitative Ability",
+            "topic": "Min-Heap Streaming Complexity",
+            "tag": "VGen Backend Developer",
+            "difficulty": "medium",
+            "explanation": (
+                "Using a min-heap of capacity K:\n"
+                "1. For each incoming metric, compare it with the root of the heap (the minimum among the current top K elements).\n"
+                "2. If larger, extract the root and push the new element.\n"
+                "3. Both push and pop operations on a binary min-heap of size K take O(log K) operations.\n"
+                "4. Auxiliary space is strictly O(K), optimal for unbounded data streams."
+            ),
+        },
+        {
+            "id": "vgen-q2",
+            "question": "What will be printed to the console when the following JavaScript code executes in a browser environment?\n\nconsole.log(1);\nsetTimeout(() => console.log(2), 0);\nPromise.resolve().then(() => console.log(3));\nconsole.log(4);",
+            "options": ["1, 4, 3, 2", "1, 2, 3, 4", "1, 4, 2, 3", "3, 1, 4, 2"],
+            "correct_option_index": 0,
+            "section": "Technical Pseudocode & Puzzles",
+            "topic": "JavaScript Event Loop & Microtasks",
+            "tag": "VGen Frontend Developer",
+            "difficulty": "medium",
+            "explanation": (
+                "Execution sequence in the JavaScript Event Loop:\n"
+                "1. Synchronous statements execute immediately on the call stack: logs 1, then 4.\n"
+                "2. Microtask queue has strict priority over the macrotask queue. Promise callbacks (.then) are microtasks: logs 3.\n"
+                "3. The macrotask queue (timer callback from setTimeout) executes only after all pending microtasks are drained: logs 2.\n"
+                "Final console sequence: 1, 4, 3, 2."
+            ),
+        },
+        {
+            "id": "vgen-q3",
+            "question": "Developer A can build a full-stack module in 12 days, and Developer B can build the same module in 18 days. If they work together for 4 days, what fraction of the module remains to be completed?",
+            "options": ["4/9", "5/9", "1/3", "7/18"],
+            "correct_option_index": 0,
+            "section": "Quantitative Ability",
+            "topic": "Time & Work Fractional Progress",
+            "tag": "VGen Software Developer",
+            "difficulty": "easy",
+            "explanation": (
+                "1. Calculate 1-day work rate:\n"
+                "   A's 1-day work = 1/12\n"
+                "   B's 1-day work = 1/18\n"
+                "   Combined 1-day work = 1/12 + 1/18 = (3 + 2)/36 = 5/36.\n"
+                "2. Work completed in 4 days = 4 × (5/36) = 20/36 = 5/9.\n"
+                "3. Remaining fraction of work = 1 - 5/9 = 4/9."
+            ),
+        },
+        {
+            "id": "vgen-q4",
+            "question": "In a relational database handling high-throughput job applications, which type of index is most suitable for optimizing queries with range conditions such as `created_at BETWEEN '2026-01-01' AND '2026-06-30'`?",
+            "options": ["B-Tree Index", "Hash Index", "GIN Index", "Full-Text Index"],
+            "correct_option_index": 0,
+            "section": "Technical Pseudocode & Puzzles",
+            "topic": "Database Indexing & Range Filters",
+            "tag": "VGen Backend Developer",
+            "difficulty": "medium",
+            "explanation": (
+                "B-Tree (Balanced Tree) indexes maintain sorted key order, allowing O(log N) lookup and efficient sequential range scans for operators like BETWEEN, <, <=, >, >=.\n"
+                "Hash indexes only support exact equality checks (=) and cannot optimize range queries."
+            ),
+        },
+        {
+            "id": "vgen-q5",
+            "question": "A recruiter search autocomplete feature needs to find all candidate skills matching a given prefix of length K among M stored dictionary skills. Which data structure guarantees prefix lookups in O(K) time, completely independent of M?",
+            "options": ["Trie (Prefix Tree)", "Balanced Binary Search Tree", "Sorted Array with Binary Search", "Hash Map with substring slices"],
+            "correct_option_index": 0,
+            "section": "Logical Reasoning",
+            "topic": "Trie Data Structure & Search",
+            "tag": "VGen Software Developer",
+            "difficulty": "medium",
+            "explanation": (
+                "A Trie (Prefix Tree) organizes characters along tree branches.\n"
+                "Traversal to the node corresponding to a prefix of length K requires visiting exactly K nodes, taking strictly O(K) time regardless of how many total words (M) are stored in the tree."
+            ),
+        },
+        {
+            "id": "vgen-q6",
+            "question": "In React 18, what is the key difference between useEffect and useLayoutEffect during the component rendering lifecycle?",
+            "options": [
+                "useLayoutEffect runs synchronously immediately after DOM mutations before browser paint, whereas useEffect runs asynchronously after browser paint",
+                "useEffect runs before DOM mutations while useLayoutEffect runs after paint",
+                "useLayoutEffect only executes on the server side during SSR",
+                "There is no difference; useLayoutEffect is a deprecated alias of useEffect"
+            ],
+            "correct_option_index": 0,
+            "section": "Technical Pseudocode & Puzzles",
+            "topic": "React Component Lifecycle & Hooks",
+            "tag": "VGen Frontend Developer",
+            "difficulty": "hard",
+            "explanation": (
+                "useLayoutEffect fires synchronously after all DOM mutations but before the browser paints the screen, making it essential for reading DOM layout measurements and synchronously applying visual updates to prevent screen flicker.\n"
+                "useEffect is deferred and runs asynchronously after the browser paints."
+            ),
+        },
+        {
+            "id": "vgen-q7",
+            "question": "During VGen's recent technical screening for Software Developers, candidates were tested on Python runtime internals. Which garbage collection mechanism handles circular references between Python objects where reference count alone cannot reach zero?",
+            "options": [
+                "Generational Cyclic Garbage Collector (gc module)",
+                "Automatic Reference Counting (ARC) only",
+                "Global Interpreter Lock (GIL) deallocation",
+                "Manual free() calls in the CPython runtime"
+            ],
+            "correct_option_index": 0,
+            "section": "Technical Pseudocode & Puzzles",
+            "topic": "Python Memory & Cyclic GC",
+            "tag": "VGen Screening Interview",
+            "difficulty": "medium",
+            "explanation": (
+                "CPython primarily uses Reference Counting for immediate memory deallocation.\n"
+                "However, when objects reference each other cyclically (e.g., node.next = node), reference counting never drops to zero.\n"
+                "CPython's generational cyclic garbage collector periodically tracks container objects across Generation 0, 1, and 2 to detect and free unreachable cycles."
+            ),
+        },
+        {
+            "id": "vgen-q8",
+            "question": "Two data replication servers located in Mumbai and Chennai communicate over dedicated fiber lines. Packet A leaves Mumbai at 60 MB/s and Packet B leaves Chennai towards Mumbai at 90 MB/s simultaneously. If the network distance between the endpoints is 750 MB equivalent, at what fraction of the total distance from Mumbai will they meet?",
+            "options": ["2/5 (40%)", "3/5 (60%)", "1/2 (50%)", "4/9 (44.4%)"],
+            "correct_option_index": 0,
+            "section": "Quantitative Ability",
+            "topic": "Relative Speed & Proportions",
+            "tag": "VGen Quant",
+            "difficulty": "easy",
+            "explanation": (
+                "Both packets travel for the exact same amount of time t until they meet.\n"
+                "Therefore, the distance traveled by each packet is directly proportional to its speed:\n"
+                "Distance from Mumbai / Total Distance = 60 / (60 + 90) = 60 / 150 = 2/5 = 40%."
+            ),
+        },
+    ],
+    "vaarg": [
+        {
+            "id": "vaarg-q1",
+            "question": "In Vaarg's AI candidate resume matching system, candidate and job embeddings are represented as high-dimensional unit vectors u and v. Which metric measures their semantic angle similarity invariant to vector magnitude, and what is its range for unit vectors?",
+            "options": [
+                "Cosine Similarity, range [-1, 1]",
+                "Euclidean Distance, range [-∞, ∞]",
+                "Manhattan Distance, range [0, 1]",
+                "Pearson Correlation, range [0, 100]"
+            ],
+            "correct_option_index": 0,
+            "section": "Technical Pseudocode & Puzzles",
+            "topic": "Vector Embeddings & Semantic Search",
+            "tag": "Vaarg AI Developer",
+            "difficulty": "medium",
+            "explanation": (
+                "Cosine similarity calculates cos(θ) = (u · v) / (||u|| * ||v||).\n"
+                "For normalized unit vectors (where ||u|| = ||v|| = 1), it simplifies directly to the dot product u · v, ranging from -1 (opposite orientation) through 0 (orthogonal) to +1 (identical direction)."
+            ),
+        },
+        {
+            "id": "vaarg-q2",
+            "question": "In an automated screening test, 80% of candidates who are proficient in AI pass the test, while 10% of candidates who are NOT proficient also pass (false positive). If 20% of all applicants are actually proficient in AI, what is the probability that a candidate who passed the test is genuinely proficient?",
+            "options": ["2/3 (66.7%)", "1/2 (50.0%)", "4/5 (80.0%)", "1/4 (25.0%)"],
+            "correct_option_index": 0,
+            "section": "Quantitative Ability",
+            "topic": "Bayes' Theorem & Screening Statistics",
+            "tag": "Vaarg Screening Quant",
+            "difficulty": "hard",
+            "explanation": (
+                "By Bayes' Theorem:\n"
+                "P(Proficient | Pass) = [P(Pass | Proficient) × P(Proficient)] / P(Pass)\n"
+                "1. P(Pass) = [P(Pass | Proficient) × P(Proficient)] + [P(Pass | Not Proficient) × P(Not Proficient)]\n"
+                "   P(Pass) = (0.80 × 0.20) + (0.10 × 0.80) = 0.16 + 0.08 = 0.24.\n"
+                "2. P(Proficient | Pass) = 0.16 / 0.24 = 16 / 24 = 2/3 ≈ 66.67%."
+            ),
+        },
+        {
+            "id": "vaarg-q3",
+            "question": "In Transformer models used for automated resume parsing, what is the computational complexity of the standard Scaled Dot-Product Self-Attention mechanism with sequence length N and embedding dimension D?",
+            "options": ["O(N^2 * D)", "O(N * D^2)", "O(N^3)", "O(D^2 * log N)"],
+            "correct_option_index": 0,
+            "section": "Technical Pseudocode & Puzzles",
+            "topic": "Transformer Attention Complexity",
+            "tag": "Vaarg AI Developer",
+            "difficulty": "hard",
+            "explanation": (
+                "Computing the query-key dot product Q × K^T requires multiplying an (N × D) matrix by a (D × N) matrix, which takes O(N^2 × D) operations.\n"
+                "Multiplying the resulting (N × N) attention weight matrix by V (N × D) also takes O(N^2 × D) operations.\n"
+                "Thus, self-attention scales quadratically with sequence length N."
+            ),
+        },
+        {
+            "id": "vaarg-q4",
+            "question": "Statements:\n1. All AI Engineers are Problem Solvers.\n2. Some Problem Solvers are Cloud Certified.\n3. All Cloud Certified engineers know Python.\nConclusions:\nI. Some Python experts are Problem Solvers.\nII. Some AI Engineers are Cloud Certified.\nWhich conclusion(s) logically follow?",
+            "options": ["Only Conclusion I follows", "Only Conclusion II follows", "Both I and II follow", "Neither follows"],
+            "correct_option_index": 0,
+            "section": "Logical Reasoning",
+            "topic": "Deductive Logic & Syllogisms",
+            "tag": "Vaarg Analytical Reasoning",
+            "difficulty": "medium",
+            "explanation": (
+                "From Statements 2 and 3: Some Problem Solvers are Cloud Certified, and ALL Cloud Certified know Python.\n"
+                "Therefore, those Problem Solvers who are Cloud Certified definitely know Python, so 'Some Python experts are Problem Solvers' (Conclusion I is definitely true).\n"
+                "There is no guaranteed intersection given between AI Engineers and Cloud Certified, so Conclusion II does not necessarily follow."
+            ),
+        },
+        {
+            "id": "vaarg-q5",
+            "question": "When building a real-time candidate search dashboard with rapid keystrokes, which frontend optimization technique delays executing the API search request until the user has paused typing for at least 300ms?",
+            "options": ["Debouncing", "Throttling", "Memoization", "Virtualization"],
+            "correct_option_index": 0,
+            "section": "Technical Pseudocode & Puzzles",
+            "topic": "Frontend Performance & Event Debounce",
+            "tag": "Vaarg Frontend Developer",
+            "difficulty": "easy",
+            "explanation": (
+                "Debouncing ensures that a function is not called until a certain amount of time has elapsed since the last time it was invoked.\n"
+                "In contrast, throttling guarantees function execution at most once every specified regular time interval."
+            ),
+        },
+        {
+            "id": "vaarg-q6",
+            "question": "In Senior Recruiter interviews at Vaarg, what does the structured behavioral interviewing framework 'STAR' stand for when evaluating candidate interview responses?",
+            "options": [
+                "Situation, Task, Action, Result",
+                "Strategy, Testing, Analysis, Review",
+                "Skill, Talent, Aptitude, Readiness",
+                "Scope, Timeline, Allocation, Return"
+            ],
+            "correct_option_index": 0,
+            "section": "Verbal Ability",
+            "topic": "STAR Interview Methodology",
+            "tag": "Vaarg Senior Recruiter",
+            "difficulty": "easy",
+            "explanation": (
+                "The STAR framework is the industry gold standard for behavioral interviews:\n"
+                "Situation: context and setting of the challenge\n"
+                "Task: specific responsibility and target objective\n"
+                "Action: exact steps and initiatives taken by the candidate\n"
+                "Result: quantifiable business or technical outcome achieved."
+            ),
+        },
+        {
+            "id": "vaarg-q7",
+            "question": "In Vaarg's technical pre-screening interview for AI Developers, candidates were asked: How does Dropout during neural network training prevent overfitting?",
+            "options": [
+                "It randomly zeroes out activations of a fraction of neurons at each training iteration, preventing co-adaptation of features",
+                "It removes small weights permanently from the model after every epoch",
+                "It decreases the learning rate by a decaying factor",
+                "It normalizes mini-batch inputs to zero mean and unit variance"
+            ],
+            "correct_option_index": 0,
+            "section": "Technical Pseudocode & Puzzles",
+            "topic": "Neural Regularization & Dropout",
+            "tag": "Vaarg Screening Interview",
+            "difficulty": "medium",
+            "explanation": (
+                "Dropout randomly deactivates (sets to zero) a randomly selected fraction of neurons with probability p during each forward training pass.\n"
+                "This forces individual neurons to learn robust, generalized representations rather than relying on specific neighboring neurons (co-adaptation), effectively acting as an ensemble of thinned neural networks."
+            ),
+        },
+        {
+            "id": "vaarg-q8",
+            "question": "A recruiter needs to form an interview panel of 4 evaluators from a team of 5 AI Engineers and 4 Frontend Developers. In how many ways can the panel be formed such that it contains at least 2 AI Engineers?",
+            "options": ["105 ways", "90 ways", "126 ways", "85 ways"],
+            "correct_option_index": 0,
+            "section": "Quantitative Ability",
+            "topic": "Combinations & Panel Formation",
+            "tag": "Vaarg Quant",
+            "difficulty": "medium",
+            "explanation": (
+                "Case 1: 2 AI Engineers and 2 Frontend Developers: C(5, 2) × C(4, 2) = 10 × 6 = 60 ways.\n"
+                "Case 2: 3 AI Engineers and 1 Frontend Developer: C(5, 3) × C(4, 1) = 10 × 4 = 40 ways.\n"
+                "Case 3: 4 AI Engineers and 0 Frontend Developers: C(5, 4) × C(4, 0) = 5 × 1 = 5 ways.\n"
+                "Total valid panel combinations = 60 + 40 + 5 = 105 ways."
+            ),
+        },
+    ],
 }
 

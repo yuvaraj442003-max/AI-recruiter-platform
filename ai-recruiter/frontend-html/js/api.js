@@ -621,6 +621,7 @@ const studyMaterialsAPI = {
   toggleDailyTask: (payload) => api.post("/study-materials/learning-journey/toggle-task", payload),
   resetLearningJourney: () => api.post("/study-materials/learning-journey/reset", {}),
   selectCourseTrack: (payload) => api.post("/study-materials/learning-journey/select-course", payload),
+  startCourse: (payload) => api.post("/study-materials/learning-journey/start-course", payload || {}),
   getCourseCurriculum: (courseId) => api.get(`/study-materials/learning-journey/curriculum/${encodeURIComponent(courseId)}`),
   completeTopic: (payload) => api.post("/study-materials/learning-journey/complete-topic", payload),
   getCompanies: () => api.get("/study-materials/companies"),

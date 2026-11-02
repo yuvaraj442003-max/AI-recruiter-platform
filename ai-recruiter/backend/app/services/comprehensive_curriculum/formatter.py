@@ -8,6 +8,7 @@ Transforms structured chapter data into unabridged placement markdown with:
 5. Real Company Technical Interview Questions & Answers
 """
 from typing import Dict, List, Any
+from app.services.course_real_world_pedagogy import get_chapter_pedagogy
 
 def format_chapter_to_markdown(ch: Dict[str, Any], subject: str = "") -> str:
     num = ch.get("chapter_num", 1)
@@ -15,6 +16,11 @@ def format_chapter_to_markdown(ch: Dict[str, Any], subject: str = "") -> str:
     takeaway = ch.get("key_takeaways", "")
     topics = ch.get("topics", [])
     sections = ch.get("sections", {})
+
+    pedagogy = get_chapter_pedagogy(subject, num, title, 8)
+    stage_title = pedagogy.get("stage_title", "Foundations")
+    stage_guidance = pedagogy.get("guidance", "")
+    rw = pedagogy.get("real_world_application", {})
 
     concept = sections.get("concept", "").strip()
     formulas = sections.get("formulas", "").strip()
@@ -25,7 +31,9 @@ def format_chapter_to_markdown(ch: Dict[str, Any], subject: str = "") -> str:
     lines = [
         f"## Chapter {num}: {title}",
         "",
-        f"> **Key Principle / Exam Takeaway:** {takeaway}",
+        f"> **🎓 Learning Progression Stage:** `{stage_title}`  ",
+        f"> **💡 Pedagogical Guidance:** {stage_guidance}  ",
+        f"> **📌 Key Principle / Exam Takeaway:** {takeaway}",
         "",
         "**Core Curriculum Topics Covered in this Chapter:**",
     ]
@@ -41,18 +49,31 @@ def format_chapter_to_markdown(ch: Dict[str, Any], subject: str = "") -> str:
         "",
     ])
 
-    # 2. Key Formulas & Mechanics
+    # 2. Real-World Project Application & Practical Industry Use-Cases
+    if rw:
+        lines.extend([
+            "### 🚀 2. Real-World Project Application & Practical Industry Use-Cases",
+            "",
+            f"- **🏢 Industry Domain & Companies:** `{rw.get('domain', 'Enterprise Production Systems')}` ({rw.get('companies', 'Amazon, Microsoft, Google, TCS, Infosys')})",
+            f"- **📍 Where Applied in Production Systems:** {rw.get('where_applied', 'Core microservice architecture, API gateways, and transactional databases.')}",
+            f"- **⚙️ How Engineers Apply It in Real Codebases:** {rw.get('how_applied', 'Implemented with modular architectural patterns, defensive validation, and connection pooling.')}",
+            f"- **⚠️ Production Reliability & Incident Prevention:** {rw.get('production_safeguards', 'Avoid unhandled exceptions, unbounded resource consumption, and race conditions.')}",
+            f"- **💼 Placement Technical Interview Focus:** {rw.get('interview_relevance', 'Tested to evaluate problem-solving ability, code efficiency, and production readiness.')}",
+            "",
+        ])
+
+    # 3. Key Formulas & Mechanics
     if formulas:
         lines.extend([
-            "### 📐 2. Key Formulas, Rules & Complexity Classes",
+            "### 📐 3. Key Formulas, Rules & Complexity Classes",
             "",
             formulas,
             "",
         ])
 
-    # 3. Step-by-Step Solved Examples
+    # 4. Step-by-Step Solved Examples
     lines.extend([
-        "### 💡 3. Step-by-Step Solved Examples",
+        "### 💡 4. Step-by-Step Solved Examples",
         "",
     ])
     if solved_examples:
@@ -110,9 +131,9 @@ def format_chapter_to_markdown(ch: Dict[str, Any], subject: str = "") -> str:
             "",
         ])
 
-    # 4. Practice Questions with Answers & Explanations
+    # 5. Practice Questions with Answers & Explanations
     lines.extend([
-        "### 📝 4. Practice Questions with Answers & Explanations",
+        "### 📝 5. Practice Questions with Answers & Explanations",
         "",
     ])
     if practice_questions:
@@ -144,9 +165,9 @@ def format_chapter_to_markdown(ch: Dict[str, Any], subject: str = "") -> str:
             "",
         ])
 
-    # 5. Real Company Technical Interview Questions & Answers
+    # 6. Real Company Technical Interview Questions & Answers
     lines.extend([
-        "### 💼 5. Real Company Technical Interview Questions & Answers",
+        "### 💼 6. Real Company Technical Interview Questions & Answers",
         "",
     ])
     if interview_questions:

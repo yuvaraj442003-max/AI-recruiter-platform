@@ -165,8 +165,41 @@
       if (github) formData.append("github_url", github);
       if (portfolio) formData.append("portfolio_url", portfolio);
 
+      // Structured Academic Details
+      const college = document.getElementById("cand-college")?.value?.trim() || "";
+      const degree = document.getElementById("cand-degree")?.value?.trim() || "";
+      const gradYear = document.getElementById("cand-grad-year")?.value?.trim() || "";
+      const cgpa = document.getElementById("cand-cgpa")?.value?.trim() || "";
+
+      const twelfthSchool = document.getElementById("cand-12th-school")?.value?.trim() || "";
+      const twelfthBoard = document.getElementById("cand-12th-board")?.value?.trim() || "";
+      const twelfthYear = document.getElementById("cand-12th-year")?.value?.trim() || "";
+      const twelfthMarks = document.getElementById("cand-12th-marks")?.value?.trim() || "";
+
+      const tenthSchool = document.getElementById("cand-10th-school")?.value?.trim() || "";
+      const tenthBoard = document.getElementById("cand-10th-board")?.value?.trim() || "";
+      const tenthYear = document.getElementById("cand-10th-year")?.value?.trim() || "";
+      const tenthMarks = document.getElementById("cand-10th-marks")?.value?.trim() || "";
+
+      if (college) formData.append("college_name", college);
+      if (degree) formData.append("degree", degree);
+      if (gradYear) formData.append("graduation_year", gradYear);
+      if (cgpa) formData.append("cgpa", cgpa);
+
+      if (twelfthSchool) formData.append("twelfth_school", twelfthSchool);
+      if (twelfthBoard) formData.append("twelfth_board", twelfthBoard);
+      if (twelfthYear) formData.append("twelfth_year", twelfthYear);
+      if (twelfthMarks) formData.append("twelfth_percentage", twelfthMarks);
+
+      if (tenthSchool) formData.append("tenth_school", tenthSchool);
+      if (tenthBoard) formData.append("tenth_board", tenthBoard);
+      if (tenthYear) formData.append("tenth_year", tenthYear);
+      if (tenthMarks) formData.append("tenth_percentage", tenthMarks);
+
       if (fileInput && fileInput.files && fileInput.files[0]) {
         formData.append("file", fileInput.files[0]);
+      } else if (uploadedResumeFile) {
+        formData.append("file", uploadedResumeFile);
       }
 
       const apiObj = getResumeAPI();
@@ -179,37 +212,22 @@
         Session.save(res.data);
       }
 
-      // Save Student Academic Credentials
-      const college = document.getElementById("cand-college")?.value?.trim() || null;
-      const degree = document.getElementById("cand-degree")?.value?.trim() || null;
-      const gradYear = document.getElementById("cand-grad-year")?.value ? Number(document.getElementById("cand-grad-year").value) : null;
-      const cgpa = document.getElementById("cand-cgpa")?.value ? Number(document.getElementById("cand-cgpa").value) : null;
-
-      const twelfthSchool = document.getElementById("cand-12th-school")?.value?.trim() || null;
-      const twelfthBoard = document.getElementById("cand-12th-board")?.value?.trim() || null;
-      const twelfthYear = document.getElementById("cand-12th-year")?.value ? Number(document.getElementById("cand-12th-year").value) : null;
-      const twelfthMarks = document.getElementById("cand-12th-marks")?.value ? Number(document.getElementById("cand-12th-marks").value) : null;
-
-      const tenthSchool = document.getElementById("cand-10th-school")?.value?.trim() || null;
-      const tenthBoard = document.getElementById("cand-10th-board")?.value?.trim() || null;
-      const tenthYear = document.getElementById("cand-10th-year")?.value ? Number(document.getElementById("cand-10th-year").value) : null;
-      const tenthMarks = document.getElementById("cand-10th-marks")?.value ? Number(document.getElementById("cand-10th-marks").value) : null;
-
+      // Save Student Academic Credentials via student API
       if (college || degree || gradYear || cgpa || twelfthSchool || tenthSchool) {
         try {
           await api.student.updateProfile({
-            college_name: college,
-            degree: degree,
-            graduation_year: gradYear,
-            cgpa: cgpa,
-            twelfth_school: twelfthSchool,
-            twelfth_board: twelfthBoard,
-            twelfth_year: twelfthYear,
-            twelfth_percentage: twelfthMarks,
-            tenth_school: tenthSchool,
-            tenth_board: tenthBoard,
-            tenth_year: tenthYear,
-            tenth_percentage: tenthMarks,
+            college_name: college || null,
+            degree: degree || null,
+            graduation_year: gradYear ? Number(gradYear) : null,
+            cgpa: cgpa ? Number(cgpa) : null,
+            twelfth_school: twelfthSchool || null,
+            twelfth_board: twelfthBoard || null,
+            twelfth_year: twelfthYear ? Number(twelfthYear) : null,
+            twelfth_percentage: twelfthMarks ? Number(twelfthMarks) : null,
+            tenth_school: tenthSchool || null,
+            tenth_board: tenthBoard || null,
+            tenth_year: tenthYear ? Number(tenthYear) : null,
+            tenth_percentage: tenthMarks ? Number(tenthMarks) : null,
             target_role: headline,
             is_student: true,
           });
@@ -350,12 +368,89 @@
   }
 
   // Resume Auto-Fill for Complete Registration Wizard
+  let uploadedResumeFile = null;
   const regTriggerBtn = document.getElementById("btn-reg-trigger-resume-autofill");
   const regFileInput = document.getElementById("reg-autofill-resume-file");
+  const candResumeFileInput = document.getElementById("cand-resume-file");
   const regBtnText = document.getElementById("reg-autofill-btn-text");
   const regSpinner = document.getElementById("reg-autofill-spinner");
   const regStatusAlert = document.getElementById("reg-autofill-status-alert");
   const regStatusMsg = document.getElementById("reg-autofill-status-msg");
+
+  async function autofillFromResume(file) {
+    if (!file) return;
+    uploadedResumeFile = file;
+
+    if (regStatusAlert) regStatusAlert.classList.add("d-none");
+    if (regTriggerBtn) regTriggerBtn.disabled = true;
+    if (regBtnText) regBtnText.textContent = "Extracting Info...";
+    if (regSpinner) regSpinner.classList.remove("d-none");
+
+    try {
+      const resAPI = getResumeAPI();
+      if (!resAPI || !resAPI.extractDetails) {
+        throw new Error("Resume extraction service is unavailable.");
+      }
+      const res = await resAPI.extractDetails(file);
+      const data = res?.data || {};
+
+      let filledCount = 0;
+      const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el && val !== undefined && val !== null && String(val).trim() !== "") {
+          el.value = val;
+          el.classList.add("border-success", "bg-success-subtle", "bg-opacity-10");
+          setTimeout(() => el.classList.remove("border-success", "bg-success-subtle", "bg-opacity-10"), 4000);
+          filledCount++;
+        }
+      };
+
+      // Personal Details (Step 1)
+      setVal("cand-name", data.name);
+      setVal("cand-phone", data.phone);
+      setVal("cand-location", data.location);
+      setVal("cand-exp", data.experience_years);
+      setVal("cand-linkedin", data.linkedin_url);
+      setVal("cand-github", data.github_url);
+      setVal("cand-portfolio", data.portfolio_url);
+
+      // Basic Info (Step 2)
+      setVal("cand-headline", data.headline || data.current_role);
+      setVal("cand-summary", data.summary);
+      setVal("cand-skills", data.skills);
+      setVal("cand-college", data.college);
+      setVal("cand-degree", data.degree);
+      setVal("cand-grad-year", data.graduation_year);
+      setVal("cand-cgpa", data.cgpa);
+
+      // 12th & 10th Grade Credentials
+      setVal("cand-12th-school", data.twelfth_school);
+      setVal("cand-12th-board", data.twelfth_board);
+      setVal("cand-12th-year", data.twelfth_year);
+      setVal("cand-12th-marks", data.twelfth_percentage);
+
+      setVal("cand-10th-school", data.tenth_school);
+      setVal("cand-10th-board", data.tenth_board);
+      setVal("cand-10th-year", data.tenth_year);
+      setVal("cand-10th-marks", data.tenth_percentage);
+
+      if (regStatusAlert && regStatusMsg) {
+        regStatusAlert.className = "alert alert-success py-2 px-3 mb-0 mt-3 d-flex align-items-center justify-content-between small shadow-xs";
+        regStatusMsg.innerHTML = `<span><strong>🎉 Success!</strong> Auto-filled <strong>${filledCount} fields</strong> from your resume (${file.name}).</span>`;
+        regStatusAlert.classList.remove("d-none");
+      }
+    } catch (err) {
+      if (regStatusAlert && regStatusMsg) {
+        regStatusAlert.className = "alert alert-danger py-2 px-3 mb-0 mt-3 d-flex align-items-center justify-content-between small shadow-xs";
+        regStatusMsg.innerHTML = `<span><strong>Extraction failed:</strong> ${err.message || "Could not read resume file."}</span>`;
+        regStatusAlert.classList.remove("d-none");
+      }
+    } finally {
+      if (regTriggerBtn) regTriggerBtn.disabled = false;
+      if (regBtnText) regBtnText.textContent = "Upload Resume";
+      if (regSpinner) regSpinner.classList.add("d-none");
+    }
+  }
 
   if (regTriggerBtn && regFileInput) {
     regTriggerBtn.addEventListener("click", () => {
@@ -364,77 +459,18 @@
 
     regFileInput.addEventListener("change", async (e) => {
       const file = e.target.files?.[0];
-      if (!file) return;
+      if (file) {
+        await autofillFromResume(file);
+      }
+      regFileInput.value = "";
+    });
+  }
 
-      if (regStatusAlert) regStatusAlert.classList.add("d-none");
-      if (regTriggerBtn) regTriggerBtn.disabled = true;
-      if (regBtnText) regBtnText.textContent = "Extracting Info...";
-      if (regSpinner) regSpinner.classList.remove("d-none");
-
-      try {
-        const resAPI = getResumeAPI();
-        if (!resAPI || !resAPI.extractDetails) {
-          throw new Error("Resume extraction service is unavailable.");
-        }
-        const res = await resAPI.extractDetails(file);
-        const data = res?.data || {};
-
-        let filledCount = 0;
-        const setVal = (id, val) => {
-          const el = document.getElementById(id);
-          if (el && val !== undefined && val !== null && String(val).trim() !== "") {
-            el.value = val;
-            el.classList.add("border-success", "bg-success-subtle", "bg-opacity-10");
-            setTimeout(() => el.classList.remove("border-success", "bg-success-subtle", "bg-opacity-10"), 4000);
-            filledCount++;
-          }
-        };
-
-        // Personal Details (Step 1)
-        setVal("cand-name", data.name);
-        setVal("cand-phone", data.phone);
-        setVal("cand-location", data.location);
-        setVal("cand-exp", data.experience_years);
-        setVal("cand-linkedin", data.linkedin_url);
-        setVal("cand-github", data.github_url);
-        setVal("cand-portfolio", data.portfolio_url);
-
-        // Basic Info (Step 2)
-        setVal("cand-headline", data.headline || data.current_role);
-        setVal("cand-summary", data.summary);
-        setVal("cand-skills", data.skills);
-        setVal("cand-college", data.college);
-        setVal("cand-degree", data.degree);
-        setVal("cand-grad-year", data.graduation_year);
-        setVal("cand-cgpa", data.cgpa);
-
-        // 12th & 10th Grade Credentials
-        setVal("cand-12th-school", data.twelfth_school);
-        setVal("cand-12th-board", data.twelfth_board);
-        setVal("cand-12th-year", data.twelfth_year);
-        setVal("cand-12th-marks", data.twelfth_percentage);
-
-        setVal("cand-10th-school", data.tenth_school);
-        setVal("cand-10th-board", data.tenth_board);
-        setVal("cand-10th-year", data.tenth_year);
-        setVal("cand-10th-marks", data.tenth_percentage);
-
-        if (regStatusAlert && regStatusMsg) {
-          regStatusAlert.className = "alert alert-success py-2 px-3 mb-0 mt-3 d-flex align-items-center justify-content-between small shadow-xs";
-          regStatusMsg.innerHTML = `<span><strong>🎉 Success!</strong> Auto-filled <strong>${filledCount} fields</strong> from your resume (${file.name}).</span>`;
-          regStatusAlert.classList.remove("d-none");
-        }
-      } catch (err) {
-        if (regStatusAlert && regStatusMsg) {
-          regStatusAlert.className = "alert alert-danger py-2 px-3 mb-0 mt-3 d-flex align-items-center justify-content-between small shadow-xs";
-          regStatusMsg.innerHTML = `<span><strong>Extraction failed:</strong> ${err.message || "Could not read resume file."}</span>`;
-          regStatusAlert.classList.remove("d-none");
-        }
-      } finally {
-        if (regTriggerBtn) regTriggerBtn.disabled = false;
-        if (regBtnText) regBtnText.textContent = "Upload Resume";
-        if (regSpinner) regSpinner.classList.add("d-none");
-        regFileInput.value = "";
+  if (candResumeFileInput) {
+    candResumeFileInput.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        await autofillFromResume(file);
       }
     });
   }

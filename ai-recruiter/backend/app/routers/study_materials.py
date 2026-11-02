@@ -100,6 +100,10 @@ class SelectCourseTrackRequest(BaseModel):
     course_id: str
 
 
+class StartCourseRequest(BaseModel):
+    course_id: Optional[str] = None
+
+
 class CompleteTopicRequest(BaseModel):
     topic_id: str
     phase_num: int = 1
@@ -179,11 +183,21 @@ def select_learning_course_track(
     return APIResponse(success=True, message=f"Selected course {payload.course_id}", data=data)
 
 
+@router.post("/learning-journey/start-course", response_model=APIResponse[Dict[str, Any]])
+def start_learning_course_track(
+    payload: StartCourseRequest,
+    current_user: User = Depends(require_role(UserRole.candidate)),
+    db: Session = Depends(get_db),
+):
+    """Starts the chosen course track, activating Phase 1: Foundations for step-by-step topic learning."""
+    from app.services.candidate_learning_journey_service import start_course_journey
+    data = start_course_journey(db, current_user.id, payload.course_id)
+    return APIResponse(success=True, message="Course started successfully! Begin step-by-step topic learning.", data=data)
+
+
 @router.get("/learning-journey/curriculum/{course_id}", response_model=APIResponse[Dict[str, Any]])
 def get_course_curriculum_endpoint(
     course_id: str,
-    current_user: User = Depends(require_role(UserRole.candidate)),
-    db: Session = Depends(get_db),
 ):
     """Returns complete 10-chapter curriculum, practical coding exercises, projects, and interview preparation for the course."""
     from app.services.candidate_learning_journey_service import get_course_curriculum_details
@@ -1455,6 +1469,24 @@ def get_book_chapters(
 
     pdf_path = find_prescribed_book_pdf(book["subject"])
 
+    from app.services.course_real_world_pedagogy import get_chapter_pedagogy, get_course_progression_overview
+    raw_chapters = book.get("chapters", [])
+    enriched_chapters = []
+    for ch in raw_chapters:
+        ch_copy = dict(ch)
+        c_num = ch_copy.get("chapter_num") or ch_copy.get("num", 1)
+        c_title = ch_copy.get("title", "")
+        ped = get_chapter_pedagogy(book["subject"], c_num, c_title, len(raw_chapters))
+        ch_copy["progression_stage"] = ped.get("stage_num", 1)
+        ch_copy["stage_title"] = ped.get("stage_title", "Foundations")
+        ch_copy["stage_badge"] = ped.get("stage_badge", "Fundamentals")
+        ch_copy["stage_color"] = ped.get("stage_color", "success")
+        ch_copy["stage_guidance"] = ped.get("guidance", "")
+        ch_copy["real_world_application"] = ped.get("real_world_application", {})
+        enriched_chapters.append(ch_copy)
+
+    progression_overview = get_course_progression_overview(book["subject"], book["title"], len(raw_chapters))
+
     data = {
         "book_title": book["title"],
         "subject": book["subject"],
@@ -1462,8 +1494,9 @@ def get_book_chapters(
         "edition": book["edition"],
         "author": book["author"],
         "description": book["description"],
-        "chapters_count": len(book["chapters"]),
-        "chapters": book["chapters"],
+        "chapters_count": len(raw_chapters),
+        "progression_overview": progression_overview,
+        "chapters": enriched_chapters,
         "has_physical_pdf": pdf_path is not None,
         "exam_rule": "All exam questions for this subject are strictly grounded in these chapters.",
     }
@@ -1562,18 +1595,18 @@ async def upload_prescribed_book_pdf(
 # -----------------------------------------------------------------------------
 
 @router.get("/companies", response_model=APIResponse[List[Dict[str, Any]]])
-def list_company_intelligence():
+def list_company_intelligence(db: Session = Depends(get_db)):
     """
-    Returns summarized intelligence for all top campus recruiters:
-    TCS, Infosys, Cognizant, Accenture, Wipro, Amazon, Deloitte, Capgemini, Goldman Sachs, Zoho, Google, Microsoft.
+    Returns summarized intelligence for all top campus recruiters and active hiring companies:
+    VGen, Vaarg, TCS, Infosys, Cognizant, Accenture, Wipro, Amazon, Deloitte, Capgemini, Goldman Sachs, Zoho, Google, Microsoft.
     """
     from app.services.company_intelligence_service import get_all_companies_intelligence
-    data = get_all_companies_intelligence()
+    data = get_all_companies_intelligence(db=db)
     return APIResponse(success=True, message="Top placement company intelligence", data=data)
 
 
 @router.get("/companies/{slug}", response_model=APIResponse[Dict[str, Any]])
-def get_company_intelligence(slug: str):
+def get_company_intelligence(slug: str, db: Session = Depends(get_db)):
     """
     Returns deep-dive intelligence for a company:
     - Hiring cadres and CTC packages
@@ -1582,9 +1615,10 @@ def get_company_intelligence(slug: str):
     - Aptitude question trends (Quant, Reasoning, Verbal weights & exam tips)
     - 4-week placement preparation strategy
     - Sample company placement questions with verified step-by-step explanations
+    - Recent hiring process questions asked to selected/shortlisted candidates
     """
     from app.services.company_intelligence_service import get_company_intelligence_detail
-    detail = get_company_intelligence_detail(slug)
+    detail = get_company_intelligence_detail(slug, db=db)
     if not detail:
         raise NotFoundError(f"Company intelligence for '{slug}' not found")
     return APIResponse(success=True, message=f"{detail['name']} intelligence and exam trends", data=detail)
@@ -1602,7 +1636,7 @@ def start_company_mock_test(
     Strictly 30-45 seconds per question to build corporate exam speed.
     """
     from app.services.company_intelligence_service import get_company_intelligence_detail
-    detail = get_company_intelligence_detail(slug)
+    detail = get_company_intelligence_detail(slug, db=db)
     if not detail:
         raise NotFoundError(f"Company '{slug}' not found")
 

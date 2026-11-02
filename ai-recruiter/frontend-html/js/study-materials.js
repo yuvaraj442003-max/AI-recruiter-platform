@@ -178,6 +178,15 @@
     setupFilters();
     loadCompanyIntelligence();
 
+    // Check if navigating to start learning directly
+    const urlParams = new URLSearchParams(window.location.search);
+    const startMode = urlParams.get("start") || urlParams.get("mode");
+    const courseParam = urlParams.get("course") || urlParams.get("subject");
+    if ((startMode === "true" || startMode === "learn") && courseParam) {
+      window.location.href = `course-learning.html?course=${encodeURIComponent(courseParam)}`;
+      return;
+    }
+
     // Auto-switch tab if URL hash specified (#company-pane, #my-track-pane, etc.)
     const hash = window.location.hash;
     if (hash) {
@@ -1723,7 +1732,7 @@
   // --------------------------------------------------------------------------
 
   let allCompaniesCatalog = [];
-  let activeCompanySlug = "tcs";
+  let activeCompanySlug = "vgen";
 
   async function loadCompanyIntelligence() {
     const chipsContainer = document.getElementById("company-selector-chips-container");
@@ -1735,9 +1744,9 @@
       allCompaniesCatalog = res.data || [];
       renderCompanySelectorChips();
 
-      // Check if URL specifies a company or default to first
+      // Check if URL specifies a company or default to first recently hiring company
       const urlParams = new URLSearchParams(window.location.search);
-      const targetCompany = urlParams.get("company") || activeCompanySlug || (allCompaniesCatalog[0] ? allCompaniesCatalog[0].slug : "tcs");
+      const targetCompany = urlParams.get("company") || (allCompaniesCatalog[0] ? allCompaniesCatalog[0].slug : "vgen");
       selectCompany(targetCompany);
     } catch (err) {
       console.error("Failed to load companies intelligence:", err);
@@ -1764,7 +1773,7 @@
       >
         <span class="me-1">${c.icon || '🏢'}</span>
         <span class="fw-semibold me-1.5">${escapeHtml(c.name)}</span>
-        <span class="company-chip-badge">${escapeHtml(c.badge_text || '')}</span>
+        <span class="company-chip-badge ${c.is_recent_hiring ? 'bg-success text-white fw-bold' : ''}">${escapeHtml(c.badge_text || '')}</span>
       </button>
     `).join("");
   }
@@ -2054,18 +2063,23 @@
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3 pb-3 border-bottom">
           <div>
             <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
-              <span class="badge bg-primary text-white fw-bold px-3 py-1 rounded-pill">
+              <span class="badge ${c.is_recent_hiring || c.hired_candidates_count ? 'bg-danger text-white' : 'bg-primary text-white'} fw-bold px-3 py-1 rounded-pill">
                 🔥 Recent Hiring Process: ${escapeHtml(c.badge_text || c.recent_hiring_process || 'Campus Placement 2026')}
               </span>
               <span class="badge bg-success-subtle text-success fw-bold px-2.5 py-1 rounded-pill small">
                 ✓ Verified Exam Questions
               </span>
+              ${c.hired_candidates_count > 0 ? `
+                <span class="badge bg-success text-white fw-bold px-2.5 py-1 rounded-pill small">
+                  🎯 ${c.hired_candidates_count} Candidates Hired
+                </span>
+              ` : ''}
             </div>
             <h4 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
               <span>📝</span> Aptitude Questions Asked in ${escapeHtml(c.name)}'s Recruitment Process
             </h4>
             <span class="text-secondary small">
-              Practice authentic quantitative, reasoning, verbal, and technical aptitude questions asked in recent ${escapeHtml(c.name)} campus drives. Click an option to test your accuracy and reveal the step-by-step verified derivation.
+              Practice authentic quantitative, reasoning, verbal, and technical aptitude questions asked in recent ${escapeHtml(c.name)} recruitment drives. Click an option to test your accuracy and reveal the step-by-step verified derivation.
             </span>
           </div>
           <div class="d-flex align-items-center gap-2 flex-shrink-0">
@@ -2074,6 +2088,18 @@
             </span>
           </div>
         </div>
+
+        ${c.hired_candidates_count > 0 ? `
+          <div class="alert alert-success border-0 rounded-4 p-3 mb-4 d-flex align-items-center gap-3 shadow-sm" style="background: rgba(34, 197, 94, 0.12); color: #166534;">
+            <span class="fs-3">🏆</span>
+            <div>
+              <div class="fw-bold mb-0.5">Active Platform Recruiter &amp; Verified Hiring Questions</div>
+              <div class="small opacity-90">
+                <strong>${escapeHtml(c.name)}</strong> recently conducted hiring on this platform, selecting <strong>${c.hired_candidates_count} candidates</strong> across <strong>${escapeHtml((c.hired_roles || []).join(', ') || 'Engineering Roles')}</strong>. All aptitude questions and screening evaluations asked during this process are listed below with interactive drills and step-by-step solutions.
+              </div>
+            </div>
+          </div>
+        ` : ''}
 
         <!-- Section / Topic Filter Pills -->
         <div class="d-flex flex-wrap gap-2 mb-4 p-2.5 bg-light rounded-4 align-items-center">
@@ -3099,7 +3125,9 @@
             <div class="card h-100 border p-3 bg-light shadow-none d-flex flex-column" style="border-radius: 14px;">
               <div class="d-flex justify-content-between align-items-center mb-2">
                 <span class="badge bg-dark text-white rounded-pill small">Chapter ${chNum}</span>
-                <span class="badge bg-success-subtle text-success border border-success-subtle small" style="font-size: 0.72rem;">Complete &amp; Tested</span>
+                <span class="badge ${chNum <= 2 ? 'bg-success text-white' : chNum <= 5 ? 'bg-primary text-white' : chNum <= 7 ? 'bg-warning text-dark' : 'bg-danger text-white'} rounded-pill small" style="font-size: 0.68rem;">
+                  ${chNum <= 2 ? '🌱 Fundamentals' : chNum <= 5 ? '⚙️ Core Engineering' : chNum <= 7 ? '⚡ Advanced Concepts' : '🚀 Real-World Projects'}
+                </span>
               </div>
               <h6 class="fw-bold text-dark mb-1.5">${escapeHtml(chTitle)}</h6>
               <p class="text-secondary small mb-2 fst-italic" style="font-size: 0.78rem;">
@@ -3109,6 +3137,7 @@
               <!-- Section Content Coverage Badges -->
               <div class="d-flex flex-wrap gap-1 mb-2">
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.68rem;">📘 Core Concepts</span>
+                <span class="badge bg-dark text-white border" style="font-size: 0.68rem;">🚀 Real-World Projects</span>
                 <span class="badge bg-warning-subtle text-dark border border-warning-subtle" style="font-size: 0.68rem;">📐 Formulas</span>
                 <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem;">💡 ${solvedCount} Solved Ex</span>
                 <span class="badge bg-info-subtle text-info border border-info-subtle" style="font-size: 0.68rem;">📝 ${practiceCount} Practice Qs</span>

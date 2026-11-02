@@ -24,6 +24,27 @@ var escapeHtml = window.escapeHtml;
 (function () {
   let activeJourneyData = null;
   let cachedCurriculumData = {};
+  let currentCourseCurriculum = null;
+  let currentAllTopicsList = [];
+  let currentLearningModuleIdx = 0;
+  let currentLearningTopicIdx = 0;
+
+  const COURSE_PROJECT_BADGES = {
+    java: "(Spring Boot & Microservices)",
+    python: "(FastAPI & Microservices)",
+    dsa: "(System Design & High-Throughput Engines)",
+    web_dev: "(Full-Stack React & Node Cloud Systems)",
+    ai_ml: "(End-to-End ML & Model Deployment)",
+    data_science: "(ETL Pipelines & Real-Time Analytics)",
+    cloud_computing: "(AWS Serverless Architecture)",
+    aws: "(Cloud-Native Architecture & Terraform)",
+    cybersecurity: "(Enterprise SIEM & Security Labs)",
+    devops: "(CI/CD Pipelines, Docker & Kubernetes)",
+    sql_db: "(High-Concurrency PostgreSQL & Sharding)",
+    gen_ai: "(LLM Agents, RAG & Vector Databases)",
+    deep_learning: "(PyTorch Neural Nets & Vision Models)",
+    software_testing: "(Selenium, Playwright & SDET Automation)"
+  };
 
   const FALLBACK_JOURNEY = {
     roadmap_title: "Your 90-Day Roadmap — Java Programming",
@@ -546,6 +567,64 @@ var escapeHtml = window.escapeHtml;
     if (elDesc) elDesc.textContent = track.description;
     if (elBadge) elBadge.textContent = track.target_role || "Target Track";
 
+    // Dynamic Real-World Projects Badge for active course
+    const selectedCourseKey = (track.id || data.selected_course || "java").toLowerCase();
+    const elProjectsBadge = document.getElementById("active-course-projects-badge");
+    if (elProjectsBadge) {
+      elProjectsBadge.textContent = COURSE_PROJECT_BADGES[selectedCourseKey] || `(${track.name} Real-World Systems)`;
+    }
+
+    // Dynamic Href on Navigation Links
+    const targetLearningUrl = (selectedCourseKey === "python") ? "python-course-learning.html" : `course-learning.html?course=${encodeURIComponent(selectedCourseKey)}`;
+    const elHeaderStart = document.getElementById("btn-header-start-course");
+    if (elHeaderStart) {
+      elHeaderStart.href = targetLearningUrl;
+    }
+    const elJourneyStart = document.getElementById("btn-journey-start-course");
+    if (elJourneyStart) {
+      elJourneyStart.href = targetLearningUrl;
+    }
+    const elSyllabusLink = document.getElementById("btn-header-syllabus-link");
+    if (elSyllabusLink) {
+      elSyllabusLink.href = targetLearningUrl;
+    }
+
+    // Dynamic Start Course / Continue Learning Buttons
+    const isStarted = Boolean(data.is_started || (data.overall_progress_percent && data.overall_progress_percent > 0) || (data.completed_topics && data.completed_topics.length > 0));
+    const overallPct = Math.round(data.overall_progress_percent || 0);
+
+    const btnHeaderStart = document.getElementById("btn-header-start-course");
+    const btnHeaderStartText = document.getElementById("btn-header-start-text");
+    const btnHeaderStartIcon = document.getElementById("btn-header-start-icon");
+    if (btnHeaderStartText) {
+      if (isStarted) {
+        btnHeaderStartText.textContent = overallPct > 0 ? `Continue Learning (${overallPct}%)` : "Continue Learning";
+        if (btnHeaderStartIcon) btnHeaderStartIcon.textContent = "🚀";
+        if (btnHeaderStart) {
+          btnHeaderStart.className = "btn btn-primary text-white fw-bold px-3.5 py-2 rounded-pill shadow-sm d-flex align-items-center gap-2";
+        }
+      } else {
+        btnHeaderStartText.textContent = "Start Course";
+        if (btnHeaderStartIcon) btnHeaderStartIcon.textContent = "▶️";
+        if (btnHeaderStart) {
+          btnHeaderStart.className = "btn btn-warning text-dark fw-bold px-3.5 py-2 rounded-pill shadow-sm d-flex align-items-center gap-2";
+        }
+      }
+    }
+
+    const btnJourneyStart = document.getElementById("btn-journey-start-course");
+    const btnJourneyStartText = document.getElementById("btn-journey-start-text");
+    const btnJourneyStartIcon = document.getElementById("btn-journey-start-icon");
+    if (btnJourneyStartText) {
+      if (isStarted) {
+        btnJourneyStartText.textContent = overallPct > 0 ? `Continue Learning (${overallPct}%)` : "Continue Learning";
+        if (btnJourneyStartIcon) btnJourneyStartIcon.textContent = "🚀";
+      } else {
+        btnJourneyStartText.textContent = "Start Course";
+        if (btnJourneyStartIcon) btnJourneyStartIcon.textContent = "▶️";
+      }
+    }
+
     // Update Dropdown Items Active State with Custom Reference Layout & Search
     const dropdownMenu = document.getElementById("courseTrackDropdownList");
     if (dropdownMenu && data.available_courses) {
@@ -607,6 +686,11 @@ var escapeHtml = window.escapeHtml;
   };
 
   window.switchCandidateCourse = async function(courseId) {
+    currentCourseCurriculum = null;
+    currentAllTopicsList = [];
+    currentLearningModuleIdx = 0;
+    currentLearningTopicIdx = 0;
+
     try {
       if (typeof api !== "undefined" && api.studyMaterials && typeof api.studyMaterials.selectCourseTrack === "function") {
         const res = await api.studyMaterials.selectCourseTrack({ course_id: courseId });
@@ -623,7 +707,503 @@ var escapeHtml = window.escapeHtml;
 
     if (activeJourneyData) {
       activeJourneyData.selected_course = courseId;
+      const courseObj = (activeJourneyData.available_courses || []).find(c => c.id === courseId);
+      if (courseObj) {
+        activeJourneyData.course_track = {
+          id: courseObj.id,
+          name: courseObj.name,
+          title: `${courseObj.name}: Beginner to Placement Ready`,
+          icon: courseObj.icon || "📚",
+          badge: courseObj.badge || "Placement Track",
+          target_role: `${courseObj.name} Engineer / SDE-1`,
+          description: `Complete step-by-step guidance from foundational syntax to real-world projects and placement interviews for ${courseObj.name}.`
+        };
+        activeJourneyData.roadmap_title = `Your 90-Day Roadmap — ${courseObj.name}`;
+        activeJourneyData.target_track = `${courseObj.name}: Beginner to Placement Ready`;
+        if (activeJourneyData.next_step) {
+          activeJourneyData.next_step.title = "Phase 1: Foundations (0% Completed)";
+          if (courseId === "python") {
+            activeJourneyData.next_step.guidance = "Welcome to Python Full-Stack! Begin with core syntax, dynamic typing, data structures, and the Python memory model to build strong foundational competence.";
+          } else if (courseId === "dsa") {
+            activeJourneyData.next_step.guidance = "Welcome to DSA Placement Mastery! Begin with time & space algorithmic complexity, array patterns, and two-pointer techniques to build foundational problem-solving rigor.";
+          } else if (courseId === "web_dev") {
+            activeJourneyData.next_step.guidance = "Welcome to Full-Stack Web Development! Begin with semantic HTML5, modern CSS layout, and asynchronous JavaScript fundamentals.";
+          } else {
+            activeJourneyData.next_step.guidance = `Welcome to ${courseObj.name}! Begin with beginner core concepts, fundamentals, and architecture to build strong foundational competence.`;
+          }
+        }
+      }
       renderLearningJourneyDashboard(activeJourneyData);
+    }
+  };
+
+
+  // =========================================================================
+  // STEP-BY-STEP TOPIC-BY-TOPIC INTERACTIVE LEARNING ENGINE
+  // =========================================================================
+
+  function buildAllTopicsList(curData) {
+    currentAllTopicsList = [];
+    if (!curData || !curData.chapters || !curData.chapters.length) return;
+    curData.chapters.forEach((ch, mIdx) => {
+      const chNum = ch.chapter_num || (mIdx + 1);
+      const topics = (ch.topics && ch.topics.length) ? ch.topics : [ch.title];
+      topics.forEach((t, tIdx) => {
+        currentAllTopicsList.push({
+          moduleIdx: mIdx,
+          topicIdx: tIdx,
+          chapter: ch,
+          chapterNum: chNum,
+          topicTitle: t,
+          topicId: `topic-${chNum}-${tIdx + 1}`,
+          stageNum: ch.progression_stage || (chNum <= 2 ? 1 : chNum <= 5 ? 2 : chNum <= 7 ? 3 : 4),
+          stageBadge: ch.stage_badge || (chNum <= 2 ? 'Stage 1: Fundamentals' : chNum <= 5 ? 'Stage 2: Core Engineering' : chNum <= 7 ? 'Stage 3: Advanced Concepts' : 'Stage 4: Real-World Projects')
+        });
+      });
+    });
+  }
+
+  window.startCurrentCourse = function(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const courseId = (activeJourneyData && activeJourneyData.selected_course) ? activeJourneyData.selected_course.toLowerCase().trim() : "python";
+
+    // 1. Mark Course Started via Backend API in background without blocking navigation
+    try {
+      if (typeof api !== "undefined" && api.studyMaterials && typeof api.studyMaterials.startCourse === "function") {
+        api.studyMaterials.startCourse({ course_id: courseId }).catch(() => {});
+      }
+    } catch (err) {}
+
+    // 2. Navigate immediately to the dedicated Course Learning Page!
+    if (courseId === "python") {
+      window.location.href = "python-course-learning.html";
+    } else {
+      window.location.href = `course-learning.html?course=${encodeURIComponent(courseId)}`;
+    }
+  };
+
+  window.renderStepByStepTopic = function(moduleIdx, topicIdx) {
+    currentLearningModuleIdx = moduleIdx;
+    currentLearningTopicIdx = topicIdx;
+
+    if (!currentCourseCurriculum || !currentCourseCurriculum.chapters) {
+      const container = document.getElementById("step-topic-content-container");
+      if (container) {
+        container.innerHTML = `
+          <div class="text-center py-5">
+            <div class="fs-1 mb-2">📚</div>
+            <h5 class="fw-bold text-dark">Course Curriculum Loading...</h5>
+            <p class="text-muted small">Please wait while the structured learning curriculum is being retrieved.</p>
+            <button class="btn btn-primary rounded-pill px-4 mt-2" onclick="startCurrentCourse()">Retry Loading</button>
+          </div>
+        `;
+      }
+      return;
+    }
+
+    if (!currentAllTopicsList || !currentAllTopicsList.length) {
+      buildAllTopicsList(currentCourseCurriculum);
+    }
+
+    const curItem = currentAllTopicsList.find(x => x.moduleIdx === moduleIdx && x.topicIdx === topicIdx) || currentAllTopicsList[0];
+    if (!curItem) return;
+
+    const currentIndex = currentAllTopicsList.indexOf(curItem);
+    const totalTopics = currentAllTopicsList.length;
+    const completedList = activeJourneyData?.completed_topics || [];
+    const isCompleted = completedList.includes(curItem.topicId);
+    const completedCount = currentAllTopicsList.filter(x => completedList.includes(x.topicId)).length;
+    const progressPct = totalTopics > 0 ? Math.round((completedCount / totalTopics) * 100) : 0;
+
+    // Header metadata
+    const courseTrack = activeJourneyData?.course_track || {};
+    const elCourseIcon = document.getElementById("step-modal-course-icon");
+    const elCourseTitle = document.getElementById("step-modal-course-title");
+    const elStageBadge = document.getElementById("step-modal-stage-badge");
+    const elModuleBadge = document.getElementById("step-modal-module-badge");
+    const elTopicStatus = document.getElementById("step-modal-topic-status");
+    const elProgressBar = document.getElementById("step-modal-progress-bar");
+    const elNavIndicator = document.getElementById("step-modal-nav-indicator");
+
+    if (elCourseIcon) elCourseIcon.textContent = courseTrack.icon || "📚";
+    if (elCourseTitle) elCourseTitle.textContent = currentCourseCurriculum.course_title || courseTrack.title || "Course Track";
+    if (elStageBadge) {
+      elStageBadge.textContent = curItem.stageBadge;
+      elStageBadge.className = `badge ${curItem.stageNum === 1 ? 'bg-success' : curItem.stageNum === 2 ? 'bg-primary' : curItem.stageNum === 3 ? 'bg-warning text-dark' : 'bg-danger'} text-white px-2.5 py-0.5 rounded-pill small fw-bold`;
+    }
+    if (elModuleBadge) {
+      elModuleBadge.textContent = `Module ${curItem.chapterNum} of ${currentCourseCurriculum.chapters.length}`;
+    }
+    if (elTopicStatus) {
+      if (isCompleted) {
+        elTopicStatus.className = "badge bg-success text-white rounded-pill px-2.5 py-0.5 small";
+        elTopicStatus.innerHTML = "✓ Topic Completed";
+      } else {
+        elTopicStatus.className = "badge bg-info text-dark rounded-pill px-2.5 py-0.5 small";
+        elTopicStatus.innerHTML = "Topic In Progress";
+      }
+    }
+    if (elProgressBar) {
+      elProgressBar.style.width = `${Math.max(5, progressPct)}%`;
+    }
+    if (elNavIndicator) {
+      elNavIndicator.textContent = `Topic ${currentIndex + 1} of ${totalTopics} (${progressPct}% Completed)`;
+    }
+
+    // Navigation buttons state
+    const btnPrev = document.getElementById("btn-step-prev");
+    if (btnPrev) {
+      btnPrev.disabled = (currentIndex <= 0);
+    }
+    const btnNext = document.getElementById("btn-step-next");
+    const btnNextText = document.getElementById("btn-step-next-text");
+    if (btnNext && btnNextText) {
+      if (currentIndex >= totalTopics - 1) {
+        btnNextText.textContent = isCompleted ? "🎓 Completed Course" : "✓ Complete & Finish Course";
+        btnNext.className = "btn btn-warning text-dark rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2";
+      } else if (isCompleted) {
+        btnNextText.textContent = "Next Topic";
+        btnNext.className = "btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2";
+      } else {
+        btnNextText.textContent = "✓ Complete & Next Topic";
+        btnNext.className = "btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2";
+      }
+    }
+
+    // Render Lesson Content Viewport
+    const container = document.getElementById("step-topic-content-container");
+    if (container) {
+      const ch = curItem.chapter;
+      const realWorld = ch.real_world_application || {};
+      const sections = ch.sections || {};
+      const concept = sections.concept || ch.key_takeaways || "";
+      const examples = sections.solved_examples || [];
+      const example = examples.length > 0 ? examples[topicIdx % examples.length] : null;
+      const practiceQuestions = sections.practice_questions || [];
+      const question = practiceQuestions.length > 0 ? practiceQuestions[topicIdx % practiceQuestions.length] : null;
+
+      container.innerHTML = `
+        <!-- BREADCRUMB & TOPIC TITLE -->
+        <div class="mb-4">
+          <div class="d-flex align-items-center gap-2 text-muted small mb-2 flex-wrap">
+            <span class="badge ${curItem.stageNum === 1 ? 'bg-success' : curItem.stageNum === 2 ? 'bg-primary' : curItem.stageNum === 3 ? 'bg-warning text-dark' : 'bg-danger'} text-white rounded-pill px-2.5 py-0.5" style="font-size: 0.7rem;">
+              ${escapeHtml(curItem.stageBadge)}
+            </span>
+            <span>•</span>
+            <span class="fw-semibold text-dark">Module ${curItem.chapterNum}: ${escapeHtml(ch.title)}</span>
+            <span>•</span>
+            <span class="badge bg-light text-secondary border">Topic ${curItem.topicIdx + 1} of ${(ch.topics || []).length}</span>
+          </div>
+          <h2 class="fw-bold text-dark mb-2" style="letter-spacing: -0.3px;">${escapeHtml(curItem.topicTitle)}</h2>
+          <p class="text-secondary small mb-0" style="line-height: 1.6;">
+            Study this concept systematically. We begin with core fundamentals, explain how top tech companies deploy it in real-world systems, examine working production code, and test your retention with an interactive practice question.
+          </p>
+        </div>
+
+        <!-- 1. CORE FUNDAMENTALS & CONCEPTUAL FOUNDATION -->
+        <div class="card border-0 shadow-sm p-4 mb-4 rounded-4" style="background: #ffffff; border-left: 5px solid #3b82f6 !important;">
+          <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+              <span class="fs-4">💡</span>
+              <h5 class="fw-bold text-dark mb-0">1. Core Fundamentals &amp; Mechanics</h5>
+            </div>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 small fw-semibold">Step 1: Theory &amp; Foundations</span>
+          </div>
+          <div class="text-dark small" style="line-height: 1.8; white-space: pre-line; font-size: 0.93rem;">
+            ${escapeHtml(concept)}
+          </div>
+        </div>
+
+        <!-- 2. REAL-TIME PROJECT APPLICATION: HOW & WHERE USED IN INDUSTRY -->
+        <div class="card border-0 shadow-sm p-4 mb-4 rounded-4" style="background: #ffffff; border-left: 5px solid #10b981 !important;">
+          <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+              <span class="fs-4">🚀</span>
+              <h5 class="fw-bold text-dark mb-0">2. Real-World Project Application (How &amp; Where Used in Real-Time Systems)</h5>
+            </div>
+            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-bold small">
+              🏢 ${escapeHtml(realWorld.domain || 'Enterprise Software & Microservices')}
+            </span>
+          </div>
+          <p class="text-secondary small mb-3">
+            Practical industry insights: how senior software engineers design and leverage this concept in live customer-facing systems.
+          </p>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <div class="p-3 bg-light rounded-3 border h-100">
+                <div class="d-flex align-items-center gap-1.5 text-primary fw-bold small mb-1.5">
+                  <span>📍</span>
+                  <span>Where Applied in Production:</span>
+                </div>
+                <div class="text-secondary small mb-2" style="line-height: 1.6;">
+                  ${escapeHtml(realWorld.where_applied || 'Used throughout service layers, request pipelines, and high-throughput data processors.')}
+                </div>
+                <div class="text-muted small" style="font-size: 0.78rem;">
+                  <strong>Leading Companies:</strong> ${escapeHtml(realWorld.companies || 'Amazon, Google, Netflix, Microsoft, TCS, Infosys')}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="p-3 bg-light rounded-3 border h-100">
+                <div class="d-flex align-items-center gap-1.5 text-success fw-bold small mb-1.5">
+                  <span>⚙️</span>
+                  <span>How Senior Engineers Implement It:</span>
+                </div>
+                <div class="text-secondary small mb-2" style="line-height: 1.6;">
+                  ${escapeHtml(realWorld.how_applied || 'Implemented using modular patterns, immutable data structures, and defensive boundary validation.')}
+                </div>
+                <div class="text-muted small" style="font-size: 0.78rem;">
+                  <strong>Placement &amp; Interview Focus:</strong> ${escapeHtml(realWorld.interview_relevance || 'Core technical interview staple in software design and coding assessments.')}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Production Incident Safeguard -->
+          <div class="p-3 rounded-3 border bg-warning bg-opacity-10 border-warning border-opacity-25 d-flex align-items-start gap-2.5">
+            <span class="fs-5 text-warning">⚠️</span>
+            <div>
+              <div class="fw-bold text-dark small mb-0.5">Production Incident Safeguard:</div>
+              <div class="text-secondary small" style="font-size: 0.82rem; line-height: 1.5;">
+                ${escapeHtml(realWorld.production_safeguards || 'Enforce bounds checks, clean memory disposal, and defensive fallback handlers to avoid system outages.')}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. WORKING CODE DEMONSTRATION & IMPLEMENTATION -->
+        ${example ? `
+          <div class="card border-0 shadow-sm p-4 mb-4 rounded-4" style="background: #ffffff; border-left: 5px solid #8b5cf6 !important;">
+            <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+              <div class="d-flex align-items-center gap-2">
+                <span class="fs-4">💻</span>
+                <div>
+                  <h5 class="fw-bold text-dark mb-0">3. Working Code Demonstration &amp; Implementation</h5>
+                  <small class="text-muted">${escapeHtml(example.title || 'Step-by-Step Code Walkthrough')}</small>
+                </div>
+              </div>
+              <span class="badge bg-secondary-subtle text-secondary border rounded-pill px-2.5 py-1 small">${escapeHtml(example.difficulty || 'Industry Standard')}</span>
+            </div>
+
+            ${example.problem ? `
+              <div class="p-3 bg-light rounded-3 border mb-3 small text-secondary">
+                <strong>Problem Scenario:</strong> ${escapeHtml(example.problem)}
+              </div>
+            ` : ''}
+
+            <div class="position-relative mb-3">
+              <pre class="p-3.5 bg-dark text-light rounded-3 font-monospace small mb-0 overflow-auto" style="max-height: 280px; font-size: 0.84rem; line-height: 1.6;"><code>${escapeHtml(example.code_or_math || '')}</code></pre>
+            </div>
+
+            ${example.explanation ? `
+              <div class="alert alert-light border small mb-0 text-secondary">
+                <strong>💡 Code Walkthrough:</strong> ${escapeHtml(example.explanation)}
+              </div>
+            ` : ''}
+          </div>
+        ` : ''}
+
+        <!-- 4. INTERACTIVE KNOWLEDGE CHECK & PRACTICE CHALLENGE -->
+        ${question ? `
+          <div class="card border-0 shadow-sm p-4 mb-4 rounded-4" style="background: #ffffff; border-left: 5px solid #f59e0b !important;">
+            <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+              <div class="d-flex align-items-center gap-2">
+                <span class="fs-4">📝</span>
+                <h5 class="fw-bold text-dark mb-0">4. Interactive Knowledge Check &amp; Practice Challenge</h5>
+              </div>
+              <span class="badge bg-warning-subtle text-dark border border-warning-subtle rounded-pill px-2.5 py-1 small fw-bold">Test Your Understanding</span>
+            </div>
+
+            <p class="text-dark fw-semibold small mb-3" style="font-size: 0.92rem;">
+              ${escapeHtml(question.question || question.title || 'Review the conceptual challenge below:')}
+            </p>
+
+            ${question.options && question.options.length ? `
+              <div class="d-flex flex-column gap-2 mb-3">
+                ${question.options.map((opt, oIdx) => `
+                  <div class="p-2.5 rounded-3 border bg-light d-flex align-items-center gap-2.5 cursor-pointer topic-quiz-option" 
+                       onclick="selectTopicQuizOption(this, ${oIdx === question.answer ? 'true' : 'false'})"
+                       style="cursor: pointer; transition: all 0.2s ease;">
+                    <span class="badge bg-white border text-dark rounded-circle px-2 py-1">${String.fromCharCode(65 + oIdx)}</span>
+                    <span class="small text-secondary">${escapeHtml(opt)}</span>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+
+            <div class="d-flex align-items-center gap-2">
+              <button type="button" class="btn btn-sm btn-outline-warning rounded-pill px-3 py-1.5 fw-semibold" onclick="toggleTopicSolution(${curItem.chapterNum}, ${curItem.topicIdx})">
+                👁️ Reveal Solution &amp; Architectural Explanation
+              </button>
+            </div>
+
+            <div id="topic-solution-${curItem.chapterNum}-${curItem.topicIdx}" class="mt-3 p-3 bg-light rounded-3 border small" style="display: none;">
+              <div class="fw-bold text-success mb-1">✓ Solution &amp; Architectural Explanation:</div>
+              <div class="text-secondary" style="line-height: 1.6;">${escapeHtml(question.explanation || question.answer || 'Review key fundamentals and practical safeguards above to solidify this topic.')}</div>
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- BOTTOM NAVIGATION TOOLBAR -->
+        <div class="p-3.5 bg-light rounded-4 border d-flex align-items-center justify-content-between flex-wrap gap-2 mt-4">
+          <button type="button" class="btn btn-outline-secondary rounded-pill px-3 py-1.5 small fw-semibold" onclick="goToPreviousTopic()" ${currentIndex <= 0 ? 'disabled' : ''}>
+            ⬅ Previous Topic
+          </button>
+          <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn ${isCompleted ? 'btn-success' : 'btn-outline-primary'} rounded-pill px-3 py-1.5 small fw-semibold" onclick="toggleTopicCompleted('${curItem.topicId}', ${curItem.stageNum})">
+              ${isCompleted ? '✓ Marked Complete' : 'Mark Complete'}
+            </button>
+            <button type="button" class="btn btn-primary rounded-pill px-3.5 py-1.5 small fw-bold" onclick="completeAndGoToNextTopic()">
+              ${currentIndex >= totalTopics - 1 ? 'Finish Course 🎓' : 'Complete & Next Topic ➔'}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Render Curriculum Outline Sidebar
+    const outlineContainer = document.getElementById("step-outline-modules-list");
+    if (outlineContainer && currentCourseCurriculum?.chapters) {
+      outlineContainer.innerHTML = currentCourseCurriculum.chapters.map((ch, mIdx) => {
+        const chNum = ch.chapter_num || (mIdx + 1);
+        const topics = (ch.topics && ch.topics.length) ? ch.topics : [ch.title];
+        const isCurrentModule = (mIdx === currentLearningModuleIdx);
+        const chCompletedCount = topics.filter((_, tIdx) => completedList.includes(`topic-${chNum}-${tIdx + 1}`)).length;
+        const isModuleDone = (chCompletedCount === topics.length && topics.length > 0);
+
+        return `
+          <div class="card border-0 mb-2 rounded-3 shadow-none ${isCurrentModule ? 'bg-white border-primary shadow-sm' : 'bg-transparent'}">
+            <div class="p-2.5 border-bottom d-flex align-items-center justify-content-between cursor-pointer" onclick="toggleModuleOutlineAccordion(${mIdx})" style="cursor: pointer;">
+              <div>
+                <span class="badge ${ch.progression_stage === 1 ? 'bg-success' : ch.progression_stage === 2 ? 'bg-primary' : ch.progression_stage === 3 ? 'bg-warning text-dark' : 'bg-danger'} rounded-pill px-2 py-0.5 me-1" style="font-size: 0.65rem;">
+                  Stage ${ch.progression_stage || (chNum <= 2 ? 1 : chNum <= 5 ? 2 : chNum <= 7 ? 3 : 4)}
+                </span>
+                <strong class="small text-dark" style="font-size: 0.8rem;">Module ${chNum}</strong>
+                <div class="text-truncate text-secondary" style="max-width: 210px; font-size: 0.74rem;">${escapeHtml(ch.title)}</div>
+              </div>
+              <span class="badge ${isModuleDone ? 'bg-success' : 'bg-light text-muted border'} rounded-pill" style="font-size: 0.68rem;">
+                ${chCompletedCount}/${topics.length}
+              </span>
+            </div>
+            <div class="p-1.5 ${isCurrentModule ? 'd-block' : 'd-none'}" id="module-outline-sublist-${mIdx}">
+              ${topics.map((t, tIdx) => {
+                const tId = `topic-${chNum}-${tIdx + 1}`;
+                const isDone = completedList.includes(tId);
+                const isActive = (mIdx === currentLearningModuleIdx && tIdx === currentLearningTopicIdx);
+
+                return `
+                  <div class="p-2 rounded-2 mb-1 cursor-pointer d-flex align-items-center justify-content-between ${isActive ? 'bg-primary text-white fw-bold shadow-sm' : isDone ? 'bg-success-subtle text-success' : 'hover-bg-light text-secondary'}" 
+                       style="font-size: 0.75rem; cursor: pointer; transition: background 0.15s ease;"
+                       onclick="selectStepTopic(${mIdx}, ${tIdx})">
+                    <div class="d-flex align-items-center gap-1.5 text-truncate me-2">
+                      <span>${isDone ? '✓' : isActive ? '▶' : `${tIdx + 1}.`}</span>
+                      <span class="text-truncate">${escapeHtml(t)}</span>
+                    </div>
+                    ${isActive ? '<span class="badge bg-white text-primary rounded-pill" style="font-size: 0.62rem;">Active</span>' : ''}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  };
+
+  window.completeAndGoToNextTopic = async function() {
+    if (!currentAllTopicsList || !currentAllTopicsList.length) return;
+
+    const curItem = currentAllTopicsList.find(x => x.moduleIdx === currentLearningModuleIdx && x.topicIdx === currentLearningTopicIdx);
+    if (curItem) {
+      if (!activeJourneyData.completed_topics) activeJourneyData.completed_topics = [];
+      if (!activeJourneyData.completed_topics.includes(curItem.topicId)) {
+        activeJourneyData.completed_topics.push(curItem.topicId);
+        try {
+          if (typeof api !== "undefined" && api.studyMaterials && typeof api.studyMaterials.completeTopic === "function") {
+            api.studyMaterials.completeTopic({ topic_id: curItem.topicId, phase_num: curItem.stageNum });
+          }
+        } catch (e) {
+          console.warn("Complete topic API error", e);
+        }
+      }
+    }
+
+    const curIndex = currentAllTopicsList.indexOf(curItem);
+    if (curIndex < currentAllTopicsList.length - 1) {
+      const nextItem = currentAllTopicsList[curIndex + 1];
+      renderStepByStepTopic(nextItem.moduleIdx, nextItem.topicIdx);
+      const viewport = document.getElementById("step-lesson-viewport");
+      if (viewport) viewport.scrollTop = 0;
+    } else {
+      alert("🎉 Congratulations! You have completed all curriculum topics in this course from foundational syntax to real-world deployment!");
+      renderStepByStepTopic(currentLearningModuleIdx, currentLearningTopicIdx);
+    }
+
+    renderLearningJourneyDashboard(activeJourneyData);
+  };
+
+  window.goToPreviousTopic = function() {
+    if (!currentAllTopicsList || !currentAllTopicsList.length) return;
+    const curItem = currentAllTopicsList.find(x => x.moduleIdx === currentLearningModuleIdx && x.topicIdx === currentLearningTopicIdx);
+    const curIndex = currentAllTopicsList.indexOf(curItem);
+    if (curIndex > 0) {
+      const prevItem = currentAllTopicsList[curIndex - 1];
+      renderStepByStepTopic(prevItem.moduleIdx, prevItem.topicIdx);
+      const viewport = document.getElementById("step-lesson-viewport");
+      if (viewport) viewport.scrollTop = 0;
+    }
+  };
+
+  window.selectStepTopic = function(mIdx, tIdx) {
+    renderStepByStepTopic(mIdx, tIdx);
+    const viewport = document.getElementById("step-lesson-viewport");
+    if (viewport) viewport.scrollTop = 0;
+  };
+
+  window.toggleModuleOutlineAccordion = function(mIdx) {
+    const el = document.getElementById(`module-outline-sublist-${mIdx}`);
+    if (el) {
+      if (el.classList.contains("d-none")) {
+        el.classList.remove("d-none");
+        el.classList.add("d-block");
+      } else {
+        el.classList.remove("d-block");
+        el.classList.add("d-none");
+      }
+    }
+  };
+
+  window.toggleTopicSolution = function(chNum, tIdx) {
+    const el = document.getElementById(`topic-solution-${chNum}-${tIdx}`);
+    if (el) {
+      el.style.display = (el.style.display === "none" || !el.style.display) ? "block" : "none";
+    }
+  };
+
+  window.selectTopicQuizOption = function(el, isCorrect) {
+    const parent = el.closest(".d-flex.flex-column");
+    if (parent) {
+      parent.querySelectorAll(".topic-quiz-option").forEach(item => {
+        item.classList.remove("bg-success-subtle", "border-success", "bg-danger-subtle", "border-danger");
+      });
+    }
+    if (isCorrect) {
+      el.classList.add("bg-success-subtle", "border-success");
+    } else {
+      el.classList.add("bg-danger-subtle", "border-danger");
+    }
+  };
+
+  window.toggleTopicIndexDrawer = function() {
+    const sidebar = document.getElementById("step-topics-sidebar");
+    if (sidebar) {
+      if (sidebar.style.display === "none") {
+        sidebar.style.display = "block";
+      } else {
+        sidebar.style.display = "none";
+      }
     }
   };
 
@@ -658,7 +1238,7 @@ var escapeHtml = window.escapeHtml;
     const modalBody = document.getElementById("curriculum-modal-body");
 
     if (modalTitle) modalTitle.textContent = curData ? curData.course_title : "Course Learning Roadmap & Guidance";
-    if (modalRole) modalRole.textContent = curData ? `${curData.target_role} • ${curData.chapters_count || 10} Comprehensive Modules` : "Placement Ready Track";
+    if (modalRole) modalRole.textContent = curData ? `${curData.target_role} • ${curData.chapters_count || 10} Structured Modules • Fundamentals ➔ Advanced ➔ Real-World Projects` : "Placement Ready Track";
 
     if (!modalBody) return;
 
@@ -666,8 +1246,50 @@ var escapeHtml = window.escapeHtml;
     const exercises = (curData && curData.practical_exercises) ? curData.practical_exercises : (activeJourneyData?.practical_exercises || []);
     const projects = (curData && curData.real_world_projects) ? curData.real_world_projects : (activeJourneyData?.real_world_projects || []);
     const placement = (curData && curData.placement_training) ? curData.placement_training : (activeJourneyData?.placement_training || {});
+    const progression = curData?.progression_overview || null;
 
     modalBody.innerHTML = `
+      <!-- 4-Stage Pedagogical Stepper Banner -->
+      <div class="card border-0 shadow-sm p-3 mb-4 rounded-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
+        <div class="d-flex align-items-center justify-content-between mb-2.5 flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary px-3 py-1 rounded-pill small fw-bold">🎯 Learning Progression Ladder</span>
+            <span class="fw-bold small text-light">Step-by-Step From Fundamentals to Production Systems</span>
+          </div>
+          <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-0.5" style="font-size: 0.72rem;">Beginner Friendly ➔ Enterprise Ready</span>
+        </div>
+        <div class="row g-2 text-center">
+          <div class="col-6 col-md-3">
+            <div class="p-2.5 rounded-3 border border-secondary h-100" style="background: rgba(255,255,255,0.06);">
+              <span class="badge bg-success text-white rounded-pill px-2 py-0.5 mb-1" style="font-size: 0.68rem;">Stage 1</span>
+              <div class="fw-bold small text-white">Fundamentals</div>
+              <div class="text-white-50" style="font-size: 0.7rem;">Syntax, Runtime &amp; Basics</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-2.5 rounded-3 border border-secondary h-100" style="background: rgba(255,255,255,0.06);">
+              <span class="badge bg-primary text-white rounded-pill px-2 py-0.5 mb-1" style="font-size: 0.68rem;">Stage 2</span>
+              <div class="fw-bold small text-white">Core Engineering</div>
+              <div class="text-white-50" style="font-size: 0.7rem;">Data Structures &amp; OOP</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-2.5 rounded-3 border border-secondary h-100" style="background: rgba(255,255,255,0.06);">
+              <span class="badge bg-warning text-dark rounded-pill px-2 py-0.5 mb-1" style="font-size: 0.68rem;">Stage 3</span>
+              <div class="fw-bold small text-white">Advanced Concepts</div>
+              <div class="text-white-50" style="font-size: 0.7rem;">Concurrency &amp; Optimization</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-2.5 rounded-3 border border-secondary h-100" style="background: rgba(255,255,255,0.06);">
+              <span class="badge bg-danger text-white rounded-pill px-2 py-0.5 mb-1" style="font-size: 0.68rem;">Stage 4</span>
+              <div class="fw-bold small text-white">Real-World Projects</div>
+              <div class="text-white-50" style="font-size: 0.7rem;">Microservices &amp; Deployment</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Navigation Tabs -->
       <ul class="nav nav-pills nav-fill mb-4 p-1.5 bg-light rounded-4 gap-1 border" id="curriculumTabs" role="tablist">
         <li class="nav-item" role="presentation">
@@ -712,16 +1334,54 @@ var escapeHtml = window.escapeHtml;
                 <div class="accordion-item border-bottom">
                   <h2 class="accordion-header" id="heading-ch-${chNum}">
                     <button class="accordion-button ${idx === 0 ? '' : 'collapsed'} fw-bold text-dark py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-ch-${chNum}">
-                      <div class="d-flex align-items-center gap-2 flex-grow-1">
-                        <span class="badge bg-primary text-white rounded-pill px-2.5 py-1">Module ${chNum}</span>
-                        <span>${escapeHtml(ch.title)}</span>
+                      <div class="d-flex align-items-center gap-2 flex-grow-1 flex-wrap">
+                        <span class="badge bg-dark text-white rounded-pill px-2.5 py-1">Module ${chNum}</span>
+                        <span class="badge ${ch.progression_stage === 1 ? 'bg-success' : ch.progression_stage === 2 ? 'bg-primary' : ch.progression_stage === 3 ? 'bg-warning text-dark' : 'bg-danger'} rounded-pill px-2.5 py-0.5" style="font-size: 0.68rem;">
+                          ${escapeHtml(ch.stage_badge || (chNum <= 2 ? 'Fundamentals' : chNum <= 5 ? 'Core Engineering' : chNum <= 7 ? 'Advanced Concepts' : 'Real-World Projects'))}
+                        </span>
+                        <span class="fw-bold text-dark">${escapeHtml(ch.title)}</span>
                       </div>
                     </button>
                   </h2>
                   <div id="collapse-ch-${chNum}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" data-bs-parent="#curriculumAccordion">
                     <div class="accordion-body bg-light p-4">
+                      <!-- REAL-TIME PROJECT APPLICATION CARD -->
+                      ${ch.real_world_application ? `
+                        <div class="card border-0 shadow-sm p-3.5 mb-3 rounded-3" style="background: #ffffff; border-left: 4px solid #3b82f6 !important;">
+                          <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                            <div class="d-flex align-items-center gap-2">
+                              <span class="fs-5">🚀</span>
+                              <h6 class="fw-bold text-dark mb-0" style="font-size: 0.92rem;">Real-Time Project Application (How &amp; Where Used in Industry)</h6>
+                            </div>
+                            <span class="badge bg-dark text-white rounded-pill px-2.5 py-1" style="font-size: 0.7rem;">🏢 ${escapeHtml(ch.real_world_application.domain || 'Enterprise Software')}</span>
+                          </div>
+                          <div class="row g-2 mb-2">
+                            <div class="col-md-6">
+                              <div class="p-2.5 bg-light rounded-2 border">
+                                <div class="text-primary fw-bold small mb-1">📍 Where Applied in Production:</div>
+                                <div class="text-secondary small" style="font-size: 0.78rem;">${escapeHtml(ch.real_world_application.where_applied || '')}</div>
+                                <div class="mt-1 text-muted" style="font-size: 0.7rem;"><strong>Top Companies:</strong> ${escapeHtml(ch.real_world_application.companies || 'Amazon, Google, TCS, Infosys')}</div>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="p-2.5 bg-light rounded-2 border">
+                                <div class="text-success fw-bold small mb-1">⚙️ How Engineers Implement It:</div>
+                                <div class="text-secondary small" style="font-size: 0.78rem;">${escapeHtml(ch.real_world_application.how_applied || '')}</div>
+                                <div class="mt-1 text-muted" style="font-size: 0.7rem;"><strong>Placement Focus:</strong> ${escapeHtml(ch.real_world_application.interview_relevance || '')}</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="p-2 bg-light rounded-2 border small d-flex align-items-start gap-2">
+                            <span class="text-warning">⚠️</span>
+                            <div style="font-size: 0.76rem;" class="text-muted">
+                              <strong>Production Incident Safeguard:</strong> ${escapeHtml(ch.real_world_application.production_safeguards || 'Enforce bounds, defensive logging, and resource cleanup.')}
+                            </div>
+                          </div>
+                        </div>
+                      ` : ''}
+
                       <div class="mb-3">
-                        <h6 class="fw-bold text-dark mb-1">Key Takeaways & Core Concepts:</h6>
+                        <h6 class="fw-bold text-dark mb-1">Key Takeaways &amp; Core Concepts:</h6>
                         <div class="small text-secondary" style="white-space: pre-line;">${escapeHtml(concept)}</div>
                       </div>
 
@@ -1143,6 +1803,15 @@ var escapeHtml = window.escapeHtml;
   // Expose global methods
   window.loadCandidateLearningJourney = loadCandidateLearningJourney;
   window.renderLearningJourneyDashboard = renderLearningJourneyDashboard;
+  window.startCurrentCourse = startCurrentCourse;
+  window.renderStepByStepTopic = renderStepByStepTopic;
+  window.completeAndGoToNextTopic = completeAndGoToNextTopic;
+  window.goToPreviousTopic = goToPreviousTopic;
+  window.selectStepTopic = selectStepTopic;
+  window.toggleModuleOutlineAccordion = toggleModuleOutlineAccordion;
+  window.toggleTopicSolution = toggleTopicSolution;
+  window.selectTopicQuizOption = selectTopicQuizOption;
+  window.toggleTopicIndexDrawer = toggleTopicIndexDrawer;
 
   // Auto-init on load
   if (document.readyState === "loading") {

@@ -9,7 +9,7 @@ import logging
 from typing import Optional, Dict, Any
 
 from app.nlp.resume_parser import extract_resume_text
-from app.nlp.skill_extractor import parse_resume_fields
+from app.nlp.skill_extractor import parse_resume_fields, clean_institution_name
 from app.core.config import settings
 
 logger = logging.getLogger("ai_recruiter.resume_autofill")
@@ -162,7 +162,7 @@ def extract_candidate_autofill_fields(file_bytes: bytes, filename: str, fallback
         if not clean_c or re.search(r"\b(cgpa|gpa|percentage|passed with|completed with|\d+%\b)", clean_c, re.I):
             continue
         # Join lines that continue previous certificate title
-        if merged_certs and (clean_c[0].islower() or re.match(r"^(?:in|through|at|by|from|journey|development)\b", clean_c, re.I) or not re.match(r"^(?:completed|certified|certificate|aws|google|microsoft|coursera|python|java|react)\b", clean_c, re.I)):
+        if merged_certs and (clean_c[0].islower() or re.match(r"^(?:and|with|through|at|by|from|via)\b", clean_c, re.I)):
             merged_certs[-1] = f"{merged_certs[-1]} {clean_c}".strip()
         else:
             merged_certs.append(clean_c)
@@ -194,7 +194,8 @@ def extract_candidate_autofill_fields(file_bytes: bytes, filename: str, fallback
     # Helper regexes
     year_re = re.compile(r"\b(19\d{2}|20\d{2})\b")
     pct_re = re.compile(r"(\d+(?:\.\d+)?)\s*%")
-    cgpa_num_re = re.compile(r"\b([4-9]\.\d{1,2}|10\.0)\b")
+    cgpa_num_re = re.compile(r"\b(?:cgpa|gpa|grade|score)?\s*[:\-–—]?\s*([2-9]\.\d{1,2}|10\.0)\b", re.I)
+    explicit_gpa_re = re.compile(r"\b(?:cgpa|gpa)\s*[:\-–—]?\s*([0-9]\.\d{1,2})\b", re.I)
 
     for item in edu_items:
         deg_str = str(item.get("degree") or "").strip()
@@ -207,17 +208,19 @@ def extract_candidate_autofill_fields(file_bytes: bytes, filename: str, fallback
 
         # Classify degree / level
         is_10th = bool(re.search(r"\b(sslc|10th(?:\s+grade|\s+std)?|class\s+x\b|secondary\s+school\s+leaving)\b", full_lower))
-        is_12th = bool(re.search(r"\b(hsc|12th(?:\s+grade|\s+std)?|class\s+xii\b|higher\s+secondary\s+certificate|intermediate|diploma|plus\s+two)\b", full_lower))
+        is_12th = not is_10th and bool(re.search(r"\b(hsc|12th(?:\s+grade|\s+std)?|class\s+xii\b|higher\s+secondary(?:\s+certificate)?|intermediate|diploma|plus\s+two|high\s+school)\b", full_lower))
 
         if not is_10th and not is_12th:
             if re.search(r"\b(sslc|10th\b|secondary\s+education)\b", full_lower):
                 is_10th = True
             elif re.search(r"\b(hsc|12th\b|higher\s+secondary)\b", full_lower):
                 is_12th = True
+            elif re.search(r"\b(high\s+school)\b", full_lower):
+                is_12th = True
 
         if is_10th and not is_12th:
             # 10th Grade / SSLC Record
-            clean_school = re.sub(r"[\s,\-–—]+(SSLC|10th(?:\s+Grade|\s+Std)?|Secondary\s+School\s+Leaving\s+Certificate)\b.*$", "", inst_str, flags=re.I).strip(" ,-|.")
+            clean_school = clean_institution_name(inst_str)
             tenth_school = clean_school or tenth_school
             if "matric" in full_lower:
                 tenth_board = "Matriculation / SSLC"
@@ -246,7 +249,7 @@ def extract_candidate_autofill_fields(file_bytes: bytes, filename: str, fallback
 
         elif is_12th:
             # 12th Grade / HSC / Intermediate Record
-            clean_school = re.sub(r"[\s,\-–—]+(HSC|12th(?:\s+Grade|\s+Std)?|Higher\s+Secondary\s+Certificate|Intermediate|Diploma)\b.*$", "", inst_str, flags=re.I).strip(" ,-|.")
+            clean_school = clean_institution_name(inst_str)
             twelfth_school = clean_school or twelfth_school
             if "diploma" in full_lower:
                 twelfth_board = "Diploma"
@@ -277,19 +280,40 @@ def extract_candidate_autofill_fields(file_bytes: bytes, filename: str, fallback
 
         else:
             # College / University Record
-            if not college or college == "-":
-                clean_inst = re.sub(r"[\s,\-–—]+(B\.?E\.?|B\.?Tech|BCA|MCA|M\.?Tech|B\.?Sc|M\.?Sc)\b.*$", "", inst_str, flags=re.I).strip(" ,-|.")
+            clean_inst = clean_institution_name(inst_str)
+            if clean_inst:
                 college = clean_inst
+
+            # Separate degree & branch if combined
+            cand_deg = deg_str
+            cand_branch = field_str
+            if " in " in cand_deg:
+                parts = cand_deg.split(" in ", 1)
+                cand_deg = parts[0].strip()
+                if not cand_branch:
+                    cand_branch = parts[1].strip()
+            if "(" in cand_deg and ")" in cand_deg:
+                m_br = re.search(r"^(.*?)\s*\(([^)]+)\)", cand_deg)
+                if m_br:
+                    cand_deg = m_br.group(1).strip()
+                    if not cand_branch:
+                        cand_branch = m_br.group(2).strip()
+
             if not degree or degree.lower() in ("degree", "academic degree", "-"):
-                degree = deg_str
+                degree = cand_deg
             if not branch:
-                branch = field_str
-            if not cgpa and item_score:
-                cg_m = cgpa_num_re.search(item_score) or pct_re.search(item_score)
+                branch = cand_branch
+
+            if not cgpa:
+                cg_m = explicit_gpa_re.search(item_score) or explicit_gpa_re.search(full_item_text) or cgpa_num_re.search(item_score) or pct_re.search(item_score)
                 if cg_m:
                     cgpa = cg_m.group(1)
             if item_end_year:
                 grad_year = item_end_year
+            elif not grad_year:
+                y_m = year_re.findall(full_item_text)
+                if y_m:
+                    grad_year = y_m[-1]
 
     # Education section slice fallback if college fields remain incomplete
     m_edu_sec = re.search(r"(?:EDUCATION|ACADEMIC|ACADEMICS)\s*[:\-–—]?\s*(?:\r?\n)+([^\n]+(?:\n[^\n]+){0,8})", raw_text, re.I)
@@ -299,16 +323,23 @@ def extract_candidate_autofill_fields(file_bytes: bytes, filename: str, fallback
         for line in edu_text.splitlines():
             l_str = line.strip()
             if any(kw in l_str.lower() for kw in ["university", "college", "institute", "campus", "iit", "nit", "bits", "vit", "srm"]):
-                college = re.sub(r"[\s,\-–—]+(B\.?E\.?|B\.?Tech|BCA|MCA|M\.?Tech|B\.?Sc|M\.?Sc)\b.*$", "", l_str, flags=re.I).strip(" ,-|.")
+                college = clean_institution_name(l_str)
                 college = re.sub(r"\s*[|•].*$", "", college).strip()
                 break
 
     if not degree or degree.lower() in ("degree", "academic degree", "-"):
         m_deg = re.search(r"\b(B\.?E\.?|B\.?Tech|BCA|MCA|M\.?Tech|B\.?Sc|M\.?Sc|Bachelor(?:['’]s)?(?:\s+of\s+[A-Za-z\s]+)?|Master(?:['’]s)?(?:\s+of\s+[A-Za-z\s]+)?)\b", edu_text, re.I)
         if m_deg:
-            degree = m_deg.group(1).strip()
-            if degree.lower().startswith("bachelor"):
+            deg_found = m_deg.group(1).strip()
+            if " in " in deg_found:
+                d_parts = deg_found.split(" in ", 1)
+                degree = d_parts[0].strip()
+                if not branch:
+                    branch = d_parts[1].strip()
+            elif deg_found.lower().startswith("bachelor"):
                 degree = "Bachelor of Engineering (B.E.)"
+            else:
+                degree = deg_found
 
     if not branch:
         m_br = re.search(r"\b(Computer Science(?: & Engineering| and Engineering)?|Information Technology|Electronics & Communication|Electrical & Electronics|Mechanical Engineering|Data Science|Artificial Intelligence)\b", edu_text, re.I)
@@ -316,7 +347,7 @@ def extract_candidate_autofill_fields(file_bytes: bytes, filename: str, fallback
             branch = m_br.group(1).strip()
 
     if not cgpa:
-        m_cg = cgpa_num_re.search(edu_text) or pct_re.search(edu_text)
+        m_cg = explicit_gpa_re.search(edu_text) or cgpa_num_re.search(edu_text) or pct_re.search(edu_text)
         if m_cg:
             cgpa = m_cg.group(1)
 

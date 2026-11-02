@@ -41,7 +41,7 @@ SECTION_HEADING_RE = re.compile(
     r"skills\s*(?:&|and)\s*competencies|skills\s*(?:&|and)\s*technologies|technical\s+skills|key\s+skills|skills\s*(?:&|and)\s*expertise|core\s+competencies|competencies|technical\s+environment|technologies|tech\s+stack|technical\s+stack|technical\s+expertise|technical\s+proficiencies|tools\s*(?:&|and)\s*technologies|tools|skills|areas\s+of\s+expertise|programming\s+languages|software\s+skills|core\s+skills|extracted\s+skills|"
     r"projects?|academic\s+projects|key\s+projects|personal\s+projects|featured\s+projects|technical\s+projects|project\s+work|major\s+projects|mini\s+projects|recent\s+projects|projects\s+undertaken|project\s+details|"
     r"certifications?|certificates?|credentials?|licenses?|courses?|certifications?\s*(?:&|and)\s*licenses?|licenses?\s*(?:&|and)\s*certifications?|training\s*(?:&|and)\s*certifications?|courses?\s*(?:&|and)\s*certifications?|professional\s+certifications?|"
-    r"professional\s+summary|career\s+objective|summary|objective|about\s+me|profile|executive\s+summary|"
+    r"professional\s+summary|profile\s+summary|summary\s+of\s+qualifications|professional\s+profile|personal\s+profile|personal\s+summary|career\s+objective|summary|objective|about\s+me|about|profile|bio|biography|executive\s+summary|"
     r"declaration|personal\s+details|contact\s+information|contact\s+details|personal\s+info|languages|hobbies|interests|achievements|awards|publications|references|volunteer"
     r")\s*[*_]*:?\s*$",
     re.IGNORECASE | re.MULTILINE,
@@ -73,7 +73,7 @@ _CERTIFICATION_HEADING_RE = re.compile(
 )
 
 _CAREER_OBJ_RE = re.compile(
-    r"^\s*(?:[#*\->\d\.]+\s*)?(?:career\s+objective|objective|professional\s+summary|summary|profile|about\s+me|executive\s+summary)\s*[*_]*:?\s*$",
+    r"^\s*(?:[#*\->\d\.]+\s*)?(?:career\s+objective|objective|professional\s+summary|profile\s+summary|summary\s+of\s+qualifications|professional\s+profile|personal\s+profile|personal\s+summary|summary|profile|about\s+me|about|bio|biography|executive\s+summary)\s*[*_]*:?\s*$",
     re.IGNORECASE | re.MULTILINE,
 )
 
@@ -170,6 +170,19 @@ def extract_name(text: str, entities: dict[str, list[str]]) -> str | None:
     if not lines:
         return None
 
+    # 0. Check explicit labeled name: Name: ..., Full Name: ..., Candidate Name: ...
+    label_re = re.compile(
+        r"^\s*(?:full\s+name|candidate\s+name|applicant\s+name|name)\s*[:\-–—]\s*([a-zA-Z\s.'-]+)$",
+        re.IGNORECASE,
+    )
+    for line in lines[:8]:
+        m = label_re.match(line)
+        if m:
+            cand = m.group(1).strip()
+            w_lower = [w.lower() for w in cand.split()]
+            if 1 <= len(w_lower) <= 5 and not any(w in _INVALID_NAME_TERMS for w in w_lower):
+                return cand
+
     gpe_terms = {g.lower() for g in entities.get("GPE", [])}
     for gpe in list(gpe_terms):
         for part in gpe.split():
@@ -178,7 +191,8 @@ def extract_name(text: str, entities: dict[str, list[str]]) -> str | None:
     # 1. Primary Strategy: Check the top 3 non-empty lines for the candidate full name.
     # Resumes standardly start with candidate's full name on line 1.
     for line in lines[:3]:
-        clean_line = re.sub(r"^[^\w]+", "", line).strip()
+        clean_line = re.sub(r"^(?:full\s+name|candidate\s+name|applicant\s+name|name)\s*[:\-–—]\s*", "", line, flags=re.I)
+        clean_line = re.sub(r"^[^\w]+", "", clean_line).strip()
         words = clean_line.split()
         words_lower = [w.lower() for w in words]
 
@@ -654,10 +668,14 @@ def extract_summary(text: str, max_sentences: int = 5) -> str | None:
     head_text = text[:first_sec.start()] if first_sec else text[:600]
     lines = [clean_bullets(l).strip() for l in head_text.splitlines() if clean_bullets(l).strip()]
     content_lines = []
-    for line in lines:
+    for line in lines[1:]:  # skip candidate name line
         if EMAIL_RE.search(line) or PHONE_RE.search(line) or _LINKEDIN_RE.search(line) or _GITHUB_RE.search(line):
             continue
+        if re.search(r"^(?:address|contact|phone|email|location|github|linkedin|portfolio)\b", line, re.IGNORECASE):
+            continue
         if len(line.split()) <= 4 and _HEADER_LINE_RE.match(line):
+            continue
+        if len(line.split()) < 4:
             continue
         content_lines.append(line)
     if content_lines:
@@ -727,10 +745,25 @@ _GITHUB_RE = re.compile(
     r"(?:https?://)?(?:www\.)?github\.com/([a-zA-Z0-9_%-]+)/?",
     re.IGNORECASE,
 )
-_PORTFOLIO_RE = re.compile(
-    r"(?:https?://)?([a-zA-Z0-9_-]+\.(?:netlify\.app|vercel\.app|github\.io|herokuapp\.com|[a-zA-Z]{2,}(?:/[a-zA-Z0-9._/-]*)?))",
+_PORTFOLIO_HOSTING_RE = re.compile(
+    r"\b([a-zA-Z0-9_-]+\.(?:netlify\.app|vercel\.app|github\.io|herokuapp\.com|web\.app|firebaseapp\.com|pages\.dev|surge\.sh|render\.com)(?:/[^\s,;]*)?)\b",
     re.IGNORECASE,
 )
+_HTTP_PORTFOLIO_RE = re.compile(
+    r"(https?://(?:www\.)?[a-zA-Z0-9_-]+(?:\.[a-zA-Z0-9_-]+)+(?:/[^\s,;]*)?)",
+    re.IGNORECASE,
+)
+_LABELED_PORTFOLIO_RE = re.compile(
+    r"(?:portfolio|website|personal\s+site|web)\s*[:\-–—]\s*(https?://[^\s,;]+|[a-zA-Z0-9_-]+\.[a-zA-Z0-9._/-]+)",
+    re.IGNORECASE,
+)
+
+_IGNORED_PORTFOLIO_DOMAINS = [
+    "linkedin.com", "github.com", "gitlab.com", "example.com", "w3.org", "schema.org", "adobe.com",
+    "canva.com", "medium.com", "youtube.com", "twitter.com", "x.com", "facebook.com", "instagram.com",
+    "gmail.com", "outlook.com", "yahoo.com", "hotmail.com", "icloud.com", "live.com", "proton.me", "protonmail.com",
+    "leetcode.com", "hackerrank.com", "geeksforgeeks.org", "codeforces.com"
+]
 
 
 def extract_linkedin(text: str) -> Optional[str]:
@@ -756,15 +789,32 @@ def extract_github(text: str) -> Optional[str]:
 
 
 def extract_portfolio(text: str) -> Optional[str]:
-    """Extract personal portfolio URL or site."""
-    matches = _PORTFOLIO_RE.findall(text)
-    for m in matches:
-        m_lower = m.lower()
-        if not any(ignored in m_lower for ignored in ["linkedin.com", "github.com", "example.com", "w3.org", "schema.org", "adobe.com"]):
-            url = m.strip()
-            if not url.startswith("http://") and not url.startswith("https://"):
-                url = f"https://{url}"
-            return url
+    """Extract personal portfolio URL or site without false positives from emails or social domains."""
+    # 1. Explicit labeled portfolio: Portfolio: https://... or Website: mysite.dev
+    m_lab = _LABELED_PORTFOLIO_RE.search(text)
+    if m_lab:
+        cand = m_lab.group(1).strip()
+        cand_lower = cand.lower()
+        if not any(ign in cand_lower for ign in _IGNORED_PORTFOLIO_DOMAINS) and "@" not in cand:
+            if not cand.startswith("http://") and not cand.startswith("https://"):
+                cand = f"https://{cand}"
+            return cand
+
+    # 2. Known portfolio hosting platforms (.github.io, .vercel.app, .netlify.app, etc.)
+    m_host = _PORTFOLIO_HOSTING_RE.search(text)
+    if m_host:
+        cand = m_host.group(1).strip()
+        if not cand.startswith("http://") and not cand.startswith("https://"):
+            cand = f"https://{cand}"
+        return cand
+
+    # 3. Explicit HTTP(S) links that are not emails, social platforms, or documentation sites
+    for m in _HTTP_PORTFOLIO_RE.findall(text):
+        cand_lower = m.lower()
+        if not any(ign in cand_lower for ign in _IGNORED_PORTFOLIO_DOMAINS) and "@" not in m:
+            if not re.search(r"\.(pdf|docx?|png|jpe?g|gif)$", cand_lower):
+                return m.strip()
+
     return None
 
 
@@ -1091,6 +1141,34 @@ def parse_projects_items(proj_text: str, candidate_github: Optional[str] = None,
     return projects
 
 
+def clean_institution_name(text: str) -> str:
+    """Cleans school/college name by removing leading degree prefixes, trailing scores, years, and boards."""
+    if not text:
+        return ""
+    # Strip leading generic headers
+    text = re.sub(r"^(?:education|academics?|qualifications?|high\s+school|secondary\s+school)\s*[:\-–—|/]?\s*", "", text, flags=re.I)
+    # 1. Remove leading degree / exam type prefix: e.g. "B.Tech (Information Technology), ", "HSC (12th), ", "SSLC (10th), "
+    text = re.sub(
+        r"^(?:[\s*•\-–—]*)(?:b\.?tech|b\.?e\.?|m\.?tech|bca|mca|b\.?sc|m\.?sc|bba|mba|ph\.?d|bachelor[^\,\(\)]*|master[^\,\(\)]*|hsc|sslc|12th(?:\s+grade|\s+std)?|10th(?:\s+grade|\s+std)?|class\s+xii|class\s+x|intermediate|secondary\s+school\s+leaving(?:\s+certificate)?|higher\s+secondary(?:\s+certificate)?)\s*(?:\([^\)]*\))?\s*[\,\:\-–—|/]\s*",
+        "",
+        text,
+        flags=re.I,
+    )
+    # 2. Remove trailing score / CGPA / percentage: e.g. ", 89.2%", ", CGPA: 8.62"
+    text = re.sub(
+        r"[\s*•\-–—|,/]+\s*(?:cgpa|gpa|percentage|marks|grade|score)?\s*[:=]?\s*\d+(?:\.\d+)?\s*(?:/\s*\d+)?\s*%?.*$",
+        "",
+        text,
+        flags=re.I,
+    )
+    # 3. Remove trailing years / graduated: e.g. ", 2024", ", Graduated: 2023"
+    text = re.sub(r"[\s*•\-–—|,/]+\s*(?:graduated|passed|completed)?\s*[:=]?\s*(?:19\d{2}|20\d{2})\b.*$", "", text, flags=re.I)
+    text = re.sub(r"[\s*•\-–—|,/]+\s*(?:graduated|passed|completed)\b.*$", "", text, flags=re.I)
+    # 4. Remove trailing board
+    text = re.sub(r"[\s*•\-–—|,/]+\s*(?:state\s+board|cbse|icse|matriculation|sslc|hsc|diploma)\b.*$", "", text, flags=re.I)
+    return text.strip(" ,-|.:;•\t\r\n")
+
+
 def parse_education_items(edu_text: str, **kwargs) -> list[dict]:
     """
     Parses Education section into structured academic items with verbatim precision.
@@ -1193,38 +1271,42 @@ def parse_education_items(edu_text: str, **kwargs) -> list[dict]:
 
         desc_lines = []
         inst_lines = []
+        deg_lines = []
         for l in b_lines:
             if header_re.match(l):
                 continue
-            if re.search(r"\b(completed|cgpa|gpa|percentage|passed|scored|grade)\b|\d+%", l, re.I):
+            if re.search(r"\b(completed|cgpa|gpa|percentage|passed|scored|grade|graduated|graduation\s+year)\b|\d+%", l, re.I):
                 desc_lines.append(l)
+            elif degree_kw.search(l) and not any(kw in l.lower() for kw in ["college", "university", "institute", "school"]):
+                deg_lines.append(l)
             else:
                 inst_lines.append(l)
 
         details = " ".join(desc_lines) if desc_lines else None
-        inst_text = " ".join(inst_lines) if inst_lines else b_lines[0]
+        inst_text = " ".join(inst_lines) if inst_lines else (deg_lines[0] if deg_lines else b_lines[0])
 
         # Extract degree and clean institution
-        deg_suffix = re.search(r"[\s,\-–—]+(B\.?E\.?|B\.?Tech|M\.?Tech|B\.?Sc|M\.?Sc|HSC|SSLC|Diploma|BBA|BCA|MCA|MBA|Ph\.?D)\b", inst_text, re.I)
-        if deg_suffix:
-            deg = deg_suffix.group(1).upper()
-            inst = inst_text[:deg_suffix.start()].strip(" ,-|.")
+        if deg_lines:
+            deg = deg_lines[0].strip()
+            inst = inst_text
         else:
-            deg_m = degree_kw.search(full_block)
-            deg = deg_m.group(0).upper() if deg_m else "Education"
-            # If parts separated by dash / pipe
-            parts = re.split(r"[-–—|]\s*", inst_text)
-            if len(parts) >= 2 and any(kw in parts[1].lower() for kw in ["college", "university", "school", "institute"]):
-                inst = parts[1].strip(" ,-|.")
+            deg_suffix = re.search(r"[\s,\-–—]+(B\.?E\.?|B\.?Tech|M\.?Tech|B\.?Sc|M\.?Sc|HSC|SSLC|Diploma|BBA|BCA|MCA|MBA|Ph\.?D)\b", inst_text, re.I)
+            if deg_suffix:
+                deg = deg_suffix.group(1).upper()
+                inst = inst_text[:deg_suffix.start()].strip(" ,-|.")
             else:
-                inst = inst_text
+                deg_m = degree_kw.search(full_block)
+                deg = deg_m.group(0).upper() if deg_m else "Education"
+                # If parts separated by dash / pipe
+                parts = re.split(r"[-–—|]\s*", inst_text)
+                if len(parts) >= 2 and any(kw in parts[1].lower() for kw in ["college", "university", "school", "institute"]):
+                    inst = parts[1].strip(" ,-|.")
+                else:
+                    inst = inst_text
 
         # Clean institution name of redundant degree suffixes, GPA/score, and header prefixes
         inst = re.sub(r"^(?:education|academic|academics|qualifications?)\s*[:\-–—]?\s*", "", inst, flags=re.I).strip(" ,-|.")
-        inst = re.sub(r"[\s,\-–—]+(?:B\.?E\.?|HSC|SSLC|B\.?Tech|M\.?Tech|Diploma)\b", "", inst, flags=re.I).strip(" ,-|.")
-        inst = re.sub(r"\s*[\s,\-|–—]*\b(?:c?gpa|grade|score|percentage)\s*[:\-–—]?\s*\d+(?:\.\d+)?(?:\s*/\s*\d+)?(?:\s*%)?.*$", "", inst, flags=re.I).strip(" ,-|.")
-        inst = re.sub(r"[\s,\-|–—]+(?:\d+(?:\.\d+)?\s*(?:/\s*\d+)?\s*(?:%|cgpa|gpa))\b.*$", "", inst, flags=re.I).strip(" ,-|.")
-        inst = inst.strip(" ,-|.")
+        inst = clean_institution_name(inst)
 
         # Year determination
         start_year = years[0] if len(years) >= 2 else None

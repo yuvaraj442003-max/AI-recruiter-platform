@@ -24,6 +24,11 @@
           </a>
         </li>
         <li class="nav-item">
+          <a href="course-learning.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📚</span> Course Learning Studio
+          </a>
+        </li>
+        <li class="nav-item">
           <a href="candidate-dashboard.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
             <span>📊</span> Dashboard
           </a>
@@ -143,6 +148,12 @@
               </div>
 
               <div class="d-flex align-items-center gap-2 flex-wrap flex-shrink-0">
+                <!-- Clearly Visible Start Course Button -->
+                <a href="python-course-learning.html" class="btn btn-warning text-dark fw-bold px-3.5 py-2 rounded-pill shadow-sm d-flex align-items-center gap-2" id="btn-header-start-course" onclick="startCurrentCourse(event)" style="font-size: 0.92rem; box-shadow: 0 4px 14px rgba(234, 179, 8, 0.4); text-decoration: none;">
+                  <span id="btn-header-start-icon">▶️</span>
+                  <span id="btn-header-start-text">Start Course</span>
+                </a>
+
                 <!-- Course Selector Dropdown -->
                 <div class="dropdown">
                   <button class="btn btn-light fw-bold px-3 py-2 rounded-pill shadow-sm dropdown-toggle d-flex align-items-center gap-2" type="button" id="courseTrackDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -179,9 +190,9 @@
                   </ul>
                 </div>
 
-                <button type="button" class="btn btn-outline-light rounded-pill px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-1.5" onclick="openCourseCurriculumModal()">
-                  <span>📖 Full Syllabus &amp; Materials</span>
-                </button>
+                <a href="course-learning.html?course=python" class="btn btn-outline-light rounded-pill px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-1.5" id="btn-header-syllabus-link" style="text-decoration: none;">
+                  <span>📖 Full Syllabus &amp; Topics</span>
+                </a>
               </div>
             </div>
 
@@ -194,7 +205,7 @@
                 <span>💻</span> <span class="text-white-50"><strong class="text-white">Practical Coding</strong> Exercises</span>
               </div>
               <div class="col-6 col-md-3 d-flex align-items-center gap-2">
-                <span>🚀</span> <span class="text-white-50"><strong class="text-white">Real-World Projects</strong> (Spring Boot)</span>
+                <span>🚀</span> <span class="text-white-50"><strong class="text-white">Real-World Projects</strong> <span id="active-course-projects-badge">(FastAPI &amp; Microservices)</span></span>
               </div>
               <div class="col-6 col-md-3 d-flex align-items-center gap-2">
                 <span>🎯</span> <span class="text-white-50"><strong class="text-white">Campus Placement</strong> Training</span>
@@ -220,13 +231,14 @@
                 </div>
               </div>
               <div class="d-flex align-items-center gap-2 flex-wrap">
-                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold shadow-sm" id="btn-advance-stage-progress" onclick="advanceActiveStageProgress()">
-                  ⚡ Advance Progress (+20%)
+                <a href="python-course-learning.html" class="btn btn-primary rounded-pill px-3.5 py-2 fw-bold shadow-sm d-flex align-items-center gap-1.5" id="btn-journey-start-course" onclick="startCurrentCourse(event)" style="text-decoration: none;">
+                  <span id="btn-journey-start-icon">▶️</span>
+                  <span id="btn-journey-start-text">Start Course</span>
+                </a>
+                <button type="button" class="btn btn-outline-primary rounded-pill px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-1.5" onclick="openCourseCurriculumModal()">
+                  <span>📖 Syllabus</span>
                 </button>
-                <button type="button" class="btn btn-sm btn-success rounded-pill px-3 fw-bold shadow-sm" id="btn-complete-stage-gate" onclick="completeCurrentStageGate()">
-                  🎓 Complete Stage &amp; Unlock Next
-                </button>
-                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5" title="Reset to reference dashboard state" onclick="resetLearningDashboard()">
+                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-1.5" title="Reset learning progress" onclick="resetLearningDashboard()">
                   🔄 Reset
                 </button>
               </div>
@@ -488,6 +500,88 @@
           </div>
         </div>
 
+        <!-- STEP-BY-STEP TOPIC LEARNING MODAL -->
+        <div class="modal fade" id="stepByStepLearningModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+          <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; min-height: 85vh;">
+              <!-- Header -->
+              <div class="modal-header border-bottom p-3 px-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
+                <div class="d-flex align-items-center justify-content-between w-100 flex-wrap gap-2">
+                  <div class="d-flex align-items-center gap-3">
+                    <span class="fs-3 p-2 rounded-3 bg-white bg-opacity-10 border border-white border-opacity-15" id="step-modal-course-icon">🐍</span>
+                    <div>
+                      <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                        <span class="badge bg-warning text-dark px-2.5 py-0.5 rounded-pill small fw-bold" id="step-modal-stage-badge">Stage 1: Fundamentals</span>
+                        <span class="badge bg-white bg-opacity-15 text-white border border-white border-opacity-20 rounded-pill px-2.5 py-0.5 small" id="step-modal-module-badge">Module 1 of 8</span>
+                        <span class="badge bg-success text-white rounded-pill px-2.5 py-0.5 small" id="step-modal-topic-status">Topic In Progress</span>
+                      </div>
+                      <h5 class="modal-title fw-bold text-white mb-0" id="step-modal-course-title">Python Programming: Beginner to Placement Ready</h5>
+                    </div>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1.5 fw-semibold d-flex align-items-center gap-1.5" id="btn-toggle-outline" onclick="toggleTopicIndexDrawer()">
+                      <span>📑 Topic Outline</span>
+                    </button>
+                    <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Thin animated course progress bar -->
+              <div class="progress" style="height: 6px; border-radius: 0; background: rgba(0,0,0,0.06);">
+                <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" id="step-modal-progress-bar" role="progressbar" style="width: 10%;"></div>
+              </div>
+
+              <!-- Body with Lesson Content & Sidebar Outline -->
+              <div class="modal-body p-0">
+                <div class="row g-0 h-100">
+                  <!-- Main Topic Lesson Card -->
+                  <div class="col-12 col-lg-8 col-xl-8.5 p-4 p-md-5 overflow-auto" id="step-lesson-viewport" style="max-height: 72vh;">
+                    <div id="step-topic-content-container">
+                      <div class="text-center py-5">
+                        <div class="spinner-border text-primary mb-3"></div>
+                        <h6 class="text-muted">Loading step-by-step topic lesson...</h6>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Right Topics Outline Sidebar -->
+                  <div class="col-12 col-lg-4 col-xl-3.5 border-start bg-light p-3 p-md-4 overflow-auto" id="step-topics-sidebar" style="max-height: 72vh;">
+                    <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                      <span class="fw-bold text-dark small text-uppercase" style="letter-spacing: 0.5px;">Curriculum Outline</span>
+                      <span class="badge bg-primary text-white rounded-pill small" id="step-outline-count-badge">8 Modules</span>
+                    </div>
+                    <div class="d-flex flex-column gap-2" id="step-outline-modules-list">
+                      <!-- Dynamically rendered modules and topics list -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Footer Navigation Bar -->
+              <div class="modal-footer border-top p-3 px-4 d-flex justify-content-between align-items-center bg-white">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-3.5 py-2 fw-semibold d-flex align-items-center gap-1.5" id="btn-step-prev" onclick="goToPreviousTopic()">
+                  <span>⬅</span>
+                  <span>Previous Topic</span>
+                </button>
+
+                <div class="d-flex align-items-center gap-2 text-muted small fw-semibold">
+                  <span id="step-modal-nav-indicator">Topic 1 of 35</span>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                  <button type="button" class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2" id="btn-step-next" onclick="completeAndGoToNextTopic()">
+                    <span id="btn-step-next-text">✓ Complete &amp; Next Topic</span>
+                    <span>➔</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
               <h5 class="fw-bold mb-2">Candidate Dashboard</h5>
               <p class="text-secondary small mb-3 flex-grow-1" style="line-height: 1.6;">
                 View application progress, ATS match scores, profile status, and evaluation summaries.
@@ -609,7 +703,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/api.js"></script>
-  <script src="js/candidate-learning-journey.js"></script>
+  <script src="js/candidate-learning-journey.js?v=20261030_v4"></script>
   <script src="js/chat.js"></script>
   <script>
     (function () {

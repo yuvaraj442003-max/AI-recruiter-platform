@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python Programming: Beginner to Placement Ready — Dedicated Learning Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/candidate-learning-journey.css" />
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .learning-navbar {
+      background: linear-gradient(135deg, #0b1329 0%, #172554 50%, #1e3a8a 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+      position: sticky;
+      top: 0;
+      z-index: 1030;
+    }
+    .nav-brand-icon {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      font-size: 1.6rem;
+    }
+    .stage-ladder-pill {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 9999px;
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .stage-ladder-pill:hover,
+    .stage-ladder-pill.active {
+      background: #3b82f6;
+      border-color: #60a5fa;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+    .stage-ladder-pill.completed {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: #10b981;
+      color: #a7f3d0;
+    }
+    .topic-list-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px 18px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .topic-list-card:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.1);
+      transform: translateY(-2px);
+    }
+    .topic-list-card.is-completed {
+      border-color: #10b981;
+      background: #f0fdf4;
+    }
+    .code-editor-box {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 12px;
+      font-family: "JetBrains Mono", "Fira Code", Consolas, Monaco, monospace;
+      font-size: 0.88rem;
+      overflow-x: auto;
+      padding: 16px 20px;
+      line-height: 1.65;
+      border: 1px solid #1e293b;
+    }
+    .terminal-output-box {
+      background: #020617;
+      color: #38bdf8;
+      border-left: 4px solid #0284c7;
+      border-radius: 8px;
+      font-family: "JetBrains Mono", Consolas, monospace;
+      font-size: 0.84rem;
+      padding: 12px 16px;
+      white-space: pre-wrap;
+    }
+    .sidebar-topic-item {
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: #334155;
+    }
+    .sidebar-topic-item:hover {
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+    .sidebar-topic-item.active {
+      background: #2563eb;
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+    .sidebar-topic-item.active span,
+    .sidebar-topic-item.active small {
+      color: #ffffff !important;
+    }
+    .sidebar-topic-item.completed {
+      background: #f0fdf4;
+      color: #15803d;
+    }
+    .sticky-bottom-nav {
+      position: sticky;
+      bottom: 0;
+      background: #ffffff;
+      border-top: 1px solid #e2e8f0;
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+      z-index: 1020;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP LEARNING NAVBAR -->
+  <nav class="learning-navbar py-2.5 px-3 px-md-4">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <!-- Left: Back & Course Title -->
+      <div class="d-flex align-items-center gap-3">
+        <a href="candidate-dashboard.html" class="btn btn-outline-light btn-sm rounded-pill px-3 py-1.5 fw-semibold d-flex align-items-center gap-1.5" title="Return to Candidate Dashboard">
+          <i class="bi bi-arrow-left"></i>
+          <span>Dashboard</span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2.5">
+          <div class="nav-brand-icon">🐍</div>
+          <div>
+            <div class="d-flex align-items-center gap-2 flex-wrap mb-0.5">
+              <span class="badge bg-warning text-dark px-2.5 py-0.5 rounded-pill small fw-bold" id="page-track-badge">Python Full-Stack Track</span>
+              <span class="badge bg-white bg-opacity-20 text-white rounded-pill px-2.5 py-0.5 small" id="page-stage-badge">Stage 1: Fundamentals</span>
+              <span class="badge bg-success text-white rounded-pill px-2 py-0.5 small" id="page-status-badge">Placement Ready</span>
+            </div>
+            <h5 class="fw-bold text-white mb-0" id="page-course-title">Python Programming: Beginner to Placement Ready</h5>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Course Track Selector & Progress -->
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <!-- Progress Bar -->
+        <div class="d-none d-md-flex align-items-center gap-2 bg-white bg-opacity-10 px-3 py-1.5 rounded-pill border border-white border-opacity-15">
+          <span class="small text-white-50">Progress:</span>
+          <div class="progress" style="width: 110px; height: 8px; background: rgba(255,255,255,0.2);">
+            <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" id="top-progress-bar" role="progressbar" style="width: 0%;"></div>
+          </div>
+          <span class="badge bg-success text-white rounded-pill small fw-bold" id="top-progress-text">0 / 49</span>
+        </div>
+
+        <!-- Textbook Link -->
+        <a href="study-materials.html?subject=python" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1.5 fw-semibold d-flex align-items-center gap-1.5">
+          <i class="bi bi-journal-text"></i>
+          <span class="d-none d-sm-inline">Textbook</span>
+        </a>
+
+        <!-- Switch Course Dropdown -->
+        <div class="dropdown">
+          <button class="btn btn-sm btn-light fw-bold px-3 py-1.5 rounded-pill shadow-sm dropdown-toggle d-flex align-items-center gap-1.5" type="button" id="switchCourseBtn" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-arrow-left-right"></i>
+            <span>Switch Track</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 p-2" style="min-width: 280px;">
+            <li><h6 class="dropdown-header text-uppercase fw-bold text-muted small">Target Tracks</h6></li>
+            <li><a class="dropdown-item active rounded-2 py-2 fw-semibold" href="python-course-learning.html">🐍 Python Full-Stack (Active)</a></li>
+            <li><a class="dropdown-item rounded-2 py-2 fw-semibold" href="course-learning.html?course=java">☕ Java Backend Development</a></li>
+            <li><a class="dropdown-item rounded-2 py-2 fw-semibold" href="course-learning.html?course=dsa">⚡ DSA Placement Mastery</a></li>
+            <li><a class="dropdown-item rounded-2 py-2 fw-semibold" href="course-learning.html?course=web_dev">🌐 Full-Stack Web Development</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 4-STAGE PEDAGOGICAL LADDER -->
+  <section class="bg-dark text-white py-3 px-3 px-md-4 border-bottom border-secondary border-opacity-25" style="background: #0f172a !important;">
+    <div class="container-fluid">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-white-50 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Pedagogical Progression:</span>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap" id="stage-ladder-container">
+          <button type="button" class="stage-ladder-pill active" id="ladder-stage-1" onclick="filterByStage(1)">
+            <span>1️⃣ Stage 1: Fundamentals (15)</span>
+          </button>
+          <span class="text-white-50 small">➔</span>
+          <button type="button" class="stage-ladder-pill" id="ladder-stage-2" onclick="filterByStage(2)">
+            <span>2️⃣ Stage 2: Core Engineering (10)</span>
+          </button>
+          <span class="text-white-50 small">➔</span>
+          <button type="button" class="stage-ladder-pill" id="ladder-stage-3" onclick="filterByStage(3)">
+            <span>3️⃣ Stage 3: Advanced Concepts (14)</span>
+          </button>
+          <span class="text-white-50 small">➔</span>
+          <button type="button" class="stage-ladder-pill" id="ladder-stage-4" onclick="filterByStage(4)">
+            <span>4️⃣ Stage 4: Real-World Projects (10)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="container-fluid py-4 px-3 px-lg-5">
+
+    <!-- MODE TABS -->
+    <ul class="nav nav-pills gap-2 mb-4 bg-white p-2 rounded-4 border shadow-sm" id="courseModeTabs" role="tablist">
+      <li class="nav-item flex-grow-1" role="presentation">
+        <button class="nav-link active rounded-pill fw-bold py-2.5 w-100 d-flex align-items-center justify-content-center gap-2" id="tab-all-topics-btn" data-bs-toggle="pill" data-bs-target="#tab-all-topics-pane" type="button" role="tab">
+          <i class="bi bi-grid-3x3-gap"></i>
+          <span>All Course Topics &amp; Modules (<span id="all-topics-count-badge">49 Topics</span>)</span>
+        </button>
+      </li>
+      <li class="nav-item flex-grow-1" role="presentation">
+        <button class="nav-link rounded-pill fw-bold py-2.5 w-100 d-flex align-items-center justify-content-center gap-2" id="tab-lesson-studio-btn" data-bs-toggle="pill" data-bs-target="#tab-lesson-studio-pane" type="button" role="tab">
+          <i class="bi bi-book-half"></i>
+          <span id="active-lesson-tab-label">Step-by-Step Lesson Studio</span>
+        </button>
+      </li>
+    </ul>
+
+    <!-- TAB CONTENTS -->
+    <div class="tab-content" id="courseModeTabsContent">
+
+      <!-- ============================================================== -->
+      <!-- TAB 1: ALL COURSE TOPICS DIRECTORY -->
+      <!-- ============================================================== -->
+      <div class="tab-pane fade show active" id="tab-all-topics-pane" role="tabpanel">
+
+        <!-- Filter and Search Header -->
+        <div class="card border-0 shadow-sm p-4 rounded-4 mb-4 bg-white">
+          <div class="row g-3 align-items-center justify-content-between">
+            <div class="col-12 col-lg-7">
+              <h4 class="fw-bold text-dark mb-1">Python Curriculum Roadmap: 10 Modules, 49 Topics</h4>
+              <p class="text-secondary small mb-0">
+                Organized from core fundamentals to senior placement readiness. Click any topic to begin its guided lesson studio.
+              </p>
+            </div>
+            <div class="col-12 col-lg-5">
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control border-start-0 bg-light shadow-none" id="topic-search-input" placeholder="Search any topic, concept, or company..." oninput="handleTopicSearch(this.value)">
+                <button class="btn btn-outline-secondary" type="button" onclick="clearTopicSearch()">Clear</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage Filter Pills -->
+          <div class="d-flex align-items-center gap-2 flex-wrap mt-3 pt-3 border-top">
+            <span class="small fw-bold text-muted me-1">Filter by Stage:</span>
+            <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 fw-semibold stage-filter-btn active" data-stage="all" onclick="setStageFilter('all', this)">All Stages (49)</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold stage-filter-btn" data-stage="1" onclick="setStageFilter(1, this)">Stage 1: Fundamentals (15)</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold stage-filter-btn" data-stage="2" onclick="setStageFilter(2, this)">Stage 2: Core Engineering (10)</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold stage-filter-btn" data-stage="3" onclick="setStageFilter(3, this)">Stage 3: Advanced Concepts (14)</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold stage-filter-btn" data-stage="4" onclick="setStageFilter(4, this)">Stage 4: Real-World Projects (10)</button>
+          </div>
+        </div>
+
+        <!-- Modules & Topics Container -->
+        <div class="d-flex flex-column gap-4" id="modules-directory-container">
+          <!-- Dynamically populated by JS -->
+        </div>
+
+      </div>
+
+      <!-- ============================================================== -->
+      <!-- TAB 2: STEP-BY-STEP LESSON STUDIO -->
+      <!-- ============================================================== -->
+      <div class="tab-pane fade" id="tab-lesson-studio-pane" role="tabpanel">
+        <div class="row g-4">
+
+          <!-- LEFT: Main Topic Lesson Content -->
+          <div class="col-12 col-xl-8 col-xxl-9">
+            <div id="lesson-content-container">
+              <!-- Dynamically populated with all 5 sections for the active topic -->
+            </div>
+
+            <!-- Bottom Sticky Action Nav -->
+            <div class="sticky-bottom-nav p-3 rounded-4 mt-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+              <button type="button" class="btn btn-outline-secondary rounded-pill px-3.5 py-2 fw-semibold d-flex align-items-center gap-1.5" id="btn-bottom-prev" onclick="goToPreviousTopic()">
+                <i class="bi bi-arrow-left"></i>
+                <span>Previous Topic</span>
+              </button>
+
+              <div class="d-flex align-items-center gap-2 text-muted small fw-semibold" id="bottom-topic-counter">
+                Topic 1 of 49
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-outline-primary rounded-pill px-3.5 py-2 fw-semibold d-flex align-items-center gap-1.5" id="btn-bottom-mark-toggle" onclick="toggleCurrentTopicComplete()">
+                  <i class="bi bi-check-circle"></i>
+                  <span id="btn-bottom-mark-text">Mark Complete</span>
+                </button>
+                <button type="button" class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2" id="btn-bottom-next" onclick="completeAndGoToNextTopic()">
+                  <span id="btn-bottom-next-text">✓ Complete &amp; Next Topic</span>
+                  <i class="bi bi-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Sticky Topic Navigation Drawer -->
+          <div class="col-12 col-xl-4 col-xxl-3">
+            <div class="card border-0 shadow-sm p-3 p-md-4 rounded-4 bg-white sticky-top" style="top: 85px; max-height: calc(100vh - 100px); overflow-y: auto;">
+              <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                <div>
+                  <h6 class="fw-bold text-dark mb-0">Topic Navigation</h6>
+                  <small class="text-muted" id="outline-summary-stats">49 Topics Across 10 Modules</small>
+                </div>
+                <button class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-0.5" onclick="switchToAllTopicsTab()">
+                  <i class="bi bi-grid me-1"></i>View All
+                </button>
+              </div>
+
+              <div class="input-group input-group-sm mb-3">
+                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control form-control-sm border-start-0 bg-light shadow-none" placeholder="Filter topics in outline..." oninput="filterOutlineTopics(this.value)">
+              </div>
+
+              <div class="d-flex flex-column gap-2" id="outline-modules-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <!-- Load the 10-module, 49-topic Python dataset -->
+  <script src="js/python-course-data.js?v=20261030_v1"></script>
+  <!-- Load the interactive Python course learning controller -->
+  <script src="js/python-course-learning.js?v=20261030_v1"></script>
+</body>
+</html>
+

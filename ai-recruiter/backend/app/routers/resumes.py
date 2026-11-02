@@ -881,6 +881,19 @@ async def complete_candidate_registration(
     linkedin_url: str = Form(None),
     github_url: str = Form(None),
     portfolio_url: str = Form(None),
+    college_name: Optional[str] = Form(None),
+    degree: Optional[str] = Form(None),
+    branch: Optional[str] = Form(None),
+    graduation_year: Optional[str] = Form(None),
+    cgpa: Optional[str] = Form(None),
+    twelfth_school: Optional[str] = Form(None),
+    twelfth_board: Optional[str] = Form(None),
+    twelfth_year: Optional[str] = Form(None),
+    twelfth_percentage: Optional[str] = Form(None),
+    tenth_school: Optional[str] = Form(None),
+    tenth_board: Optional[str] = Form(None),
+    tenth_year: Optional[str] = Form(None),
+    tenth_percentage: Optional[str] = Form(None),
     file: Optional[UploadFile] = File(None),
     current_user: User = Depends(require_role(UserRole.candidate)),
     db: Session = Depends(get_db),
@@ -978,6 +991,47 @@ async def complete_candidate_registration(
             user_name=current_user.name,
             user_email=current_user.email,
         )
+
+    # Persist structured academic credentials to CandidateProfile
+    if profile:
+        if college_name is not None and college_name.strip():
+            profile.college_name = college_name.strip()
+        if degree is not None and degree.strip():
+            profile.degree = degree.strip()
+        if branch is not None and branch.strip():
+            profile.branch = branch.strip()
+        if graduation_year is not None and str(graduation_year).strip().isdigit():
+            profile.graduation_year = int(str(graduation_year).strip())
+        if cgpa is not None and str(cgpa).strip():
+            try:
+                profile.cgpa = float(str(cgpa).strip())
+            except ValueError:
+                pass
+
+        if twelfth_school is not None and twelfth_school.strip():
+            profile.twelfth_school = twelfth_school.strip()
+        if twelfth_board is not None and twelfth_board.strip():
+            profile.twelfth_board = twelfth_board.strip()
+        if twelfth_year is not None and str(twelfth_year).strip().isdigit():
+            profile.twelfth_year = int(str(twelfth_year).strip())
+        if twelfth_percentage is not None and str(twelfth_percentage).strip():
+            try:
+                profile.twelfth_percentage = float(str(twelfth_percentage).strip())
+            except ValueError:
+                pass
+
+        if tenth_school is not None and tenth_school.strip():
+            profile.tenth_school = tenth_school.strip()
+        if tenth_board is not None and tenth_board.strip():
+            profile.tenth_board = tenth_board.strip()
+        if tenth_year is not None and str(tenth_year).strip().isdigit():
+            profile.tenth_year = int(str(tenth_year).strip())
+        if tenth_percentage is not None and str(tenth_percentage).strip():
+            try:
+                profile.tenth_percentage = float(str(tenth_percentage).strip())
+            except ValueError:
+                pass
+        db.add(profile)
 
     db.commit()
     db.refresh(current_user)
