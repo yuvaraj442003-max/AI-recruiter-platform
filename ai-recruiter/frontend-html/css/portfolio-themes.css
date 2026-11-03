@@ -3322,3 +3322,42 @@ html,
 
 
 
+
+/* ========================================================================= */
+/* ADVANCED PORTFOLIO INTERACTION SUITE                                      */
+/* ========================================================================= */
+html {
+  scroll-behavior: smooth;
+}
+
+.project-card-item {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease;
+}
+.project-card-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12) !important;
+}
+
+.portfolio-skill-pill, .skill-badge {
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.portfolio-skill-pill:hover, .skill-badge:hover {
+  transform: scale(1.05);
+}
+
+/* Modal dark mode adaptation */
+body[data-bs-theme="dark"] .modal-content {
+  background: #0f172a;
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+body[data-bs-theme="dark"] .modal-body .bg-light {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+body[data-bs-theme="dark"] .modal-body .text-dark {
+  color: #f8fafc !important;
+}
+body[data-bs-theme="dark"] .modal-body .text-secondary {
+  color: #94a3b8 !important;
+}

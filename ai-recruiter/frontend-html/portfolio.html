@@ -6,9 +6,9 @@
   <base href="/" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Fira+Code:wght@400;600&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&family=Syne:wght@600;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Fira+Code:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&family=Syne:wght@600;800&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="/css/portfolio-themes.css?v=4.5" />
+  <link rel="stylesheet" href="/css/portfolio-themes.css?v=4.6" />
   <style>
     /* Public page stage baseline */
     #portfolio-public-stage {
@@ -17,34 +17,99 @@
       width: 100%;
       overflow-x: hidden;
     }
+
+    /* Scroll reading progress bar */
+    #portfolio-scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3.5px;
+      width: 0%;
+      background: linear-gradient(90deg, #4f46e5 0%, #06b6d4 50%, #10b981 100%);
+      z-index: 10005;
+      transition: width 0.1s ease-out;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+    }
+
+    /* Top Sticky Glassmorphic Navbar */
+    .portfolio-glass-navbar {
+      position: sticky;
+      top: 0;
+      z-index: 9995;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      transition: all 0.3s ease;
+      background: rgba(15, 23, 42, 0.85);
+      color: #ffffff;
+    }
+    body[data-bs-theme="light"] .portfolio-glass-navbar {
+      background: rgba(255, 255, 255, 0.88);
+      color: #0f172a;
+      border-bottom-color: rgba(226, 232, 240, 0.8);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    }
+
+    .portfolio-nav-link {
+      color: inherit;
+      opacity: 0.75;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      transition: all 0.2s ease;
+      display: inline-block;
+    }
+    .portfolio-nav-link:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-1px);
+      color: inherit;
+    }
+    body[data-bs-theme="light"] .portfolio-nav-link:hover {
+      background: rgba(0, 0, 0, 0.06);
+    }
+
+    .pulsing-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #10b981;
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulseGreen 2s infinite ease-in-out;
+    }
+    @keyframes pulseGreen {
+      0% { transform: scale(0.9); opacity: 0.8; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.9); opacity: 0.8; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
     /* Public page subtle floating helper bar */
     .public-floating-bar {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
+      bottom: 24px;
+      right: 24px;
       z-index: 9999;
       display: flex;
       gap: 8px;
       align-items: center;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(12px);
-      padding: 8px 16px;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 6px 12px;
       border-radius: 9999px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       color: #ffffff;
       font-size: 0.85rem;
-      transition: all 0.2s ease;
-    }
-    .public-floating-bar a {
-      color: #ffffff;
-      text-decoration: none;
-      font-weight: 600;
+      transition: all 0.25s ease;
     }
     .public-floating-bar:hover {
       transform: translateY(-2px);
-      box-shadow: 0 14px 30px rgba(0,0,0,0.35);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.38);
     }
+
     #portfolio-error-container {
       min-height: 80vh;
       display: flex;
@@ -53,9 +118,27 @@
       text-align: center;
       padding: 2rem;
     }
+
+    /* Print / PDF Mode */
+    @media print {
+      #portfolio-scroll-progress,
+      #portfolio-top-navbar,
+      .public-floating-bar,
+      .modal,
+      #portfolio-toast {
+        display: none !important;
+      }
+      body, #portfolio-public-stage {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+    }
   </style>
 </head>
 <body>
+
+  <!-- Top Scroll Reading Progress -->
+  <div id="portfolio-scroll-progress"></div>
 
   <!-- Loading State Spinner -->
   <div id="portfolio-loading-container" class="min-vh-100 d-flex flex-column align-items-center justify-content-center bg-light">
@@ -80,22 +163,204 @@
     </div>
   </div>
 
+  <!-- Top Sticky Glassmorphic Interactive Navigation Dock -->
+  <nav id="portfolio-top-navbar" class="portfolio-glass-navbar d-none">
+    <div class="container-fluid px-3 px-md-5 py-2 d-flex justify-content-between align-items-center">
+      <!-- Left: Brand / Avatar & Status -->
+      <div class="d-flex align-items-center gap-2.5">
+        <div id="nav-brand-avatar" class="rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 38px; height: 38px; background: linear-gradient(135deg, #4f46e5, #06b6d4); color: #fff; font-size: 0.92rem; flex-shrink: 0;">
+          SS
+        </div>
+        <div>
+          <div class="d-flex align-items-center gap-2">
+            <span id="nav-candidate-name" class="fw-bold fs-6 mb-0 text-truncate" style="max-width: 220px;">Candidate Name</span>
+            <span class="badge rounded-pill px-2.5 py-0.5 small d-none d-sm-inline-flex align-items-center gap-1.5" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 0.72rem;">
+              <span class="pulsing-dot"></span> Available for Hire
+            </span>
+          </div>
+          <small id="nav-candidate-headline" class="text-secondary d-none d-md-block small text-truncate" style="max-width: 320px; font-size: 0.74rem;">Professional</small>
+        </div>
+      </div>
+
+      <!-- Center: Section Navigation Links -->
+      <div class="d-none d-lg-flex align-items-center gap-1" id="nav-section-anchors">
+        <a href="javascript:void(0)" onclick="window.scrollToPortfolioSection('section-about')" class="portfolio-nav-link" id="nav-link-about">About</a>
+        <a href="javascript:void(0)" onclick="window.scrollToPortfolioSection('section-skills')" class="portfolio-nav-link" id="nav-link-skills">Skills</a>
+        <a href="javascript:void(0)" onclick="window.scrollToPortfolioSection('section-experience')" class="portfolio-nav-link" id="nav-link-experience">Experience</a>
+        <a href="javascript:void(0)" onclick="window.scrollToPortfolioSection('section-projects')" class="portfolio-nav-link" id="nav-link-projects">Projects</a>
+        <a href="javascript:void(0)" onclick="window.scrollToPortfolioSection('section-education')" class="portfolio-nav-link" id="nav-link-education">Education</a>
+        <a href="javascript:void(0)" onclick="window.scrollToPortfolioSection('section-contact')" class="portfolio-nav-link" id="nav-link-contact">Contact</a>
+      </div>
+
+      <!-- Right: Action Buttons -->
+      <div class="d-flex align-items-center gap-2">
+        <!-- Live Dark / Light Theme Toggle -->
+        <button id="btn-toggle-portfolio-theme" class="btn btn-sm rounded-pill px-3 py-1.5 d-flex align-items-center gap-1.5" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); font-size: 0.8rem; color: inherit;" title="Toggle Light / Dark Mode">
+          <span id="theme-toggle-icon">🌙</span>
+          <span class="d-none d-sm-inline" id="theme-toggle-text">Dark</span>
+        </button>
+
+        <!-- Print / PDF CV -->
+        <button id="btn-print-portfolio" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-1.5 d-none d-md-flex align-items-center gap-1.5 small" title="Print or Save CV to PDF">
+          <span>🖨️</span>
+          <span>Print CV</span>
+        </button>
+
+        <!-- Get in Touch CTA -->
+        <button id="btn-nav-hire-me" class="btn btn-sm btn-primary rounded-pill px-3.5 py-1.5 fw-bold shadow-sm d-flex align-items-center gap-1.5" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); border: none;">
+          <span>💼</span>
+          <span>Get in Touch</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
   <!-- Active Dynamic Portfolio Stage -->
   <div id="portfolio-public-stage" class="d-none">
     <!-- Rendered dynamically by PortfolioThemesEngine -->
   </div>
 
-  <!-- Floating Utility Bar -->
+  <!-- Floating Utility Dock (Bottom Right) -->
   <div class="public-floating-bar d-none" id="public-floating-bar">
+    <button id="btn-floating-top" class="btn btn-sm btn-outline-light py-1 px-2.5 rounded-pill small d-none" title="Back to top">
+      <span>↑ Top</span>
+    </button>
     <button id="btn-floating-copy" class="btn btn-sm btn-outline-light py-1 px-3 rounded-pill small d-flex align-items-center gap-2" title="Share portfolio link">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-      <span>Share Portfolio</span>
+      <span>Share</span>
     </button>
+    <button id="btn-floating-hire" class="btn btn-sm btn-primary py-1 px-3 rounded-pill small fw-bold d-flex align-items-center gap-1.5" style="background: linear-gradient(135deg, #4f46e5, #3b82f6); border: none;">
+      <span>💼 Connect</span>
+    </button>
+  </div>
+
+  <!-- Interactive Project Quick-View Modal -->
+  <div class="modal fade" id="projectDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden" id="project-modal-content">
+        <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-start">
+          <div>
+            <span class="badge bg-primary-subtle text-primary border rounded-pill px-3 py-1 small fw-bold mb-2" id="proj-modal-badge">Featured Engineering Project</span>
+            <h4 class="fw-bold modal-title mb-1" id="proj-modal-title">Project Title</h4>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <p class="text-secondary mb-4" id="proj-modal-desc" style="line-height: 1.65; font-size: 0.95rem;"></p>
+          
+          <div class="mb-4">
+            <h6 class="fw-bold small text-uppercase mb-2 text-secondary" style="letter-spacing: 0.5px;">Technologies &amp; Architecture:</h6>
+            <div class="d-flex flex-wrap gap-2" id="proj-modal-tech-list"></div>
+          </div>
+
+          <div class="p-3 rounded-3 mb-2" id="proj-modal-metrics-box" style="background: rgba(79, 70, 229, 0.06); border: 1px solid rgba(79, 70, 229, 0.15);">
+            <h6 class="fw-bold text-primary small mb-1.5">⚡ Key Impact &amp; Engineering Highlights:</h6>
+            <ul class="mb-0 ps-3 small text-secondary" id="proj-modal-highlights">
+              <li>Production-ready modular code structure and robust API design.</li>
+              <li>Engineered for high performance, reliability, and security.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer border-top p-3 px-4 d-flex justify-content-between">
+          <button type="button" class="btn btn-outline-secondary rounded-pill px-3.5" data-bs-dismiss="modal">Close</button>
+          <div class="d-flex gap-2" id="proj-modal-actions">
+            <a href="#" id="proj-modal-code-link" target="_blank" class="btn btn-outline-dark rounded-pill px-3.5 fw-semibold d-flex align-items-center gap-1.5">
+              <span>💻 View Code</span>
+            </a>
+            <a href="#" id="proj-modal-demo-link" target="_blank" class="btn btn-primary rounded-pill px-4 fw-bold d-flex align-items-center gap-1.5" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); border: none;">
+              <span>🚀 Live Demo &rarr;</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive "Hire Me / Get in Touch" Modal -->
+  <div class="modal fade" id="hireMeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="modal-header border-0 p-4 pb-3" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #fff;">
+          <div>
+            <span class="badge bg-success text-white px-2.5 py-0.5 rounded-pill small mb-2">Available for Opportunities</span>
+            <h4 class="fw-bold text-white mb-0" id="hire-modal-title">Get in Touch</h4>
+            <small class="text-white-50" id="hire-modal-subtitle">Connect with candidate for full-time, contract, or advisory roles.</small>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <!-- Contact Cards -->
+          <div class="d-flex flex-column gap-2.5 mb-4">
+            <div class="p-3 rounded-3 border d-flex justify-content-between align-items-center bg-light">
+              <div class="d-flex align-items-center gap-2.5">
+                <span class="fs-5">📧</span>
+                <div>
+                  <div class="small text-muted fw-semibold">Email Address</div>
+                  <div class="fw-bold text-dark small" id="hire-email-text">user@example.com</div>
+                </div>
+              </div>
+              <div class="d-flex gap-1.5">
+                <button id="btn-copy-hire-email" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-1 small" title="Copy Email">
+                  <span>📋 Copy</span>
+                </button>
+                <a href="#" id="link-direct-email" class="btn btn-sm btn-primary rounded-pill px-3 py-1 small fw-semibold">
+                  <span>✉️ Send</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="p-3 rounded-3 border d-flex justify-content-between align-items-center bg-light" id="hire-phone-card">
+              <div class="d-flex align-items-center gap-2.5">
+                <span class="fs-5">📱</span>
+                <div>
+                  <div class="small text-muted fw-semibold">Phone Number</div>
+                  <div class="fw-bold text-dark small" id="hire-phone-text">+1 (555) 000-0000</div>
+                </div>
+              </div>
+              <div class="d-flex gap-1.5">
+                <button id="btn-copy-hire-phone" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-1 small" title="Copy Phone">
+                  <span>📋 Copy</span>
+                </button>
+                <a href="#" id="link-direct-phone" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 small fw-semibold">
+                  <span>📞 Call</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="p-3 rounded-3 border d-flex align-items-center gap-2.5 bg-light" id="hire-location-card">
+              <span class="fs-5">📍</span>
+              <div>
+                <div class="small text-muted fw-semibold">Location / Availability</div>
+                <div class="fw-bold text-dark small" id="hire-location-text">Remote / Open to Relocation</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Message Composer -->
+          <div>
+            <h6 class="fw-bold small text-uppercase mb-2 text-secondary" style="letter-spacing: 0.5px;">Quick Note to Candidate:</h6>
+            <div class="mb-2">
+              <input type="text" id="hire-note-subject" class="form-control form-control-sm mb-2" placeholder="Subject: Interview Opportunity / Role Inquiry" />
+              <textarea id="hire-note-body" class="form-control form-control-sm" rows="3" placeholder="Hi, we came across your portfolio and are impressed with your technical background. We would love to connect regarding an opening at our company..."></textarea>
+            </div>
+            <button id="btn-send-recruiter-note" class="btn btn-success w-100 fw-bold rounded-pill py-2 shadow-sm d-flex align-items-center justify-content-center gap-2">
+              <span>🚀 Open Email Client with Note &rarr;</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Toast Notification -->
+  <div id="portfolio-toast" style="position: fixed; bottom: 80px; right: 24px; z-index: 100000; transform: translateY(100px); opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none;" class="badge bg-dark text-white p-3 rounded-4 shadow-lg border border-secondary border-opacity-50 fs-6 d-flex align-items-center gap-2">
+    <span id="portfolio-toast-icon">✓</span>
+    <span id="portfolio-toast-msg">Copied!</span>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/api.js?v=3.1"></script>
-  <script src="/js/portfolio-themes.js?v=4.5"></script>
-  <script src="/js/portfolio-view.js?v=4.5"></script>
+  <script src="/js/portfolio-themes.js?v=4.6"></script>
+  <script src="/js/portfolio-view.js?v=4.6"></script>
 </body>
 </html>
