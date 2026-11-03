@@ -426,6 +426,11 @@
             </a>
           </div>
 
+          <!-- Recruiter Pitch & Share Suite Button -->
+          <button id="btn-recruiter-pitch-modal" class="btn btn-sm btn-outline-primary fw-bold px-3 py-2 shadow-sm d-flex align-items-center gap-1" title="Generate ready-to-send recruiter pitch blurbs & QR code">
+            <span>🤝</span> Share &amp; Pitch
+          </button>
+
           <!-- Edit Portfolio Button -->
           <button id="btn-toggle-edit-mode" class="btn btn-sm btn-outline-primary fw-bold px-3 py-2 shadow-sm d-flex align-items-center gap-1" title="Modify details and customize sections">
             <span>✏️</span> Edit Portfolio
@@ -562,7 +567,75 @@
               </div>
             </div>
 
-            <!-- 3. STUDIO INSPECTOR TABS (Content, Styles, Publishing) -->
+            <!-- 3. REAL-TIME AI PORTFOLIO STRENGTH & RECRUITER READINESS AUDIT -->
+            <div class="card border-0 shadow-sm p-3 mb-4 rounded-4 bg-white" id="portfolio-audit-card">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="fs-5">🎯</span>
+                  <div>
+                    <h6 class="fw-bold mb-0 text-dark">Portfolio Strength &amp; Recruiter Audit</h6>
+                    <small class="text-muted" style="font-size: 0.74rem;">AI evaluation of completeness, recruiter impact &amp; ATS signals</small>
+                  </div>
+                </div>
+                <span id="audit-score-badge" class="badge bg-success-subtle text-success border px-2.5 py-1 fw-bold" style="font-size: 0.8rem;">
+                  Score: --%
+                </span>
+              </div>
+
+              <!-- Animated Progress Bar -->
+              <div class="progress mb-3" style="height: 8px; border-radius: 9999px; background: #e2e8f0;">
+                <div id="audit-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%; background: linear-gradient(90deg, #4f46e5, #06b6d4);"></div>
+              </div>
+
+              <!-- Interactive Audit Checklist -->
+              <div class="d-flex flex-column gap-2" id="audit-checklist-container">
+                <!-- Checklist item 1: Headline & About Narrative -->
+                <div class="d-flex justify-content-between align-items-center p-2 rounded-3 bg-light border small">
+                  <div class="d-flex align-items-center gap-2">
+                    <span id="audit-check-bio" class="text-muted">⚪</span>
+                    <span class="fw-semibold">Executive Headline &amp; Narrative Bio</span>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold" id="btn-audit-fix-bio" style="font-size: 0.72rem;">
+                    ✨ AI Polish
+                  </button>
+                </div>
+
+                <!-- Checklist item 2: Quantified Impact Metrics -->
+                <div class="d-flex justify-content-between align-items-center p-2 rounded-3 bg-light border small">
+                  <div class="d-flex align-items-center gap-2">
+                    <span id="audit-check-metrics" class="text-muted">⚪</span>
+                    <span class="fw-semibold">Quantified Impact Metrics (KPIs)</span>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold" id="btn-audit-fix-metrics" style="font-size: 0.72rem;">
+                    ✨ Generate 4 KPIs
+                  </button>
+                </div>
+
+                <!-- Checklist item 3: Structured Project Case Studies -->
+                <div class="d-flex justify-content-between align-items-center p-2 rounded-3 bg-light border small">
+                  <div class="d-flex align-items-center gap-2">
+                    <span id="audit-check-projects" class="text-muted">⚪</span>
+                    <span class="fw-semibold">Project Case Studies &amp; Tech Highlights</span>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold" id="btn-audit-fix-projects" style="font-size: 0.72rem;">
+                    ✨ Enrich Case Studies
+                  </button>
+                </div>
+
+                <!-- Checklist item 4: Value Proposition Pillars -->
+                <div class="d-flex justify-content-between align-items-center p-2 rounded-3 bg-light border small">
+                  <div class="d-flex align-items-center gap-2">
+                    <span id="audit-check-services" class="text-muted">⚪</span>
+                    <span class="fw-semibold">Core Value Proposition Pillars</span>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold" id="btn-audit-fix-services" style="font-size: 0.72rem;">
+                    ✨ Generate Pillars
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. STUDIO INSPECTOR TABS (Content, Styles, Publishing) -->
             <div class="card border-0 shadow-sm p-3 mb-4 rounded-4 bg-white" id="studio-inspector-card">
               <ul class="nav studio-tabs mb-3 border-bottom pb-2" role="tablist">
                 <li class="nav-item">
@@ -876,9 +949,14 @@
                   <div class="mb-3 p-3 bg-light rounded-3" id="sec-metrics">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                       <label class="form-label fw-bold small mb-0">⚡ Impact Metrics &amp; KPIs</label>
-                      <button id="btn-add-metric" class="btn btn-sm btn-primary py-0 px-2 fw-semibold" style="font-size: 0.72rem;">
-                        + Add Metric
-                      </button>
+                      <div class="d-flex align-items-center gap-1">
+                        <button id="btn-ai-generate-metrics" class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold" style="font-size: 0.72rem;">
+                          ✨ AI 4 KPIs
+                        </button>
+                        <button id="btn-add-metric" class="btn btn-sm btn-primary py-0 px-2 fw-semibold" style="font-size: 0.72rem;">
+                          + Add Metric
+                        </button>
+                      </div>
                     </div>
                     <div id="metrics-editor-container" class="d-flex flex-column gap-2">
                       <!-- Rendered by JS -->
@@ -957,10 +1035,15 @@
                   <!-- 8. Services & Offerings Section -->
                   <div class="mb-3 p-3 bg-light rounded-3" id="sec-services">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                      <label class="form-label fw-bold small mb-0">🎯 Services &amp; Offerings</label>
-                      <button id="btn-add-service-item" class="btn btn-sm btn-primary py-0 px-2 fw-semibold" style="font-size: 0.72rem;">
-                        + Add Service
-                      </button>
+                      <label class="form-label fw-bold small mb-0">🎯 Services &amp; Value Pillars</label>
+                      <div class="d-flex align-items-center gap-1">
+                        <button id="btn-ai-generate-services" class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold" style="font-size: 0.72rem;">
+                          ✨ AI Pillars
+                        </button>
+                        <button id="btn-add-service-item" class="btn btn-sm btn-primary py-0 px-2 fw-semibold" style="font-size: 0.72rem;">
+                          + Add Service
+                        </button>
+                      </div>
                     </div>
                     <div id="services-editor-container" class="d-flex flex-column gap-2">
                       <!-- Rendered by JS -->
@@ -1055,10 +1138,33 @@
                   <span class="small text-muted" id="preview-theme-indicator">Theme: Modern</span>
                 </div>
 
-                <div class="d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
                   <button type="button" class="btn btn-sm btn-outline-primary fw-semibold d-flex align-items-center gap-1" id="btn-quick-edit-preview" title="Edit portfolio content and details">
                     <span>✏️</span> Edit Portfolio
                   </button>
+
+                  <!-- Live Dark / Light Mode Switcher -->
+                  <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-preview-dark-toggle" title="Toggle Dark/Light Mode">
+                    🌙
+                  </button>
+
+                  <!-- Section Visibility Dropdown -->
+                  <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-1" type="button" id="btn-preview-sections-dropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Toggle section visibility">
+                      <span>👁️</span> Sections
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2" id="preview-sections-menu" style="min-width: 210px;">
+                      <li class="dropdown-item-text small fw-bold text-muted pb-1">TOGGLE SECTIONS</li>
+                      <li><hr class="dropdown-divider my-1"></li>
+                      <li><label class="dropdown-item d-flex align-items-center gap-2 small cursor-pointer"><input type="checkbox" class="form-check-input sec-vis-check" data-section="achievements" checked> ⚡ Metrics &amp; KPIs</label></li>
+                      <li><label class="dropdown-item d-flex align-items-center gap-2 small cursor-pointer"><input type="checkbox" class="form-check-input sec-vis-check" data-section="services" checked> 🎯 Value Pillars</label></li>
+                      <li><label class="dropdown-item d-flex align-items-center gap-2 small cursor-pointer"><input type="checkbox" class="form-check-input sec-vis-check" data-section="projects" checked> 🚀 Projects</label></li>
+                      <li><label class="dropdown-item d-flex align-items-center gap-2 small cursor-pointer"><input type="checkbox" class="form-check-input sec-vis-check" data-section="experience" checked> 💼 Experience</label></li>
+                      <li><label class="dropdown-item d-flex align-items-center gap-2 small cursor-pointer"><input type="checkbox" class="form-check-input sec-vis-check" data-section="education" checked> 🎓 Education</label></li>
+                      <li><label class="dropdown-item d-flex align-items-center gap-2 small cursor-pointer"><input type="checkbox" class="form-check-input sec-vis-check" data-section="certifications" checked> 📜 Certifications</label></li>
+                    </ul>
+                  </div>
+
                   <!-- Device Mode Switcher -->
                   <div class="btn-group btn-group-sm" role="group">
                     <button type="button" class="btn btn-outline-secondary device-switcher-btn active" data-mode="desktop" title="Desktop View">
@@ -1143,6 +1249,72 @@
             <span id="delete-btn-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
             <span>Permanently Delete</span>
           </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recruiter Pitch & Share Suite Modal -->
+  <div class="modal fade" id="recruiterPitchModal" tabindex="-1" aria-labelledby="recruiterPitchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+        <div class="modal-header border-0 pb-0">
+          <div class="d-flex align-items-center gap-2">
+            <div class="p-2 rounded-circle bg-primary-subtle text-primary fs-5">🤝</div>
+            <div>
+              <h5 class="modal-title fw-bold text-dark" id="recruiterPitchModalLabel">Recruiter Outreach &amp; Sharing Suite</h5>
+              <small class="text-muted">Instant pre-written pitches with your portfolio link and mobile QR code</small>
+            </div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body py-3">
+          <div class="row g-3">
+            <div class="col-lg-8">
+              <!-- Pitch Tabs -->
+              <ul class="nav nav-pills gap-2 mb-3" id="pitchTabs" role="tablist">
+                <li class="nav-item">
+                  <button class="nav-link active btn-sm py-1.5 px-3 rounded-pill fw-semibold" id="tab-linkedin-pitch" data-bs-toggle="pill" data-bs-target="#pitch-linkedin" type="button">LinkedIn InMail</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link btn-sm py-1.5 px-3 rounded-pill fw-semibold" id="tab-email-pitch" data-bs-toggle="pill" data-bs-target="#pitch-email" type="button">Hiring Manager Email</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link btn-sm py-1.5 px-3 rounded-pill fw-semibold" id="tab-quick-pitch" data-bs-toggle="pill" data-bs-target="#pitch-quick" type="button">Quick DM / Slack</button>
+                </li>
+              </ul>
+              <div class="tab-content">
+                <div class="tab-pane fade show active" id="pitch-linkedin">
+                  <textarea id="text-pitch-linkedin" class="form-control small mb-2" rows="6" readonly></textarea>
+                  <button type="button" class="btn btn-sm btn-primary fw-semibold d-flex align-items-center gap-1 btn-copy-pitch" data-target="text-pitch-linkedin">
+                    <span>📋</span> Copy LinkedIn Pitch
+                  </button>
+                </div>
+                <div class="tab-pane fade" id="pitch-email">
+                  <textarea id="text-pitch-email" class="form-control small mb-2" rows="6" readonly></textarea>
+                  <button type="button" class="btn btn-sm btn-primary fw-semibold d-flex align-items-center gap-1 btn-copy-pitch" data-target="text-pitch-email">
+                    <span>📋</span> Copy Email Pitch
+                  </button>
+                </div>
+                <div class="tab-pane fade" id="pitch-quick">
+                  <textarea id="text-pitch-quick" class="form-control small mb-2" rows="6" readonly></textarea>
+                  <button type="button" class="btn btn-sm btn-primary fw-semibold d-flex align-items-center gap-1 btn-copy-pitch" data-target="text-pitch-quick">
+                    <span>📋</span> Copy Quick DM
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4 text-center border-start ps-lg-4">
+              <div class="fw-bold small text-muted mb-2">📱 MOBILE SCAN &amp; PREVIEW</div>
+              <div class="p-2 bg-light rounded-3 d-inline-block border mb-2">
+                <img id="qr-code-img" src="" alt="Portfolio QR Code" style="width: 140px; height: 140px;" class="rounded" />
+              </div>
+              <small class="text-muted d-block" style="font-size: 0.72rem;">Scan with your phone camera to inspect live responsive portfolio.</small>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary fw-semibold px-4" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>

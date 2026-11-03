@@ -111,6 +111,35 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnCheckSlug = document.getElementById("btn-check-slug");
   const slugMsg = document.getElementById("slug-availability-msg");
 
+  // DOM Elements - Audit & Strength Meter
+  const auditScoreBadge = document.getElementById("audit-score-badge");
+  const auditProgressBar = document.getElementById("audit-progress-bar");
+  const auditCheckBio = document.getElementById("audit-check-bio");
+  const auditCheckMetrics = document.getElementById("audit-check-metrics");
+  const auditCheckProjects = document.getElementById("audit-check-projects");
+  const auditCheckServices = document.getElementById("audit-check-services");
+  const btnAuditFixBio = document.getElementById("btn-audit-fix-bio");
+  const btnAuditFixMetrics = document.getElementById("btn-audit-fix-metrics");
+  const btnAuditFixProjects = document.getElementById("btn-audit-fix-projects");
+  const btnAuditFixServices = document.getElementById("btn-audit-fix-services");
+
+  // DOM Elements - AI Quick Generator Buttons
+  const btnAiGenerateMetrics = document.getElementById("btn-ai-generate-metrics");
+  const btnAiGenerateServices = document.getElementById("btn-ai-generate-services");
+
+  // DOM Elements - Preview Controls
+  const btnPreviewDarkToggle = document.getElementById("btn-preview-dark-toggle");
+  const secVisChecks = document.querySelectorAll(".sec-vis-check");
+
+  // DOM Elements - Recruiter Pitch & Share Suite
+  const btnRecruiterPitchModal = document.getElementById("btn-recruiter-pitch-modal");
+  const recruiterPitchModalEl = document.getElementById("recruiterPitchModal");
+  const textPitchLinkedin = document.getElementById("text-pitch-linkedin");
+  const textPitchEmail = document.getElementById("text-pitch-email");
+  const textPitchQuick = document.getElementById("text-pitch-quick");
+  const qrCodeImg = document.getElementById("qr-code-img");
+  const btnCopyPitches = document.querySelectorAll(".btn-copy-pitch");
+
   // Helpers
   function showAlert(msg, type = "success") {
     alertEl.className = `alert alert-${type} py-2 px-3 mb-4 rounded-3 d-block shadow-sm`;
@@ -368,6 +397,100 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderCertificationsEditor();
     renderServicesEditor();
     renderSocialLinksEditor();
+
+    // Sync Section Visibility Checkboxes
+    const currentVis = safeParse(currentPortfolio.section_visibility, {});
+    secVisChecks.forEach(chk => {
+      const sec = chk.getAttribute("data-section");
+      if (sec in currentVis) {
+        chk.checked = currentVis[sec] !== false;
+      }
+    });
+
+    // Update Live Recruiter Readiness Audit Score
+    updateAuditScore();
+  }
+
+  /**
+   * Evaluates portfolio completeness and assigns a 0-100% Recruiter Readiness score.
+   */
+  function updateAuditScore() {
+    if (!currentPortfolio || !auditScoreBadge || !auditProgressBar) return;
+    let score = 0;
+
+    // 1. Headline & Bio (25 pts)
+    const hl = (currentPortfolio.professional_headline || "").trim();
+    const ab = (currentPortfolio.about || "").trim();
+    const bioPass = hl.length > 8 && ab.length > 40;
+    if (hl.length > 8) score += 10;
+    if (ab.length > 40) score += 15;
+    if (auditCheckBio) {
+      auditCheckBio.innerHTML = bioPass 
+        ? '<span class="text-success fw-bold">✓</span>' 
+        : '<span class="text-warning fw-bold">!</span>';
+    }
+
+    // 2. Metrics & KPIs (25 pts)
+    const metrics = safeParse(currentPortfolio.achievements, []);
+    const metricsPass = metrics.length >= 3;
+    score += Math.min(25, metrics.length * 7);
+    if (auditCheckMetrics) {
+      auditCheckMetrics.innerHTML = metricsPass 
+        ? '<span class="text-success fw-bold">✓</span>' 
+        : '<span class="text-warning fw-bold">!</span>';
+    }
+
+    // 3. Projects & Case Studies (25 pts)
+    const projects = safeParse(currentPortfolio.projects, []);
+    let projPts = 0;
+    if (projects.length >= 1) projPts += 10;
+    if (projects.length >= 2) projPts += 10;
+    const hasDetailedProj = projects.some(p => (p.key_features && p.key_features.length > 0) || (p.technologies && p.technologies.length > 1));
+    if (hasDetailedProj) projPts += 5;
+    score += projPts;
+    const projectsPass = projects.length >= 2;
+    if (auditCheckProjects) {
+      auditCheckProjects.innerHTML = projectsPass 
+        ? '<span class="text-success fw-bold">✓</span>' 
+        : '<span class="text-warning fw-bold">!</span>';
+    }
+
+    // 4. Value Pillars / Services (15 pts)
+    const services = safeParse(currentPortfolio.services, []);
+    const servicesPass = services.length >= 2;
+    score += Math.min(15, services.length * 5);
+    if (auditCheckServices) {
+      auditCheckServices.innerHTML = servicesPass 
+        ? '<span class="text-success fw-bold">✓</span>' 
+        : '<span class="text-warning fw-bold">!</span>';
+    }
+
+    // 5. Contact & Social Channels (10 pts)
+    const soc = safeParse(currentPortfolio.social_links, {});
+    let socPts = 0;
+    if (soc.email) socPts += 4;
+    if (soc.location) socPts += 3;
+    if (soc.github || soc.linkedin) socPts += 3;
+    score += socPts;
+
+    // Bound score 0-100
+    score = Math.min(100, Math.max(10, score));
+
+    // Update UI
+    auditProgressBar.style.width = `${score}%`;
+    if (score >= 90) {
+      auditScoreBadge.className = "badge bg-success-subtle text-success border px-2.5 py-1 fw-bold";
+      auditScoreBadge.textContent = `Score: ${score}% (Recruiter Ready 🌟)`;
+      auditProgressBar.className = "progress-bar bg-success";
+    } else if (score >= 70) {
+      auditScoreBadge.className = "badge bg-primary-subtle text-primary border px-2.5 py-1 fw-bold";
+      auditScoreBadge.textContent = `Score: ${score}% (Solid Impact 🚀)`;
+      auditProgressBar.className = "progress-bar bg-primary";
+    } else {
+      auditScoreBadge.className = "badge bg-warning-subtle text-dark border px-2.5 py-1 fw-bold";
+      auditScoreBadge.textContent = `Score: ${score}% (Needs Details ⚠️)`;
+      auditProgressBar.className = "progress-bar bg-warning";
+    }
   }
 
   function updatePublishStatusBadge() {
@@ -910,14 +1033,192 @@ document.addEventListener("DOMContentLoaded", async () => {
         currentPortfolio.services = servs;
         renderServicesEditor();
         renderLivePreview();
+        updateAuditScore();
       });
     }
+
+    // AI Quick Generate 4 KPIs
+    if (btnAiGenerateMetrics) {
+      btnAiGenerateMetrics.addEventListener("click", async () => {
+        if (!currentPortfolio) return;
+        btnAiGenerateMetrics.disabled = true;
+        btnAiGenerateMetrics.innerHTML = `<span class="spinner-border spinner-border-sm" role="status"></span>`;
+        try {
+          const skillsObj = safeParse(currentPortfolio.skills, {});
+          const flatSkills = Array.isArray(skillsObj) ? skillsObj : Object.values(skillsObj).flat();
+          const res = await portfolioAPI.generateMetrics({
+            role: currentPortfolio.professional_headline,
+            skills: flatSkills,
+          });
+          if (res && res.data && res.data.metrics) {
+            currentPortfolio.achievements = res.data.metrics;
+            renderMetricsEditor();
+            renderLivePreview();
+            updateAuditScore();
+            showAlert("⚡ 4 Grounded impact KPIs generated successfully!", "success");
+          }
+        } catch (err) {
+          showAlert("Could not auto-generate metrics.", "warning");
+        } finally {
+          btnAiGenerateMetrics.disabled = false;
+          btnAiGenerateMetrics.innerHTML = "✨ AI 4 KPIs";
+        }
+      });
+    }
+
+    // AI Quick Generate Value Pillars
+    if (btnAiGenerateServices) {
+      btnAiGenerateServices.addEventListener("click", async () => {
+        if (!currentPortfolio) return;
+        btnAiGenerateServices.disabled = true;
+        btnAiGenerateServices.innerHTML = `<span class="spinner-border spinner-border-sm" role="status"></span>`;
+        try {
+          const skillsObj = safeParse(currentPortfolio.skills, {});
+          const flatSkills = Array.isArray(skillsObj) ? skillsObj : Object.values(skillsObj).flat();
+          const res = await portfolioAPI.generateServices({
+            role: currentPortfolio.professional_headline,
+            skills: flatSkills,
+          });
+          if (res && res.data && res.data.services) {
+            currentPortfolio.services = res.data.services;
+            renderServicesEditor();
+            renderLivePreview();
+            updateAuditScore();
+            showAlert("🎯 Core value proposition pillars generated successfully!", "success");
+          }
+        } catch (err) {
+          showAlert("Could not auto-generate services.", "warning");
+        } finally {
+          btnAiGenerateServices.disabled = false;
+          btnAiGenerateServices.innerHTML = "✨ AI Pillars";
+        }
+      });
+    }
+
+    // Audit Widget 1-Click AI Fix Actions
+    if (btnAuditFixBio) {
+      btnAuditFixBio.addEventListener("click", () => {
+        if (tabBtnContent) tabBtnContent.click();
+        if (btnRewriteAbout) btnRewriteAbout.click();
+      });
+    }
+    if (btnAuditFixMetrics) {
+      btnAuditFixMetrics.addEventListener("click", () => {
+        if (tabBtnContent) tabBtnContent.click();
+        if (btnAiGenerateMetrics) btnAiGenerateMetrics.click();
+      });
+    }
+    if (btnAuditFixProjects) {
+      btnAuditFixProjects.addEventListener("click", () => {
+        if (tabBtnContent) tabBtnContent.click();
+        const projs = safeParse(currentPortfolio.projects, []);
+        if (projs.length === 0) {
+          if (btnAddProject) btnAddProject.click();
+        } else {
+          const firstEnrich = document.querySelector(".btn-enrich-case-study");
+          if (firstEnrich) firstEnrich.click();
+        }
+      });
+    }
+    if (btnAuditFixServices) {
+      btnAuditFixServices.addEventListener("click", () => {
+        if (tabBtnContent) tabBtnContent.click();
+        if (btnAiGenerateServices) btnAiGenerateServices.click();
+      });
+    }
+
+    // Section Visibility Checkboxes
+    secVisChecks.forEach(chk => {
+      chk.addEventListener("change", (e) => {
+        if (!currentPortfolio) return;
+        const sec = e.target.getAttribute("data-section");
+        let vis = safeParse(currentPortfolio.section_visibility, {});
+        vis[sec] = e.target.checked;
+        currentPortfolio.section_visibility = vis;
+        renderLivePreview();
+        updateAuditScore();
+        showAlert(`Toggled ${sec} visibility in preview.`);
+      });
+    });
+
+    // Live Dark/Light Mode Toggle in Preview Chrome
+    if (btnPreviewDarkToggle) {
+      btnPreviewDarkToggle.addEventListener("click", () => {
+        if (!currentPortfolio) return;
+        currentPortfolio.dark_mode = !currentPortfolio.dark_mode;
+        if (switchDarkMode) switchDarkMode.checked = currentPortfolio.dark_mode;
+        btnPreviewDarkToggle.textContent = currentPortfolio.dark_mode ? "☀️" : "🌙";
+        renderLivePreview();
+        showAlert(`Switched to ${currentPortfolio.dark_mode ? 'Dark Mode' : 'Light Mode'}`);
+      });
+    }
+
+    // Recruiter Outreach & Share Suite Modal
+    if (btnRecruiterPitchModal) {
+      btnRecruiterPitchModal.addEventListener("click", () => {
+        if (!currentPortfolio) return;
+        const slug = currentPortfolio.slug || "candidate";
+        const origin = window.location.origin;
+        const publicUrl = `${origin}/portfolio/${slug}`;
+        const name = currentPortfolio.full_name || "Candidate";
+        const headline = currentPortfolio.professional_headline || "Software Engineer";
+        const skillsObj = safeParse(currentPortfolio.skills, {});
+        const flatSkills = Array.isArray(skillsObj) ? skillsObj : Object.values(skillsObj).flat();
+        const topSkills = flatSkills.slice(0, 5).join(", ") || "Modern Full-Stack Technologies";
+        const projects = safeParse(currentPortfolio.projects, []);
+        const topProjects = projects.slice(0, 3).map(p => p.name).filter(Boolean).join(", ") || "Production Systems";
+
+        if (textPitchLinkedin) {
+          textPitchLinkedin.value = `Hi [Hiring Manager / Recruiter Name],\n\nI came across your team's open engineering roles and wanted to share my interactive portfolio:\n👉 ${publicUrl}\n\nIt features my core system architectures (${topProjects}), verified technical competencies in ${topSkills}, and quantified impact metrics.\n\nI'd welcome the chance to connect and discuss how my background aligns with your engineering initiatives.\n\nBest regards,\n${name}`;
+        }
+
+        if (textPitchEmail) {
+          textPitchEmail.value = `Subject: ${headline} Portfolio — ${name}\n\nDear Hiring Team,\n\nI am reaching out regarding technical opportunities at your organization. Please find my verified interactive portfolio here:\n${publicUrl}\n\nPortfolio Overview:\n• Role Focus: ${headline}\n• Core Competencies: ${topSkills}\n• Key Flagship Projects: ${topProjects}\n\nI look forward to discussing how I can deliver value to your team.\n\nSincerely,\n${name}`;
+        }
+
+        if (textPitchQuick) {
+          textPitchQuick.value = `Hey! Here is my updated interactive engineering portfolio with live case studies and verified impact metrics: ${publicUrl}`;
+        }
+
+        if (qrCodeImg) {
+          qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(publicUrl)}`;
+        }
+
+        if (typeof bootstrap !== "undefined" && recruiterPitchModalEl) {
+          const modal = bootstrap.Modal.getOrCreateInstance(recruiterPitchModalEl);
+          modal.show();
+        }
+      });
+    }
+
+    btnCopyPitches.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const targetId = btn.getAttribute("data-target");
+        const textarea = document.getElementById(targetId);
+        if (textarea && textarea.value) {
+          navigator.clipboard.writeText(textarea.value);
+          const originalText = btn.innerHTML;
+          btn.innerHTML = `<span>✓</span> Copied to Clipboard!`;
+          btn.classList.replace("btn-primary", "btn-success");
+          setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.replace("btn-success", "btn-primary");
+          }, 2200);
+        }
+      });
+    });
   }
 
   function renderMetricsEditor() {
     metricsContainer.innerHTML = "";
     if (!currentPortfolio) return;
     const metrics = safeParse(currentPortfolio.achievements, []);
+
+    if (metrics.length === 0) {
+      metricsContainer.innerHTML = `<div class="text-muted small p-2 text-center bg-white rounded border">No impact metrics yet. Click <strong>✨ AI 4 KPIs</strong> above to auto-generate verified KPIs.</div>`;
+      return;
+    }
+
     metrics.forEach((m, idx) => {
       const row = document.createElement("div");
       row.className = "d-flex align-items-center gap-2 p-2 bg-white rounded border";
@@ -932,17 +1233,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         metrics[idx].value = e.target.value;
         currentPortfolio.achievements = metrics;
         renderLivePreview();
+        updateAuditScore();
       });
       row.querySelector(".metric-lbl").addEventListener("input", (e) => {
         metrics[idx].label = e.target.value;
         currentPortfolio.achievements = metrics;
         renderLivePreview();
+        updateAuditScore();
       });
       row.querySelector(".btn-del-metric").addEventListener("click", () => {
         metrics.splice(idx, 1);
         currentPortfolio.achievements = metrics;
         renderMetricsEditor();
         renderLivePreview();
+        updateAuditScore();
       });
 
       metricsContainer.appendChild(row);
@@ -1003,28 +1307,77 @@ document.addEventListener("DOMContentLoaded", async () => {
     const projects = safeParse(currentPortfolio.projects, []);
 
     if (projects.length === 0) {
-      projectsContainer.innerHTML = `<div class="text-muted small p-2 text-center bg-white rounded border">No projects yet. Click <strong>+ Add Project</strong> to showcase your work.</div>`;
+      projectsContainer.innerHTML = `
+        <div class="text-muted small p-3 text-center bg-white rounded-3 border">
+          <div class="mb-2">No projects added yet. Click below to add your first flagship project.</div>
+          <button type="button" class="btn btn-sm btn-primary fw-semibold" id="btn-empty-add-project">+ Add Project</button>
+        </div>
+      `;
+      const emptyAdd = document.getElementById("btn-empty-add-project");
+      if (emptyAdd) {
+        emptyAdd.addEventListener("click", () => {
+          projects.push({
+            name: "Flagship Cloud Architecture Project",
+            description: "Engineered scalable microservices handling high concurrency with sub-100ms API response latency.",
+            key_features: ["Architected event-driven microservices", "Engineered relational schema optimizations", "Configured automated CI/CD deployment"],
+            technologies: ["Python", "FastAPI", "PostgreSQL", "Docker"],
+            live_demo_url: "",
+            github_url: ""
+          });
+          currentPortfolio.projects = projects;
+          renderProjectsEditor();
+          renderLivePreview();
+          updateAuditScore();
+        });
+      }
       return;
     }
 
     projects.forEach((p, idx) => {
       const card = document.createElement("div");
-      card.className = "p-2 bg-white rounded border";
+      card.className = "p-3 bg-white rounded-3 border shadow-sm mb-2";
+      const kfText = Array.isArray(p.key_features) ? p.key_features.join("\n") : (p.key_features || "");
       card.innerHTML = `
-        <div class="d-flex justify-content-between align-items-center mb-1">
-          <input type="text" class="form-control form-control-sm fw-bold proj-name" value="${p.name || ''}" placeholder="Project Name" />
-          <button type="button" class="btn btn-sm text-danger ms-2 btn-del-proj" title="Delete Project">×</button>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="d-flex align-items-center gap-1 flex-grow-1">
+            <span class="badge bg-light text-dark border fw-bold" style="font-size: 0.72rem;">#${idx + 1}</span>
+            <input type="text" class="form-control form-control-sm fw-bold proj-name" value="${p.name || ''}" placeholder="Project Title" />
+          </div>
+          <div class="d-flex align-items-center gap-1 ms-2">
+            ${idx > 0 ? `<button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1 btn-move-up" title="Move Up">▲</button>` : ''}
+            ${idx < projects.length - 1 ? `<button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1 btn-move-down" title="Move Down">▼</button>` : ''}
+            <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold btn-enrich-case-study" title="Enrich to high-impact STAR case study with key features" style="font-size: 0.72rem;">
+              ✨ AI Polish
+            </button>
+            <button type="button" class="btn btn-sm text-danger py-0 px-1 btn-del-proj" title="Delete Project">×</button>
+          </div>
         </div>
-        <textarea rows="2" class="form-control form-control-sm proj-desc mb-1" placeholder="Description">${p.description || ''}</textarea>
-        <div class="row g-1 mb-1">
+
+        <div class="mb-2">
+          <label class="form-label text-muted small mb-1" style="font-size: 0.72rem;">Architectural &amp; Problem Overview</label>
+          <textarea rows="2" class="form-control form-control-sm proj-desc" placeholder="Describe the problem, architectural design, and impact...">${p.description || ''}</textarea>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label text-muted small mb-1" style="font-size: 0.72rem;">Key Deliverables &amp; Engineering Highlights (one per line)</label>
+          <textarea rows="2" class="form-control form-control-sm proj-kf" placeholder="• Architected modular REST endpoints&#10;• Reduced latency by 45% with Redis caching">${kfText}</textarea>
+        </div>
+
+        <div class="row g-2 mb-1">
           <div class="col-12">
-            <input type="text" class="form-control form-control-sm proj-techs" value="${(p.technologies || []).join(', ')}" placeholder="Technologies (comma separated, e.g. React, Python)" />
+            <input type="text" class="form-control form-control-sm proj-techs" value="${(p.technologies || []).join(', ')}" placeholder="Technologies (e.g. React, FastAPI, Docker, PostgreSQL)" />
           </div>
           <div class="col-6">
-            <input type="url" class="form-control form-control-sm proj-live" value="${p.live_demo_url || ''}" placeholder="Live Demo URL (optional)" />
+            <div class="input-group input-group-sm">
+              <input type="url" class="form-control proj-live" value="${p.live_demo_url || ''}" placeholder="Live Demo URL" />
+              ${p.live_demo_url ? `<a href="${p.live_demo_url}" target="_blank" class="btn btn-outline-secondary py-0 px-2 d-flex align-items-center" title="Test Live Link">↗</a>` : ''}
+            </div>
           </div>
           <div class="col-6">
-            <input type="url" class="form-control form-control-sm proj-gh" value="${p.github_url || ''}" placeholder="GitHub URL (optional)" />
+            <div class="input-group input-group-sm">
+              <input type="url" class="form-control proj-gh" value="${p.github_url || ''}" placeholder="GitHub URL" />
+              ${p.github_url ? `<a href="${p.github_url}" target="_blank" class="btn btn-outline-secondary py-0 px-2 d-flex align-items-center" title="Test GitHub Link">↗</a>` : ''}
+            </div>
           </div>
         </div>
       `;
@@ -1033,16 +1386,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         projects[idx].name = e.target.value;
         currentPortfolio.projects = projects;
         renderLivePreview();
+        updateAuditScore();
       });
       card.querySelector(".proj-desc").addEventListener("input", (e) => {
         projects[idx].description = e.target.value;
         currentPortfolio.projects = projects;
         renderLivePreview();
+        updateAuditScore();
+      });
+      card.querySelector(".proj-kf").addEventListener("input", (e) => {
+        projects[idx].key_features = e.target.value.split("\n").map(l => l.replace(/^[•\-\*]\s*/, '').trim()).filter(Boolean);
+        currentPortfolio.projects = projects;
+        renderLivePreview();
+        updateAuditScore();
       });
       card.querySelector(".proj-techs").addEventListener("change", (e) => {
         projects[idx].technologies = e.target.value.split(",").map(t => t.trim()).filter(Boolean);
         currentPortfolio.projects = projects;
         renderLivePreview();
+        updateAuditScore();
       });
       card.querySelector(".proj-live").addEventListener("input", (e) => {
         projects[idx].live_demo_url = e.target.value.trim();
@@ -1054,11 +1416,66 @@ document.addEventListener("DOMContentLoaded", async () => {
         currentPortfolio.projects = projects;
         renderLivePreview();
       });
+
+      // Move Up
+      const btnUp = card.querySelector(".btn-move-up");
+      if (btnUp) {
+        btnUp.addEventListener("click", () => {
+          const temp = projects[idx];
+          projects[idx] = projects[idx - 1];
+          projects[idx - 1] = temp;
+          currentPortfolio.projects = projects;
+          renderProjectsEditor();
+          renderLivePreview();
+        });
+      }
+
+      // Move Down
+      const btnDown = card.querySelector(".btn-move-down");
+      if (btnDown) {
+        btnDown.addEventListener("click", () => {
+          const temp = projects[idx];
+          projects[idx] = projects[idx + 1];
+          projects[idx + 1] = temp;
+          currentPortfolio.projects = projects;
+          renderProjectsEditor();
+          renderLivePreview();
+        });
+      }
+
+      // AI Case Study Polish
+      const btnEnrich = card.querySelector(".btn-enrich-case-study");
+      if (btnEnrich) {
+        btnEnrich.addEventListener("click", async () => {
+          btnEnrich.disabled = true;
+          btnEnrich.innerHTML = `<span class="spinner-border spinner-border-sm" role="status"></span>`;
+          try {
+            const res = await portfolioAPI.improveProject(projects[idx]);
+            if (res && res.data && res.data.improved_project) {
+              const imp = res.data.improved_project;
+              projects[idx].description = imp.description || projects[idx].description;
+              if (imp.key_features) projects[idx].key_features = imp.key_features;
+              currentPortfolio.projects = projects;
+              renderProjectsEditor();
+              renderLivePreview();
+              updateAuditScore();
+              showAlert("✨ Project case study polished with architectural highlights!", "success");
+            }
+          } catch (err) {
+            showAlert("Could not enrich project.", "warning");
+          } finally {
+            btnEnrich.disabled = false;
+            btnEnrich.innerHTML = "✨ AI Polish";
+          }
+        });
+      }
+
       card.querySelector(".btn-del-proj").addEventListener("click", () => {
         projects.splice(idx, 1);
         currentPortfolio.projects = projects;
         renderProjectsEditor();
         renderLivePreview();
+        updateAuditScore();
       });
 
       projectsContainer.appendChild(card);
@@ -1274,7 +1691,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const servList = safeParse(currentPortfolio.services, []);
 
     if (servList.length === 0) {
-      servicesContainer.innerHTML = `<div class="text-muted small p-2 text-center bg-white rounded border">No services yet. Click <strong>+ Add Service</strong> to highlight offerings.</div>`;
+      servicesContainer.innerHTML = `<div class="text-muted small p-2 text-center bg-white rounded border">No value pillars yet. Click <strong>✨ AI Pillars</strong> above to highlight capability offerings.</div>`;
       return;
     }
 
@@ -1296,22 +1713,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         servList[idx].icon = e.target.value;
         currentPortfolio.services = servList;
         renderLivePreview();
+        updateAuditScore();
       });
       card.querySelector(".serv-title").addEventListener("input", (e) => {
         servList[idx].title = e.target.value;
         currentPortfolio.services = servList;
         renderLivePreview();
+        updateAuditScore();
       });
       card.querySelector(".serv-desc").addEventListener("input", (e) => {
         servList[idx].description = e.target.value;
         currentPortfolio.services = servList;
         renderLivePreview();
+        updateAuditScore();
       });
       card.querySelector(".btn-del-serv").addEventListener("click", () => {
         servList.splice(idx, 1);
         currentPortfolio.services = servList;
         renderServicesEditor();
         renderLivePreview();
+        updateAuditScore();
       });
 
       servicesContainer.appendChild(card);

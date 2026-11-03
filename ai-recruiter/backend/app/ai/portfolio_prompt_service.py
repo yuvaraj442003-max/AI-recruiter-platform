@@ -9,7 +9,12 @@ import re
 from typing import Any, Dict, List, Optional
 
 from app.ai.llm_service import generate
-from app.ai.portfolio_ai_service import clean_markdown_code_block, organize_skills_into_categories
+from app.ai.portfolio_ai_service import (
+    clean_markdown_code_block,
+    organize_skills_into_categories,
+    generate_value_services,
+    generate_impact_metrics,
+)
 from app.core.config import settings
 
 logger = logging.getLogger("ai_recruiter.portfolio_prompt")
@@ -185,32 +190,42 @@ def analyze_resume_with_gemini(
     else:
         skills_dict = {"Core Technologies": ["Software Development", "System Architecture"]}
 
+    fallback_role = candidate_context.get("headline", "Software Engineer") if candidate_context else "Software Engineer"
+    exp_years = float(candidate_context.get("experience_years", 0.0)) if candidate_context and candidate_context.get("experience_years") else 0.0
+    projs = candidate_context.get("projects", []) if candidate_context else []
+    flat_skills = fallback_skills if isinstance(fallback_skills, list) else list(skills_dict.values())
+    flat_skills_list = [str(s) for sub in (flat_skills if any(isinstance(i, list) for i in flat_skills) else [flat_skills]) for s in (sub if isinstance(sub, list) else [sub])]
+
+    derived_metrics = generate_impact_metrics(
+        role=fallback_role,
+        skills=flat_skills_list,
+        experience_years=exp_years,
+        project_count=len(projs),
+        verified_metrics=candidate_context.get("metrics_and_impact") if candidate_context else None,
+    )
+    derived_services = generate_value_services(
+        role=fallback_role,
+        skills=flat_skills_list,
+        experience_years=exp_years,
+    )
+
     return {
         "candidate_name": candidate_name,
         "domain": candidate_context.get("headline", "Technology") if candidate_context else "Technology",
         "career_persona": candidate_context.get("headline", f"{candidate_name} — Professional Portfolio") if candidate_context else "Software Engineer",
-        "headline": candidate_context.get("headline", "Senior Software Engineer") if candidate_context else "Senior Software Engineer",
+        "headline": fallback_role,
         "about_summary": candidate_context.get("summary", "") if candidate_context else "",
         "skills": skills_dict,
         "experience": candidate_context.get("experience", []) if candidate_context else [],
-        "projects": candidate_context.get("projects", []) if candidate_context else [],
+        "projects": projs,
         "education": candidate_context.get("education", []) if candidate_context else [],
-        "impact_metrics": [
-            {"value": "99.9%", "label": "System Reliability", "icon": "⚡"},
-            {"value": "15+", "label": "Projects Delivered", "icon": "🚀"},
-            {"value": "5+", "label": "Years Experience", "icon": "🏆"},
-            {"value": "100%", "label": "Code Integrity", "icon": "🎯"},
-        ],
-        "services": [
-            {"title": "Full-Stack Development", "description": "Designing high-scale distributed applications and resilient APIs.", "icon": "🏗️"},
-            {"title": "System Architecture", "description": "End-to-end cloud infrastructure and robust microservices.", "icon": "⚡"},
-            {"title": "Performance Tuning", "description": "Optimizing database throughput and frontend response times.", "icon": "🎯"},
-        ],
+        "impact_metrics": derived_metrics,
+        "services": derived_services,
         "social_links": {
             "email": candidate_context.get("email", "") if candidate_context else "",
             "location": candidate_context.get("location", "") if candidate_context else "",
-            "github": "https://github.com",
-            "linkedin": "https://linkedin.com",
+            "github": candidate_context.get("github_url", "https://github.com") if candidate_context else "https://github.com",
+            "linkedin": candidate_context.get("linkedin_url", "https://linkedin.com") if candidate_context else "https://linkedin.com",
         }
     }
 

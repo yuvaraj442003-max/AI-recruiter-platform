@@ -836,20 +836,18 @@ def build_portfolio_from_candidate_profile(
         portfolio.section_order = json.dumps(DEFAULT_SECTION_ORDER)
     if not portfolio.section_visibility:
         initial_vis = dict(DEFAULT_SECTION_VISIBILITY)
-        if not extracted.get("achievements"):
-            initial_vis["achievements"] = False
-        if not extracted.get("services"):
-            initial_vis["services"] = False
+        initial_vis["achievements"] = bool(extracted.get("achievements"))
+        initial_vis["services"] = bool(extracted.get("services"))
         if not extracted.get("certifications"):
             initial_vis["certifications"] = False
         portfolio.section_visibility = json.dumps(initial_vis)
     else:
         try:
             curr_vis = json.loads(portfolio.section_visibility)
-            if not extracted.get("achievements"):
-                curr_vis["achievements"] = False
-            if not extracted.get("services"):
-                curr_vis["services"] = False
+            if extracted.get("achievements"):
+                curr_vis["achievements"] = True
+            if extracted.get("services"):
+                curr_vis["services"] = True
             if not extracted.get("certifications"):
                 curr_vis["certifications"] = False
             portfolio.section_visibility = json.dumps(curr_vis)
