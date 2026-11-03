@@ -31,20 +31,20 @@ logger = logging.getLogger("ai_recruiter.learning_journey")
 def compute_dynamic_phase_schedules(base_date: Optional[datetime] = None) -> List[str]:
     """
     Computes dynamic, realistic 90-day placement sprint schedules starting from base_date (Day 1):
-    - Phase 1: Foundations (Days 1 - 22)
-    - Phase 2: Core Skills (Days 23 - 45)
-    - Phase 3: Advanced & Projects (Days 46 - 68)
-    - Phase 4: Placement Ready (Days 69 - 90)
+    - Phase 1: Foundations (Days 1 - 21) -> Weeks 1-3
+    - Phase 2: Core Engineering (Days 22 - 50) -> Weeks 4-7
+    - Phase 3: Advanced & Projects (Days 51 - 70) -> Weeks 8-10
+    - Phase 4: Placement Ready (Days 71 - 90) -> Weeks 11-12
     """
     start_date = base_date or datetime.now()
     p1_start = start_date
-    p1_end = start_date + timedelta(days=21)
+    p1_end = start_date + timedelta(days=20)
 
     p2_start = p1_end + timedelta(days=1)
-    p2_end = start_date + timedelta(days=44)
+    p2_end = start_date + timedelta(days=49)
 
     p3_start = p2_end + timedelta(days=1)
-    p3_end = start_date + timedelta(days=67)
+    p3_end = start_date + timedelta(days=69)
 
     p4_start = p3_end + timedelta(days=1)
     p4_end = start_date + timedelta(days=89)
@@ -58,6 +58,147 @@ def compute_dynamic_phase_schedules(base_date: Optional[datetime] = None) -> Lis
         fmt_range(p3_start, p3_end),
         fmt_range(p4_start, p4_end),
     ]
+
+
+PHASE_SCHEDULE_META: List[Dict[str, Any]] = [
+    {
+        "phase_num": 1,
+        "weekly_schedule": "Weeks 1–3 (Days 1–21)",
+        "expected_topics_count": 15,
+        "stage_title": "Foundations & Syntax Mechanics",
+        "focus": "Core Language Syntax, JVM/Runtime Architecture, Data Structures & OOP Foundations",
+    },
+    {
+        "phase_num": 2,
+        "weekly_schedule": "Weeks 4–7 (Days 22–50)",
+        "expected_topics_count": 15,
+        "stage_title": "Core Engineering & Deep Architecture",
+        "focus": "Collections Framework, Concurrency, Multithreading, Asynchronous I/O & Databases",
+    },
+    {
+        "phase_num": 3,
+        "weekly_schedule": "Weeks 8–10 (Days 51–70)",
+        "expected_topics_count": 10,
+        "stage_title": "Production Systems & Real-World Projects",
+        "focus": "REST Microservices, High-Scale Enterprise Architectures, Cloud Dockerization",
+    },
+    {
+        "phase_num": 4,
+        "weekly_schedule": "Weeks 11–12 (Days 71–90)",
+        "expected_topics_count": 10,
+        "stage_title": "Placement Sprints & Mock Interviews",
+        "focus": "Campus Placement Coding Rounds, Speed Tests, AI Proctored Technical & Behavioral Interviews",
+    },
+]
+
+
+def build_12_week_schedule(
+    course_id: str,
+    base_date: datetime,
+    is_started: bool,
+    completed_topics: List[str],
+) -> List[Dict[str, Any]]:
+    """
+    Builds the complete 12-week schedule (90 days) for the candidate's active course track,
+    mapping out week-by-week topic allocations, calendar dates, milestones, and progress.
+    """
+    norm = course_id.lower().strip() if course_id else "java"
+    curr = get_course_curriculum_details(norm)
+    chapters = curr.get("chapters", [])
+    completed_set = set(str(t).lower() for t in completed_topics)
+
+    now = datetime.now()
+    days_elapsed = (now - base_date).days if is_started else 0
+    current_week_num = min(12, max(1, (days_elapsed // 7) + 1)) if is_started else 1
+
+    weeks = []
+    for w in range(1, 13):
+        if w <= 10:
+            w_start = base_date + timedelta(days=(w - 1) * 7)
+            w_end = w_start + timedelta(days=6)
+            days_label = f"Days {(w - 1) * 7 + 1}-{w * 7}"
+            ch_idx = w - 1
+            ch = chapters[ch_idx] if ch_idx < len(chapters) else {}
+            week_title = ch.get("title", f"Module {w}: Core Engineering & Implementation")
+            phase_num = 1 if w <= 3 else (2 if w <= 7 else 3)
+            phase_name = (
+                "Phase 1: Foundations" if phase_num == 1 else
+                ("Phase 2: Core Engineering" if phase_num == 2 else "Phase 3: Production Systems & Projects")
+            )
+            raw_topics = ch.get("topics", [])
+            topics_list = []
+            for t_idx, t_name in enumerate(raw_topics):
+                t_id = f"topic-{w}-{t_idx + 1}"
+                is_done = is_started and (t_id.lower() in completed_set or str(t_name).lower() in completed_set)
+                topics_list.append({
+                    "id": t_id,
+                    "title": t_name,
+                    "is_completed": is_done,
+                    "order": t_idx + 1,
+                })
+            real_world_app = ch.get("real_world_app", "")
+        elif w == 11:
+            w_start = base_date + timedelta(days=70)
+            w_end = base_date + timedelta(days=79)
+            days_label = "Days 71-80"
+            week_title = "Placement Sprint 1: Company Technical Assessments & Problem Solving Drills"
+            phase_num = 4
+            phase_name = "Phase 4: Placement Ready"
+            real_world_app = "Amazon, Google, Microsoft, TCS, Infosys technical screening round drills"
+            topics_list = [
+                {"id": "topic-11-1", "title": "High-Frequency Company Coding Challenges & LeetCode Sprints", "is_completed": False, "order": 1},
+                {"id": "topic-11-2", "title": "Data Structures & Algorithm Optimization Speed Tests", "is_completed": False, "order": 2},
+                {"id": "topic-11-3", "title": "System Design & Enterprise Architecture Walkthroughs", "is_completed": False, "order": 3},
+                {"id": "topic-11-4", "title": "Live Timed Technical Coding Assessment Drills", "is_completed": False, "order": 4},
+            ]
+        else:
+            w_start = base_date + timedelta(days=80)
+            w_end = base_date + timedelta(days=89)
+            days_label = "Days 81-90"
+            week_title = "Placement Sprint 2: AI Proctored Mock Interviews & Final Readiness Verification"
+            phase_num = 4
+            phase_name = "Phase 4: Placement Ready"
+            real_world_app = "Full placement sign-off, live AI proctored interview, portfolio & resume audit"
+            topics_list = [
+                {"id": "topic-12-1", "title": "AI Proctored Technical Mock Interview with Live Audio/Video", "is_completed": False, "order": 1},
+                {"id": "topic-12-2", "title": "HR Behavioral Interview & STAR Method Response Mastery", "is_completed": False, "order": 2},
+                {"id": "topic-12-3", "title": "ATS Resume Score Optimization & Production Portfolio Review", "is_completed": False, "order": 3},
+                {"id": "topic-12-4", "title": "Final Placement Readiness Audit & Direct Job Application Dispatch", "is_completed": False, "order": 4},
+            ]
+
+        done_cnt = sum(1 for t in topics_list if t.get("is_completed"))
+        total_cnt = len(topics_list)
+        pct = round((done_cnt / max(1, total_cnt)) * 100.0, 1) if is_started else 0.0
+
+        if not is_started:
+            status = "Ready to Start" if w == 1 else "Locked"
+        elif pct >= 100.0:
+            status = "Completed"
+        elif w == current_week_num:
+            status = "In Progress"
+        elif w < current_week_num:
+            status = "In Progress"
+        else:
+            status = "Upcoming"
+
+        weeks.append({
+            "week_num": w,
+            "days_label": days_label,
+            "phase_num": phase_num,
+            "phase_name": phase_name,
+            "title": week_title,
+            "date_range": f"{w_start.strftime('%b %d')} - {w_end.strftime('%b %d')}",
+            "target_completion_date": w_end.strftime("%b %d, %Y"),
+            "topics": topics_list,
+            "topics_count": total_cnt,
+            "completed_topics_count": done_cnt,
+            "progress_percent": pct,
+            "status": status,
+            "is_current_week": (w == current_week_num) if is_started else (w == 1),
+            "real_world_app": real_world_app,
+        })
+
+    return weeks
 
 
 COURSE_TRACKS: Dict[str, Dict[str, Any]] = {
@@ -1248,24 +1389,70 @@ def get_candidate_learning_journey(db: Session, user_id: Any) -> Dict[str, Any]:
         except Exception:
             course_start_dt = None
 
-    if is_course_started and course_start_dt:
-        dynamic_schedules = compute_dynamic_phase_schedules(course_start_dt)
-        for idx, p in enumerate(phases):
-            if idx < len(dynamic_schedules):
-                p["date_range"] = dynamic_schedules[idx]
-    else:
-        # Candidate has not started course yet: keep date_range empty and progress 0, no fake dates or progress
+    start_dt = course_start_dt if (is_course_started and course_start_dt) else now
+    expected_completion_dt = start_dt + timedelta(days=90)
+    days_elapsed = (now - start_dt).days if (is_course_started and course_start_dt) else 0
+    days_remaining = max(0, 90 - days_elapsed) if is_course_started else 90
+    current_week = min(12, max(1, (days_elapsed // 7) + 1)) if is_course_started else 1
+
+    dynamic_schedules = compute_dynamic_phase_schedules(start_dt)
+    for idx, p in enumerate(phases):
+        meta = PHASE_SCHEDULE_META[idx] if idx < len(PHASE_SCHEDULE_META) else {}
+        p["weekly_schedule"] = meta.get("weekly_schedule", f"Phase {idx+1}")
+        p["expected_topics_count"] = meta.get("expected_topics_count", 10)
+        p["stage_title"] = meta.get("stage_title", p.get("name", ""))
+        p["focus_areas"] = meta.get("focus", "")
+        if idx < len(dynamic_schedules):
+            p["date_range"] = dynamic_schedules[idx]
+
+    if not is_course_started:
+        # Candidate has not started course yet:
+        # Phase 1 is Ready to Start, Phases 2-4 are Locked.
+        # Overall progress remains 0.0% until they begin learning, but the 12-week schedule,
+        # weekly milestones, and expected completion date are clearly visible.
         for p in phases:
-            p["date_range"] = ""
             p["progress_percent"] = 0.0
             if p.get("phase_num") == 1:
-                p["status"] = "Not Started"
+                p["status"] = "Ready to Start"
+                p["is_locked"] = False
+                for c in p.get("courses", []):
+                    c["status"] = "Ready to Start"
+                    c["progress_percent"] = 0.0
             else:
-                p["status"] = "Locked"
+                p["status"] = "Upcoming (Locked)"
                 p["is_locked"] = True
+                for c in p.get("courses", []):
+                    c["status"] = "Locked"
+                    c["progress_percent"] = 0.0
         overall_roadmap_pct = 0.0
         recommendations_overall_pct = 0.0
         today_plan_pct = 0.0
+
+    weekly_schedule = build_12_week_schedule(
+        selected_course,
+        start_dt,
+        is_course_started,
+        completed_topics,
+    )
+
+    schedule_overview = {
+        "is_started": is_course_started,
+        "status_label": "In Progress" if is_course_started else "Not Started (Ready to Start)",
+        "start_date": course_start_dt.strftime("%b %d, %Y") if (is_course_started and course_start_dt) else "Ready Today (Day 1 on Click)",
+        "start_date_iso": course_start_dt.isoformat() if (is_course_started and course_start_dt) else None,
+        "start_date_human": f"Started on {course_start_dt.strftime('%b %d, %Y')}" if (is_course_started and course_start_dt) else "Starts immediately when you click Start Course",
+        "expected_completion_date": expected_completion_dt.strftime("%b %d, %Y"),
+        "expected_completion_iso": expected_completion_dt.isoformat(),
+        "total_days": 90,
+        "total_weeks": 12,
+        "days_elapsed": days_elapsed,
+        "days_remaining": days_remaining,
+        "current_week": current_week,
+        "total_topics": 50,
+        "completed_topics_count": len(completed_topics) if is_course_started else 0,
+        "overall_progress_percent": overall_roadmap_pct if is_course_started else 0.0,
+        "target_pace": "4–5 Topics / Week (approx. 1 hour / day)",
+    }
 
     # Available courses list for UI selection dropdown
     available_courses = [
@@ -1300,6 +1487,10 @@ def get_candidate_learning_journey(db: Session, user_id: Any) -> Dict[str, Any]:
         "active_phase_num": active_phase["phase_num"],
         "active_phase_name": active_phase["name"],
         "phases": phases,
+        "schedule_overview": schedule_overview,
+        "weekly_schedule": weekly_schedule,
+        "expected_completion_date": expected_completion_dt.strftime("%b %d, %Y"),
+        "start_date": course_start_dt.strftime("%b %d, %Y") if (is_course_started and course_start_dt) else "Ready Today (Day 1 on Click)",
         "recommendations": recommendations,
         "recommendations_progress_percent": recommendations_overall_pct,
         "today_plan": today_plan,

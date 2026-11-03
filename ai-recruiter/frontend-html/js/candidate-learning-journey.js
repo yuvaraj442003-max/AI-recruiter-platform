@@ -344,39 +344,101 @@ var escapeHtml = window.escapeHtml;
     }
 
     // 2. CARD 1: Your 90-Day Roadmap Header Overall Badge & Timeline
+    const overview = data.schedule_overview || {};
+    const expectedCompletionDate = overview.expected_completion_date || data.expected_completion_date || "Feb 01, 2027";
+    const startDateText = isCourseStarted 
+      ? (overview.start_date || (data.course_started_at ? new Date(data.course_started_at).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }) : "Active Sprint"))
+      : "Starts Day 1 on Click (Ready Today)";
+    const overallPct = Math.round(data.overall_progress_percent !== undefined ? data.overall_progress_percent : 0);
+    const completedCount = (data.completed_topics && data.completed_topics.length) || overview.completed_topics_count || 0;
+    const totalTopicsCount = overview.total_topics || 50;
+    const daysElapsed = overview.days_elapsed || 0;
+    const daysRemaining = overview.days_remaining !== undefined ? overview.days_remaining : 90;
+    const currentWeekNum = overview.current_week || 1;
+
     const overallBadge = document.getElementById("roadmap-overall-badge");
     if (overallBadge) {
       if (isCourseStarted) {
-        const overallPct = Math.round(data.overall_progress_percent !== undefined ? data.overall_progress_percent : 0);
-        overallBadge.textContent = `${overallPct}% Total`;
+        overallBadge.textContent = `${overallPct}% Total • Day ${daysElapsed}/90`;
         overallBadge.style.background = "#dbeafe";
         overallBadge.style.color = "#1e40af";
       } else {
-        overallBadge.textContent = "Not Started";
-        overallBadge.style.background = "#f1f5f9";
-        overallBadge.style.color = "#64748b";
+        overallBadge.textContent = "Not Started • 90-Day Sprint";
+        overallBadge.style.background = "#fef3c7";
+        overallBadge.style.color = "#92400e";
       }
     }
 
     const timelineContainer = document.getElementById("journey-roadmap-timeline");
-
-    // If course not started, show a clear "Start your learning journey" CTA — no fake roadmap
-    if (timelineContainer && !isCourseStarted) {
-      const courseName = (data.course_track && data.course_track.name) || data.selected_course || "your course";
-      timelineContainer.innerHTML = `
-        <div class="d-flex flex-column align-items-center justify-content-center py-4 text-center" style="gap: 12px; min-height: 180px;">
-          <div style="background: #f0fdf4; border-radius: 50%; width: 56px; height: 56px; display:flex; align-items:center; justify-content:center; font-size: 1.6rem;">🚀</div>
-          <div>
-            <div class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">Your 90-Day Roadmap Awaits</div>
-            <div class="text-muted" style="font-size: 0.8rem; max-width: 260px;">Click <strong>Start Course</strong> to begin your ${escapeHtml(courseName)} learning journey. Your roadmap, progress, and phase schedule will appear here.</div>
+    if (timelineContainer) {
+      // 90-Day Schedule Overview Banner (Always visible for all candidates)
+      const scheduleBannerHtml = `
+        <div class="p-3 mb-3 rounded-4 shadow-sm" style="background: ${isCourseStarted ? 'linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%)' : 'linear-gradient(135deg, #f8faff 0%, #ffffff 100%)'}; border: 1px solid ${isCourseStarted ? '#86efac' : '#cbd5e1'};">
+          <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+              <span class="fs-5">${isCourseStarted ? '⚡' : '🚀'}</span>
+              <div>
+                <div class="fw-bold text-dark" style="font-size: 0.88rem; line-height: 1.2;">
+                  ${isCourseStarted ? `Sprint Active: Day ${daysElapsed || 1} of 90 (Week ${currentWeekNum} of 12)` : 'Your 90-Day Placement Sprint Roadmap'}
+                </div>
+                <div class="text-secondary" style="font-size: 0.72rem;">
+                  ${isCourseStarted ? `${daysRemaining} days remaining to your target completion` : 'Starts Day 1 when you click Start Course • Fully structured 12-week schedule'}
+                </div>
+              </div>
+            </div>
+            <span class="badge ${isCourseStarted ? 'bg-success text-white' : 'bg-warning text-dark'} rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.7rem;">
+              ${isCourseStarted ? 'In Progress' : 'Not Started'}
+            </span>
           </div>
-          <button class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm" onclick="startCurrentCourse()" style="font-size: 0.85rem;">▶ Start Course</button>
+
+          <!-- Calendar Dates Strip: Start Date & Target Completion Date -->
+          <div class="row g-2 py-2 my-1 border-top border-bottom" style="border-color: rgba(0,0,0,0.06) !important; font-size: 0.76rem;">
+            <div class="col-6">
+              <div class="text-muted" style="font-size: 0.7rem;">📅 Journey Start Date:</div>
+              <div class="fw-bold text-dark">${escapeHtml(startDateText)}</div>
+            </div>
+            <div class="col-6">
+              <div class="text-muted" style="font-size: 0.7rem;">🎯 Expected Completion Date:</div>
+              <div class="fw-bold" style="color: #059669;">${escapeHtml(expectedCompletionDate)}</div>
+            </div>
+          </div>
+
+          <!-- Weekly Schedule Pace & Overall Progress -->
+          <div class="d-flex align-items-center justify-content-between text-secondary mt-2 mb-1" style="font-size: 0.75rem;">
+            <span><strong>Weekly Schedule:</strong> 12 Weeks (4 Stages)</span>
+            <span><strong>Overall Progress:</strong> <b class="${overallPct > 0 ? 'text-primary' : 'text-dark'}">${overallPct}%</b> (${completedCount}/${totalTopicsCount} Topics)</span>
+          </div>
+          <div class="progress mb-2.5" style="height: 7px; border-radius: 999px; background: #e2e8f0;">
+            <div class="progress-bar ${overallPct >= 100 ? 'bg-success' : 'bg-primary'}" role="progressbar" style="width: ${overallPct}%;" aria-valuenow="${overallPct}" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+
+          <!-- 1-Click Action Button -->
+          ${!isCourseStarted ? `
+            <div class="d-flex align-items-center justify-content-between pt-1">
+              <div class="text-muted" style="font-size: 0.73rem;">
+                Click to begin your 90-day learning journey
+              </div>
+              <button class="btn btn-sm btn-primary rounded-pill px-3.5 py-1.5 fw-bold shadow-sm d-flex align-items-center gap-1.5" onclick="startCurrentCourse(event)">
+                <span>▶ Start Course</span>
+              </button>
+            </div>
+          ` : `
+            <div class="d-flex align-items-center justify-content-between pt-1">
+              <button class="btn btn-sm btn-link text-primary p-0 text-decoration-none fw-semibold" onclick="openFullRoadmapScheduleModal(event)" style="font-size: 0.75rem;">
+                🗓️ View Weekly Calendar
+              </button>
+              <button class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-bold d-flex align-items-center gap-1" onclick="startCurrentCourse(event)">
+                <span>Continue Learning →</span>
+              </button>
+            </div>
+          `}
         </div>
       `;
-    } else if (timelineContainer && data.phases) {
-      timelineContainer.innerHTML = data.phases.map((p) => {
-        const isCurrentActive = (data.active_phase_num === p.phase_num);
-        const isCompleted = (p.status === "Completed" || p.progress_percent >= 100);
+
+      // 4-Stage Roadmap Timeline (Visible for all candidates with dates and topics)
+      const phasesHtml = (data.phases || []).map((p) => {
+        const isCurrentActive = isCourseStarted && (data.active_phase_num === p.phase_num);
+        const isCompleted = isCourseStarted && (p.status === "Completed" || p.progress_percent >= 100);
 
         let nodeClass = "";
         if (isCompleted) nodeClass = "completed";
@@ -400,7 +462,13 @@ var escapeHtml = window.escapeHtml;
         }
 
         let statusBadge = "";
-        if (isCompleted) {
+        if (!isCourseStarted) {
+          if (p.phase_num === 1) {
+            statusBadge = '<span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill" style="font-size: 0.68rem;">Ready to Start</span>';
+          } else {
+            statusBadge = '<span class="roadmap-badge-upcoming">Locked</span>';
+          }
+        } else if (isCompleted) {
           statusBadge = '<span class="roadmap-badge-completed">Completed</span>';
         } else if (isCurrentActive) {
           statusBadge = '<span class="roadmap-badge-in-progress">In Progress</span>';
@@ -408,15 +476,18 @@ var escapeHtml = window.escapeHtml;
           statusBadge = '<span class="roadmap-badge-upcoming">Upcoming</span>';
         }
 
-        const pct = Math.round(p.progress_percent || 0);
+        const pct = isCourseStarted ? Math.round(p.progress_percent || 0) : 0;
         const barColor = (isCompleted || isCurrentActive) && pct > 0 ? "#10b981" : "#e2e8f0";
+
+        const weeklyScheduleBadge = p.weekly_schedule ? `<span class="badge bg-light text-primary border me-1" style="font-size: 0.68rem; font-weight: 600;">${escapeHtml(p.weekly_schedule)}</span>` : '';
+        const topicsCountBadge = p.expected_topics_count ? `<span class="badge bg-light text-secondary border" style="font-size: 0.68rem;">${p.expected_topics_count} Topics</span>` : '';
 
         const courses = p.courses || [];
         const coursesHtml = courses.length ? `
           <div class="d-flex flex-wrap gap-1.5 mt-1.5">
             ${courses.slice(0, 2).map(c => `
               <span class="badge bg-light text-secondary border px-1.5 py-0.5" style="font-size: 0.65rem; font-weight: 500;">
-                ${escapeHtml(c.name)}: <b class="${c.progress_percent > 0 ? 'text-dark' : 'text-muted'}">${Math.round(c.progress_percent || 0)}%</b>
+                ${escapeHtml(c.name)}: <b class="${c.progress_percent > 0 ? 'text-dark' : 'text-muted'}">${isCourseStarted ? Math.round(c.progress_percent || 0) : 0}%</b>
               </span>
             `).join('')}
             ${courses.length > 2 ? `<span class="badge bg-light text-muted border px-1.5 py-0.5" style="font-size: 0.65rem;">+${courses.length - 2} more</span>` : ''}
@@ -424,7 +495,7 @@ var escapeHtml = window.escapeHtml;
         ` : '';
 
         return `
-          <div class="roadmap-step" onclick="openStageGateModal(${p.phase_num})">
+          <div class="roadmap-step" onclick="openStageGateModal(${p.phase_num})" style="cursor: pointer;" title="Click to view weekly schedule & topics">
             <span class="roadmap-node ${nodeClass}" title="${escapeHtml(p.name)}"></span>
             
             <div class="d-flex align-items-start gap-2.5 flex-grow-1 me-2">
@@ -432,8 +503,12 @@ var escapeHtml = window.escapeHtml;
                 ${iconHtml}
               </div>
               <div class="flex-grow-1">
-                <div class="fw-bold text-dark" style="font-size: 0.88rem; line-height: 1.3;">${escapeHtml(p.name)}</div>
-                <div class="text-muted" style="font-size: 0.72rem; margin-top: 1px;">${escapeHtml(p.date_range)}</div>
+                <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                  <span class="fw-bold text-dark" style="font-size: 0.88rem; line-height: 1.3;">${escapeHtml(p.name)}</span>
+                  ${weeklyScheduleBadge}
+                  ${topicsCountBadge}
+                </div>
+                <div class="text-muted" style="font-size: 0.72rem; margin-top: 1px;">📅 ${escapeHtml(p.date_range || '90-Day Sprint')}</div>
                 <div class="text-secondary" style="font-size: 0.75rem; margin-top: 2px;">${escapeHtml(p.subtitle)}</div>
                 ${coursesHtml}
               </div>
@@ -451,7 +526,9 @@ var escapeHtml = window.escapeHtml;
           </div>
         `;
       }).join("");
-    }  // end else-if (isCourseStarted)
+
+      timelineContainer.innerHTML = scheduleBannerHtml + phasesHtml;
+    }
 
     // 3. CARD 2: Top Recommendations for You
     const recOverallBadge = document.getElementById("recommendations-overall-badge");
@@ -946,23 +1023,46 @@ var escapeHtml = window.escapeHtml;
     });
   }
 
-  window.startCurrentCourse = function(e) {
+  window.startCurrentCourse = async function(e, stayOnPage) {
     if (e && e.preventDefault) e.preventDefault();
-    const courseId = (activeJourneyData && activeJourneyData.selected_course) ? activeJourneyData.selected_course.toLowerCase().trim() : "python";
+    const courseId = (activeJourneyData && activeJourneyData.selected_course) ? activeJourneyData.selected_course.toLowerCase().trim() : "java";
 
-    // 1. Mark Course Started via Backend API in background without blocking navigation
+    const btn = (e && e.currentTarget) || (e && e.target);
+    const origHtml = btn ? btn.innerHTML : "";
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Starting...`;
+    }
+
     try {
       if (typeof api !== "undefined" && api.studyMaterials && typeof api.studyMaterials.startCourse === "function") {
-        api.studyMaterials.startCourse({ course_id: courseId }).catch(() => {});
+        const res = await api.studyMaterials.startCourse({ course_id: courseId });
+        if (res && res.data) {
+          activeJourneyData = res.data;
+        }
       }
-    } catch (err) {}
+    } catch (err) {
+      console.warn("Could not start course via API:", err);
+    }
 
-    // 2. Navigate immediately to the dedicated Course Learning Page!
+    if (stayOnPage) {
+      if (typeof loadCandidateLearningJourney === "function") {
+        await loadCandidateLearningJourney();
+      }
+      return;
+    }
+
+    // Navigate to dedicated course learning studio
     if (courseId === "python") {
       window.location.href = "python-course-learning.html";
     } else {
       window.location.href = `course-learning.html?course=${encodeURIComponent(courseId)}`;
     }
+  };
+
+  window.openFullRoadmapScheduleModal = function(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    openCourseCurriculumModal("schedule");
   };
 
   window.renderStepByStepTopic = function(moduleIdx, topicIdx) {
@@ -1415,6 +1515,82 @@ var escapeHtml = window.escapeHtml;
     }
   };
 
+  
+  function getEffectiveWeeklySchedule(curData) {
+    if (activeJourneyData && Array.isArray(activeJourneyData.weekly_schedule) && activeJourneyData.weekly_schedule.length > 0) {
+      return activeJourneyData.weekly_schedule;
+    }
+    const chapters = (curData && curData.chapters) ? curData.chapters : [];
+    const isStarted = Boolean(activeJourneyData && activeJourneyData.is_started);
+    const baseDate = (isStarted && activeJourneyData.course_started_at) ? new Date(activeJourneyData.course_started_at) : new Date();
+
+    const weeks = [];
+    for (let w = 1; w <= 12; w++) {
+      let wStart, wEnd, daysLabel, weekTitle, phaseNum, phaseName, topicsList;
+      if (w <= 10) {
+        wStart = new Date(baseDate.getTime() + (w - 1) * 7 * 86400000);
+        wEnd = new Date(wStart.getTime() + 6 * 86400000);
+        daysLabel = `Days ${(w - 1) * 7 + 1}-${w * 7}`;
+        const ch = chapters[w - 1] || {};
+        weekTitle = ch.title || `Module ${w}: Core Engineering & Practice`;
+        phaseNum = w <= 3 ? 1 : (w <= 7 ? 2 : 3);
+        phaseName = phaseNum === 1 ? "Phase 1: Foundations" : (phaseNum === 2 ? "Phase 2: Core Engineering" : "Phase 3: Production Systems");
+        topicsList = (ch.topics || []).map((t, tIdx) => ({
+          id: `topic-${w}-${tIdx + 1}`,
+          title: t,
+          is_completed: false,
+          order: tIdx + 1
+        }));
+      } else if (w === 11) {
+        wStart = new Date(baseDate.getTime() + 70 * 86400000);
+        wEnd = new Date(baseDate.getTime() + 79 * 86400000);
+        daysLabel = "Days 71-80";
+        weekTitle = "Placement Sprint 1: Company Technical Assessments & Problem Solving Drills";
+        phaseNum = 4;
+        phaseName = "Phase 4: Placement Ready";
+        topicsList = [
+          { id: "topic-11-1", title: "High-Frequency Company Coding Challenges & LeetCode Sprints", is_completed: false, order: 1 },
+          { id: "topic-11-2", title: "Data Structures & Algorithm Optimization Speed Tests", is_completed: false, order: 2 },
+          { id: "topic-11-3", title: "System Design & Enterprise Architecture Walkthroughs", is_completed: false, order: 3 },
+          { id: "topic-11-4", title: "Live Timed Technical Coding Assessment Drills", is_completed: false, order: 4 }
+        ];
+      } else {
+        wStart = new Date(baseDate.getTime() + 80 * 86400000);
+        wEnd = new Date(baseDate.getTime() + 89 * 86400000);
+        daysLabel = "Days 81-90";
+        weekTitle = "Placement Sprint 2: AI Proctored Mock Interviews & Final Readiness Verification";
+        phaseNum = 4;
+        phaseName = "Phase 4: Placement Ready";
+        topicsList = [
+          { id: "topic-12-1", title: "AI Proctored Technical Mock Interview with Live Audio/Video", is_completed: false, order: 1 },
+          { id: "topic-12-2", title: "HR Behavioral Interview & STAR Method Response Mastery", is_completed: false, order: 2 },
+          { id: "topic-12-3", title: "ATS Resume Score Optimization & Production Portfolio Review", is_completed: false, order: 3 },
+          { id: "topic-12-4", title: "Final Placement Readiness Audit & Direct Job Application Dispatch", is_completed: false, order: 4 }
+        ];
+      }
+
+      const fmt = (d) => d.toLocaleDateString("en-US", { month: "short", day: "2-digit" });
+      const fmtFull = (d) => d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
+
+      weeks.push({
+        week_num: w,
+        days_label: daysLabel,
+        phase_num: phaseNum,
+        phase_name: phaseName,
+        title: weekTitle,
+        date_range: `${fmt(wStart)} - ${fmt(wEnd)}`,
+        target_completion_date: fmtFull(wEnd),
+        topics: topicsList,
+        topics_count: topicsList.length,
+        completed_topics_count: 0,
+        progress_percent: 0.0,
+        status: isStarted ? (w === 1 ? "In Progress" : "Upcoming") : (w === 1 ? "Ready to Start" : "Locked"),
+        is_current_week: w === 1
+      });
+    }
+    return weeks;
+  }
+
   function renderCurriculumModalContent(curData, courseId) {
     const modalTitle = document.getElementById("curriculum-modal-title");
     const modalRole = document.getElementById("curriculum-modal-role");
@@ -1473,10 +1649,81 @@ var escapeHtml = window.escapeHtml;
         </div>
       </div>
 
+      <!-- Schedule Pace Overview Banner -->
+      ${(() => {
+        const isStarted = Boolean(activeJourneyData && activeJourneyData.is_started);
+        const overview = activeJourneyData?.schedule_overview || {};
+        const expectedDate = overview.expected_completion_date || activeJourneyData?.expected_completion_date || "Feb 01, 2027";
+        const startDate = isStarted ? (overview.start_date || "Active Sprint") : "Starts Day 1 on Click (Ready Today)";
+        const overallPct = Math.round(activeJourneyData?.overall_progress_percent || 0);
+        const completedCnt = (activeJourneyData?.completed_topics && activeJourneyData.completed_topics.length) || 0;
+
+        return `
+          <div class="card border-0 shadow-sm p-4 mb-4 rounded-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
+            <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+              <div class="d-flex align-items-center gap-2">
+                <span class="fs-4">${isStarted ? '⚡' : '🚀'}</span>
+                <div>
+                  <h5 class="fw-bold mb-0 text-white">${isStarted ? 'Sprint Active: 90-Day Placement Journey' : '90-Day Learning Roadmap & Weekly Schedule'}</h5>
+                  <div class="small text-white-50">${isStarted ? `Day ${overview.days_elapsed || 1} of 90 • Week ${overview.current_week || 1} of 12` : 'Starts only when you click Start Course • Independent to your candidate account'}</div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge ${isStarted ? 'bg-success text-white' : 'bg-warning text-dark'} rounded-pill px-3 py-1.5 fw-bold">
+                  ${isStarted ? 'In Progress' : 'Ready to Start'}
+                </span>
+                ${!isStarted ? `
+                  <button class="btn btn-sm btn-primary rounded-pill px-3 py-1.5 fw-bold shadow-sm" onclick="startCurrentCourse(event)">
+                    ▶ Start Course Now
+                  </button>
+                ` : `
+                  <a href="course-learning.html?course=${encodeURIComponent(courseId)}" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1.5 fw-semibold">
+                    Open Course Studio →
+                  </a>
+                `}
+              </div>
+            </div>
+
+            <!-- Key Milestones Strip -->
+            <div class="row g-2 text-center pt-2 border-top border-white border-opacity-15">
+              <div class="col-6 col-md-3">
+                <div class="p-2 rounded-3" style="background: rgba(255,255,255,0.06);">
+                  <div class="text-white-50" style="font-size: 0.72rem;">📅 JOURNEY START</div>
+                  <div class="fw-bold small text-white text-truncate">${escapeHtml(startDate)}</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="p-2 rounded-3" style="background: rgba(255,255,255,0.06);">
+                  <div class="text-white-50" style="font-size: 0.72rem;">🎯 EXPECTED FINISH</div>
+                  <div class="fw-bold small text-success text-truncate">${escapeHtml(expectedDate)}</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="p-2 rounded-3" style="background: rgba(255,255,255,0.06);">
+                  <div class="text-white-50" style="font-size: 0.72rem;">⏱️ WEEKLY SPRINT PACE</div>
+                  <div class="fw-bold small text-white text-truncate">4-5 Topics / Week</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="p-2 rounded-3" style="background: rgba(255,255,255,0.06);">
+                  <div class="text-white-50" style="font-size: 0.72rem;">📊 OVERALL PROGRESS</div>
+                  <div class="fw-bold small text-info text-truncate">${overallPct}% (${completedCnt}/50 Topics)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      })()}
+
       <!-- Navigation Tabs -->
       <ul class="nav nav-pills nav-fill mb-4 p-1.5 bg-light rounded-4 gap-1 border" id="curriculumTabs" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link active rounded-pill fw-bold py-2" id="tab-curriculum-btn" data-bs-toggle="pill" data-bs-target="#tab-curriculum-pane" type="button" role="tab">
+          <button class="nav-link active rounded-pill fw-bold py-2" id="tab-schedule-btn" data-bs-toggle="pill" data-bs-target="#tab-schedule-pane" type="button" role="tab">
+            📅 90-Day Weekly Schedule & Calendar (12 Weeks)
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link rounded-pill fw-bold py-2" id="tab-curriculum-btn" data-bs-toggle="pill" data-bs-target="#tab-curriculum-pane" type="button" role="tab">
             📚 All Topics & Study Materials (${chapters.length})
           </button>
         </li>
@@ -1499,8 +1746,101 @@ var escapeHtml = window.escapeHtml;
 
       <!-- Tab Contents -->
       <div class="tab-content" id="curriculumTabContent">
+        <!-- TAB 0: 90-DAY WEEKLY SCHEDULE & TOPICS CALENDAR -->
+        <div class="tab-pane fade show active" id="tab-schedule-pane" role="tabpanel">
+          ${(() => {
+            const isStarted = Boolean(activeJourneyData && activeJourneyData.is_started);
+            const weeklySchedule = getEffectiveWeeklySchedule(curData);
+            const completedTopics = (activeJourneyData?.completed_topics) || [];
+
+            return `
+              <div class="alert alert-light border shadow-sm rounded-4 mb-4 p-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="fs-4">🗓️</span>
+                  <div>
+                    <strong class="text-dark">Week-by-Week Placement Sprint Calendar (Weeks 1 to 12)</strong>
+                    <div class="small text-secondary">Every week is designed with realistic targets, specific topics to complete, and direct hands-on practice.</div>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <span class="badge bg-primary-subtle text-primary border rounded-pill px-3 py-1">50 Topics Total</span>
+                  <span class="badge bg-success-subtle text-success border rounded-pill px-3 py-1">10 Modules + 2 Sprints</span>
+                </div>
+              </div>
+
+              <!-- 12-Week List -->
+              <div class="d-flex flex-column gap-3 mb-4">
+                ${weeklySchedule.map((wk) => {
+                  const isCurrent = isStarted && wk.is_current_week;
+                  const phaseColor = wk.phase_num === 1 ? 'success' : (wk.phase_num === 2 ? 'primary' : (wk.phase_num === 3 ? 'warning text-dark' : 'info text-dark'));
+                  const topics = wk.topics || [];
+
+                  return `
+                    <div class="card border rounded-4 shadow-sm overflow-hidden ${isCurrent ? 'border-primary' : ''}">
+                      <div class="card-header bg-white p-3 d-flex align-items-center justify-content-between flex-wrap gap-2 border-bottom">
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                          <span class="badge bg-dark text-white rounded-pill px-3 py-1 fw-bold" style="font-size: 0.78rem;">
+                            Week ${wk.week_num} (${wk.days_label})
+                          </span>
+                          <span class="badge bg-${phaseColor} rounded-pill px-2.5 py-0.5" style="font-size: 0.7rem;">
+                            ${escapeHtml(wk.phase_name)}
+                          </span>
+                          <span class="fw-bold text-dark" style="font-size: 0.92rem;">
+                            ${escapeHtml(wk.title)}
+                          </span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                          <span class="badge bg-light text-secondary border px-2.5 py-1" style="font-size: 0.73rem;">
+                            📅 ${escapeHtml(wk.date_range)} • Target: <b>${escapeHtml(wk.target_completion_date)}</b>
+                          </span>
+                          <span class="badge ${wk.status === 'Completed' ? 'bg-success' : (wk.status === 'In Progress' ? 'bg-primary' : 'bg-secondary')} text-white rounded-pill px-2.5 py-1" style="font-size: 0.68rem;">
+                            ${escapeHtml(wk.status)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div class="card-body p-3 bg-light bg-opacity-50">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                          <div class="small fw-bold text-secondary">Topics to cover in Week ${wk.week_num} (${topics.length} topics):</div>
+                          ${!isStarted ? `
+                            <button class="btn btn-sm btn-outline-primary rounded-pill px-3 py-0.5 fw-semibold" onclick="startCurrentCourse(event)" style="font-size: 0.73rem;">
+                              ▶ Start Course to Unlock
+                            </button>
+                          ` : `
+                            <a href="course-learning.html?course=${encodeURIComponent(courseId)}&module=${wk.week_num - 1}" class="btn btn-sm btn-primary rounded-pill px-3 py-0.5 fw-semibold" style="font-size: 0.73rem;">
+                              Learn This Week's Topics →
+                            </a>
+                          `}
+                        </div>
+
+                        <div class="row g-2">
+                          ${topics.map((t) => {
+                            const isDone = completedTopics.includes(t.id) || t.is_completed;
+                            return `
+                              <div class="col-12 col-md-6">
+                                <div class="p-2 rounded-3 bg-white border d-flex align-items-center gap-2 h-100 shadow-xs">
+                                  <span class="flex-shrink-0" style="font-size: 0.95rem;">
+                                    ${isDone ? '✅' : '⚪'}
+                                  </span>
+                                  <div class="flex-grow-1 small ${isDone ? 'text-decoration-line-through text-muted' : 'text-dark'}" style="font-size: 0.78rem; line-height: 1.3;">
+                                    <strong>#${t.order || 1}</strong> ${escapeHtml(t.title)}
+                                  </div>
+                                </div>
+                              </div>
+                            `;
+                          }).join('')}
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            `;
+          })()}
+        </div>
+
         <!-- TAB 1: CURRICULUM CHAPTERS -->
-        <div class="tab-pane fade show active" id="tab-curriculum-pane" role="tabpanel">
+        <div class="tab-pane fade" id="tab-curriculum-pane" role="tabpanel">
           <div class="alert alert-info border-0 rounded-3 mb-3 d-flex align-items-center gap-2 small">
             <span>💡</span>
             <div><strong>Step-by-Step Learning Guidance:</strong> Study each module in sequence. Complete the solved examples and quizzes to master beginner foundations and advanced principles.</div>
@@ -1763,6 +2103,10 @@ var escapeHtml = window.escapeHtml;
     const modalActions = document.getElementById("stage-modal-actions");
     const modalEl = document.getElementById("stageGateDetailModal");
 
+    const isCourseStarted = Boolean(activeJourneyData && activeJourneyData.is_started);
+    const weeklyScheduleBadge = phase.weekly_schedule || `Phase ${phaseNum}`;
+    const dateRangeStr = phase.date_range || "90-Day Sprint";
+
     if (modalTitle) modalTitle.textContent = phase.name;
     if (modalLevel) modalLevel.textContent = `${phase.level} • ${phase.status}`;
 
@@ -1832,20 +2176,31 @@ var escapeHtml = window.escapeHtml;
     }
 
     if (modalActions) {
-      modalActions.innerHTML = `
-        ${!phase.is_locked ? `
-          <button type="button" class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openCourseCurriculumModal()">
-            📖 Full Curriculum & Exercises
+      if (!isCourseStarted) {
+        modalActions.innerHTML = `
+          <button type="button" class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openFullRoadmapScheduleModal(event)">
+            🗓️ View Full 12-Week Calendar
           </button>
-          <a href="${phase.action_url || 'study-materials.html'}" class="btn btn-primary rounded-pill px-4 fw-bold">
-            ${escapeHtml(phase.action_text || 'Start Learning')} &rarr;
-          </a>
-        ` : `
-          <button type="button" class="btn btn-secondary rounded-pill px-4" disabled>
-            🔒 Locked (Complete Phase ${phaseNum - 1} First)
+          <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold" onclick="startCurrentCourse(event)">
+            ▶ Start Course Now &rarr;
           </button>
-        `}
-      `;
+        `;
+      } else {
+        modalActions.innerHTML = `
+          ${!phase.is_locked ? `
+            <button type="button" class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="openFullRoadmapScheduleModal(event)">
+              🗓️ 12-Week Schedule
+            </button>
+            <a href="${phase.action_url || 'course-learning.html'}" class="btn btn-primary rounded-pill px-4 fw-bold">
+              ${escapeHtml(phase.action_text || 'Continue Learning')} &rarr;
+            </a>
+          ` : `
+            <button type="button" class="btn btn-secondary rounded-pill px-4" disabled>
+              🔒 Locked (Complete Phase ${phaseNum - 1} First)
+            </button>
+          `}
+        `;
+      }
     }
 
     if (modalEl && typeof bootstrap !== "undefined") {
