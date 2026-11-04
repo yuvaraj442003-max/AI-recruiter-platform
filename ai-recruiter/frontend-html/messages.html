@@ -11,33 +11,79 @@
 
 <body class="bg-body-tertiary vh-100 overflow-hidden d-flex">
   <!-- Unified Common Messages & Chat Sidebar -->
-  <nav id="unified-messages-sidebar" class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3" style="width: 260px; min-width: 260px;">
-    <a href="index.html" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mb-4 px-2">
-      <span class="fs-4">🤖</span>
-      <span class="fw-bold text-dark fs-5">AI Recruiter</span>
-    </a>
-    <ul class="nav nav-pills flex-column gap-2">
-      <li class="nav-item">
-        <a id="nav-portal-home" href="candidate-portal.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
-          <span>🏠</span> Portal Home
-        </a>
-      </li>
-      <li class="nav-item">
-        <a id="nav-portal-dash" href="candidate-dashboard.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
-          <span>📊</span> Dashboard
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="messages.html" class="nav-link active text-nowrap d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #fff;">
-          <span>💬</span> Messages &amp; Chat
-          <span id="sidebar-unread-badge" class="badge rounded-pill bg-danger d-none ms-auto">0</span>
-        </a>
-      </li>
-    </ul>
-    <div class="mt-auto pt-3 border-top">
-      <button id="logout-btn" class="btn btn-outline-secondary w-100 fw-semibold">Log out</button>
-    </div>
-  </nav>
+    <!-- Sidebar -->
+    <nav id="unified-messages-sidebar" class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3 candidate-sidebar" style="width: 270px; min-width: 270px;">
+      <a href="candidate-portal.html" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mb-4 px-2">
+        <span class="fs-4">👨‍💻</span>
+        <span class="fw-bold text-dark fs-5">Candidate Portal</span>
+      </a>
+      <ul class="nav nav-pills flex-column gap-2">
+        <li class="nav-item">
+          <a id="nav-portal-home" href="candidate-portal.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🏠</span> Portal Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="course-learning.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📚</span> Course Learning Studio
+          </a>
+        </li>
+        <li class="nav-item">
+          <a id="nav-portal-dash" href="candidate-dashboard.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📊</span> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="aptitude-test.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🧠</span> Aptitude &amp; Tests
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="study-materials.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🎓</span> Campus Hub &amp; Textbooks
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="coding-assessment.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>💻</span> Coding Lab (DSA)
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="interview.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🎙️</span> AI Mock Interviews
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="upload-resume.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📄</span> Resume &amp; ATS Score
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="portfolio-builder.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>✨</span> Portfolio
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="jobs.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🔍</span> Find Jobs &amp; Drives
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="my-applications.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📑</span> My Applications
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="messages.html" class="nav-link active text-nowrap d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color: #fff;">
+            <span>💬</span> Messages &amp; Chat
+            <span id="sidebar-unread-badge" class="badge rounded-pill bg-danger d-none ms-auto">0</span>
+          </a>
+        </li>
+      </ul>
+      <div class="mt-auto pt-3 border-top">
+        <button id="logout-btn" class="btn btn-outline-secondary w-100 fw-semibold">Log out</button>
+      </div>
+    </nav>
 
   <div class="flex-grow-1 d-flex flex-column vh-100 overflow-hidden">
 
