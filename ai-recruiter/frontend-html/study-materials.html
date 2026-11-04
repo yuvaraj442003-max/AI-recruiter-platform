@@ -128,39 +128,59 @@
       background: #fef2f2;
     }
     .company-selector-chip {
-      border: 1px solid #cbd5e1;
+      border: 1px solid #e2e8f0;
       background: #ffffff;
-      color: #1e293b;
+      color: #0f172a;
       font-size: 0.85rem;
       border-radius: 9999px;
-      padding: 6px 15px;
+      padding: 6px 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       cursor: pointer;
     }
     .company-selector-chip:hover {
-      background: #f8fafc;
-      border-color: #94a3b8;
+      background: #f8faff;
+      border-color: #93c5fd;
       transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.08);
     }
     .company-selector-chip.active {
-      background: #0066cc !important;
-      border-color: #0066cc !important;
-      color: #ffffff !important;
-      box-shadow: 0 4px 12px rgba(0, 102, 204, 0.28);
+      background: #f0f7ff !important;
+      border-color: #2563eb !important;
+      color: #0f172a !important;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25) !important;
     }
-    .company-selector-chip.active .company-chip-badge {
-      background: #ffffff !important;
-      color: #0066cc !important;
-      border-color: transparent !important;
+    .company-selector-chip .company-chip-logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
     }
-    .company-chip-badge {
-      background: #f1f5f9;
-      color: #64748b;
-      border: 1px solid #e2e8f0;
+    .company-selector-chip .company-chip-name {
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 0.87rem;
+      white-space: nowrap;
+    }
+    .company-selector-chip .company-chip-badge {
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #dbeafe;
       border-radius: 9999px;
       font-size: 0.72rem;
-      padding: 2px 8px;
+      padding: 2.5px 9px;
       font-weight: 600;
+      white-space: nowrap;
+    }
+    .company-selector-chip.active .company-chip-badge {
+      background: #2563eb !important;
+      color: #ffffff !important;
+      border-color: #2563eb !important;
     }
     .company-q-opt:hover:not([disabled]) {
       border-color: #0066cc !important;
@@ -748,9 +768,9 @@
 
             <!-- Company Selector Bar -->
             <div class="mb-4">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-muted fw-bold small text-uppercase" style="letter-spacing: 0.5px;">Select Target Company:</span>
-                <span class="text-muted small" style="font-size: 0.8rem;">Click any company to inspect recruitment rounds, question weights, and test patterns</span>
+              <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <span class="fw-bold text-dark small text-uppercase" style="letter-spacing: 0.5px; font-size: 0.82rem;">SELECT TARGET COMPANY:</span>
+                <span class="text-muted small" style="font-size: 0.82rem;">Click any company to inspect recruitment rounds, question weights, and test patterns</span>
               </div>
               <div class="d-flex flex-wrap gap-2" id="company-selector-chips-container">
                 <div class="spinner-border spinner-border-sm text-primary" role="status"></div>

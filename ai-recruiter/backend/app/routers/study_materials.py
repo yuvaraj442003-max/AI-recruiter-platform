@@ -1597,8 +1597,8 @@ async def upload_prescribed_book_pdf(
 @router.get("/companies", response_model=APIResponse[List[Dict[str, Any]]])
 def list_company_intelligence(db: Session = Depends(get_db)):
     """
-    Returns summarized intelligence for all top campus recruiters and active hiring companies:
-    VGen, Vaarg, TCS, Infosys, Cognizant, Accenture, Wipro, Amazon, Deloitte, Capgemini, Goldman Sachs, Zoho, Google, Microsoft.
+    Returns summarized intelligence for all top campus recruiters:
+    Amazon, Capgemini, Cognizant, Accenture, Deloitte, Goldman Sachs, Google, Infosys, Microsoft, TCS, Wipro, Zoho.
     """
     from app.services.company_intelligence_service import get_all_companies_intelligence
     data = get_all_companies_intelligence(db=db)

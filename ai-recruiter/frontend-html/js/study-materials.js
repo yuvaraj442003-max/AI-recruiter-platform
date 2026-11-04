@@ -1732,7 +1732,7 @@
   // --------------------------------------------------------------------------
 
   let allCompaniesCatalog = [];
-  let activeCompanySlug = "vgen";
+  let activeCompanySlug = "amazon";
 
   async function loadCompanyIntelligence() {
     const chipsContainer = document.getElementById("company-selector-chips-container");
@@ -1746,7 +1746,7 @@
 
       // Check if URL specifies a company or default to first recently hiring company
       const urlParams = new URLSearchParams(window.location.search);
-      const targetCompany = urlParams.get("company") || (allCompaniesCatalog[0] ? allCompaniesCatalog[0].slug : "vgen");
+      const targetCompany = urlParams.get("company") || (allCompaniesCatalog[0] ? allCompaniesCatalog[0].slug : "amazon");
       selectCompany(targetCompany);
     } catch (err) {
       console.error("Failed to load companies intelligence:", err);
@@ -1756,24 +1756,68 @@
     }
   }
 
+    function getCompanyLogoSvg(slug) {
+    const s = String(slug || '').toLowerCase().trim();
+    if (s === 'amazon') {
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align: middle;"><text x="2" y="16.5" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="16" fill="#111827">a</text><path d="M6.5 17.5C10.5 20.2 16 19.8 20.5 15.5" stroke="#ff9900" stroke-width="2.2" stroke-linecap="round"/><path d="M19 14.5L21.5 15.5L19.5 18" stroke="#ff9900" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    }
+    if (s === 'capgemini') {
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="#0070ad" style="vertical-align: middle;"><path d="M12 2C9.5 5.5 4 10.5 4 14.5C4 18 7 20 9.5 20C10.8 20 11.5 19.3 12 18.5C12.5 19.3 13.2 20 14.5 20C17 20 20 18 20 14.5C20 10.5 14.5 5.5 12 2Z"/><path d="M10.5 20C10.5 22 9.5 23 8 23H16C14.5 23 13.5 22 13.5 20H10.5Z" fill="#0070ad"/></svg>`;
+    }
+    if (s === 'cognizant') {
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align: middle;"><defs><linearGradient id="cogGrad_${s}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0033a0"/><stop offset="100%" stop-color="#00b4d8"/></linearGradient></defs><path d="M18.5 7.5L13.5 4.5C12.5 4 11.5 4 10.5 4.5L5.5 7.5C4.5 8 4 9 4 10V14C4 15 4.5 16 5.5 16.5L10.5 19.5C11.5 20 12.5 20 13.5 19.5L18.5 16.5" stroke="url(#cogGrad_${s})" stroke-width="3" stroke-linecap="round"/></svg>`;
+    }
+    if (s === 'accenture') {
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align: middle;"><path d="M7 4L17 12L7 20" stroke="#a100ff" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    }
+    if (s === 'deloitte') {
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align: middle;"><circle cx="12" cy="12" r="11" fill="#002816"/><text x="4.5" y="16.5" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="13" fill="#ffffff">D</text><circle cx="17" cy="15.5" r="2.2" fill="#86bc25"/></svg>`;
+    }
+    if (s === 'goldman_sachs') {
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align: middle;"><circle cx="12" cy="12" r="11" fill="#1b365d"/><text x="3.5" y="16" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="10.5" fill="#ffffff" letter-spacing="-0.5">GS</text></svg>`;
+    }
+    if (s === 'google') {
+      return `<svg width="20" height="20" viewBox="0 0 24 24" style="vertical-align: middle;"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.14-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>`;
+    }
+    if (s === 'infosys') {
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align: middle;"><circle cx="12" cy="12" r="11" fill="#007cc3"/><circle cx="12" cy="7.5" r="1.8" fill="#ffffff"/><rect x="10.2" y="11" width="3.6" height="7.5" rx="1.8" fill="#ffffff"/></svg>`;
+    }
+    if (s === 'microsoft') {
+      return `<svg width="20" height="20" viewBox="0 0 24 24" style="vertical-align: middle;"><rect x="1.5" y="1.5" width="9.5" height="9.5" fill="#f25022"/><rect x="13" y="1.5" width="9.5" height="9.5" fill="#7fba00"/><rect x="1.5" y="13" width="9.5" height="9.5" fill="#00a4ef"/><rect x="13" y="13" width="9.5" height="9.5" fill="#ffb900"/></svg>`;
+    }
+    if (s === 'tcs') {
+      return `<svg width="24" height="20" viewBox="0 0 28 20" fill="none" style="vertical-align: middle;"><text x="1" y="15.5" font-family="'Trebuchet MS', Arial, sans-serif" font-weight="900" font-size="14" fill="#d8232a" letter-spacing="-0.5">tcs</text></svg>`;
+    }
+    if (s === 'wipro') {
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align: middle;"><circle cx="12" cy="12" r="3" fill="#1e3a8a"/><circle cx="12" cy="4" r="1.8" fill="#ef4444"/><circle cx="17.6" cy="6.4" r="1.8" fill="#f59e0b"/><circle cx="20" cy="12" r="1.8" fill="#10b981"/><circle cx="17.6" cy="17.6" r="1.8" fill="#06b6d4"/><circle cx="12" cy="20" r="1.8" fill="#3b82f6"/><circle cx="6.4" cy="17.6" r="1.8" fill="#6366f1"/><circle cx="4" cy="12" r="1.8" fill="#8b5cf6"/><circle cx="6.4" cy="6.4" r="1.8" fill="#ec4899"/></svg>`;
+    }
+    if (s === 'zoho') {
+      return `<svg width="20" height="20" viewBox="0 0 24 24" style="vertical-align: middle;"><rect x="2" y="2" width="9" height="9" rx="2" fill="#e11d48"/><rect x="13" y="2" width="9" height="9" rx="2" fill="#16a34a"/><rect x="2" y="13" width="9" height="9" rx="2" fill="#2563eb"/><rect x="13" y="13" width="9" height="9" rx="2" fill="#ca8a04"/><text x="7" y="17" font-family="Arial, sans-serif" font-weight="900" font-size="13" fill="#ffffff">Z</text></svg>`;
+    }
+    return `<span style="font-size: 1.1rem; vertical-align: middle;">🏢</span>`;
+  }
+
   function renderCompanySelectorChips() {
     const chipsContainer = document.getElementById("company-selector-chips-container");
     if (!chipsContainer) return;
-    if (!allCompaniesCatalog.length) {
+
+    // Filter out vgen and vaarg strictly
+    const filteredCompanies = allCompaniesCatalog.filter(c => c.slug !== "vgen" && c.slug !== "vaarg");
+    if (!filteredCompanies.length) {
       chipsContainer.innerHTML = `<span class="text-muted small">No company intelligence available.</span>`;
       return;
     }
 
-    chipsContainer.innerHTML = allCompaniesCatalog.map(c => `
+    chipsContainer.innerHTML = filteredCompanies.map(c => `
       <button 
         type="button" 
         class="company-selector-chip ${c.slug === activeCompanySlug ? 'active' : ''}"
         id="chip-company-${c.slug}"
         onclick="selectCompany('${c.slug}')"
       >
-        <span class="me-1">${c.icon || '🏢'}</span>
-        <span class="fw-semibold me-1.5">${escapeHtml(c.name)}</span>
-        <span class="company-chip-badge ${c.is_recent_hiring ? 'bg-success text-white fw-bold' : ''}">${escapeHtml(c.badge_text || '')}</span>
+        <span class="company-chip-logo">${getCompanyLogoSvg(c.slug)}</span>
+        <span class="company-chip-name">${escapeHtml(c.name)}</span>
+        <span class="company-chip-badge">${escapeHtml(c.badge_text || '')}</span>
       </button>
     `).join("");
   }

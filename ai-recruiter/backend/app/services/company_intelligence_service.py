@@ -801,110 +801,6 @@ TOP_COMPANIES_INTELLIGENCE: Dict[str, Dict[str, Any]] = {
         "mock_test_title": "Microsoft SDE-1 Campus Technical & Analytical Mock",
         "mock_test_id": "microsoft-sde1-campus-technical-mock",
     },
-    "vgen": {
-        "slug": "vgen",
-        "name": "VGen Software Solutions",
-        "badge_text": "🔥 Recently Hired 5 Candidates",
-        "icon": "⚡",
-        "accent_color": "#2563eb",
-        "gradient": "linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)",
-        "tagline": "Fast-growing product & engineering firm with active hiring drives for Frontend, Backend, and Software Developers.",
-        "overall_difficulty": "Moderate to High",
-        "hiring_roles": [
-            {"title": "Frontend Developer", "package": "₹6.00 - ₹9.50 LPA", "focus": "HTML/CSS, JavaScript, React, State Management & Responsive UI"},
-            {"title": "Backend Developer", "package": "₹7.50 - ₹12.00 LPA", "focus": "Python, SQL, Java, REST APIs & Distributed Systems"},
-            {"title": "Software Developer", "package": "₹6.50 - ₹10.00 LPA", "focus": "Core Algorithms, MySQL, OOPs & Data Structures"},
-        ],
-        "selection_rounds": [
-            {"round": "Round 1: AI Pre-Screening & Technical Profile", "details": "WhatsApp & Voice AI screening verifying hands-on stack skills, experience, and domain proficiency."},
-            {"round": "Round 2: Aptitude & Technical Challenge", "details": "Quantitative problem solving (15 Qs), Logical analysis (15 Qs), and Technical core MCQs (15 Qs) in 60 mins."},
-            {"round": "Round 3: Live Engineering Interview", "details": "Architecture discussion, live coding / debugging, SQL query optimization, and project defense."},
-            {"round": "Round 4: HR & Offer Rollout", "details": "Compensation discussion, joining timelines, and team alignment."},
-        ],
-        "exam_pattern": [
-            {"section": "Quantitative Problem Solving", "questions": 15, "time_mins": 20, "marking": "+1, No Negative", "cutoff": "65%"},
-            {"section": "Logical & Code Output Reasoning", "questions": 15, "time_mins": 20, "marking": "+1, No Negative", "cutoff": "70%"},
-            {"section": "Frontend & Web Architecture", "questions": 15, "time_mins": 15, "marking": "+1, No Negative", "cutoff": "75%"},
-            {"section": "Backend, Python & SQL Systems", "questions": 15, "time_mins": 15, "marking": "+1, No Negative", "cutoff": "70%"},
-        ],
-        "aptitude_analysis": {
-            "quantitative_trends": [
-                {"topic": "Algorithmic Time Complexity", "weight": "35%", "freq": "Very High", "tips": "Focus on Big-O space-time tradeoffs, heap streaming, and tree traversal costs."},
-                {"topic": "Time & Work / Sprint Allocation", "weight": "35%", "freq": "High", "tips": "Combined resource efficiency formulas and multi-worker completion timelines."},
-                {"topic": "Proportions & Network Speed", "weight": "30%", "freq": "High", "tips": "Relative speed, throughput ratios, and latency calculation problems."},
-            ],
-            "reasoning_trends": [
-                {"topic": "JavaScript Event Loop Tracing", "weight": "40%", "freq": "Signature", "tips": "Execution order of synchronous call stack, microtask queue (Promises), and macrotasks (setTimeout)."},
-                {"topic": "Trie & String Search Logic", "weight": "35%", "freq": "Very High", "tips": "Prefix lookups, pattern matching, and dictionary optimizations."},
-                {"topic": "Condition & Loop Logic Tracing", "weight": "25%", "freq": "High", "tips": "Nested loops, recursion unwinding, and bitwise logic."},
-            ],
-            "verbal_trends": [
-                {"topic": "Engineering Communication", "weight": "50%", "freq": "High", "tips": "Technical articulation of system trade-offs and concise documentation."},
-                {"topic": "Code Review & Error Spotting", "weight": "50%", "freq": "Very High", "tips": "Identifying subtle bug patterns and security pitfalls."},
-            ],
-        },
-        "preparation_strategy": [
-            "Week 1: Practice Frontend basics: JavaScript Event Loop, closures, Promises, React rendering cycles, and CSS layout algorithms.",
-            "Week 2: Master Backend fundamentals: Database indexing (B-Tree vs Hash), SQL JOINs, Python memory/GC, and REST status codes.",
-            "Week 3: Daily timed practice of 20 Quantitative and Logical aptitude questions under strict 45-second timers.",
-            "Week 4: Attempt full VGen recruiter mock tests and review questions asked to recently hired candidates.",
-        ],
-        "sample_questions": [],
-        "mock_test_title": "VGen Software Developer Aptitude & Technical Mock Exam",
-        "mock_test_id": "vgen-software-developer-aptitude-mock",
-    },
-    "vaarg": {
-        "slug": "vaarg",
-        "name": "Vaarg Technologies",
-        "badge_text": "🔥 Recently Hired 5 Candidates",
-        "icon": "🤖",
-        "accent_color": "#7c3aed",
-        "gradient": "linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%)",
-        "tagline": "Next-generation AI and intelligent recruiting platform actively hiring AI Developers, Frontend Engineers, and Talent Partners.",
-        "overall_difficulty": "High",
-        "hiring_roles": [
-            {"title": "AI Developer", "package": "₹8.00 - ₹15.00 LPA", "focus": "PyTorch, Vector Embeddings, LLM Prompting, Python & Deep Learning"},
-            {"title": "Frontend Developer", "package": "₹6.00 - ₹10.00 LPA", "focus": "Modern JavaScript, Debouncing, React Performance & Responsive UI"},
-            {"title": "Senior Recruiter", "package": "₹6.50 - ₹11.00 LPA", "focus": "STAR Methodology, Talent Sourcing, Candidate Screening & Analytics"},
-        ],
-        "selection_rounds": [
-            {"round": "Round 1: Automated AI Screening", "details": "Multimodal candidate screening evaluating core experience, stack alignment, and salary expectations."},
-            {"round": "Round 2: Cognitive Aptitude & AI Fundamentals", "details": "Bayesian probability (10 Qs), Linear algebra & vectors (10 Qs), AI/ML mechanics (15 Qs), and Deductive logic (15 Qs)."},
-            {"round": "Round 3: Technical Deep-Dive / Portfolio Review", "details": "Hands-on coding, model evaluation metrics, vector search latency optimization, and architecture defense."},
-            {"round": "Round 4: Strategic & Leadership Round", "details": "Real-world scenario problem solving, high-ambiguity delivery, and cultural fit."},
-        ],
-        "exam_pattern": [
-            {"section": "Bayesian Math & Probability", "questions": 12, "time_mins": 20, "marking": "+1, No Negative", "cutoff": "70%"},
-            {"section": "Logical & Deductive Reasoning", "questions": 15, "time_mins": 20, "marking": "+1, No Negative", "cutoff": "70%"},
-            {"section": "AI, ML & Transformer Mechanics", "questions": 15, "time_mins": 20, "marking": "+1, No Negative", "cutoff": "75%"},
-            {"section": "Frontend & Talent Evaluation", "questions": 12, "time_mins": 15, "marking": "+1, No Negative", "cutoff": "65%"},
-        ],
-        "aptitude_analysis": {
-            "quantitative_trends": [
-                {"topic": "Bayes' Theorem & Screening Statistics", "weight": "40%", "freq": "Signature", "tips": "Conditional probabilities, false positive/negative calculations in automated screening."},
-                {"topic": "Vector Math & Cosine Distance", "weight": "35%", "freq": "Very High", "tips": "Dot product of normalized vectors, high-dimensional cosine similarity, and Euclidean bounds."},
-                {"topic": "Permutations & Committee Combinations", "weight": "25%", "freq": "High", "tips": "Evaluation panel formations and constrained combinations."},
-            ],
-            "reasoning_trends": [
-                {"topic": "Transformer Attention Mechanics", "weight": "40%", "freq": "Signature", "tips": "Scaled Dot-Product Attention $O(N^2 D)$ complexity and multi-head projection dimensions."},
-                {"topic": "Syllogistic & Deductive Logic", "weight": "35%", "freq": "Very High", "tips": "Three-statement syllogisms evaluating guaranteed truth versus uncertain overlap."},
-                {"topic": "Web Performance Logic", "weight": "25%", "freq": "High", "tips": "Debounce vs Throttle mechanisms for high-frequency input streams."},
-            ],
-            "verbal_trends": [
-                {"topic": "STAR Behavioral Framework", "weight": "50%", "freq": "Very High", "tips": "Structuring responses into Situation, Task, Action, and Quantifiable Result."},
-                {"topic": "Talent Communication & Rubrics", "weight": "50%", "freq": "High", "tips": "Objective candidate assessment and structured feedback formulation."},
-            ],
-        },
-        "preparation_strategy": [
-            "Week 1: Master Vector Math and Bayes' Theorem: practice calculating posterior probabilities and embedding cosine distances.",
-            "Week 2: Deep dive into Transformer Self-Attention, PyTorch training dynamics, Dropout regularization, and loss functions.",
-            "Week 3: Study Modern Frontend performance: Debouncing, Event delegation, and Virtual DOM rendering optimizations.",
-            "Week 4: Take the Vaarg AI & Technical recruiter placement mock exam and review questions asked in recent hiring loops.",
-        ],
-        "sample_questions": [],
-        "mock_test_title": "Vaarg Technologies AI & Full-Stack Placement Mock Test",
-        "mock_test_id": "vaarg-ai-fullstack-placement-mock",
-    },
 }
 
 
@@ -996,7 +892,7 @@ def get_all_companies_intelligence(db: Optional[Session] = None) -> List[Dict[st
         hiring_stat = hiring_companies_stats.get(slug)
         is_recent_hiring = hiring_stat is not None and (hiring_stat["hired_count"] > 0 or hiring_stat["shortlisted_count"] > 0)
 
-        badge_text = c["badge_text"]
+        badge_text = c.get("badge_text", "Campus Placement 2026")
         recent_hiring_process = c.get("badge_text", "Campus Placement 2026")
         hired_count = 0
         hired_roles_list = []
@@ -1004,7 +900,6 @@ def get_all_companies_intelligence(db: Optional[Session] = None) -> List[Dict[st
         if is_recent_hiring:
             hired_count = hiring_stat["hired_count"]
             roles_str = ", ".join(list(hiring_stat["roles"])[:2]) if hiring_stat["roles"] else "Tech Roles"
-            badge_text = f"🔥 Recently Hired {hired_count} Candidates"
             recent_hiring_process = f"Recent Hiring Process ({roles_str})"
             hired_roles_list = list(hiring_stat["roles"])
 
@@ -1029,8 +924,22 @@ def get_all_companies_intelligence(db: Optional[Session] = None) -> List[Dict[st
             "hired_roles": hired_roles_list,
         })
 
-    # Sort companies so that active hiring companies appear first, followed by top tech recruiters
-    result.sort(key=lambda x: (not x.get("is_recent_hiring", False), x["slug"]))
+    # Sort companies strictly in canonical placement order matching UI
+    target_order = [
+        "amazon",
+        "capgemini",
+        "cognizant",
+        "accenture",
+        "deloitte",
+        "goldman_sachs",
+        "google",
+        "infosys",
+        "microsoft",
+        "tcs",
+        "wipro",
+        "zoho",
+    ]
+    result.sort(key=lambda x: target_order.index(x["slug"]) if x["slug"] in target_order else 999)
     return result
 
 
