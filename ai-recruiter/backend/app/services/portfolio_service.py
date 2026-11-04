@@ -836,20 +836,22 @@ def build_portfolio_from_candidate_profile(
         portfolio.section_order = json.dumps(DEFAULT_SECTION_ORDER)
     if not portfolio.section_visibility:
         initial_vis = dict(DEFAULT_SECTION_VISIBILITY)
+        initial_vis["projects"] = bool(extracted.get("projects"))
+        initial_vis["experience"] = bool(extracted.get("experience"))
+        initial_vis["education"] = bool(extracted.get("education"))
+        initial_vis["certifications"] = bool(extracted.get("certifications"))
         initial_vis["achievements"] = bool(extracted.get("achievements"))
         initial_vis["services"] = bool(extracted.get("services"))
-        if not extracted.get("certifications"):
-            initial_vis["certifications"] = False
         portfolio.section_visibility = json.dumps(initial_vis)
     else:
         try:
             curr_vis = json.loads(portfolio.section_visibility)
-            if extracted.get("achievements"):
-                curr_vis["achievements"] = True
-            if extracted.get("services"):
-                curr_vis["services"] = True
-            if not extracted.get("certifications"):
-                curr_vis["certifications"] = False
+            curr_vis["projects"] = bool(extracted.get("projects"))
+            curr_vis["experience"] = bool(extracted.get("experience"))
+            curr_vis["education"] = bool(extracted.get("education"))
+            curr_vis["certifications"] = bool(extracted.get("certifications"))
+            curr_vis["achievements"] = bool(extracted.get("achievements"))
+            curr_vis["services"] = bool(extracted.get("services"))
             portfolio.section_visibility = json.dumps(curr_vis)
         except Exception:
             pass

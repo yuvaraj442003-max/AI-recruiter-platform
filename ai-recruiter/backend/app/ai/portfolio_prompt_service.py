@@ -224,8 +224,8 @@ def analyze_resume_with_gemini(
         "social_links": {
             "email": candidate_context.get("email", "") if candidate_context else "",
             "location": candidate_context.get("location", "") if candidate_context else "",
-            "github": candidate_context.get("github_url", "https://github.com") if candidate_context else "https://github.com",
-            "linkedin": candidate_context.get("linkedin_url", "https://linkedin.com") if candidate_context else "https://linkedin.com",
+            "github": candidate_context.get("github_url", "") if candidate_context else "",
+            "linkedin": candidate_context.get("linkedin_url", "") if candidate_context else "",
         }
     }
 
@@ -544,7 +544,7 @@ def _normalize_generated_portfolio(data: Dict[str, Any], candidate_name: str, pr
     font = data.get("font") or "Plus Jakarta Sans"
     dark_mode = bool(data.get("dark_mode", False))
 
-    # Metrics
+    # Metrics — strictly from authentic candidate resume data, NEVER inject fake numbers
     raw_metrics = data.get("impact_metrics") or []
     impact_metrics = []
     if isinstance(raw_metrics, list):
@@ -555,13 +555,6 @@ def _normalize_generated_portfolio(data: Dict[str, Any], candidate_name: str, pr
                     "label": str(m["label"]),
                     "icon": m.get("icon") or "⚡",
                 })
-    if not impact_metrics:
-        impact_metrics = [
-            {"value": "99.9%", "label": "Production Reliability", "icon": "⚡"},
-            {"value": "15+", "label": "Projects Shipped", "icon": "🚀"},
-            {"value": "5+", "label": "Years Experience", "icon": "🏆"},
-            {"value": "100%", "label": "Commitment to Quality", "icon": "🎯"},
-        ]
 
     # Skills
     raw_skills = data.get("skills") or {}
@@ -573,12 +566,7 @@ def _normalize_generated_portfolio(data: Dict[str, Any], candidate_name: str, pr
     elif isinstance(raw_skills, list):
         skills_dict = organize_skills_into_categories([str(i).strip() for i in raw_skills if i])
 
-    if not skills_dict:
-        skills_dict = {
-            "Core Technologies": ["Python", "JavaScript", "TypeScript", "SQL"],
-            "Frameworks": ["React", "FastAPI", "Node.js", "Docker"],
-            "Architecture & Tools": ["Git", "REST APIs", "CI/CD", "PostgreSQL"],
-        }
+    # Leave skills empty if not present in resume — do NOT fabricate skills
 
     # Projects
     raw_projects = data.get("projects") or []
@@ -616,8 +604,8 @@ def _normalize_generated_portfolio(data: Dict[str, Any], candidate_name: str, pr
                 if isinstance(techs, str):
                     techs = [t.strip() for t in techs.split(",") if t.strip()]
                 experience.append({
-                    "title": e.get("title") or "Senior Engineer",
-                    "company": e.get("company") or "Tech Innovations",
+                    "title": e.get("title") or "",
+                    "company": e.get("company") or "",
                     "location": e.get("location") or "Remote",
                     "start_date": str(e.get("start_date") or "2022"),
                     "end_date": str(e.get("end_date") or "Present"),
@@ -627,7 +615,7 @@ def _normalize_generated_portfolio(data: Dict[str, Any], candidate_name: str, pr
                     "technologies": techs,
                 })
 
-    # Services / Value proposition
+    # Services / Value proposition — strictly from resume, NEVER inject fake services
     raw_serv = data.get("services") or []
     services = []
     if isinstance(raw_serv, list):
@@ -638,17 +626,14 @@ def _normalize_generated_portfolio(data: Dict[str, Any], candidate_name: str, pr
                     "description": s.get("description") or "",
                     "icon": s.get("icon") or "💡",
                 })
-    if not services:
-        services = [
-            {"title": "High-Performance Systems", "description": "Designing low-latency, scalable architectures that support enterprise growth.", "icon": "⚡"},
-            {"title": "Product Engineering", "description": "Translating complex requirements into intuitive, reliable web applications.", "icon": "🚀"},
-            {"title": "Technical Leadership", "description": "Mentoring engineers, driving code reviews, and upholding architectural standards.", "icon": "🛡️"},
-        ]
 
-    # Education
-    education = data.get("education") or [
-        {"degree": "B.S. in Computer Science", "institution": "Accredited University", "end_year": "2021", "grade": "First Class"}
-    ]
+    # Education — strictly from resume, NEVER inject fake universities
+    raw_edu = data.get("education") or []
+    education = []
+    if isinstance(raw_edu, list):
+        for ed in raw_edu:
+            if isinstance(ed, dict) and (ed.get("degree") or ed.get("institution")):
+                education.append(ed)
 
     # Certifications
     certifications = data.get("certifications") or []
@@ -895,64 +880,47 @@ def _generate_deterministic_portfolio(
         }
 
     # CRITICAL: Preserve authentic candidate resume facts (employers, projects, education)
+    # Strictly zero fabrication — if not in resume, leave empty list
     projects = []
     experience = []
     education = []
+    achievements = []
+    services = []
+    certifications = []
+    contact_email = ""
+    contact_linkedin = ""
+    contact_github = ""
+    contact_location = ""
 
     if candidate_context:
         if candidate_context.get("headline"):
             role = candidate_context["headline"]
-        if candidate_context.get("skills") and isinstance(candidate_context["skills"], list):
-            skills = organize_skills_into_categories(candidate_context["skills"])
+        if candidate_context.get("skills"):
+            if isinstance(candidate_context["skills"], list):
+                skills = organize_skills_into_categories(candidate_context["skills"])
+            elif isinstance(candidate_context["skills"], dict):
+                skills = candidate_context["skills"]
         if candidate_context.get("experience"):
             experience = candidate_context["experience"]
         if candidate_context.get("projects"):
             projects = candidate_context["projects"]
         if candidate_context.get("education"):
             education = candidate_context["education"]
+        if candidate_context.get("metrics"):
+            achievements = candidate_context["metrics"]
+        if candidate_context.get("services"):
+            services = candidate_context["services"]
+        if candidate_context.get("certifications"):
+            certifications = candidate_context["certifications"]
 
-    if not projects:
-        projects = [
-            {
-                "name": "Intelligent Distributed Platform",
-                "description": "High-throughput microservices architecture delivering real-time processing and dynamic user workflows.",
-                "key_features": ["Processed 10,000+ events per second with sub-50ms latency", "Automated deployment pipeline reducing release time by 60%"],
-                "technologies": ["Python", "FastAPI", "Docker", "PostgreSQL", "Redis"],
-                "live_demo_url": "",
-                "github_url": "",
-            },
-            {
-                "name": "Cloud Native Orchestrator",
-                "description": "Comprehensive telemetry and workflow orchestration tool providing end-to-end monitoring.",
-                "key_features": ["Dynamic scaling across heterogeneous clusters", "Zero-downtime blue/green deployment strategy"],
-                "technologies": ["TypeScript", "React", "Kubernetes", "AWS"],
-                "live_demo_url": "",
-                "github_url": "",
-            },
-        ]
-
-    if not experience:
-        experience = [
-            {
-                "title": role,
-                "company": "Apex Technologies",
-                "location": "San Francisco, CA (Hybrid)",
-                "start_date": "2022",
-                "end_date": "Present",
-                "is_current": True,
-                "description": "Leading core engineering initiatives across scalable platforms and distributed systems.",
-                "highlights": [
-                    "Spearheaded architectural redesign resulting in a 40% reduction in infrastructure overhead.",
-                    "Collaborated cross-functionally with product and design teams to deliver 6 major feature releases on schedule.",
-                ],
-                "technologies": ["Python", "React", "PostgreSQL", "AWS"],
-            }
-        ]
-
-    if not education:
-        education = [
-            {"degree": "B.S. in Computer Science", "institution": "University of Technology", "end_year": "2020", "grade": "Honors"}
-        ]
+        contact_email = (candidate_context.get("email") or (candidate_context.get("social_links") or {}).get("email") or "").strip()
+        contact_linkedin = (candidate_context.get("linkedin") or (candidate_context.get("social_links") or {}).get("linkedin") or "").strip()
+        contact_github = (candidate_context.get("github") or (candidate_context.get("social_links") or {}).get("github") or "").strip()
+        contact_location = (candidate_context.get("location") or (candidate_context.get("social_links") or {}).get("location") or "").strip()
+    else:
+        # No resume provided: leave career sections completely blank for candidate to edit
+        role = ""
+        skills = {}
 
     slug_base = re.sub(r"[^a-z0-9\-]+", "-", candidate_name.lower().replace(" ", "-")).strip("-") or "candidate"
     slug = f"{slug_base}-{matched_preset['theme_id']}"
@@ -962,14 +930,14 @@ def _generate_deterministic_portfolio(
         "professional_headline": role,
         "headline_options": [
             role,
-            f"{role} | High-Impact Systems & Architecture",
-            f"Senior Innovator | {domain}",
-        ],
+            f"{role} | High-Impact Systems & Architecture" if role else "",
+            f"Senior Innovator | {domain}" if role else "",
+        ] if role else [],
         "about": (
             f"Hello, I'm {candidate_name}. As a dedicated professional in {domain}, I focus on designing and executing "
             f"resilient, scalable solutions that drive measurable business outcomes. With a strong commitment to clean architecture, "
             f"seamless user experience, and continuous innovation, I thrive on solving complex engineering challenges."
-        ),
+        ) if role else "",
         "domain": domain,
         "theme_id": matched_preset["theme_id"],
         "primary_color": primary_color,
@@ -983,29 +951,18 @@ def _generate_deterministic_portfolio(
         "button_style": "rounded",
         "dark_mode": dark_mode,
         "layout": layout,
-        "impact_metrics": [
-            {"value": "99.9%", "label": "Service Availability", "icon": "⚡"},
-            {"value": "4.8M+", "label": "Requests Handled Daily", "icon": "🚀"},
-            {"value": "35%", "label": "Latency Optimization", "icon": "📉"},
-            {"value": "5+", "label": "Years Delivering Impact", "icon": "🏆"},
-        ],
+        "impact_metrics": achievements if achievements else [],
         "skills": skills,
-        "services": [
-            {"title": "Scalable System Design", "description": "Architecting resilient, distributed services engineered for enterprise reliability and scale.", "icon": "🏗️"},
-            {"title": "Rapid Product Delivery", "description": "Taking products from concept to production with clean code and high velocity.", "icon": "⚡"},
-            {"title": "Performance Optimization", "description": "Auditing bottlenecks and delivering sub-100ms response times across the stack.", "icon": "🎯"},
-        ],
+        "services": services if services else [],
         "projects": projects,
         "experience": experience,
         "education": education,
-        "certifications": [
-            {"name": "Certified Professional Specialist", "organization": "Accredited Institute", "year": "2023"}
-        ],
+        "certifications": certifications,
         "social_links": {
-            "email": f"{slug_base}@example.com",
-            "linkedin": f"https://linkedin.com/in/{slug_base}",
-            "github": f"https://github.com/{slug_base}",
-            "location": "San Francisco, CA",
+            "email": contact_email,
+            "linkedin": contact_linkedin,
+            "github": contact_github,
+            "location": contact_location,
         },
         "suggested_slug": slug,
         "generation_prompt": prompt,

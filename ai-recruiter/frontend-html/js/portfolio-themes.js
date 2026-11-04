@@ -2403,12 +2403,9 @@ const PortfolioThemesEngine = (() => {
     const name = project.name || `Featured Project #${idx + 1}`;
     const desc = project.description || "Production-grade system implementation engineered for high reliability, performance, and user impact.";
     const techs = Array.isArray(project.technologies) ? project.technologies : [];
-    const features = Array.isArray(project.key_features) && project.key_features.length > 0
-      ? project.key_features.slice(0, 3)
-      : [
-          "Architected scalable component modules with clean abstractions",
-          "Optimized processing latency and data throughput benchmarks"
-        ];
+    const features = Array.isArray(project.key_features)
+      ? project.key_features.filter(f => f && typeof f === "string" && f.trim()).slice(0, 4)
+      : [];
 
     // Category tag
     const category = project.category || (
@@ -2448,9 +2445,11 @@ const PortfolioThemesEngine = (() => {
               ${liveUrl ? `<a href="${escapeHtml(liveUrl)}" target="_blank" rel="noopener noreferrer" class="project-arrow-icon" title="Open Live Site">↗</a>` : `<span class="project-arrow-icon">✦</span>`}
             </div>
             <p class="project-description-enhanced">${escapeHtml(desc)}</p>
-            <ul class="project-features-list">
-              ${features.map(f => `<li><span class="feat-check">✓</span> <span>${escapeHtml(f)}</span></li>`).join("")}
-            </ul>
+            ${features.length > 0 ? `
+              <ul class="project-features-list">
+                ${features.map(f => `<li><span class="feat-check">✓</span> <span>${escapeHtml(f)}</span></li>`).join("")}
+              </ul>
+            ` : ""}
             ${techs.length > 0 ? `
               <div class="tech-pills-row">
                 ${techs.slice(0, 6).map(t => `<span class="tech-pill-dot">${escapeHtml(t)}</span>`).join("")}
@@ -2804,9 +2803,7 @@ const PortfolioThemesEngine = (() => {
         }
       });
     }
-    if (trustedItems.length === 0) {
-      trustedItems.push("MODO", "LUMI", "KOVO", "NOMA", "ASPEKT");
-    }
+    // Do NOT inject fake brands — only display genuine companies/skills if present
 
     // 4. Assemble 4 High-Contrast KPI Metrics
     const kpiMetrics = [];
@@ -2819,10 +2816,7 @@ const PortfolioThemesEngine = (() => {
         kpiMetrics.push({ value: a.value || "100%", label: a.label || a.title || "Key Metric" });
       });
     }
-    while (kpiMetrics.length < 4) {
-      const fallbackKpi = profile.defaultKpis[kpiMetrics.length] || { value: "100%", label: "Production Quality" };
-      kpiMetrics.push(fallbackKpi);
-    }
+    // Strictly display genuine metrics from candidate resume — NEVER inject fake numbers
 
     // 5. Build Project Showcase Cards with photographic backdrops & circular ↗ action button
     const projectCovers = [
@@ -2867,34 +2861,7 @@ const PortfolioThemesEngine = (() => {
         `;
       }).join("");
     } else {
-      projectsCardsHtml = `
-        <div class="col-lg-6 mb-4">
-          <a href="#section-contact" class="nova-project-card">
-            <img src="${projectCovers[0]}" alt="A premium brand with a new website" class="nova-project-bg" />
-            <div class="nova-project-gradient"></div>
-            <div class="nova-project-content">
-              <div>
-                <h4 class="nova-project-title">A premium brand with a new website</h4>
-                <p class="nova-project-desc">Complete end-to-end architecture, modern design system, and scalable cloud performance.</p>
-              </div>
-              <div class="nova-project-btn">↗</div>
-            </div>
-          </a>
-        </div>
-        <div class="col-lg-6 mb-4">
-          <a href="#section-contact" class="nova-project-card">
-            <img src="${projectCovers[1]}" alt="A new identity for an ambitious brand" class="nova-project-bg" />
-            <div class="nova-project-gradient"></div>
-            <div class="nova-project-content">
-              <div>
-                <h4 class="nova-project-title">A new identity for an ambitious brand</h4>
-                <p class="nova-project-desc">Strategic development combining refined aesthetics with high-throughput backend services.</p>
-              </div>
-              <div class="nova-project-btn">↗</div>
-            </div>
-          </a>
-        </div>
-      `;
+      projectsCardsHtml = "";
     }
 
     // 6. Assemble Full Complete HTML
@@ -2959,55 +2926,57 @@ const PortfolioThemesEngine = (() => {
           </div>
         </section>
 
-        <!-- "Trusted By" Strip (Image 2) -->
-        <div class="container nova-trusted-strip">
-          <div class="d-flex align-items-center flex-wrap gap-4">
-            <span class="nova-trusted-label">Trusted by</span>
-            <div class="nova-trusted-items">
-              ${trustedItems.map(item => `<span>${escapeHtml(item)}</span>`).join('')}
+        <!-- "Trusted By" Strip -->
+        ${trustedItems.length > 0 ? `
+          <div class="container nova-trusted-strip">
+            <div class="d-flex align-items-center flex-wrap gap-4">
+              <span class="nova-trusted-label">Verified Experience & Tech</span>
+              <div class="nova-trusted-items">
+                ${trustedItems.map(item => `<span>${escapeHtml(item)}</span>`).join('')}
+              </div>
             </div>
           </div>
-        </div>
+        ` : ""}
 
-        <!-- High-Contrast Dark KPI Metrics Banner (Image 2) -->
-        <div class="container">
-          <div class="nova-kpi-banner">
-            <div class="nova-kpi-grid">
-              ${kpiMetrics.map(k => `
-                <div class="nova-kpi-item">
-                  <div class="nova-kpi-value">${escapeHtml(k.value)}</div>
-                  <div class="nova-kpi-label">${escapeHtml(k.label)}</div>
+        <!-- High-Contrast Dark KPI Metrics Banner -->
+        ${kpiMetrics.length > 0 ? `
+          <div class="container">
+            <div class="nova-kpi-banner">
+              <div class="nova-kpi-grid">
+                ${kpiMetrics.map(k => `
+                  <div class="nova-kpi-item">
+                    <div class="nova-kpi-value">${escapeHtml(k.value)}</div>
+                    <div class="nova-kpi-label">${escapeHtml(k.label)}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        ` : ""}
+
+        <!-- Selected Work -->
+        ${(projects.length > 0 && projectsCardsHtml) ? `
+          <section id="section-projects" class="py-3">
+            <div class="container nova-section-lead">
+              <div class="row align-items-end g-4">
+                <div class="col-lg-6">
+                  <h2 class="nova-lead-title">Featured Projects</h2>
                 </div>
-              `).join('')}
-            </div>
-          </div>
-        </div>
-
-        <!-- Two-Column Section Lead (Image 2) & Selected Work (Image 3) -->
-        <section id="section-projects" class="py-3">
-          <div class="container nova-section-lead">
-            <div class="row align-items-end g-4">
-              <div class="col-lg-6">
-                <h2 class="nova-lead-title">Turning ideas into real outcomes</h2>
-              </div>
-              <div class="col-lg-6">
-                <p class="nova-lead-desc">
-                  We combine strategic thinking, refined design and modern technology to create digital systems that look great and deliver measurable value.
-                </p>
-                <a href="#section-projects" class="nova-action-link">
-                  See selected work <span class="ms-1">→</span>
-                </a>
+                <div class="col-lg-6">
+                  <p class="nova-lead-desc">
+                    Authentic software and technical systems engineered by ${name}.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Selected Work Photographic Cards Grid (Image 3) -->
-          <div class="container mb-5">
-            <div class="row g-4">
-              ${projectsCardsHtml}
+            <div class="container mb-5">
+              <div class="row g-4">
+                ${projectsCardsHtml}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        ` : ""}
 
         <!-- Spotlight Section ("People who create value" - Image 4) -->
         <section id="section-about" class="nova-spotlight-section">
@@ -5498,18 +5467,30 @@ const PortfolioThemesEngine = (() => {
     const achList = Array.isArray(rawAch) ? rawAch : [];
     let metrics = achList.filter(item => item && (item.type === "metric" || item.value));
     if (metrics.length === 0) {
-      // Derive authentic candidate-specific metrics from their actual projects, skills & experience
+      // Derive authentic candidate-specific metrics ONLY from their actual projects, skills & experience
       const projs = Array.isArray(data.projects) ? data.projects : [];
       const skillsObj = typeof data.skills === "object" && data.skills ? data.skills : {};
       const allSkills = Array.isArray(skillsObj) ? skillsObj : Object.values(skillsObj).flat();
       const exps = Array.isArray(data.experience) ? data.experience : [];
 
-      metrics = [
-        { value: `${Math.max(projs.length, 3)}+`, label: "Production Projects", icon: "🚀" },
-        { value: `${Math.max(allSkills.length, 12)}+`, label: "Verified Technologies", icon: "⚡" },
-        { value: exps.length > 0 ? `${exps.length}+` : "100%", label: exps.length > 0 ? "Professional Roles" : "Placement Ready", icon: "💼" },
-        { value: "Top 5%", label: "Placement Verified", icon: "🎯" }
-      ];
+      if (projs.length === 0 && allSkills.length === 0 && exps.length === 0) {
+        return ""; // Leave completely blank if no verified information exists
+      }
+
+      const derived = [];
+      if (projs.length > 0) {
+        derived.push({ value: `${projs.length}`, label: "Documented Projects", icon: "🚀" });
+      }
+      if (allSkills.length > 0) {
+        derived.push({ value: `${allSkills.length}`, label: "Verified Technologies", icon: "⚡" });
+      }
+      if (exps.length > 0) {
+        derived.push({ value: `${exps.length}`, label: "Professional Roles", icon: "💼" });
+      }
+      if (derived.length === 0) {
+        return "";
+      }
+      metrics = derived;
     }
     const safeMetrics = metrics.slice(0, 4);
 

@@ -1058,10 +1058,24 @@ def parse_projects_items(proj_text: str, candidate_github: Optional[str] = None,
             u_clean = f"https://{u_clean}"
         return u_clean
 
+    _NON_PROJECT_HEADERS = {
+        "education", "academic", "academics", "academic details", "academic credentials", "educational qualifications",
+        "experience", "work experience", "employment", "employment history", "work history", "professional experience",
+        "skills", "technical skills", "core skills", "key skills", "proficiencies", "areas of expertise",
+        "certifications", "certificates", "licenses", "courses", "trainings",
+        "achievements", "accomplishments", "awards", "honors", "activities",
+        "summary", "professional summary", "career summary", "about", "about me", "profile", "executive summary",
+        "objective", "career objective",
+        "declaration", "personal details", "personal profile", "hobbies", "interests", "languages", "references", "strengths"
+    }
+
     for chunk in raw_chunks:
         if not chunk:
             continue
         first_line = chunk[0].rstrip(":").strip()
+        first_line_clean = re.sub(r"^[0-9.#\-–—*•\s]+", "", first_line).strip(" :–—|-").lower()
+        if first_line_clean in _NON_PROJECT_HEADERS or any(first_line_clean == h for h in _NON_PROJECT_HEADERS):
+            continue
 
         # Check if first_line has an embedded URL in parentheses or after separator
         title_urls = url_re.findall(first_line)
@@ -1258,6 +1272,19 @@ def parse_education_items(edu_text: str, **kwargs) -> list[dict]:
             continue
 
         full_block = " ".join(b_lines)
+
+        # Verify educational relevance: must contain degree keyword or educational institution / academic keywords
+        has_edu_evidence = (
+            bool(degree_kw.search(full_block)) or
+            any(kw in full_block.lower() for kw in [
+                "college", "university", "institute", "school", "academy", "polytechnic", 
+                "vidyalaya", "vidhalaya", "campus", "board", "cgpa", "gpa", "bachelor", 
+                "master", "degree", "diploma", "secondary", "matriculation"
+            ])
+        )
+        if not has_edu_evidence:
+            continue
+
         years = year_re.findall(full_block)
 
         # Check for score / CGPA / percentage

@@ -210,7 +210,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       } else {
         // Attempt to auto-generate portfolio from existing resume/profile
         try {
-          const genRes = await portfolioAPI.generatePortfolio({ theme_id: "auto" });
+          const genRes = await portfolioAPI.generate({ theme_id: "auto" });
           if (genRes && genRes.data) {
             currentPortfolio = genRes.data;
             syncDataToUI();
@@ -232,12 +232,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   function setupInitialDefaultPortfolio(user) {
     currentPortfolio = {
       candidate_name: user?.name || "Candidate",
-      professional_headline: "Senior Software Engineer | High-Scale Distributed Systems",
-      headline_options: [
-        "Senior Software Engineer | High-Scale Distributed Systems",
-        "Full Stack Architect | Cloud & AI Solutions",
-      ],
-      about: `Hi, I'm ${user?.name || "Candidate"}. I design and engineer scalable web applications, distributed systems, and intuitive user experiences. Enter a prompt above to let Gemini AI build a custom bespoke portfolio tailored to your unique career goals!`,
+      professional_headline: "",
+      headline_options: [],
+      about: "",
       theme_id: "modern",
       primary_color: "#4f46e5",
       secondary_color: "#06b6d4",
@@ -247,65 +244,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       button_style: "rounded",
       dark_mode: false,
       layout: "modern",
-      achievements: [
-        { value: "99.9%", label: "System Reliability", icon: "⚡" },
-        { value: "10M+", label: "Monthly API Requests", icon: "🚀" },
-        { value: "35%", label: "Query Latency Reduction", icon: "📉" },
-        { value: "5+", label: "Years Experience", icon: "🏆" },
-      ],
-      skills: {
-        "Core Languages": ["Python", "TypeScript", "JavaScript", "SQL"],
-        "Frameworks & Web": ["React", "Next.js", "FastAPI", "Node.js"],
-        "Cloud & DevOps": ["Docker", "Kubernetes", "AWS", "CI/CD"],
-        "Databases & Tools": ["PostgreSQL", "Redis", "Git"],
-      },
-      services: [
-        { title: "Full-Stack Architecture", description: "Designing end-to-end cloud platforms with resilient microservices.", icon: "🏗️" },
-        { title: "API & Data Engineering", description: "Sub-100ms API endpoints and automated ETL data streaming.", icon: "⚡" },
-        { title: "Performance Auditing", description: "Optimizing render times, bundle size, and database query throughput.", icon: "🎯" },
-      ],
-      projects: [
-        {
-          name: "Cloud Telemetry Engine",
-          description: "Distributed monitoring platform processing high-throughput application metrics in real time.",
-          key_features: ["Engineered streaming event pipeline with Kafka", "Built interactive dashboard with sub-50ms refresh"],
-          technologies: ["Python", "FastAPI", "React", "Docker"],
-          live_demo_url: "",
-          github_url: "",
-        },
-        {
-          name: "AI Recruiting Automation Hub",
-          description: "Intelligent ATS matching system with semantic resume parsing and interview assessment.",
-          key_features: ["Implemented NLP skill extraction engine", "Engineered role-based evaluation workflows"],
-          technologies: ["TypeScript", "FastAPI", "PostgreSQL", "Gemini AI"],
-          live_demo_url: "",
-          github_url: "",
-        },
-      ],
-      experience: [
-        {
-          title: "Senior Software Engineer",
-          company: "Enterprise Cloud Tech",
-          location: "San Francisco, CA",
-          start_date: "2022",
-          end_date: "Present",
-          is_current: true,
-          description: "Leading core platform services and engineering scalability initiatives.",
-          highlights: [
-            "Reduced cloud infrastructure costs by 30% through container orchestration tuning.",
-            "Mentored 4 junior engineers and standardized API documentation across teams.",
-          ],
-          technologies: ["Python", "React", "AWS", "Docker"],
-        },
-      ],
-      education: [
-        { degree: "B.S. in Computer Science", institution: "University of Technology", end_year: "2021", grade: "First Class" },
-      ],
+      achievements: [],
+      skills: {},
+      services: [],
+      projects: [],
+      experience: [],
+      education: [],
+      certifications: [],
       social_links: {
-        email: user?.email || "candidate@example.com",
-        location: "San Francisco, CA",
-        github: "https://github.com",
-        linkedin: "https://linkedin.com",
+        email: user?.email || "",
+        location: "",
+        github: "",
+        linkedin: "",
       },
       slug: (user?.name || "candidate").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
       is_published: false,
@@ -906,7 +856,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     btnAddMetric.addEventListener("click", () => {
       if (!currentPortfolio) return;
       let metrics = safeParse(currentPortfolio.achievements, []);
-      metrics.push({ value: "100%", label: "New KPI Impact", icon: "⚡" });
+      metrics.push({ value: "", label: "", icon: "⚡" });
       currentPortfolio.achievements = metrics;
       renderMetricsEditor();
       renderLivePreview();
@@ -950,10 +900,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!currentPortfolio) return;
       let projects = safeParse(currentPortfolio.projects, []);
       projects.push({
-        name: "New Flagship Project",
-        description: "Engineered scalable features delivering high performance and seamless user experience.",
-        key_features: ["Implemented resilient architecture", "Optimized sub-100ms response time"],
-        technologies: ["TypeScript", "React", "PostgreSQL"],
+        name: "",
+        description: "",
+        key_features: [],
+        technologies: [],
         live_demo_url: "",
         github_url: "",
       });
@@ -966,15 +916,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!currentPortfolio) return;
       let exp = safeParse(currentPortfolio.experience, []);
       exp.push({
-        title: "Senior Engineer",
-        company: "Tech Enterprise",
-        location: "Remote",
-        start_date: "2023",
-        end_date: "Present",
-        is_current: true,
-        description: "Leading core systems and product features.",
-        highlights: ["Delivered major engineering milestones on schedule."],
-        technologies: ["Python", "Docker"],
+        title: "",
+        company: "",
+        location: "",
+        start_date: "",
+        end_date: "",
+        is_current: false,
+        description: "",
+        highlights: [],
+        technologies: [],
       });
       currentPortfolio.experience = exp;
       renderExperienceEditor();
@@ -994,10 +944,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!currentPortfolio) return;
         let edu = safeParse(currentPortfolio.education, []);
         edu.push({
-          degree: "B.S. in Computer Science",
-          institution: "University of Technology",
-          end_year: "2023",
-          grade: "Honors",
+          degree: "",
+          institution: "",
+          end_year: "",
+          grade: "",
         });
         currentPortfolio.education = edu;
         renderEducationEditor();
@@ -1010,9 +960,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!currentPortfolio) return;
         let certs = safeParse(currentPortfolio.certifications, []);
         certs.push({
-          name: "AWS Certified Solutions Architect",
-          organization: "Amazon Web Services",
-          year: "2024",
+          name: "",
+          organization: "",
+          year: "",
           credential_url: "",
         });
         currentPortfolio.certifications = certs;
@@ -1026,8 +976,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!currentPortfolio) return;
         let servs = safeParse(currentPortfolio.services, []);
         servs.push({
-          title: "Full-Stack System Engineering",
-          description: "Designing end-to-end resilient microservices with sub-100ms API latency.",
+          title: "",
+          description: "",
           icon: "⚡",
         });
         currentPortfolio.services = servs;
@@ -1317,10 +1267,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (emptyAdd) {
         emptyAdd.addEventListener("click", () => {
           projects.push({
-            name: "Flagship Cloud Architecture Project",
-            description: "Engineered scalable microservices handling high concurrency with sub-100ms API response latency.",
-            key_features: ["Architected event-driven microservices", "Engineered relational schema optimizations", "Configured automated CI/CD deployment"],
-            technologies: ["Python", "FastAPI", "PostgreSQL", "Docker"],
+            name: "",
+            description: "",
+            key_features: [],
+            technologies: [],
             live_demo_url: "",
             github_url: ""
           });

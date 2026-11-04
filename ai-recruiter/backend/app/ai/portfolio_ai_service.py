@@ -316,22 +316,11 @@ def improve_project_item(proj_item: Dict[str, Any]) -> Dict[str, Any]:
         except Exception:
             pass
 
-    # Deterministic fallback improvement — preserves verbatim content and generates structured engineering highlights
+    # Deterministic fallback improvement — preserves verbatim content without fabrication
     improved = dict(proj_item)
-    improved["description"] = desc.strip() if desc else f"Production implementation of {name} utilizing {techs_str}."
-    improved["contribution"] = contribution.strip() if contribution else "Architected core features, data models, and component integration."
-    if proj_item.get("key_features") and len(proj_item["key_features"]) > 0:
-        improved["key_features"] = proj_item["key_features"]
-    else:
-        kf = []
-        if techs:
-            kf.append(f"Architected modular solutions leveraging {', '.join(techs[:2])}.")
-            if len(techs) > 2:
-                kf.append(f"Engineered responsive components and data layer utilizing {', '.join(techs[2:4])}.")
-        else:
-            kf.append(f"Engineered end-to-end functionality for {name}.")
-        kf.append("Implemented comprehensive error handling and optimized performance metrics.")
-        improved["key_features"] = kf
+    improved["description"] = desc.strip() if desc else ""
+    improved["contribution"] = contribution.strip() if contribution else ""
+    improved["key_features"] = proj_item.get("key_features") or []
     return improved
 
 
@@ -366,7 +355,7 @@ def extract_structured_portfolio_data(raw_text: str, parsed_fields: dict) -> dic
     skills = parsed_fields.get("skills") or []
     categorized_skills = organize_skills_into_categories(skills) if skills else {}
 
-    # 4. Projects — verbatim extracted from resume
+    # 4. Projects — verbatim extracted strictly from resume
     projects_items = parsed_fields.get("projects")
     if not projects_items and raw_text:
         from app.nlp.skill_extractor import extract_section_text, _PROJECTS_HEADING_RE, parse_projects_items
@@ -374,15 +363,20 @@ def extract_structured_portfolio_data(raw_text: str, parsed_fields: dict) -> dic
         if proj_sec:
             projects_items = parse_projects_items(proj_sec, candidate_github=parsed_fields.get("github_url"), skills=skills)
         if not projects_items:
-            # Fallback for projects without explicit section heading
-            projects_items = parse_projects_items(raw_text, candidate_github=parsed_fields.get("github_url"), skills=skills)
+            # Only parse if explicit project label lines exist (do NOT parse entire resume text)
+            p_lines = [l.strip() for l in raw_text.splitlines() if re.match(r"^(?:project\s*\d*|project\s*name)\s*:", l, re.I)]
+            if p_lines:
+                projects_items = parse_projects_items("\n\n".join(p_lines), candidate_github=parsed_fields.get("github_url"), skills=skills)
     if not projects_items:
         projects_items = []
 
-    # 5. Work Experience — verbatim extracted from resume
+    # 5. Work Experience — verbatim extracted strictly from resume work section
     experience_items = parsed_fields.get("work_experience_items")
     if not experience_items and raw_text:
-        experience_items = parse_work_experience_items(raw_text, default_location=parsed_fields.get("location") or "", skills=skills)
+        from app.nlp.skill_extractor import extract_section_text, _WORK_HEADING_RE, parse_work_experience_items
+        work_sec = extract_section_text(raw_text, _WORK_HEADING_RE)
+        if work_sec:
+            experience_items = parse_work_experience_items(work_sec, default_location=parsed_fields.get("location") or "", skills=skills)
     if not experience_items:
         experience_items = []
 
@@ -391,7 +385,9 @@ def extract_structured_portfolio_data(raw_text: str, parsed_fields: dict) -> dic
     if not education_items and raw_text:
         from app.nlp.skill_extractor import extract_section_text, _EDUCATION_HEADING_RE, extract_education
         edu_sec = extract_section_text(raw_text, _EDUCATION_HEADING_RE)
-        education_items = parse_education_items(edu_sec or extract_education(raw_text) or raw_text)
+        edu_fallback = edu_sec or extract_education(raw_text)
+        if edu_fallback:
+            education_items = parse_education_items(edu_fallback)
     if not education_items:
         education_items = []
 
@@ -399,7 +395,8 @@ def extract_structured_portfolio_data(raw_text: str, parsed_fields: dict) -> dic
     cert_items = parsed_fields.get("certifications_items")
     if not cert_items and (raw_text or parsed_fields.get("certifications")):
         fallback_c = parsed_fields.get("certifications_text") or (", ".join(parsed_fields.get("certifications")) if isinstance(parsed_fields.get("certifications"), list) else parsed_fields.get("certifications"))
-        cert_items = parse_certifications_items(fallback_c or raw_text)
+        if fallback_c:
+            cert_items = parse_certifications_items(fallback_c)
     if not cert_items:
         cert_items = []
 
@@ -465,23 +462,9 @@ def extract_structured_portfolio_data(raw_text: str, parsed_fields: dict) -> dic
             "icon": "🚀"
         })
 
-    # If fewer than 4 metrics, complement with grounded impact metrics
-    if len(achievements_items) < 4:
-        derived_metrics = generate_impact_metrics(
-            role=selected_headline,
-            skills=skills,
-            experience_years=exp_years,
-            project_count=len(projects_items),
-            verified_metrics=parsed_fields.get("metrics_and_impact")
-        )
-        seen_titles = {a.get("title", "").lower() for a in achievements_items}
-        for dm in derived_metrics:
-            if dm.get("title", "").lower() not in seen_titles and len(achievements_items) < 4:
-                achievements_items.append(dm)
-                seen_titles.add(dm.get("title", "").lower())
-
-    # 11. Services / Value Proposition Pillars — generated from candidate's verified skills & domain
-    services_items = generate_value_services(role=selected_headline, skills=skills, experience_years=exp_years)
+    # DO NOT invent or fabricate fake metrics: only keep verified metrics from resume
+    # 11. Services / Value Proposition Pillars: only include if candidate explicitly specified services in resume
+    services_items = parsed_fields.get("services") or []
 
     return {
         "candidate_name": name,
