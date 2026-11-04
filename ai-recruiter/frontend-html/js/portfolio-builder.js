@@ -75,6 +75,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnClearBgImage = document.getElementById("btn-clear-bg-image");
   const maskShapeButtons = document.querySelectorAll(".mask-shape-btn");
 
+  // DOM Elements - Profile Image / Portrait
+  const inputProfileImageFile = document.getElementById("input-profile-image-file");
+  const btnUploadProfileImage = document.getElementById("btn-upload-profile-image");
+  const btnRemoveProfileImage = document.getElementById("btn-remove-profile-image");
+  const inputProfileImageUrl = document.getElementById("input-profile-image-url");
+  const btnApplyImageUrl = document.getElementById("btn-apply-image-url");
+  const builderPhotoPreviewWrap = document.getElementById("builder-photo-preview-wrap");
+  const btnQuickPhotoClick = document.getElementById("btn-quick-photo-click");
+  const badgePhotoStatus = document.getElementById("badge-photo-status");
+  const btnHeroChangePhoto = document.getElementById("btn-hero-change-photo");
+  const heroPhotoBtnText = document.getElementById("hero-photo-btn-text");
+
   // DOM Elements - Content Editor
   const inputCandidateName = document.getElementById("input-candidate-name");
   const inputHeadline = document.getElementById("input-headline");
@@ -183,6 +195,7 @@ document.addEventListener("DOMContentLoaded", async () => {
    * Main Initialize Flow
    */
   async function init() {
+    bindProfileImageControls();
     bindPromptStarters();
     bindDeviceSwitcher();
     bindExpandToggle();
@@ -232,6 +245,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   function setupInitialDefaultPortfolio(user) {
     currentPortfolio = {
       candidate_name: user?.name || "Candidate",
+      profile_image: user?.profile_photo || "",
+      portrait_mask: "mask-pebble",
       professional_headline: "",
       headline_options: [],
       about: "",
@@ -339,6 +354,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     updatePublishStatusBadge();
 
     // Render Sub-Sections in UI
+    renderProfileImageEditor();
     renderMetricsEditor();
     renderSkillsEditor();
     renderProjectsEditor();
@@ -475,6 +491,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
       PortfolioThemesEngine.render(previewStage, currentPortfolio);
+
+      // Make rendered avatar/portrait clickable to quickly replace image
+      const previewAvatars = previewStage.querySelectorAll(
+        ".nova-portrait-frame, .portfolio-avatar-wrap, .portfolio-avatar-monogram, .bento-avatar-card, .notion-avatar-wrap, img.nova-portrait-img"
+      );
+      previewAvatars.forEach(el => {
+        el.style.cursor = "pointer";
+        el.setAttribute("title", "Click to change or replace profile image");
+        el.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (inputProfileImageFile) {
+            inputProfileImageFile.click();
+          }
+        });
+      });
     } catch (err) {
       console.error("Rendering error in PortfolioThemesEngine:", err);
     }
@@ -741,6 +773,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (currentPortfolio) {
           currentPortfolio.portrait_mask = mask;
           currentPortfolio.custom_css = JSON.stringify({ portrait_mask: mask });
+          renderProfileImageEditor();
           renderLivePreview();
         }
       });
@@ -1157,6 +1190,149 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       });
     });
+  }
+
+  /**
+   * Renders and updates the Profile Image / Portrait preview in the Studio Builder
+   */
+  function renderProfileImageEditor() {
+    if (!currentPortfolio || !builderPhotoPreviewWrap) return;
+    const imgUrl = (currentPortfolio.profile_image || "").trim();
+    const hasPhoto = Boolean(imgUrl && !imgUrl.includes("ui-avatars.com"));
+    const mask = currentPortfolio.portrait_mask || "mask-pebble";
+    const name = currentPortfolio.candidate_name || "Candidate";
+    const initials = name.split(/\s+/).map(p => p[0]).filter(Boolean).slice(0, 2).join("").toUpperCase() || "CP";
+    const primary = currentPortfolio.primary_color || "#4f46e5";
+    const secondary = currentPortfolio.secondary_color || "#06b6d4";
+
+    if (hasPhoto) {
+      builderPhotoPreviewWrap.innerHTML = `
+        <img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(name)}" class="w-100 h-100 object-fit-cover ${mask}" style="border-radius: 12px; transition: transform 0.25s ease;" />
+      `;
+      if (badgePhotoStatus) {
+        badgePhotoStatus.className = "badge bg-success-subtle text-success small";
+        badgePhotoStatus.textContent = "Custom Photo Active";
+      }
+      if (heroPhotoBtnText) {
+        heroPhotoBtnText.textContent = "Change Photo ✓";
+      }
+      if (inputProfileImageUrl && !imgUrl.startsWith("data:")) {
+        inputProfileImageUrl.value = imgUrl;
+      }
+    } else {
+      builderPhotoPreviewWrap.innerHTML = `
+        <div class="w-100 h-100 d-flex align-items-center justify-content-center fw-bold text-white shadow-sm" style="background: linear-gradient(135deg, ${primary} 0%, ${secondary} 100%); font-size: 1.25rem; letter-spacing: -0.02em; border-radius: 12px;">
+          ${initials}
+        </div>
+      `;
+      if (badgePhotoStatus) {
+        badgePhotoStatus.className = "badge bg-secondary-subtle text-secondary small";
+        badgePhotoStatus.textContent = "Initials Monogram";
+      }
+      if (heroPhotoBtnText) {
+        heroPhotoBtnText.textContent = "Add Photo";
+      }
+      if (inputProfileImageUrl) {
+        inputProfileImageUrl.value = "";
+      }
+    }
+  }
+
+  /**
+   * Binds photo file upload, URL apply, removal, and real-time synchronization
+   */
+  function bindProfileImageControls() {
+    const triggerUpload = () => {
+      if (inputProfileImageFile) inputProfileImageFile.click();
+    };
+
+    if (btnUploadProfileImage) btnUploadProfileImage.addEventListener("click", triggerUpload);
+    if (btnQuickPhotoClick) btnQuickPhotoClick.addEventListener("click", triggerUpload);
+    if (btnHeroChangePhoto) btnHeroChangePhoto.addEventListener("click", triggerUpload);
+
+    if (inputProfileImageFile) {
+      inputProfileImageFile.addEventListener("change", async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        // Instant local preview via FileReader
+        const reader = new FileReader();
+        reader.onload = (loadEvt) => {
+          const localDataUrl = loadEvt.target.result;
+          if (localDataUrl && currentPortfolio) {
+            currentPortfolio.profile_image = localDataUrl;
+            renderProfileImageEditor();
+            renderLivePreview();
+          }
+        };
+        reader.readAsDataURL(file);
+
+        // Upload to backend API
+        try {
+          if (btnUploadProfileImage) {
+            btnUploadProfileImage.disabled = true;
+            btnUploadProfileImage.innerHTML = `<span>⏳</span> Uploading...`;
+          }
+          if (window.portfolioAPI && typeof window.portfolioAPI.uploadProfileImage === "function") {
+            const res = await window.portfolioAPI.uploadProfileImage(file);
+            if (res && res.data && res.data.profile_image) {
+              currentPortfolio.profile_image = res.data.profile_image;
+              renderProfileImageEditor();
+              renderLivePreview();
+              showAlert("Profile image uploaded and updated successfully!", "success");
+            }
+          } else {
+            await portfolioAPI.updateMyPortfolio({ profile_image: currentPortfolio.profile_image });
+            showAlert("Profile image updated!", "success");
+          }
+        } catch (err) {
+          console.warn("Upload API warning (retaining instant local preview):", err);
+          showAlert("Profile image applied to preview!", "info");
+        } finally {
+          if (btnUploadProfileImage) {
+            btnUploadProfileImage.disabled = false;
+            btnUploadProfileImage.innerHTML = `<span>⬆️</span> Upload Image`;
+          }
+          inputProfileImageFile.value = "";
+        }
+      });
+    }
+
+    if (btnRemoveProfileImage) {
+      btnRemoveProfileImage.addEventListener("click", async () => {
+        if (!currentPortfolio) return;
+        currentPortfolio.profile_image = "";
+        renderProfileImageEditor();
+        renderLivePreview();
+        try {
+          await portfolioAPI.updateMyPortfolio({ profile_image: "" });
+          showAlert("Profile photo removed. Initial monogram is now active.", "info");
+        } catch (err) {
+          console.error("Failed to reset profile image:", err);
+        }
+      });
+    }
+
+    if (btnApplyImageUrl && inputProfileImageUrl) {
+      btnApplyImageUrl.addEventListener("click", async () => {
+        const url = (inputProfileImageUrl.value || "").trim();
+        if (!url) {
+          showAlert("Please enter a valid image URL", "warning");
+          return;
+        }
+        if (currentPortfolio) {
+          currentPortfolio.profile_image = url;
+          renderProfileImageEditor();
+          renderLivePreview();
+          try {
+            await portfolioAPI.updateMyPortfolio({ profile_image: url });
+            showAlert("Profile image URL applied successfully!", "success");
+          } catch (err) {
+            console.error("Failed to save image URL:", err);
+          }
+        }
+      });
+    }
   }
 
   function renderMetricsEditor() {
@@ -1759,6 +1935,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const customCssValue = currentPortfolio.custom_css || (currentPortfolio.portrait_mask ? JSON.stringify({ portrait_mask: currentPortfolio.portrait_mask }) : undefined);
         const payload = {
           theme_id: currentPortfolio.theme_id,
+          profile_image: currentPortfolio.profile_image,
           candidate_name: (inputCandidateName?.value || currentPortfolio.candidate_name || "").trim(),
           primary_color: currentPortfolio.primary_color,
           secondary_color: currentPortfolio.secondary_color,

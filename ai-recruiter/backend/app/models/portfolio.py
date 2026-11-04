@@ -44,7 +44,7 @@ class Portfolio(Base, TimestampMixin):
     section_visibility: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     # Candidate Profile & Content Presentation (JSON stringified for structured entities)
-    profile_image: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    profile_image: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     professional_headline: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     headline_options: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     about: Mapped[Optional[str]] = mapped_column(Text, nullable=True)

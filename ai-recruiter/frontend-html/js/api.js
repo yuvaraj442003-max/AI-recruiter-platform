@@ -975,6 +975,21 @@ const portfolioAPI = {
     }
     return payload;
   },
+  uploadProfileImage: async (file) => {
+    const token = Session.getAccessToken();
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await fetch(`${API_BASE_URL}/portfolio/upload-profile-image`, {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: formData,
+    });
+    const payload = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new ApiError(payload?.message || "Failed to upload profile image", payload?.error_code || "UPLOAD_FAILED", response.status);
+    }
+    return payload;
+  },
   updateMyPortfolio: (payload) => api.put("/portfolio/me", payload),
   deleteMyPortfolio: () => api.delete("/portfolio/me"),
   publish: () => api.post("/portfolio/publish"),

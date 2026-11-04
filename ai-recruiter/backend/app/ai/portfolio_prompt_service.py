@@ -469,6 +469,7 @@ def synthesize_portfolio_with_gemini(
         "card_style": design_directive.get("card_style", "glass"),
         "button_style": design_directive.get("button_style", "rounded"),
         "dark_mode": design_directive.get("dark_mode", False),
+        "profile_image": resume_intelligence.get("profile_image") or (previous_portfolio.get("profile_image") if previous_portfolio else None),
         "impact_metrics": resume_intelligence.get("impact_metrics", []),
         "skills": resume_intelligence.get("skills", {}),
         "services": resume_intelligence.get("services", []),
@@ -674,6 +675,7 @@ def _normalize_generated_portfolio(data: Dict[str, Any], candidate_name: str, pr
 
     return {
         "full_name": full_name,
+        "profile_image": data.get("profile_image") or (candidate_context.get("profile_image") if candidate_context else None) or (previous_portfolio.get("profile_image") if previous_portfolio else None),
         "professional_headline": headline,
         "headline_options": headline_options,
         "about": about,
@@ -927,6 +929,7 @@ def _generate_deterministic_portfolio(
 
     return {
         "full_name": candidate_name,
+        "profile_image": (candidate_context.get("profile_image") if candidate_context else None) or (previous_portfolio.get("profile_image") if previous_portfolio else None),
         "professional_headline": role,
         "headline_options": [
             role,

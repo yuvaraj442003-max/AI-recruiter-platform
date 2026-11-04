@@ -1,3 +1,4 @@
+from pathlib import Path
 """
 portfolio.py — FastAPI Router endpoints for Candidate Portfolio Generator & Public Display.
 Enforces candidate authentication & ownership for all modifications.
@@ -202,6 +203,10 @@ def generate_portfolio_from_prompt_endpoint(
     portfolio.button_style = gen_data.get("button_style", portfolio.button_style or "rounded")
     portfolio.dark_mode = bool(gen_data.get("dark_mode", portfolio.dark_mode))
     portfolio.layout = gen_data.get("layout", portfolio.layout or "modern")
+    if "profile_image" in gen_data and gen_data["profile_image"]:
+        portfolio.profile_image = gen_data["profile_image"]
+    elif not portfolio.profile_image and cand and cand.profile_photo:
+        portfolio.profile_image = cand.profile_photo
 
     portfolio.professional_headline = gen_data.get("professional_headline", portfolio.professional_headline)
     if "headline_options" in gen_data:
@@ -371,6 +376,57 @@ def update_my_portfolio_endpoint(
 
     data = format_portfolio_dict(portfolio, public_only=False, db=db)
     return APIResponse(success=True, message="Portfolio updated successfully", data=PortfolioResponse(**data))
+
+@router.post("/upload-profile-image", response_model=APIResponse[PortfolioResponse])
+async def upload_profile_image_endpoint(
+    file: UploadFile = File(...),
+    current_user: User = Depends(require_role(UserRole.candidate)),
+    db: Session = Depends(get_db),
+):
+    """
+    Uploads or replaces candidate profile image / headshot.
+    Validates file type (JPG/PNG/WEBP/GIF) and max 10MB size,
+    saves into static /uploads/portfolios/ directory, and updates candidate portfolio.
+    """
+    cand = _get_or_create_candidate_profile(db, current_user)
+    portfolio = get_candidate_portfolio(db, cand.id)
+    if not portfolio:
+        portfolio = build_portfolio_from_candidate_profile(db, cand)
+
+    filename = file.filename or "avatar.jpg"
+    ext = Path(filename).suffix.lower()
+    if ext not in [".jpg", ".jpeg", ".png", ".webp", ".gif"]:
+        ext = ".jpg"
+
+    content_bytes = await file.read()
+    if not content_bytes or len(content_bytes) < 50:
+        raise BadRequestError("Uploaded image file is empty or invalid.")
+    if len(content_bytes) > 10 * 1024 * 1024:
+        raise BadRequestError("Profile image exceeds 10MB maximum limit.")
+
+    upload_dir = Path(__file__).resolve().parent.parent.parent / "uploads" / "portfolios"
+    upload_dir.mkdir(parents=True, exist_ok=True)
+
+    stored_name = f"avatar_{cand.id}_{uuid.uuid4().hex[:8]}{ext}"
+    dest_path = upload_dir / stored_name
+    with open(dest_path, "wb") as f:
+        f.write(content_bytes)
+
+    img_url = f"/uploads/portfolios/{stored_name}"
+    portfolio.profile_image = img_url
+    if cand:
+        cand.profile_photo = img_url
+
+    db.commit()
+    db.refresh(portfolio)
+
+    data = format_portfolio_dict(portfolio, public_only=False, db=db)
+    return APIResponse(
+        success=True,
+        message="Profile image updated successfully!",
+        data=PortfolioResponse(**data),
+    )
+
 
 
 @router.delete("/me", response_model=APIResponse[None])

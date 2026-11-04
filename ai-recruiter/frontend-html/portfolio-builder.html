@@ -541,11 +541,16 @@
 
               <!-- Factual Context Toggle & Generate Button -->
               <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 pt-2 border-top border-white-subtle">
-                <div class="form-check form-switch mb-0">
-                  <input class="form-check-input" type="checkbox" id="check-include-resume" checked />
-                  <label class="form-check-label text-white small" for="check-include-resume" title="Gemini anchors factual company names, degrees, and verified skills to your uploaded resume">
-                    Weave in my uploaded resume facts
-                  </label>
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                  <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="check-include-resume" checked />
+                    <label class="form-check-label text-white small" for="check-include-resume" title="Gemini anchors factual company names, degrees, and verified skills to your uploaded resume">
+                      Weave in my uploaded resume facts
+                    </label>
+                  </div>
+                  <button type="button" id="btn-hero-change-photo" class="btn btn-sm btn-outline-light py-1 px-2.5 rounded-pill fw-semibold small d-flex align-items-center gap-1.5" style="font-size: 0.74rem;" title="Upload or change your headshot portrait">
+                    <span>📷</span> <span id="hero-photo-btn-text">Add / Change Photo</span>
+                  </button>
                 </div>
                 <button id="btn-generate-with-gemini" class="btn btn-ai-generate d-flex align-items-center gap-2">
                   <span id="btn-generate-icon">✨</span>
@@ -942,6 +947,53 @@
                     <div class="d-flex justify-content-between align-items-center mb-2">
                       <label class="form-label fw-bold small mb-0">👤 Profile &amp; Bio Information</label>
                       <span class="badge bg-secondary-subtle text-secondary small" style="font-size: 0.68rem;">Personal Info</span>
+                    </div>
+
+                    <!-- Profile Photo / Headshot Manager -->
+                    <div class="p-3 mb-3 bg-white rounded-3 border">
+                      <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="form-label small fw-bold mb-0">📸 Profile Photo / Portrait</label>
+                        <span id="badge-photo-status" class="badge bg-secondary-subtle text-secondary small" style="font-size: 0.68rem;">Initials Monogram</span>
+                      </div>
+                      
+                      <div class="d-flex align-items-center gap-3">
+                        <!-- Live Avatar / Photo Preview -->
+                        <div class="position-relative" style="width: 76px; height: 76px; flex-shrink: 0;">
+                          <div id="builder-photo-preview-wrap" class="w-100 h-100 d-flex align-items-center justify-content-center overflow-hidden rounded-3 border bg-light shadow-sm" style="transition: all 0.25s ease;">
+                            <!-- Populated dynamically via renderProfileImageEditor -->
+                          </div>
+                          <button type="button" id="btn-quick-photo-click" class="position-absolute bottom-0 end-0 btn btn-sm btn-primary p-0 rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 11px;" title="Upload or Replace Photo">
+                            ✏️
+                          </button>
+                        </div>
+
+                        <!-- Action Controls -->
+                        <div class="flex-grow-1">
+                          <div class="d-flex flex-wrap gap-2 mb-1.5">
+                            <button type="button" id="btn-upload-profile-image" class="btn btn-sm btn-primary fw-semibold px-2.5 py-1 d-flex align-items-center gap-1 shadow-sm" style="font-size: 0.78rem;">
+                              <span>⬆️</span> Upload Image
+                            </button>
+                            <button type="button" id="btn-remove-profile-image" class="btn btn-sm btn-outline-danger px-2 py-1 small" style="font-size: 0.74rem;" title="Reset to authentic initials monogram">
+                              <span>🗑️</span> Remove Image
+                            </button>
+                          </div>
+                          <div class="text-muted small" style="font-size: 0.72rem;">JPG, PNG, WEBP (Max 10MB). Automatically applies sculpted mask in portfolio.</div>
+                        </div>
+                      </div>
+
+                      <!-- Hidden File Input for Image Upload -->
+                      <input type="file" id="input-profile-image-file" accept="image/png, image/jpeg, image/jpg, image/webp, image/gif" class="d-none" />
+
+                      <!-- Direct Image URL Input -->
+                      <div class="mt-2.5 pt-2 border-top">
+                        <div class="input-group input-group-sm">
+                          <span class="input-group-text bg-light small text-muted" style="font-size: 0.74rem;">URL:</span>
+                          <input type="url" id="input-profile-image-url" class="form-control form-control-sm" placeholder="Paste image link (https://...)" />
+                          <button type="button" id="btn-apply-image-url" class="btn btn-outline-secondary btn-sm fw-semibold">
+                            Apply
+                          </button>
+                        </div>
+                      </div>
                     </div>
 
                     <div class="mb-2">

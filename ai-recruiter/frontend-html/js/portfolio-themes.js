@@ -2373,13 +2373,14 @@ const PortfolioThemesEngine = (() => {
     const initials = rawName.split(/\s+/).map(p => p[0]).filter(Boolean).slice(0, 2).join("").toUpperCase() || "C";
     const primary = data.primary_color || "var(--theme-primary, #4f46e5)";
     const secondary = data.secondary_color || "var(--theme-secondary, #06b6d4)";
-    const imgUrl = data.profile_image || "";
-    const isCustomPhoto = imgUrl && !imgUrl.includes("unsplash.com") && !imgUrl.includes("images.unsplash") && !imgUrl.includes("ui-avatars.com");
+    const imgUrl = (data.profile_image || "").trim();
+    const isCustomPhoto = Boolean(imgUrl && !imgUrl.includes("ui-avatars.com"));
 
     if (isCustomPhoto) {
+      const maskClass = data.portrait_mask || "";
       return `
         <div class="portfolio-avatar-wrap position-relative d-inline-block ${extraClass}">
-          <img src="${escapeHtml(imgUrl)}" alt="${name}" class="rounded-circle shadow-lg" style="width: ${size}px; height: ${size}px; object-fit: cover; border: 3.5px solid ${primary};" />
+          <img src="${escapeHtml(imgUrl)}" alt="${name}" class="${maskClass ? maskClass : 'rounded-circle'} shadow-lg" style="width: ${size}px; height: ${size}px; object-fit: cover; border: 3.5px solid ${primary}; transition: transform 0.3s ease;" />
           <span class="portfolio-status-dot position-absolute" style="bottom: 8px; right: 8px; width: ${Math.max(14, Math.round(size * 0.12))}px; height: ${Math.max(14, Math.round(size * 0.12))}px; background: #10b981; border: 2.5px solid #ffffff; border-radius: 50%; box-shadow: 0 0 10px #10b981;" title="Available for Opportunities"></span>
         </div>
       `;

@@ -454,6 +454,7 @@ if _frontend_dir.exists():
 _uploads_dir = Path(__file__).parent.parent / "uploads"
 _uploads_dir.mkdir(parents=True, exist_ok=True)
 (_uploads_dir / "audio_messages").mkdir(parents=True, exist_ok=True)
+(_uploads_dir / "portfolios").mkdir(parents=True, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=str(_uploads_dir)), name="uploads")
 
 @app.get("/", tags=["Root"])
