@@ -105,193 +105,9 @@
     }
   </style>
 </head>
-<body>
-<!-- Disqualification / Integrity Termination Fullscreen Overlay -->
-  <div id="assessment-terminated-overlay" class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="z-index: 999999; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(8px);">
-    <div class="card border border-danger shadow-lg text-center p-4 p-md-5" style="max-width: 580px; background-color: #1e1e2e; border-radius: 16px;">
-      <div class="mb-3">
-        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger bg-opacity-25 p-3 text-danger" style="width: 80px; height: 80px; font-size: 2.5rem;">
-          ⚠️
-        </div>
-      </div>
-      <h3 class="fw-bold text-white mb-2">Assessment Terminated</h3>
-      <div class="badge bg-danger text-uppercase px-3 py-2 mb-3 fs-6">Disqualified — Integrity Violation</div>
-      <p class="text-light mb-3 fs-6" id="termination-reason-text" style="color: #cbd5e1 !important;">
-        You switched browser tabs or navigated away from the assessment window.
-      </p>
-      <div class="alert alert-danger text-start small mb-4 bg-danger bg-opacity-10 border border-danger text-danger-emphasis">
-        <strong>Strict Proctoring Policy Enforced:</strong>
-        <ul class="mb-0 ps-3 mt-1">
-          <li>Switching browser tabs or opening external applications is strictly prohibited.</li>
-          <li>Your assessment session has been immediately terminated.</li>
-          <li>Your attempt score has been finalized as <strong>0%</strong> (Rejected).</li>
-        </ul>
-      </div>
-      <div class="d-flex flex-column gap-2">
-        <button id="termination-retake-btn" class="btn btn-outline-warning fw-semibold w-100" onclick="retakeAssessment()">
-          🔄 Request / Start Fresh Retake
-        </button>
-        <a href="candidate-dashboard.html" class="btn btn-danger btn-lg fw-bold w-100 shadow">
-          Return to Candidate Dashboard &rarr;
-        </a>
-      </div>
-    </div>
-  </div>
+<body data-required-role="candidate">
 
-  <!-- Time Expired Fullscreen Overlay (Polite & Non-Punitive) -->
-  <div id="assessment-expired-overlay" class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="z-index: 999999; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(8px);">
-    <div class="card border border-warning shadow-lg text-center p-4 p-md-5" style="max-width: 580px; background-color: #1e1e2e; border-radius: 16px;">
-      <div class="mb-3">
-        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-25 p-3 text-warning" style="width: 80px; height: 80px; font-size: 2.5rem;">
-          ⏱️
-        </div>
-      </div>
-      <h3 class="fw-bold text-white mb-2">Assessment Time Expired</h3>
-      <div class="badge bg-warning text-dark text-uppercase px-3 py-2 mb-3 fs-6 fw-bold">Session Time Limit Reached</div>
-      <p class="text-light mb-3 fs-6" id="expired-reason-text" style="color: #cbd5e1 !important;">
-        The allotted time limit for this assessment session has elapsed.
-      </p>
-      <div class="alert alert-info text-start small mb-4 bg-primary bg-opacity-10 border border-primary" style="color: #93c5fd !important;">
-        <strong class="text-white">Session Information:</strong>
-        <ul class="mb-0 ps-3 mt-1">
-          <li>Your previous answers and code drafts have been saved.</li>
-          <li>You can start a fresh retake attempt with a full timer reset, or return to your dashboard.</li>
-        </ul>
-      </div>
-      <div class="d-flex flex-column gap-2">
-        <button id="expired-retake-btn" class="btn btn-primary btn-lg fw-bold w-100 shadow" onclick="retakeAssessment()">
-          🔄 Retake Assessment (Start Fresh Attempt) &rarr;
-        </button>
-        <a id="expired-report-btn" href="candidate-dashboard.html" class="btn btn-outline-light w-100 fw-semibold">
-          📊 Return to Candidate Dashboard
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Assessment Results Modal -->
-  <div id="assessment-result-overlay" class="d-none position-fixed top-0 start-0 w-100 h-100 align-items-center justify-content-center" style="z-index: 999998; background: rgba(10, 15, 30, 0.97); backdrop-filter: blur(12px); overflow-y: auto;">
-    <div class="card border-0 shadow-lg text-start p-0" style="max-width: 680px; width: 95%; background: linear-gradient(160deg, #0f172a 0%, #1e1e2e 60%, #0c1a2e 100%); border-radius: 20px; margin: 24px auto;">
-      <!-- Header -->
-      <div id="result-header-bar" class="p-4 rounded-top-4" style="background: linear-gradient(135deg, #10b981 0%, #0d9488 50%, #0284c7 100%);">
-        <div class="d-flex align-items-center justify-content-between">
-          <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-              <span id="result-icon-emoji" class="fs-2">🎉</span>
-              <h3 id="result-main-title" class="fw-bold text-white mb-0">Assessment Submitted!</h3>
-            </div>
-            <p class="text-white opacity-75 mb-0 small">Your responses have been evaluated. Here's your scorecard.</p>
-          </div>
-          <div class="text-end">
-            <div id="result-pass-badge" class="badge bg-white text-success px-3 py-2 fs-6 fw-bold rounded-pill shadow">PASSED ✓</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Score Hero -->
-      <div class="p-4">
-        <div class="text-center py-3 mb-4" style="background: rgba(255,255,255,0.04); border-radius: 14px; border: 1px solid rgba(255,255,255,0.08);">
-          <div id="result-percent-display" class="display-4 fw-bold" style="background: linear-gradient(135deg, #10b981, #0284c7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">—%</div>
-          <div class="text-slate-400 small mt-1">Overall Score</div>
-          <div class="mt-2">
-            <span id="result-score-raw" class="badge bg-dark border border-secondary text-light px-3 py-1">— / — marks</span>
-          </div>
-        </div>
-
-        <!-- Stats Grid -->
-        <div class="row g-3 mb-4">
-          <div class="col-6 col-md-3">
-            <div class="text-center p-3 rounded-3" style="background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25);">
-              <div id="result-answered" class="fs-4 fw-bold text-success">—</div>
-              <div class="text-slate-400 small mt-1">Answered</div>
-            </div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="text-center p-3 rounded-3" style="background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25);">
-              <div id="result-unanswered" class="fs-4 fw-bold text-danger">—</div>
-              <div class="text-slate-400 small mt-1">Skipped</div>
-            </div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="text-center p-3 rounded-3" style="background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.25);">
-              <div id="result-total-qs" class="fs-4 fw-bold text-indigo-400" style="color:#a5b4fc;">—</div>
-              <div class="text-slate-400 small mt-1">Total Qs</div>
-            </div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="text-center p-3 rounded-3" style="background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.25);">
-              <div id="result-time-taken" class="fs-4 fw-bold" style="color:#fbbf24;">—</div>
-              <div class="text-slate-400 small mt-1">Time Taken</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Section Breakdown -->
-        <div id="result-section-breakdown" class="mb-4">
-          <h6 class="text-slate-400 text-uppercase fw-bold small mb-3">📊 Section Breakdown</h6>
-          <div id="result-apt-row" class="d-flex justify-content-between align-items-center p-3 rounded-3 mb-2" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
-            <div class="d-flex align-items-center gap-2">
-              <span class="badge bg-primary px-2 py-1">📝</span>
-              <span class="text-light fw-semibold">Section 1: Aptitude</span>
-            </div>
-            <div class="text-end">
-              <span id="result-apt-score" class="fw-bold text-white">— / —</span>
-              <span class="text-slate-400 small ms-2" id="result-apt-pct"></span>
-            </div>
-          </div>
-          <div id="result-code-row" class="d-flex justify-content-between align-items-center p-3 rounded-3" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
-            <div class="d-flex align-items-center gap-2">
-              <span class="badge bg-info text-dark px-2 py-1">💻</span>
-              <span class="text-light fw-semibold">Section 2: Coding</span>
-            </div>
-            <div class="text-end">
-              <span id="result-code-score" class="fw-bold text-white">— / —</span>
-              <span class="text-slate-400 small ms-2" id="result-code-pct"></span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Passing Threshold Bar -->
-        <div class="mb-4">
-          <div class="d-flex justify-content-between small text-slate-400 mb-1">
-            <span>Your Score</span>
-            <span>Passing: <strong id="result-threshold" class="text-warning">60%</strong></span>
-          </div>
-          <div class="progress" style="height: 10px; background: rgba(255,255,255,0.08); border-radius: 99px;">
-            <div id="result-progress-bar" class="progress-bar" role="progressbar" style="width: 0%; border-radius: 99px; background: linear-gradient(90deg, #10b981, #0284c7); transition: width 0.8s ease;"></div>
-          </div>
-        </div>
-
-        <!-- Feedback Message -->
-        <div id="result-feedback-box" class="p-3 rounded-3 mb-4" style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2);">
-          <div class="d-flex align-items-start gap-2">
-            <span id="result-feedback-icon" class="fs-5">✅</span>
-            <div>
-              <div class="fw-semibold text-white small mb-1" id="result-feedback-title">Congratulations!</div>
-              <div class="text-slate-400 small" id="result-feedback-msg">You have successfully passed the assessment. Your result has been recorded.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="d-flex flex-column gap-2">
-          <a id="result-full-report-btn" href="candidate-dashboard.html" class="btn btn-primary btn-lg fw-bold w-100 shadow" style="background: linear-gradient(135deg, #0284c7, #4f46e5); border: none; border-radius: 10px;">
-            📊 View Full Report &amp; Detailed Scores
-          </a>
-          <button id="result-retake-btn" class="btn btn-outline-info w-100 fw-semibold" onclick="retakeAssessment()" style="border-radius: 10px;">
-            🔄 Retake Assessment (Start Fresh Attempt)
-          </button>
-          <a href="candidate-dashboard.html" class="btn btn-outline-light w-100 fw-semibold" style="border-radius: 10px;">
-            🏠 Return to Candidate Dashboard
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-
-    <!-- Programming Topics & Weekly Challenges Modal -->
+  <!-- Programming Topics & Weekly Challenges Modal -->
   <div class="modal fade" id="topicsCatalogModal" tabindex="-1" aria-labelledby="topicsCatalogModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content text-white" style="background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 18px;">
@@ -333,7 +149,85 @@
       </div>
     </div>
   </div>
-  <!-- Top Navigation Bar -->
+
+  <div class="d-flex" style="height: 100vh; width: 100vw; overflow: hidden;">
+    <!-- Sidebar -->
+    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3 candidate-sidebar" style="width: 270px; min-width: 270px; z-index: 1060;">
+      <a href="candidate-portal.html" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mb-4 px-2">
+        <span class="fs-4">👨‍💻</span>
+        <span class="fw-bold text-dark fs-5">Candidate Portal</span>
+      </a>
+      <ul class="nav nav-pills flex-column gap-2">
+        <li class="nav-item">
+          <a href="candidate-portal.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🏠</span> Portal Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="course-learning.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📚</span> Course Learning Studio
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="candidate-dashboard.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📊</span> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="aptitude-test.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🧠</span> Aptitude &amp; Tests
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="study-materials.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🎓</span> Campus Hub &amp; Textbooks
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="coding-assessment.html" class="nav-link active text-nowrap d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color: #fff;">
+            <span>💻</span> Coding Lab (DSA)
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="interview.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🎙️</span> AI Mock Interviews
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="upload-resume.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📄</span> Resume &amp; ATS Score
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="portfolio-builder.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>✨</span> Portfolio
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="jobs.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🔍</span> Find Jobs &amp; Drives
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="my-applications.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📑</span> My Applications
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="messages.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>💬</span> Messages &amp; Chat
+          </a>
+        </li>
+      </ul>
+      <div class="mt-auto pt-3 border-top">
+        <button id="logout-btn" class="btn btn-outline-secondary w-100 fw-semibold">Log out</button>
+      </div>
+    </nav>
+
+    <!-- Main Workspace Container (Right Side) -->
+    <div class="flex-grow-1 d-flex flex-column position-relative" style="min-width: 0; height: 100vh; overflow: hidden; background-color: #1e1e1e;">
+
+      <!-- Top Navigation Bar -->
   <div class="top-header d-flex align-items-center justify-content-between px-3 text-white">
     <div class="d-flex align-items-center flex-wrap gap-2">
       <span class="fw-bold fs-5 me-2 text-primary">🤖 AI Recruiter Assessment</span>
@@ -485,6 +379,193 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+      <!-- Fullscreen In-Workspace Overlays (Cover only right-side container, keeping candidate sidebar visible!) -->
+<!-- Disqualification / Integrity Termination Fullscreen Overlay -->
+  <div id="assessment-terminated-overlay" class="d-none position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="z-index: 999999; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(8px);">
+    <div class="card border border-danger shadow-lg text-center p-4 p-md-5" style="max-width: 580px; background-color: #1e1e2e; border-radius: 16px;">
+      <div class="mb-3">
+        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger bg-opacity-25 p-3 text-danger" style="width: 80px; height: 80px; font-size: 2.5rem;">
+          ⚠️
+        </div>
+      </div>
+      <h3 class="fw-bold text-white mb-2">Assessment Terminated</h3>
+      <div class="badge bg-danger text-uppercase px-3 py-2 mb-3 fs-6">Disqualified — Integrity Violation</div>
+      <p class="text-light mb-3 fs-6" id="termination-reason-text" style="color: #cbd5e1 !important;">
+        You switched browser tabs or navigated away from the assessment window.
+      </p>
+      <div class="alert alert-danger text-start small mb-4 bg-danger bg-opacity-10 border border-danger text-danger-emphasis">
+        <strong>Strict Proctoring Policy Enforced:</strong>
+        <ul class="mb-0 ps-3 mt-1">
+          <li>Switching browser tabs or opening external applications is strictly prohibited.</li>
+          <li>Your assessment session has been immediately terminated.</li>
+          <li>Your attempt score has been finalized as <strong>0%</strong> (Rejected).</li>
+        </ul>
+      </div>
+      <div class="d-flex flex-column gap-2">
+        <button id="termination-retake-btn" class="btn btn-outline-warning fw-semibold w-100" onclick="retakeAssessment()">
+          🔄 Request / Start Fresh Retake
+        </button>
+        <a href="candidate-dashboard.html" class="btn btn-danger btn-lg fw-bold w-100 shadow">
+          Return to Candidate Dashboard &rarr;
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Time Expired Fullscreen Overlay (Polite & Non-Punitive) -->
+  <div id="assessment-expired-overlay" class="d-none position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="z-index: 999999; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(8px);">
+    <div class="card border border-warning shadow-lg text-center p-4 p-md-5" style="max-width: 580px; background-color: #1e1e2e; border-radius: 16px;">
+      <div class="mb-3">
+        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-25 p-3 text-warning" style="width: 80px; height: 80px; font-size: 2.5rem;">
+          ⏱️
+        </div>
+      </div>
+      <h3 class="fw-bold text-white mb-2">Assessment Time Expired</h3>
+      <div class="badge bg-warning text-dark text-uppercase px-3 py-2 mb-3 fs-6 fw-bold">Session Time Limit Reached</div>
+      <p class="text-light mb-3 fs-6" id="expired-reason-text" style="color: #cbd5e1 !important;">
+        The allotted time limit for this assessment session has elapsed.
+      </p>
+      <div class="alert alert-info text-start small mb-4 bg-primary bg-opacity-10 border border-primary" style="color: #93c5fd !important;">
+        <strong class="text-white">Session Information:</strong>
+        <ul class="mb-0 ps-3 mt-1">
+          <li>Your previous answers and code drafts have been saved.</li>
+          <li>You can start a fresh retake attempt with a full timer reset, or return to your dashboard.</li>
+        </ul>
+      </div>
+      <div class="d-flex flex-column gap-2">
+        <button id="expired-retake-btn" class="btn btn-primary btn-lg fw-bold w-100 shadow" onclick="retakeAssessment()">
+          🔄 Retake Assessment (Start Fresh Attempt) &rarr;
+        </button>
+        <a id="expired-report-btn" href="candidate-dashboard.html" class="btn btn-outline-light w-100 fw-semibold">
+          📊 Return to Candidate Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assessment Results Modal -->
+  <div id="assessment-result-overlay" class="d-none position-absolute top-0 start-0 w-100 h-100 align-items-center justify-content-center" style="z-index: 999998; background: rgba(10, 15, 30, 0.97); backdrop-filter: blur(12px); overflow-y: auto;">
+    <div class="card border-0 shadow-lg text-start p-0" style="max-width: 680px; width: 95%; background: linear-gradient(160deg, #0f172a 0%, #1e1e2e 60%, #0c1a2e 100%); border-radius: 20px; margin: 24px auto;">
+      <!-- Header -->
+      <div id="result-header-bar" class="p-4 rounded-top-4" style="background: linear-gradient(135deg, #10b981 0%, #0d9488 50%, #0284c7 100%);">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span id="result-icon-emoji" class="fs-2">🎉</span>
+              <h3 id="result-main-title" class="fw-bold text-white mb-0">Assessment Submitted!</h3>
+            </div>
+            <p class="text-white opacity-75 mb-0 small">Your responses have been evaluated. Here's your scorecard.</p>
+          </div>
+          <div class="text-end">
+            <div id="result-pass-badge" class="badge bg-white text-success px-3 py-2 fs-6 fw-bold rounded-pill shadow">PASSED ✓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Score Hero -->
+      <div class="p-4">
+        <div class="text-center py-3 mb-4" style="background: rgba(255,255,255,0.04); border-radius: 14px; border: 1px solid rgba(255,255,255,0.08);">
+          <div id="result-percent-display" class="display-4 fw-bold" style="background: linear-gradient(135deg, #10b981, #0284c7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">—%</div>
+          <div class="text-slate-400 small mt-1">Overall Score</div>
+          <div class="mt-2">
+            <span id="result-score-raw" class="badge bg-dark border border-secondary text-light px-3 py-1">— / — marks</span>
+          </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-md-3">
+            <div class="text-center p-3 rounded-3" style="background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25);">
+              <div id="result-answered" class="fs-4 fw-bold text-success">—</div>
+              <div class="text-slate-400 small mt-1">Answered</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="text-center p-3 rounded-3" style="background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25);">
+              <div id="result-unanswered" class="fs-4 fw-bold text-danger">—</div>
+              <div class="text-slate-400 small mt-1">Skipped</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="text-center p-3 rounded-3" style="background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.25);">
+              <div id="result-total-qs" class="fs-4 fw-bold text-indigo-400" style="color:#a5b4fc;">—</div>
+              <div class="text-slate-400 small mt-1">Total Qs</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="text-center p-3 rounded-3" style="background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.25);">
+              <div id="result-time-taken" class="fs-4 fw-bold" style="color:#fbbf24;">—</div>
+              <div class="text-slate-400 small mt-1">Time Taken</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section Breakdown -->
+        <div id="result-section-breakdown" class="mb-4">
+          <h6 class="text-slate-400 text-uppercase fw-bold small mb-3">📊 Section Breakdown</h6>
+          <div id="result-apt-row" class="d-flex justify-content-between align-items-center p-3 rounded-3 mb-2" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-primary px-2 py-1">📝</span>
+              <span class="text-light fw-semibold">Section 1: Aptitude</span>
+            </div>
+            <div class="text-end">
+              <span id="result-apt-score" class="fw-bold text-white">— / —</span>
+              <span class="text-slate-400 small ms-2" id="result-apt-pct"></span>
+            </div>
+          </div>
+          <div id="result-code-row" class="d-flex justify-content-between align-items-center p-3 rounded-3" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-info text-dark px-2 py-1">💻</span>
+              <span class="text-light fw-semibold">Section 2: Coding</span>
+            </div>
+            <div class="text-end">
+              <span id="result-code-score" class="fw-bold text-white">— / —</span>
+              <span class="text-slate-400 small ms-2" id="result-code-pct"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Passing Threshold Bar -->
+        <div class="mb-4">
+          <div class="d-flex justify-content-between small text-slate-400 mb-1">
+            <span>Your Score</span>
+            <span>Passing: <strong id="result-threshold" class="text-warning">60%</strong></span>
+          </div>
+          <div class="progress" style="height: 10px; background: rgba(255,255,255,0.08); border-radius: 99px;">
+            <div id="result-progress-bar" class="progress-bar" role="progressbar" style="width: 0%; border-radius: 99px; background: linear-gradient(90deg, #10b981, #0284c7); transition: width 0.8s ease;"></div>
+          </div>
+        </div>
+
+        <!-- Feedback Message -->
+        <div id="result-feedback-box" class="p-3 rounded-3 mb-4" style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2);">
+          <div class="d-flex align-items-start gap-2">
+            <span id="result-feedback-icon" class="fs-5">✅</span>
+            <div>
+              <div class="fw-semibold text-white small mb-1" id="result-feedback-title">Congratulations!</div>
+              <div class="text-slate-400 small" id="result-feedback-msg">You have successfully passed the assessment. Your result has been recorded.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="d-flex flex-column gap-2">
+          <a id="result-full-report-btn" href="candidate-dashboard.html" class="btn btn-primary btn-lg fw-bold w-100 shadow" style="background: linear-gradient(135deg, #0284c7, #4f46e5); border: none; border-radius: 10px;">
+            📊 View Full Report &amp; Detailed Scores
+          </a>
+          <button id="result-retake-btn" class="btn btn-outline-info w-100 fw-semibold" onclick="retakeAssessment()" style="border-radius: 10px;">
+            🔄 Retake Assessment (Start Fresh Attempt)
+          </button>
+          <a href="candidate-dashboard.html" class="btn btn-outline-light w-100 fw-semibold" style="border-radius: 10px;">
+            🏠 Return to Candidate Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
     </div>
   </div>
 
@@ -1675,3 +1756,4 @@
   <script src="js/mobile-nav.js"></script>
 </body>
 </html>
+
