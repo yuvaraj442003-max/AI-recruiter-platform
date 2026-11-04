@@ -289,6 +289,13 @@ nav.sticky-top {
   overflow-x: hidden !important;
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  z-index: 1060 !important;
+}
+
+.candidate-sidebar a.navbar-brand span {
+  color: #0f172a !important;
 }
 
 .candidate-sidebar::-webkit-scrollbar {

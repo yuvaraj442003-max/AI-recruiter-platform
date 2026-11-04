@@ -106,8 +106,127 @@
   </style>
 </head>
 <body>
-  <!-- Disqualification / Integrity Termination Fullscreen Overlay -->
-  <div id="assessment-terminated-overlay" class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="z-index: 999999; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(8px);">
+    <!-- Programming Topics & Weekly Challenges Modal -->
+  <div class="modal fade" id="topicsCatalogModal" tabindex="-1" aria-labelledby="topicsCatalogModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content text-white" style="background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 18px;">
+        <div class="modal-header border-secondary pb-3">
+          <div class="d-flex align-items-center gap-2">
+            <span class="fs-4">💻</span>
+            <div>
+              <h5 class="modal-title fw-bold text-white mb-0" id="topicsCatalogModalLabel">Programming Topics for Coding Practice</h5>
+              <span class="text-white-50 small">12 Core DSA Patterns • Multi-Language Sandbox • Test Cases</span>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <!-- Weekly Challenge Quick Launch Banner -->
+          <div class="p-3 rounded-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3" style="background: linear-gradient(135deg, rgba(99,102,241,0.2) 0%, rgba(16,185,129,0.2) 100%); border: 1px solid rgba(99,102,241,0.4);">
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-warning text-dark fw-bold rounded-pill">⚡ OFFICIAL WEEKLY CODING CHALLENGE</span>
+                <span id="modal-weekly-cadence-badge" class="badge bg-white bg-opacity-10 text-white rounded-pill small">Updated Weekly Once</span>
+              </div>
+              <p class="text-white-50 small mb-0">Solve this week's timed algorithmic challenges and rank on the competitive leaderboard.</p>
+            </div>
+            <a href="coding-assessment.html?mode=weekly" class="btn btn-sm btn-success fw-bold px-3 py-2 rounded-pill shadow-sm">
+              Launch Weekly Challenge &rarr;
+            </a>
+          </div>
+
+          <h6 class="fw-bold text-white-50 text-uppercase small mb-3">SELECT A TOPIC TO PRACTICE</h6>
+          <div class="row g-3" id="modal-topics-grid">
+            <div class="col-12 text-center py-4 text-white-50">
+              <div class="spinner-border spinner-border-sm text-light me-2" role="status"></div> Loading programming topics catalog...
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex" style="height: 100vh; overflow: hidden;">
+    <!-- Sidebar -->
+    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3 candidate-sidebar" style="width: 270px; min-width: 270px;">
+      <a href="candidate-portal.html" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mb-4 px-2">
+        <span class="fs-4">👨‍💻</span>
+        <span class="fw-bold text-dark fs-5">Candidate Portal</span>
+      </a>
+      <ul class="nav nav-pills flex-column gap-2">
+        <li class="nav-item">
+          <a href="candidate-portal.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🏠</span> Portal Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="course-learning.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📚</span> Course Learning Studio
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="candidate-dashboard.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📊</span> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="aptitude-test.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🧠</span> Aptitude &amp; Tests
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="study-materials.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🎓</span> Campus Hub &amp; Textbooks
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="coding-assessment.html" class="nav-link active text-nowrap d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color: #fff;">
+            <span>💻</span> Coding Lab (DSA)
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="interview.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🎙️</span> AI Mock Interviews
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="upload-resume.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📄</span> Resume &amp; ATS Score
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="portfolio-builder.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>✨</span> Portfolio
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="jobs.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🔍</span> Find Jobs &amp; Drives
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="my-applications.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📑</span> My Applications
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="messages.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>💬</span> Messages &amp; Chat
+          </a>
+        </li>
+      </ul>
+      <div class="mt-auto pt-3 border-top">
+        <button id="logout-btn" class="btn btn-outline-secondary w-100 fw-semibold">Log out</button>
+      </div>
+    </nav>
+
+    <!-- Main Workspace Container -->
+    <div class="flex-grow-1 d-flex flex-column position-relative" style="min-width: 0; height: 100vh; overflow: hidden;">
+<!-- Disqualification / Integrity Termination Fullscreen Overlay -->
+  <div id="assessment-terminated-overlay" class="d-none position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="z-index: 999999; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(8px);">
     <div class="card border border-danger shadow-lg text-center p-4 p-md-5" style="max-width: 580px; background-color: #1e1e2e; border-radius: 16px;">
       <div class="mb-3">
         <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger bg-opacity-25 p-3 text-danger" style="width: 80px; height: 80px; font-size: 2.5rem;">
@@ -139,7 +258,7 @@
   </div>
 
   <!-- Time Expired Fullscreen Overlay (Polite & Non-Punitive) -->
-  <div id="assessment-expired-overlay" class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="z-index: 999999; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(8px);">
+  <div id="assessment-expired-overlay" class="d-none position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="z-index: 999999; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(8px);">
     <div class="card border border-warning shadow-lg text-center p-4 p-md-5" style="max-width: 580px; background-color: #1e1e2e; border-radius: 16px;">
       <div class="mb-3">
         <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-25 p-3 text-warning" style="width: 80px; height: 80px; font-size: 2.5rem;">
@@ -170,7 +289,7 @@
   </div>
 
   <!-- Assessment Results Modal -->
-  <div id="assessment-result-overlay" class="d-none position-fixed top-0 start-0 w-100 h-100 align-items-center justify-content-center" style="z-index: 999998; background: rgba(10, 15, 30, 0.97); backdrop-filter: blur(12px); overflow-y: auto;">
+  <div id="assessment-result-overlay" class="d-none position-absolute top-0 start-0 w-100 h-100 align-items-center justify-content-center" style="z-index: 999998; background: rgba(10, 15, 30, 0.97); backdrop-filter: blur(12px); overflow-y: auto;">
     <div class="card border-0 shadow-lg text-start p-0" style="max-width: 680px; width: 95%; background: linear-gradient(160deg, #0f172a 0%, #1e1e2e 60%, #0c1a2e 100%); border-radius: 20px; margin: 24px auto;">
       <!-- Header -->
       <div id="result-header-bar" class="p-4 rounded-top-4" style="background: linear-gradient(135deg, #10b981 0%, #0d9488 50%, #0284c7 100%);">
@@ -289,125 +408,7 @@
     </div>
   </div>
 
-  <!-- Programming Topics & Weekly Challenges Modal -->
-  <div class="modal fade" id="topicsCatalogModal" tabindex="-1" aria-labelledby="topicsCatalogModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content text-white" style="background-color: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 18px;">
-        <div class="modal-header border-secondary pb-3">
-          <div class="d-flex align-items-center gap-2">
-            <span class="fs-4">💻</span>
-            <div>
-              <h5 class="modal-title fw-bold text-white mb-0" id="topicsCatalogModalLabel">Programming Topics for Coding Practice</h5>
-              <span class="text-white-50 small">12 Core DSA Patterns • Multi-Language Sandbox • Test Cases</span>
-            </div>
-          </div>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body p-4">
-          <!-- Weekly Challenge Quick Launch Banner -->
-          <div class="p-3 rounded-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3" style="background: linear-gradient(135deg, rgba(99,102,241,0.2) 0%, rgba(16,185,129,0.2) 100%); border: 1px solid rgba(99,102,241,0.4);">
-            <div>
-              <div class="d-flex align-items-center gap-2 mb-1">
-                <span class="badge bg-warning text-dark fw-bold rounded-pill">⚡ OFFICIAL WEEKLY CODING CHALLENGE</span>
-                <span id="modal-weekly-cadence-badge" class="badge bg-white bg-opacity-10 text-white rounded-pill small">Updated Weekly Once</span>
-              </div>
-              <p class="text-white-50 small mb-0">Solve this week's timed algorithmic challenges and rank on the competitive leaderboard.</p>
-            </div>
-            <a href="coding-assessment.html?mode=weekly" class="btn btn-sm btn-success fw-bold px-3 py-2 rounded-pill shadow-sm">
-              Launch Weekly Challenge &rarr;
-            </a>
-          </div>
 
-          <h6 class="fw-bold text-white-50 text-uppercase small mb-3">SELECT A TOPIC TO PRACTICE</h6>
-          <div class="row g-3" id="modal-topics-grid">
-            <div class="col-12 text-center py-4 text-white-50">
-              <div class="spinner-border spinner-border-sm text-light me-2" role="status"></div> Loading programming topics catalog...
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer border-secondary">
-          <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="d-flex" style="height: 100vh; overflow: hidden;">
-    <!-- Sidebar -->
-    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3 candidate-sidebar" style="width: 270px; min-width: 270px;">
-      <a href="candidate-portal.html" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mb-4 px-2">
-        <span class="fs-4">👨‍💻</span>
-        <span class="fw-bold text-dark fs-5">Candidate Portal</span>
-      </a>
-      <ul class="nav nav-pills flex-column gap-2">
-        <li class="nav-item">
-          <a href="candidate-portal.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
-            <span>🏠</span> Portal Home
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="course-learning.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
-            <span>📚</span> Course Learning Studio
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="candidate-dashboard.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
-            <span>📊</span> Dashboard
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="aptitude-test.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
-            <span>🧠</span> Aptitude &amp; Tests
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="study-materials.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
-            <span>🎓</span> Campus Hub &amp; Textbooks
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="coding-assessment.html" class="nav-link active text-nowrap d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color: #fff;">
-            <span>💻</span> Coding Lab (DSA)
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="interview.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
-            <span>🎙️</span> AI Mock Interviews
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="upload-resume.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
-            <span>📄</span> Resume &amp; ATS Score
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="portfolio-builder.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
-            <span>✨</span> Portfolio
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="jobs.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
-            <span>🔍</span> Find Jobs &amp; Drives
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="my-applications.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
-            <span>📑</span> My Applications
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="messages.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
-            <span>💬</span> Messages &amp; Chat
-          </a>
-        </li>
-      </ul>
-      <div class="mt-auto pt-3 border-top">
-        <button id="logout-btn" class="btn btn-outline-secondary w-100 fw-semibold">Log out</button>
-      </div>
-    </nav>
-
-    <!-- Main Workspace Container -->
-    <div class="flex-grow-1 d-flex flex-column" style="min-width: 0; height: 100vh; overflow: hidden;">
   <!-- Top Navigation Bar -->
   <div class="top-header d-flex align-items-center justify-content-between px-3 text-white">
     <div class="d-flex align-items-center flex-wrap gap-2">
