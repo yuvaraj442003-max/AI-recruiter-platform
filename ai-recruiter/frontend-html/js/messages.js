@@ -85,6 +85,72 @@
       portalDash.href = isRecruiterRole ? "recruiter-dashboard.html" : "candidate-dashboard.html";
     }
 
+    if (isRecruiterRole) {
+      const sidebarNav = document.getElementById("unified-messages-sidebar");
+      if (sidebarNav) {
+        sidebarNav.className = "d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3 recruiter-sidebar";
+        sidebarNav.style.cssText = "width: 270px; min-width: 270px; max-width: 270px; z-index: 1060;";
+        sidebarNav.innerHTML = `
+          <a href="recruiter-portal.html" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mb-4 px-2">
+            <span class="fs-4">💼</span>
+            <span class="fw-bold text-dark fs-5">Recruiter Portal</span>
+          </a>
+          <ul class="nav nav-pills flex-column gap-2">
+            <li class="nav-item">
+              <a href="recruiter-portal.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+                <span>🏠</span> Portal Home
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="recruiter-dashboard.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+                <span>📊</span> Recruiter Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="recruiter-dashboard.html#candidate-learning-section" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+                <span>🎓</span> Student Learning Monitor
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="my-jobs.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+                <span>💼</span> Manage Jobs
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="post-job.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+                <span>➕</span> Post a Job
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="smart-search.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+                <span>🔍</span> Smart Search
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="talent-rediscovery.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+                <span>✨</span> Talent Rediscovery
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="upload.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+                <span>📤</span> Upload
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="messages.html" class="nav-link active text-nowrap d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff;">
+                <span>💬</span> Messages &amp; Chat
+              </a>
+            </li>
+          </ul>
+          <div class="mt-auto pt-3 border-top">
+            <button id="logout-btn" class="btn btn-outline-secondary w-100 fw-semibold">Log out</button>
+          </div>
+        `;
+        const newLogout = sidebarNav.querySelector("#logout-btn");
+        if (newLogout) newLogout.addEventListener("click", handleLogout);
+      }
+    }
+
     const handleLogout = () => {
       Session.clear();
       window.location.href = "login.html";

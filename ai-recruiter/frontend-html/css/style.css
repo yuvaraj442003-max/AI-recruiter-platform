@@ -334,6 +334,60 @@ nav.sticky-top {
   box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35) !important;
 }
 
+.recruiter-sidebar {
+  width: 270px !important;
+  min-width: 270px !important;
+  max-width: 270px !important;
+  flex-shrink: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  z-index: 1060 !important;
+}
+
+.recruiter-sidebar a.navbar-brand span {
+  color: #0f172a !important;
+}
+
+.recruiter-sidebar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.recruiter-sidebar .nav-pills {
+  gap: 3px !important;
+}
+
+.recruiter-sidebar .nav-link {
+  border-radius: 0.65rem !important;
+  padding: 0.44rem 0.85rem !important;
+  font-size: 0.91rem !important;
+  font-weight: 500 !important;
+  color: #1e293b !important;
+  white-space: nowrap !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.6rem !important;
+  line-height: 1.4 !important;
+}
+
+.recruiter-sidebar .nav-link:hover:not(.active) {
+  background-color: #f1f5f9 !important;
+  color: #10b981 !important;
+  transform: none !important;
+}
+
+.recruiter-sidebar .nav-link.active {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35) !important;
+}
+
 .nav-pills .nav-link {
   border-radius: 0.75rem;
   padding: 0.7rem 1.1rem;
