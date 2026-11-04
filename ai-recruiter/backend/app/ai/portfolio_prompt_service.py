@@ -518,13 +518,25 @@ def generate_portfolio_from_prompt(
 
     if final_portfolio and isinstance(final_portfolio, dict) and "professional_headline" in final_portfolio:
         logger.info("3-Model Gemini Portfolio Generation Pipeline completed successfully!")
-        return _normalize_generated_portfolio(final_portfolio, candidate_name, prompt)
+        return _normalize_generated_portfolio(
+            final_portfolio,
+            candidate_name,
+            prompt,
+            candidate_context=candidate_context,
+            previous_portfolio=previous_portfolio,
+        )
 
     logger.warning("Synthesis stage incomplete, merging Model 1 & Model 2 via deterministic synthesis fallback.")
     return _generate_deterministic_portfolio(prompt, candidate_name, candidate_context, previous_portfolio)
 
 
-def _normalize_generated_portfolio(data: Dict[str, Any], candidate_name: str, prompt: str) -> Dict[str, Any]:
+def _normalize_generated_portfolio(
+    data: Dict[str, Any],
+    candidate_name: str,
+    prompt: str,
+    candidate_context: Optional[Dict[str, Any]] = None,
+    previous_portfolio: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
     """Ensures all expected keys and structured formats conform to Portfolio standards."""
     full_name = data.get("full_name") or candidate_name or "Candidate"
     headline = data.get("professional_headline") or "Senior Software Engineer"
