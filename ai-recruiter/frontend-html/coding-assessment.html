@@ -103,7 +103,28 @@
       overflow-y: auto;
       padding-bottom: 6px;
     }
+      /* Fullscreen Assessment Mode - active during assessment session */
+    html.assessment-fullscreen-active #candidate-portal-nav,
+    body.assessment-fullscreen-active #candidate-portal-nav {
+      display: none !important;
+    }
+    html.assessment-fullscreen-active #main-workspace-container,
+    body.assessment-fullscreen-active #main-workspace-container {
+      width: 100vw !important;
+      max-width: 100vw !important;
+      flex: 1 1 100% !important;
+    }
   </style>
+  <script>
+    (function () {
+      try {
+        const p = new URLSearchParams(window.location.search);
+        if (p.get('active') === 'true' || p.get('mode') === 'active' || p.get('mode') === 'weekly' || p.get('mode') === 'practice') {
+          document.documentElement.classList.add('assessment-fullscreen-active');
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body data-required-role="candidate">
 
@@ -152,7 +173,7 @@
 
   <div class="d-flex" style="height: 100vh; width: 100vw; overflow: hidden;">
     <!-- Sidebar -->
-    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3 candidate-sidebar" style="width: 270px; min-width: 270px; z-index: 1060;">
+    <nav id="candidate-portal-nav" class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3 candidate-sidebar" style="width: 270px; min-width: 270px; z-index: 1060;">
       <a href="candidate-portal.html" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mb-4 px-2">
         <span class="fs-4">👨‍💻</span>
         <span class="fw-bold text-dark fs-5">Candidate Portal</span>
@@ -225,7 +246,7 @@
     </nav>
 
     <!-- Main Workspace Container (Right Side) -->
-    <div class="flex-grow-1 d-flex flex-column position-relative" style="min-width: 0; height: 100vh; overflow: hidden; background-color: #1e1e1e;">
+    <div id="main-workspace-container" class="flex-grow-1 d-flex flex-column position-relative" style="min-width: 0; height: 100vh; overflow: hidden; background-color: #1e1e1e;">
 
       <!-- Top Navigation Bar -->
   <div class="top-header d-flex align-items-center justify-content-between px-3 text-white">
@@ -244,6 +265,9 @@
         <span id="timer-label" class="text-slate-400 small fw-bold">TIME:</span>
         <span id="timer-display" class="badge timer-badge text-white">60:00</span>
       </div>
+      <button id="fullscreen-toggle-btn" class="btn btn-sm btn-outline-light rounded-pill px-2.5 py-1.5 fw-semibold d-flex align-items-center gap-1" title="Toggle Fullscreen" onclick="toggleAssessmentFullscreen()">
+        <span id="fs-icon">⛶</span> <span class="d-none d-lg-inline small">Fullscreen</span>
+      </button>
       <button id="submit-assessment-btn" class="btn btn-sm btn-success fw-bold px-3 py-2 shadow-sm d-flex align-items-center gap-2">
         <span>🚀</span> Submit Final Assessment
       </button>
@@ -591,12 +615,89 @@
     let forceEditorMode = false;
     let isAssessmentTerminated = false;
 
+        function enterAssessmentFullScreen() {
+      document.documentElement.classList.add('assessment-fullscreen-active');
+      document.body.classList.add('assessment-fullscreen-active');
+      const sidebar = document.getElementById('candidate-portal-nav');
+      if (sidebar) {
+        sidebar.classList.add('d-none');
+        sidebar.classList.remove('d-md-flex');
+        sidebar.style.display = 'none';
+      }
+      const workspace = document.getElementById('main-workspace-container');
+      if (workspace) {
+        workspace.style.width = '100vw';
+      }
+      try {
+        if (!document.fullscreenElement) {
+          const el = document.documentElement;
+          const rfs = el.requestFullscreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+          if (rfs) {
+            rfs.call(el).catch(err => {
+              console.log("Browser fullscreen policy note:", err);
+            });
+          }
+        }
+      } catch (fsErr) {}
+      setTimeout(() => {
+        if (editor) {
+          try { editor.layout(); } catch (e) {}
+        }
+      }, 100);
+      setTimeout(() => {
+        if (editor) {
+          try { editor.layout(); } catch (e) {}
+        }
+      }, 350);
+    }
+
+    function exitAssessmentFullScreen() {
+      document.documentElement.classList.remove('assessment-fullscreen-active');
+      document.body.classList.remove('assessment-fullscreen-active');
+      const sidebar = document.getElementById('candidate-portal-nav');
+      if (sidebar) {
+        sidebar.classList.remove('d-none');
+        sidebar.classList.add('d-md-flex');
+        sidebar.style.removeProperty('display');
+      }
+      const workspace = document.getElementById('main-workspace-container');
+      if (workspace) {
+        workspace.style.width = '';
+      }
+      setTimeout(() => {
+        if (editor) {
+          try { editor.layout(); } catch (e) {}
+        }
+      }, 100);
+    }
+
+    function toggleAssessmentFullscreen() {
+      if (!document.fullscreenElement) {
+        const el = document.documentElement;
+        const rfs = el.requestFullscreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+        if (rfs) {
+          rfs.call(el).catch(err => console.warn(err));
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(err => console.warn(err));
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
+    }
+
+    window.enterAssessmentFullScreen = enterAssessmentFullScreen;
+    window.exitAssessmentFullScreen = exitAssessmentFullScreen;
+    window.toggleAssessmentFullscreen = toggleAssessmentFullscreen;
+
     function triggerAssessmentTermination(reason = "Proctoring flags recorded during session.", isViolation = true) {
       if (isAssessmentTerminated) return;
       isAssessmentTerminated = true;
 
       if (timerInterval) clearInterval(timerInterval);
       if (proctorMgr) proctorMgr.stopMonitors();
+      exitAssessmentFullScreen();
 
       const overlay = document.getElementById('assessment-terminated-overlay');
       if (overlay) {
@@ -627,6 +728,7 @@
     function showAssessmentExpiredOverlay(reason = "The assessment time limit has elapsed.") {
       if (timerInterval) clearInterval(timerInterval);
       if (proctorMgr) proctorMgr.stopMonitors();
+      exitAssessmentFullScreen();
 
       const overlay = document.getElementById('assessment-expired-overlay');
       if (overlay) {
@@ -652,20 +754,35 @@
       const urlParams = new URLSearchParams(window.location.search);
       const targetId = urlParams.get('assessment_id') || 'default';
       try {
+        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } catch (e) {}
+      try {
         const startRes = await codingAPI.startAssessment(targetId, true);
         if (startRes && startRes.success) {
-          window.location.href = `coding-assessment.html?assessment_id=${targetId}`;
+          window.location.href = `coding-assessment.html?assessment_id=${targetId}&active=true`;
         } else {
-          window.location.href = `coding-assessment.html?assessment_id=${targetId}&reset=true`;
+          window.location.href = `coding-assessment.html?assessment_id=${targetId}&reset=true&active=true`;
         }
       } catch (err) {
-        window.location.href = `coding-assessment.html?assessment_id=${targetId}&reset=true`;
+        window.location.href = `coding-assessment.html?assessment_id=${targetId}&reset=true&active=true`;
       }
     }
 
     window.triggerAssessmentTermination = triggerAssessmentTermination;
     window.showAssessmentExpiredOverlay = showAssessmentExpiredOverlay;
     window.retakeAssessment = retakeAssessment;
+
+    document.addEventListener('fullscreenchange', () => {
+      const fsIcon = document.getElementById('fs-icon');
+      if (fsIcon) {
+        fsIcon.textContent = document.fullscreenElement ? '🗗' : '⛶';
+      }
+      if (editor) {
+        try { editor.layout(); } catch (e) {}
+      }
+    });
 
     document.addEventListener('DOMContentLoaded', async () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -807,6 +924,7 @@
           if (codSecBtn) codSecBtn.textContent = `💻 ${assessmentData.title}`;
 
           document.getElementById('assessment-title-nav').textContent = `💻 ${assessmentData.title}`;
+          enterAssessmentFullScreen();
           renderQuestionTabs();
           loadQuestion(0);
         } else if (isWeekly) {
@@ -841,6 +959,7 @@
               timerEl.textContent = `${initMins.toString().padStart(2, '0')}:${initSecs.toString().padStart(2, '0')}`;
             }
             document.getElementById('assessment-title-nav').textContent = `⚡ ${assessmentData.title}`;
+            enterAssessmentFullScreen();
             startTimer();
             renderQuestionTabs();
             loadQuestion(0);
@@ -909,6 +1028,7 @@
             }
 
             document.getElementById('assessment-title-nav').textContent = assessmentData.title || 'Technical & Aptitude Assessment';
+            enterAssessmentFullScreen();
             startTimer();
             renderQuestionTabs();
             loadQuestion(0);

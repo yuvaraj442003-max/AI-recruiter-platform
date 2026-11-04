@@ -1426,10 +1426,10 @@
                             : `<span class="badge bg-${item.status === 'In Progress' ? 'warning text-dark' : 'secondary'}">${item.status}</span>`));
 
                   const actionBtn = (isTerminated || isExpired)
-                    ? `<a href="coding-assessment.html?assessment_id=${item.id}&reset=true" class="btn btn-sm ${isExpired ? 'btn-primary' : 'btn-outline-warning'} fw-semibold"><i class="bi bi-arrow-repeat me-1"></i>Retake Test &rarr;</a>`
+                    ? `<a href="coding-assessment.html?assessment_id=${item.id}&reset=true&active=true" class="btn btn-sm ${isExpired ? 'btn-primary' : 'btn-outline-warning'} fw-semibold" onclick="try{if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{});}catch(e){}"><i class="bi bi-arrow-repeat me-1"></i>Retake Test &rarr;</a>`
                     : (item.status === 'Evaluated'
                         ? `<a href="coding-report.html?attempt_id=${item.attempt_id}" class="btn btn-sm btn-outline-primary fw-semibold">View Result</a>`
-                        : `<a href="coding-assessment.html?assessment_id=${item.id}" class="btn btn-sm btn-primary fw-bold">Start Assessment &rarr;</a>`);
+                        : `<a href="coding-assessment.html?assessment_id=${item.id}&active=true" class="btn btn-sm btn-primary fw-bold" onclick="try{if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{});}catch(e){}">Start Assessment &rarr;</a>`);
 
                   return `
                   <tr>
@@ -1885,7 +1885,7 @@
           if (codingScore) codingScore.textContent = "— (3 Problems)";
           if (codingBtn) {
             codingBtn.innerHTML = `🚀 Start Coding Challenge &rarr;`;
-            codingBtn.href = "coding-assessment.html?mode=weekly";
+            codingBtn.href = "coding-assessment.html?mode=weekly&active=true";
           }
         }
       }
@@ -1948,7 +1948,7 @@
                   </div>
                   <div class="d-flex justify-content-between align-items-center pt-2 border-top border-white border-opacity-10 mt-auto">
                     <span class="text-white-50 small" style="font-size: 0.75rem;"><strong>${t.problem_count}</strong> Problems</span>
-                    <a href="coding-assessment.html?mode=practice&topic=${encodeURIComponent(t.slug)}" class="btn btn-sm btn-outline-success rounded-pill px-2.5 py-1 fw-semibold text-nowrap" style="font-size: 0.75rem;">
+                    <a href="coding-assessment.html?mode=practice&topic=${encodeURIComponent(t.slug)}&active=true" class="btn btn-sm btn-outline-success rounded-pill px-2.5 py-1 fw-semibold text-nowrap" style="font-size: 0.75rem;">
                       Practice Topic &rarr;
                     </a>
                   </div>

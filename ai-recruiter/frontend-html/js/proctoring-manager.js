@@ -269,6 +269,14 @@ class ProctoringManager {
 
           // Action on Start Click
           startBtn.onclick = async () => {
+            try {
+              if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(() => {});
+              }
+            } catch (fsErr) {}
+            if (window.enterAssessmentFullScreen) {
+              window.enterAssessmentFullScreen();
+            }
             // Capture reference snapshot
             this.identitySnapshot = preCheckFaceDetector.captureSnapshot();
 
