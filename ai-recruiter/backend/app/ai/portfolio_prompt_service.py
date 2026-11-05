@@ -22,31 +22,52 @@ logger = logging.getLogger("ai_recruiter.portfolio_prompt")
 
 # Curated Theme & Style mapping suggestions based on prompt keywords
 THEME_PRESETS_BY_KEYWORD = {
-    "nova": {"theme_id": "editorial", "layout": "nova", "font": "Plus Jakarta Sans", "primary_color": "#0D9488", "secondary_color": "#BA855E", "dark_mode": False, "bg": "mesh", "mask": "mask-pebble"},
-    "editorial": {"theme_id": "editorial", "layout": "nova", "font": "Plus Jakarta Sans", "primary_color": "#0D9488", "secondary_color": "#BA855E", "dark_mode": False, "bg": "mesh", "mask": "mask-pebble"},
-    "agency": {"theme_id": "editorial", "layout": "nova", "font": "Plus Jakarta Sans", "primary_color": "#0D9488", "secondary_color": "#BA855E", "dark_mode": False, "bg": "mesh", "mask": "mask-pebble"},
+    # High-Priority Intent Phrases (Modern, Professional, Unique, Impressive Websites)
+    "modern professional": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "modern, professional": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "modern website": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "professional website": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "unique design": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "unique layout": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "clean and responsive": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "responsive user interface": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "visually attractive": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "impressive": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "attractive": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "bento": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "modern": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "professional": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+
+    # Specialized Archetypes
+    "developer workstation": {"theme_id": "developer", "layout": "developer", "font": "Fira Code", "primary_color": "#10b981", "secondary_color": "#06b6d4", "dark_mode": True, "bg": "grid", "mask": "mask-studio-bento"},
+    "terminal ide": {"theme_id": "terminal", "layout": "developer", "font": "Fira Code", "primary_color": "#22c55e", "secondary_color": "#38bdf8", "dark_mode": True, "bg": "grid", "mask": "mask-studio-bento"},
     "developer": {"theme_id": "developer", "layout": "developer", "font": "Fira Code", "primary_color": "#10b981", "secondary_color": "#06b6d4", "dark_mode": True, "bg": "grid", "mask": "mask-studio-bento"},
     "terminal": {"theme_id": "terminal", "layout": "developer", "font": "Fira Code", "primary_color": "#22c55e", "secondary_color": "#38bdf8", "dark_mode": True, "bg": "grid", "mask": "mask-studio-bento"},
     "hacker": {"theme_id": "developer", "layout": "developer", "font": "Fira Code", "primary_color": "#10b981", "secondary_color": "#06b6d4", "dark_mode": True, "bg": "grid", "mask": "mask-studio-bento"},
-    "cyberpunk": {"theme_id": "cyberpunk", "layout": "developer", "font": "Fira Code", "primary_color": "#06b6d4", "secondary_color": "#ec4899", "dark_mode": True, "bg": "dots", "mask": "mask-corner-curve"},
-    "ai": {"theme_id": "ai_tech", "layout": "ai_tech", "font": "Plus Jakarta Sans", "primary_color": "#00E5FF", "secondary_color": "#6366f1", "dark_mode": True, "bg": "mesh", "mask": "mask-corner-curve"},
+    "cyberpunk": {"theme_id": "cyberpunk", "layout": "ai_tech", "font": "Fira Code", "primary_color": "#06b6d4", "secondary_color": "#ec4899", "dark_mode": True, "bg": "dots", "mask": "mask-corner-curve"},
+    "neural hud": {"theme_id": "ai_tech", "layout": "ai_tech", "font": "Plus Jakarta Sans", "primary_color": "#00E5FF", "secondary_color": "#6366f1", "dark_mode": True, "bg": "mesh", "mask": "mask-corner-curve"},
+    "ai tech": {"theme_id": "ai_tech", "layout": "ai_tech", "font": "Plus Jakarta Sans", "primary_color": "#00E5FF", "secondary_color": "#6366f1", "dark_mode": True, "bg": "mesh", "mask": "mask-corner-curve"},
     "neural": {"theme_id": "ai_tech", "layout": "ai_tech", "font": "Plus Jakarta Sans", "primary_color": "#00E5FF", "secondary_color": "#6366f1", "dark_mode": True, "bg": "mesh", "mask": "mask-corner-curve"},
-    "minimal": {"theme_id": "minimal", "layout": "minimal", "font": "Inter", "primary_color": "#18181b", "secondary_color": "#71717a", "dark_mode": False, "bg": "clean", "mask": "mask-arch"},
+    "ai": {"theme_id": "ai_tech", "layout": "ai_tech", "font": "Plus Jakarta Sans", "primary_color": "#00E5FF", "secondary_color": "#6366f1", "dark_mode": True, "bg": "mesh", "mask": "mask-corner-curve"},
     "swiss": {"theme_id": "zurich_grid", "layout": "minimal", "font": "Inter", "primary_color": "#0f172a", "secondary_color": "#e11d48", "dark_mode": False, "bg": "clean", "mask": "mask-arch"},
-    "creative": {"theme_id": "creative", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": False, "bg": "mesh", "mask": "mask-asymmetric-pill"},
-    "design": {"theme_id": "creative", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": False, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "minimalist": {"theme_id": "minimal", "layout": "minimal", "font": "Inter", "primary_color": "#18181b", "secondary_color": "#71717a", "dark_mode": False, "bg": "clean", "mask": "mask-arch"},
+    "minimal": {"theme_id": "minimal", "layout": "minimal", "font": "Inter", "primary_color": "#18181b", "secondary_color": "#71717a", "dark_mode": False, "bg": "clean", "mask": "mask-arch"},
+    "creative studio": {"theme_id": "creative", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": False, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "split screen": {"theme_id": "split_screen", "layout": "split_screen", "font": "Outfit", "primary_color": "#4f46e5", "secondary_color": "#f43f5e", "dark_mode": False, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "split": {"theme_id": "split_screen", "layout": "split_screen", "font": "Outfit", "primary_color": "#4f46e5", "secondary_color": "#f43f5e", "dark_mode": False, "bg": "mesh", "mask": "mask-asymmetric-pill"},
     "corporate": {"theme_id": "corporate", "layout": "corporate", "font": "Plus Jakarta Sans", "primary_color": "#2563EB", "secondary_color": "#0f172a", "dark_mode": False, "bg": "clean", "mask": "mask-arch"},
     "executive": {"theme_id": "executive_briefing", "layout": "corporate", "font": "Plus Jakarta Sans", "primary_color": "#2563EB", "secondary_color": "#d97706", "dark_mode": False, "bg": "clean", "mask": "mask-arch"},
     "briefing": {"theme_id": "corporate", "layout": "corporate", "font": "Plus Jakarta Sans", "primary_color": "#2563EB", "secondary_color": "#0f172a", "dark_mode": False, "bg": "clean", "mask": "mask-arch"},
+    "dark luxury": {"theme_id": "dark", "layout": "dark", "font": "Inter", "primary_color": "#818cf8", "secondary_color": "#38bdf8", "dark_mode": True, "bg": "mesh", "mask": "mask-studio-bento"},
     "dark": {"theme_id": "dark", "layout": "dark", "font": "Inter", "primary_color": "#818cf8", "secondary_color": "#38bdf8", "dark_mode": True, "bg": "mesh", "mask": "mask-studio-bento"},
     "oled": {"theme_id": "dark", "layout": "dark", "font": "Inter", "primary_color": "#818cf8", "secondary_color": "#38bdf8", "dark_mode": True, "bg": "mesh", "mask": "mask-studio-bento"},
     "notion": {"theme_id": "notion", "layout": "notion", "font": "Inter", "primary_color": "#27272a", "secondary_color": "#64748b", "dark_mode": False, "bg": "clean", "mask": "mask-pebble"},
     "timeline": {"theme_id": "timeline", "layout": "timeline", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-pebble"},
     "dashboard": {"theme_id": "dashboard", "layout": "dashboard", "font": "Plus Jakarta Sans", "primary_color": "#0284c7", "secondary_color": "#10b981", "dark_mode": True, "bg": "grid", "mask": "mask-studio-bento"},
-    "split_screen": {"theme_id": "split_screen", "layout": "split_screen", "font": "Outfit", "primary_color": "#4f46e5", "secondary_color": "#f43f5e", "dark_mode": False, "bg": "mesh", "mask": "mask-asymmetric-pill"},
-    "split": {"theme_id": "split_screen", "layout": "split_screen", "font": "Outfit", "primary_color": "#4f46e5", "secondary_color": "#f43f5e", "dark_mode": False, "bg": "mesh", "mask": "mask-asymmetric-pill"},
-    "bento": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "modern": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-pebble"}
+    "nova": {"theme_id": "editorial", "layout": "nova", "font": "Plus Jakarta Sans", "primary_color": "#0D9488", "secondary_color": "#BA855E", "dark_mode": False, "bg": "mesh", "mask": "mask-pebble"},
+    "editorial": {"theme_id": "editorial", "layout": "nova", "font": "Plus Jakarta Sans", "primary_color": "#0D9488", "secondary_color": "#BA855E", "dark_mode": False, "bg": "mesh", "mask": "mask-pebble"},
+    "agency": {"theme_id": "editorial", "layout": "nova", "font": "Plus Jakarta Sans", "primary_color": "#0D9488", "secondary_color": "#BA855E", "dark_mode": False, "bg": "mesh", "mask": "mask-pebble"},
+    "creative": {"theme_id": "creative", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": False, "bg": "mesh", "mask": "mask-asymmetric-pill"},
 }
 
 
@@ -250,12 +271,12 @@ def analyze_prompt_with_gemini(
         "Your objective is to analyze the user's natural language creation prompt and extract their exact visual, architectural, and styling design preferences.\n"
         "STYLING EXTRACTION RULES:\n"
         "1. Layout Architecture: Choose the exact matching archetype:\n"
+        "   - 'modern': if modern website, professional, unique design, unique layout, bento, clean, impressive, attractive, responsive, modular, high-impact, SaaS cards\n"
         "   - 'developer': if terminal, IDE, code, matrix, hacker, CLI, engineer\n"
-        "   - 'modern': if bento, modular, clean grid, SaaS, modern cards\n"
         "   - 'ai_tech': if AI, machine learning, neural, HUD, cyberpunk, futuristic, cyber\n"
         "   - 'minimal': if minimal, swiss, monochrome, simple, clean, hairline\n"
         "   - 'corporate': if executive, corporate, leadership, 2-column, management\n"
-        "   - 'creative': if creative, bold, studio, pop art, vibrant, designer\n"
+        "   - 'creative': only if explicitly requesting creative studio, pop art, vibrant illustrator showcase\n"
         "   - 'dark': if dark luxury, obsidian, neon, carbon\n"
         "   - 'split_screen': if split, two panels, side by side\n"
         "   - 'nova': default editorial agency magazine layout\n"
@@ -742,25 +763,31 @@ def _generate_deterministic_portfolio(
         matched_preset = THEME_PRESETS_BY_KEYWORD["modern"]
 
     # 1. Layout detection
-    layout = matched_preset.get("layout", "modern")
-    if any(k in p_lower for k in ["nova", "editorial", "boutique", "agency"]):
-        layout = "nova"
-    elif any(k in p_lower for k in ["terminal", "ide", "hacker", "developer workstation"]):
-        layout = "developer"
-    elif any(k in p_lower for k in ["bento", "modular", "apple", "linear"]):
+    if any(k in p_lower for k in [
+        "modern, professional", "modern professional", "modern website", "professional website",
+        "unique design", "unique layout", "clean and responsive", "responsive user interface",
+        "visually attractive", "impressive", "attractive", "modern", "professional",
+        "bento", "modular", "apple", "linear", "clean"
+    ]):
         layout = "modern"
+    elif any(k in p_lower for k in ["terminal", "ide", "hacker", "developer workstation", "cli interface"]):
+        layout = "developer"
+    elif any(k in p_lower for k in ["neural hud", "ai tech", "cyber telemetry", "futuristic", "hud", "telemetry", "cyberpunk"]):
+        layout = "ai_tech"
+    elif any(k in p_lower for k in ["split screen", "split-screen", "dual panel"]):
+        layout = "split_screen"
     elif any(k in p_lower for k in ["swiss", "minimalist", "minimal monograph", "monograph"]):
         layout = "minimal"
     elif any(k in p_lower for k in ["corporate", "briefing", "2-column", "executive briefing", "dossier"]):
         layout = "corporate"
-    elif any(k in p_lower for k in ["neural hud", "ai tech", "cyber telemetry", "futuristic", "hud", "telemetry"]):
-        layout = "ai_tech"
-    elif any(k in p_lower for k in ["neo-display", "asymmetric", "creative studio", "studio"]):
+    elif any(k in p_lower for k in ["creative studio", "neo-display", "pop art"]):
         layout = "creative"
-    elif any(k in p_lower for k in ["split screen", "split-screen", "dual panel"]):
-        layout = "split_screen"
     elif any(k in p_lower for k in ["dark luxury", "oled", "midnight"]):
         layout = "dark"
+    elif any(k in p_lower for k in ["nova", "editorial", "boutique", "agency"]):
+        layout = "nova"
+    else:
+        layout = matched_preset.get("layout", "modern")
 
     # 2. Color detection
     hex_matches = re.findall(r"#[0-9a-fA-F]{6}", prompt)
