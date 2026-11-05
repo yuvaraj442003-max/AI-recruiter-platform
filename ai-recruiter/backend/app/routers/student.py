@@ -538,38 +538,52 @@ def _build_student_monitor_item(u: User, db: Session) -> StudentLearningMonitorI
     journey_data = {}
     try:
         from app.services.candidate_learning_journey_service import get_candidate_learning_journey
-        journey_data = get_candidate_learning_journey(db, u.id)
+        res = get_candidate_learning_journey(db, u.id)
+        if isinstance(res, dict):
+            journey_data = res
     except Exception as journey_err:
         logger.warning("Could not load candidate learning journey for user %s: %s", u.id, journey_err)
 
-    active_course_id = journey_data.get("selected_course", "java")
-    active_course_name = journey_data.get("course_track", {}).get("name") or journey_data.get("target_track", "Core & Advanced Java Enterprise Systems")
-    active_course_icon = journey_data.get("course_track", {}).get("icon", "📘")
-    course_progress_percentage = float(journey_data.get("overall_progress_percent", roadmap_progress or 0.0))
-    active_phase_num = int(journey_data.get("active_phase_num", 1))
-    active_phase_name = str(journey_data.get("active_phase_name", "Phase 1: Foundations"))
-    schedule_ov = journey_data.get("schedule_overview", {})
-    sprint_status = schedule_ov.get("sprint_status", "Sprint Active: Day 1 of 90")
-    expected_completion = journey_data.get("expected_completion_date", "TBD")
-    start_date = journey_data.get("start_date", "Ready Today")
+    course_track_obj = journey_data.get("course_track")
+    course_track_dict = course_track_obj if isinstance(course_track_obj, dict) else {}
+
+    active_course_id = str(journey_data.get("selected_course") or "java")
+    active_course_name = str(course_track_dict.get("name") or journey_data.get("target_track") or "Core & Advanced Java Enterprise Systems")
+    active_course_icon = str(course_track_dict.get("icon") or "📘")
+    course_progress_percentage = float(journey_data.get("overall_progress_percent") if journey_data.get("overall_progress_percent") is not None else (roadmap_progress or 0.0))
+    active_phase_num = int(journey_data.get("active_phase_num") or 1)
+    active_phase_name = str(journey_data.get("active_phase_name") or "Phase 1: Foundations")
+
+    schedule_ov = journey_data.get("schedule_overview")
+    schedule_ov_dict = schedule_ov if isinstance(schedule_ov, dict) else {}
+    sprint_status = str(schedule_ov_dict.get("sprint_status") or "Sprint Active: Day 1 of 90")
+    expected_completion = str(journey_data.get("expected_completion_date") or "TBD")
+    start_date = str(journey_data.get("start_date") or "Ready Today")
 
     # Extract all phases and topic states (completed, ongoing, pending)
-    journey_phases = journey_data.get("phases", [])
+    raw_phases = journey_data.get("phases")
+    journey_phases = raw_phases if isinstance(raw_phases, list) else []
     completed_topics = []
     ongoing_topics = []
     pending_topics = []
     phases_breakdown = []
 
     for ph in journey_phases:
-        courses = ph.get("courses", [])
+        if not isinstance(ph, dict):
+            continue
+        courses = ph.get("courses")
+        if not isinstance(courses, list):
+            courses = []
         ph_completed = 0
         for c in courses:
-            is_done = c.get("progress_percent", 0) >= 100 or c.get("status") == "completed"
+            if not isinstance(c, dict):
+                continue
+            is_done = (c.get("progress_percent") or 0) >= 100 or c.get("status") == "completed"
             if is_done:
                 ph_completed += 1
                 completed_topics.append({
-                    "id": c.get("id"),
-                    "title": c.get("title"),
+                    "id": str(c.get("id") or ""),
+                    "title": str(c.get("title") or "Topic"),
                     "phase_num": ph.get("phase_num"),
                     "phase_name": ph.get("name"),
                     "hours": c.get("hours", 4),
@@ -577,10 +591,10 @@ def _build_student_monitor_item(u: User, db: Session) -> StudentLearningMonitorI
                     "status": "completed",
                     "is_correct": True,
                 })
-            elif c.get("progress_percent", 0) > 0 or c.get("status") == "in_progress":
+            elif (c.get("progress_percent") or 0) > 0 or c.get("status") == "in_progress":
                 ongoing_topics.append({
-                    "id": c.get("id"),
-                    "title": c.get("title"),
+                    "id": str(c.get("id") or ""),
+                    "title": str(c.get("title") or "Topic"),
                     "phase_num": ph.get("phase_num"),
                     "phase_name": ph.get("name"),
                     "hours": c.get("hours", 4),
@@ -590,8 +604,8 @@ def _build_student_monitor_item(u: User, db: Session) -> StudentLearningMonitorI
                 })
             else:
                 pending_topics.append({
-                    "id": c.get("id"),
-                    "title": c.get("title"),
+                    "id": str(c.get("id") or ""),
+                    "title": str(c.get("title") or "Topic"),
                     "phase_num": ph.get("phase_num"),
                     "phase_name": ph.get("name"),
                     "hours": c.get("hours", 4),
@@ -602,11 +616,11 @@ def _build_student_monitor_item(u: User, db: Session) -> StudentLearningMonitorI
 
         phases_breakdown.append({
             "phase_num": ph.get("phase_num"),
-            "name": ph.get("name"),
-            "subtitle": ph.get("subtitle"),
-            "progress_percent": ph.get("progress_percent", 0.0),
-            "is_completed": ph.get("is_completed", False),
-            "is_locked": ph.get("is_locked", False),
+            "name": str(ph.get("name") or f"Phase {ph.get('phase_num', 1)}"),
+            "subtitle": str(ph.get("subtitle") or ""),
+            "progress_percent": float(ph.get("progress_percent") or 0.0),
+            "is_completed": bool(ph.get("is_completed", False)),
+            "is_locked": bool(ph.get("is_locked", False)),
             "topics_count": len(courses),
             "completed_count": ph_completed,
         })
@@ -616,24 +630,37 @@ def _build_student_monitor_item(u: User, db: Session) -> StudentLearningMonitorI
         total_course_topics = 50
 
     # Daily Plan Tasks (Watch, Practice, Read, Assessment)
-    daily_plan_tasks = journey_data.get("today_plan", {}).get("tasks", [])
+    raw_today_plan = journey_data.get("today_plan")
+    daily_plan_tasks = []
+    if isinstance(raw_today_plan, list):
+        daily_plan_tasks = [t for t in raw_today_plan if isinstance(t, dict)]
+    elif isinstance(raw_today_plan, dict):
+        tasks = raw_today_plan.get("tasks")
+        if isinstance(tasks, list):
+            daily_plan_tasks = [t for t in tasks if isinstance(t, dict)]
 
     # Coding Attempts
     coding_attempts = []
     if profile:
-        from app.models.coding import CandidateCodingAttempt
-        raw_coding = db.query(CandidateCodingAttempt).filter(CandidateCodingAttempt.candidate_id == profile.id).order_by(CandidateCodingAttempt.created_at.desc()).all()
-        for ca in raw_coding:
-            coding_attempts.append({
-                "id": str(ca.id),
-                "title": ca.assessment.title if ca.assessment else "Practical Coding Sandbox",
-                "score": float(ca.score or 0.0),
-                "percentage": float(ca.percentage or 0.0),
-                "passed": bool(ca.passed),
-                "status": ca.status or "Submitted",
-                "time_taken_seconds": int(ca.time_taken or 0),
-                "date": ca.created_at.strftime("%Y-%m-%d %H:%M") if ca.created_at else "Recently",
-            })
+        try:
+            from app.models.coding import CandidateCodingAttempt
+            raw_coding = db.query(CandidateCodingAttempt).filter(CandidateCodingAttempt.candidate_id == profile.id).order_by(CandidateCodingAttempt.created_at.desc()).all()
+            for ca in raw_coding:
+                assessment_title = "Practical Coding Sandbox"
+                if hasattr(ca, "assessment") and ca.assessment and hasattr(ca.assessment, "title"):
+                    assessment_title = ca.assessment.title or assessment_title
+                coding_attempts.append({
+                    "id": str(ca.id),
+                    "title": assessment_title,
+                    "score": float(ca.score or 0.0),
+                    "percentage": float(ca.percentage or 0.0),
+                    "passed": bool(ca.passed),
+                    "status": ca.status or "Submitted",
+                    "time_taken_seconds": int(ca.time_taken or 0),
+                    "date": ca.created_at.strftime("%Y-%m-%d %H:%M") if ca.created_at else "Recently",
+                })
+        except Exception as coding_err:
+            logger.warning("Could not load coding attempts for profile %s: %s", profile.id, coding_err)
 
     coding_count = len(coding_attempts)
     avg_coding_score = round(sum(ca["percentage"] for ca in coding_attempts) / coding_count, 1) if coding_count > 0 else 0.0
