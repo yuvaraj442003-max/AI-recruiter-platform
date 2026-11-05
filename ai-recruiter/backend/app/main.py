@@ -256,6 +256,7 @@ def _auto_migrate_db(target_engine=None):
         ("portfolios", "services", "TEXT"),
         ("portfolios", "social_links", "TEXT"),
         ("portfolios", "custom_css", "TEXT"),
+        ("portfolios", "generation_prompt", "TEXT"),
 
         # Weekly aptitude & coding questions status and rotation tracking
         ("aptitude_questions", "status", "VARCHAR(50) DEFAULT 'approved'"),
