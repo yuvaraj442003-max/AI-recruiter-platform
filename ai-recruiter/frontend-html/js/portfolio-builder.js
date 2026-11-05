@@ -43,6 +43,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnGenerateIcon = document.getElementById("btn-generate-icon");
   const btnGenerateText = document.getElementById("btn-generate-text");
   const promptStarters = document.querySelectorAll(".prompt-starter-chip");
+  const btnResetTemplate = document.getElementById("btn-reset-template");
+  const templateCategoryPills = document.querySelectorAll(".template-cat-pill");
+  const templateCards = document.querySelectorAll(".prompt-template-card");
+  const dimModPills = document.querySelectorAll(".dim-mod-pill");
 
   // DOM Elements - Conversational Refine Bar
   const inputRefinePrompt = document.getElementById("input-refine-prompt");
@@ -585,8 +589,133 @@ document.addEventListener("DOMContentLoaded", async () => {
     return p;
   }
 
+  const PORTFOLIO_PROMPT_TEMPLATES = [
+    {
+      id: "bento-modular",
+      category: "bento",
+      name: "Ultra-Modern Bento",
+      badge: "Modular Grid • Kinetic Glass",
+      icon: "🍱",
+      layout: "modern",
+      theme_id: "modern",
+      primary_color: "#4f46e5",
+      secondary_color: "#10b981",
+      ambient_color: "#0f172a",
+      dark_mode: true,
+      animation: "✨ 3D Tilt Cards & Glass Glow",
+      prompt: "Create an award-winning portfolio with a modern Bento modular grid layout for an innovative engineer. Use a deep midnight slate theme with electric indigo (#4f46e5) and vibrant emerald (#10b981) accents. Feature frosted glassmorphic cards, 3D perspective tilt physics on hover, interactive metric counters, and showcase high-impact projects with live demo links."
+    },
+    {
+      id: "cyber-hud",
+      category: "ai",
+      name: "Cyberpunk Neural HUD",
+      badge: "AI Telemetry • Holographic",
+      icon: "🤖",
+      layout: "ai_tech",
+      theme_id: "ai_tech",
+      primary_color: "#00e5ff",
+      secondary_color: "#a855f7",
+      ambient_color: "#090d16",
+      dark_mode: true,
+      animation: "⚡ Glowing Pulse & Radar Telemetry",
+      prompt: "Design a futuristic Cyberpunk Neural HUD portfolio for an advanced AI & Systems Specialist. Use an ultra-dark OLED obsidian palette with glowing neon cyan (#00e5ff) and hyper-violet (#a855f7) accents. Incorporate telemetry radar stats, neural network architecture flowcharts, sub-100ms inference benchmarks, and animated terminal command line widgets."
+    },
+    {
+      id: "terminal-ide",
+      category: "developer",
+      name: "Developer Terminal IDE",
+      badge: "Terminal Workstation • Monospace",
+      icon: "💻",
+      layout: "developer",
+      theme_id: "developer",
+      primary_color: "#22c55e",
+      secondary_color: "#38bdf8",
+      ambient_color: "#0a0e14",
+      dark_mode: true,
+      animation: "⌨️ Terminal Cursor Typing & Git Graph",
+      prompt: "Create an authentic Developer Terminal IDE portfolio with a dark workstation code aesthetic. Use a Matrix carbon black background (#0a0e14) with phosphor emerald green (#22c55e) and sky blue (#38bdf8) syntax highlights. Include an interactive typewriter terminal headline, collapsible code file trees, git commit activity graph, and live system status pills."
+    },
+    {
+      id: "swiss-minimal",
+      category: "minimalist",
+      name: "Minimalist Swiss Editorial",
+      badge: "Monograph • Clean Typography",
+      icon: "📐",
+      layout: "minimal",
+      theme_id: "minimal",
+      primary_color: "#18181b",
+      secondary_color: "#e11d48",
+      ambient_color: "#f8fafc",
+      dark_mode: false,
+      animation: "📐 Hairline Dividers & Smooth Fade",
+      prompt: "Build an ultra-clean, minimalist Swiss editorial monograph portfolio for a Principal Architect. Use an asymmetrical high-contrast grid with ivory light or obsidian charcoal tones, crisp hairline borders, and striking crimson carmine (#e11d48) accents. Focus on bold typography, executive impact summaries, and refined, distraction-free case studies."
+    },
+    {
+      id: "creative-studio",
+      category: "creative",
+      name: "Creative Neo-Studio",
+      badge: "Neo-Display • Fluid Gradients",
+      icon: "🎨",
+      layout: "creative",
+      theme_id: "creative",
+      primary_color: "#f97316",
+      secondary_color: "#8b5cf6",
+      ambient_color: "#1e1b4b",
+      dark_mode: true,
+      animation: "💫 Magnetic Fluid Hover & Dynamic Mesh",
+      prompt: "Design an expressive, creative neo-studio portfolio for a Senior UI/UX & Frontend Creative Technologist. Use warm sunset terracotta (#f97316) and amethyst violet (#8b5cf6) gradients over deep slate. Feature floating organic project vignettes, magnetic fluid hover physics, bold typography badges, and an interactive project sandbox."
+    },
+    {
+      id: "executive-dossier",
+      category: "executive",
+      name: "Executive Leadership Dossier",
+      badge: "2-Column • Strategic Impact",
+      icon: "💼",
+      layout: "corporate",
+      theme_id: "corporate",
+      primary_color: "#0f172a",
+      secondary_color: "#2563eb",
+      ambient_color: "#f59e0b",
+      dark_mode: false,
+      animation: "📊 Kinetic KPI Counters & Subtle Lift",
+      prompt: "Construct a prestigious Executive Briefing Dossier portfolio for an Engineering Director & Technology Leader. Use an authoritative 2-column layout with deep royal navy (#0f172a), cobalt blue (#2563eb), and champagne gold (#f59e0b) accents. Highlight team scaling metrics (30+ engineers), multi-million cloud cost optimization, and board-level strategic roadmaps."
+    },
+    {
+      id: "data-science-lab",
+      category: "ai",
+      name: "Algorithmic Data Science Lab",
+      badge: "Scientific Bento • Benchmarks",
+      icon: "🔬",
+      layout: "ai_tech",
+      theme_id: "dashboard",
+      primary_color: "#0d9488",
+      secondary_color: "#f59e0b",
+      ambient_color: "#0b192c",
+      dark_mode: true,
+      animation: "📈 Animated Model Curves & Pipeline Flow",
+      prompt: "Build a high-precision Scientific Bento Dashboard portfolio for a Senior Data Scientist & Quantitative Researcher. Use dark oceanic navy (#0b192c) with precision teal (#0d9488) and amber (#f59e0b) accents. Showcase interactive machine learning model accuracy curves, data pipeline diagrams, distributed training throughput stats, and published research benchmarks."
+    },
+    {
+      id: "split-screen-showcase",
+      category: "split",
+      name: "Interactive Split-Screen 3D",
+      badge: "50/50 Dual Panel • Parallax",
+      icon: "🪞",
+      layout: "split_screen",
+      theme_id: "split_screen",
+      primary_color: "#f43f5e",
+      secondary_color: "#7c3aed",
+      ambient_color: "#111827",
+      dark_mode: true,
+      animation: "🌊 Parallax Dual-Scroll & Frosted Glass",
+      prompt: "Create a modern 50/50 Split-Screen portfolio for a Full-Stack Product Builder. Feature a sticky personal brand hero on the left with glowing social links and dynamic availability badge, and an immersive scrollable project showcase on the right with frosted glass refraction, live demo popovers, and smooth parallax depth scrolling."
+    }
+  ];
+
+  let activePromptTemplateId = "bento-modular";
+
   /**
-   * Binds Prompt Starters, Custom Modifiers, Live Editing, and Gemini Generation
+   * Binds Prompt Starters, Creative Templates, Dimension Modifiers, Live Editing, and Gemini Generation
    */
   function bindPromptStarters() {
     // 1. Textarea auto-resize and live character count
@@ -594,10 +723,89 @@ document.addEventListener("DOMContentLoaded", async () => {
       inputAiPrompt.addEventListener("input", () => {
         adjustPromptHeight();
         updatePromptCharCount();
+        if (promptEditBadge) {
+          promptEditBadge.innerHTML = `<span>✏️</span> Custom Edited`;
+          promptEditBadge.className = "badge bg-warning-subtle text-light small d-flex align-items-center gap-1";
+        }
       });
     }
 
-    // 2. Auto-Draft from Profile button
+    // 2. Creative Template Category Filters
+    const catPills = document.querySelectorAll(".template-cat-pill");
+    const cards = document.querySelectorAll(".prompt-template-card");
+    catPills.forEach(pill => {
+      pill.addEventListener("click", () => {
+        catPills.forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        const category = pill.getAttribute("data-category");
+
+        cards.forEach(card => {
+          const cardCat = card.getAttribute("data-category");
+          if (category === "all" || cardCat === category) {
+            card.style.display = "flex";
+          } else {
+            card.style.display = "none";
+          }
+        });
+      });
+    });
+
+    // 3. Creative Template Cards Click & Selection
+    cards.forEach(card => {
+      card.addEventListener("click", () => {
+        const tId = card.getAttribute("data-template-id");
+        const tmpl = PORTFOLIO_PROMPT_TEMPLATES.find(t => t.id === tId);
+        if (!tmpl) return;
+
+        activePromptTemplateId = tId;
+        cards.forEach(c => c.classList.remove("active"));
+        card.classList.add("active");
+
+        // Load prompt template into textarea
+        if (inputAiPrompt) {
+          inputAiPrompt.value = tmpl.prompt;
+          adjustPromptHeight();
+          updatePromptCharCount();
+          inputAiPrompt.focus();
+        }
+
+        // Update toolbar badge
+        if (promptEditBadge) {
+          promptEditBadge.innerHTML = `<span>${tmpl.icon}</span> Template: ${tmpl.name}`;
+          promptEditBadge.className = "badge bg-indigo-subtle text-light small d-flex align-items-center gap-1";
+        }
+
+        // Pulse prompt editor card to highlight active customization
+        const editorCard = document.getElementById("prompt-editor-card");
+        if (editorCard) {
+          editorCard.style.boxShadow = "0 0 0 3px rgba(129, 140, 248, 0.4), 0 10px 30px rgba(0,0,0,0.5)";
+          setTimeout(() => {
+            editorCard.style.boxShadow = "";
+          }, 800);
+        }
+
+        showAlert(`✨ Loaded "${tmpl.name}" prompt template! You can freely edit, refine, or customize every sentence below.`, "info");
+      });
+    });
+
+    // 4. Reset to Template Default Button
+    if (btnResetTemplate) {
+      btnResetTemplate.addEventListener("click", () => {
+        const tmpl = PORTFOLIO_PROMPT_TEMPLATES.find(t => t.id === activePromptTemplateId) || PORTFOLIO_PROMPT_TEMPLATES[0];
+        if (tmpl && inputAiPrompt) {
+          inputAiPrompt.value = tmpl.prompt;
+          adjustPromptHeight();
+          updatePromptCharCount();
+          if (promptEditBadge) {
+            promptEditBadge.innerHTML = `<span>${tmpl.icon}</span> Template: ${tmpl.name}`;
+            promptEditBadge.className = "badge bg-indigo-subtle text-light small d-flex align-items-center gap-1";
+          }
+          showAlert(`↺ Reset prompt to default "${tmpl.name}" template text.`, "info");
+        }
+      });
+    }
+
+    // 5. Auto-Draft from Profile button
     if (btnAutoDraftPrompt) {
       btnAutoDraftPrompt.addEventListener("click", () => {
         const user = Session.getUser();
@@ -606,11 +814,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         adjustPromptHeight();
         updatePromptCharCount();
         inputAiPrompt.focus();
+        if (promptEditBadge) {
+          promptEditBadge.innerHTML = `<span>🪄</span> Auto-Drafted Profile`;
+          promptEditBadge.className = "badge bg-primary-subtle text-light small d-flex align-items-center gap-1";
+        }
         showAlert("✨ Prompt drafted from your profile facts! You can now freely edit, customize, or tweak every word.", "info");
       });
     }
 
-    // 3. Copy Prompt button
+    // 6. Copy Prompt button
     if (btnCopyPrompt) {
       btnCopyPrompt.addEventListener("click", () => {
         const val = (inputAiPrompt.value || "").trim();
@@ -629,22 +841,28 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     }
 
-    // 4. Clear Prompt button
+    // 7. Clear Prompt button
     if (btnClearPrompt) {
       btnClearPrompt.addEventListener("click", () => {
         inputAiPrompt.value = "";
         adjustPromptHeight();
         updatePromptCharCount();
         inputAiPrompt.focus();
-        showAlert("Prompt cleared. Type a custom prompt or tap any modifier/idea below.", "info");
+        if (promptEditBadge) {
+          promptEditBadge.innerHTML = `<span>✏️</span> Blank Prompt`;
+          promptEditBadge.className = "badge bg-secondary-subtle text-light small d-flex align-items-center gap-1";
+        }
+        showAlert("Prompt cleared. Type a custom prompt or click any template/modifier above.", "info");
       });
     }
 
-    // 5. Quick Modifiers Pills (e.g. + Bento Grid, + Terminal IDE, + Quantified KPIs)
-    promptModPills.forEach(pill => {
+    // 8. Dimension Fine-Tuning Studio Modifiers (Layout, Colors, Animations, Tone)
+    const dimPills = document.querySelectorAll(".dim-mod-pill");
+    dimPills.forEach(pill => {
       pill.addEventListener("click", () => {
-        const appendText = pill.getAttribute("data-append");
-        if (!appendText) return;
+        const dimValue = pill.getAttribute("data-value");
+        const dimType = pill.getAttribute("data-dimension");
+        if (!dimValue) return;
 
         let currentVal = (inputAiPrompt.value || "").trim();
         if (!currentVal) {
@@ -652,14 +870,14 @@ document.addEventListener("DOMContentLoaded", async () => {
           currentVal = `Create an exceptional portfolio for ${currentPortfolio?.candidate_name || user?.name || "Candidate"}`;
         }
 
-        // Avoid duplicate appends
-        if (!currentVal.toLowerCase().includes(appendText.toLowerCase())) {
+        // Avoid exact duplicate injection
+        if (!currentVal.toLowerCase().includes(dimValue.toLowerCase())) {
           if (/[.!?]$/.test(currentVal)) {
-            currentVal += ` Also design it ${appendText}.`;
+            currentVal += ` Also design it ${dimValue}.`;
           } else if (/,$/.test(currentVal)) {
-            currentVal += ` ${appendText}`;
+            currentVal += ` ${dimValue}`;
           } else {
-            currentVal += `, ${appendText}`;
+            currentVal += `, ${dimValue}`;
           }
         }
 
@@ -668,13 +886,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         updatePromptCharCount();
         inputAiPrompt.focus();
 
+        if (promptEditBadge) {
+          promptEditBadge.innerHTML = `<span>⚡</span> Customized Directives`;
+          promptEditBadge.className = "badge bg-indigo-subtle text-light small d-flex align-items-center gap-1";
+        }
+
+        // Pill visual feedback
         pill.classList.add("active");
         setTimeout(() => pill.classList.remove("active"), 1200);
-        showAlert(`✨ Preference added to prompt! You can continue editing your prompt above.`, "info");
+
+        const dimLabel = dimType ? dimType.charAt(0).toUpperCase() + dimType.slice(1) : "Preference";
+        showAlert(`⚡ ${dimLabel} directive added to prompt! You can continue customizing your prompt text above.`, "info");
       });
     });
 
-    // 6. Inspiring Template Starters
+    // Legacy prompt starter chips support if present
     promptStarters.forEach(chip => {
       chip.addEventListener("click", () => {
         const text = chip.getAttribute("data-prompt");
@@ -683,13 +909,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           adjustPromptHeight();
           updatePromptCharCount();
           inputAiPrompt.focus();
-
-          promptStarters.forEach(c => c.classList.remove("active"));
-          chip.classList.add("active");
-
-          btnGenerateGemini.classList.add("pulse-glow");
-          setTimeout(() => btnGenerateGemini.classList.remove("pulse-glow"), 1000);
-          showAlert("💡 Template prompt loaded! You can now freely edit, modify, or customize every sentence above.", "info");
         }
       });
     });

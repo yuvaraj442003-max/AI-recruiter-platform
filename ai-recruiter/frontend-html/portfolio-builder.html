@@ -134,6 +134,148 @@
       border-color: #818cf8;
       transform: translateY(-1px);
     }
+    /* Template Gallery Carousel & Design Studio Cards */
+    .template-gallery-wrapper {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+    }
+    .template-category-pills {
+      display: flex;
+      gap: 0.45rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 0.35rem;
+    }
+    .template-category-pills::-webkit-scrollbar {
+      display: none;
+    }
+    .template-cat-pill {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+      border-radius: 999px;
+      padding: 0.26rem 0.75rem;
+      font-size: 0.73rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .template-cat-pill:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: #ffffff;
+      border-color: rgba(129, 140, 248, 0.5);
+    }
+    .template-cat-pill.active {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: #ffffff;
+      border-color: #a5b4fc;
+      box-shadow: 0 2px 10px rgba(79, 70, 229, 0.45);
+    }
+    .template-cards-carousel {
+      display: flex;
+      gap: 0.85rem;
+      overflow-x: auto;
+      padding: 0.4rem 0.2rem 0.85rem 0.2rem;
+      scroll-behavior: smooth;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(129, 140, 248, 0.4) transparent;
+    }
+    .template-cards-carousel::-webkit-scrollbar {
+      height: 6px;
+    }
+    .template-cards-carousel::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 999px;
+    }
+    .template-cards-carousel::-webkit-scrollbar-thumb {
+      background: rgba(129, 140, 248, 0.35);
+      border-radius: 999px;
+    }
+    .prompt-template-card {
+      flex: 0 0 275px;
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 0.95rem;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+    }
+    .prompt-template-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(129, 140, 248, 0.6);
+      background: rgba(30, 41, 59, 0.92);
+      box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.5), 0 0 18px rgba(99, 102, 241, 0.25);
+    }
+    .prompt-template-card.active {
+      border-color: #818cf8;
+      background: linear-gradient(150deg, rgba(30, 27, 75, 0.96) 0%, rgba(15, 23, 42, 0.96) 100%);
+      box-shadow: 0 0 0 2px #818cf8, 0 12px 30px -6px rgba(79, 70, 229, 0.45);
+    }
+    .color-swatch-dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .card-selected-badge {
+      display: none;
+      font-size: 0.68rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      font-weight: 700;
+    }
+    .prompt-template-card.active .card-selected-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+    .customizer-dimension-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #94a3b8;
+    }
+    .dim-mod-pill {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #e2e8f0;
+      border-radius: 999px;
+      padding: 0.22rem 0.62rem;
+      font-size: 0.71rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      white-space: nowrap;
+    }
+    .dim-mod-pill:hover {
+      background: rgba(99, 102, 241, 0.28);
+      border-color: #818cf8;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+    .dim-mod-pill.active {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      border-color: #a5b4fc;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.4);
+    }
     .btn-ai-generate {
       background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #06b6d4 100%);
       border: none;
@@ -558,11 +700,269 @@
                 <span class="badge bg-white-subtle text-white border border-white-subtle fw-semibold" style="font-size: 0.72rem;">Triple-Gemini AI Engine</span>
               </div>
               <p class="text-white-50 small mb-3">
-                Describe your dream portfolio, or customize and fine-tune your prompt below using quick preference modifiers and starter templates.
+                Select an inspiring design template below based on your preferred layout, theme, colors, and animations — then freely customize every sentence or detail before generating.
               </p>
 
+              <!-- STYLE & TEMPLATE GALLERY SECTION -->
+              <div class="template-gallery-wrapper mb-3 p-3 rounded-3">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fw-bold text-white small">🎨 Creative Prompt &amp; Design Templates</span>
+                    <span class="badge bg-indigo-subtle text-light border border-white-subtle fw-medium" style="font-size: 0.68rem;">8 Curated Styles</span>
+                  </div>
+                  <span class="text-white-50 small" style="font-size: 0.68rem;">Click any template to load &amp; customize</span>
+                </div>
+
+                <!-- Category Filters -->
+                <div class="template-category-pills mb-2" id="template-category-filters">
+                  <button type="button" class="template-cat-pill active" data-category="all">All Styles (8)</button>
+                  <button type="button" class="template-cat-pill" data-category="bento">🍱 Bento &amp; Modern</button>
+                  <button type="button" class="template-cat-pill" data-category="ai">🤖 AI &amp; Neural HUD</button>
+                  <button type="button" class="template-cat-pill" data-category="developer">💻 Developer &amp; IDE</button>
+                  <button type="button" class="template-cat-pill" data-category="minimalist">📐 Swiss Minimal</button>
+                  <button type="button" class="template-cat-pill" data-category="creative">🎨 Creative Studio</button>
+                  <button type="button" class="template-cat-pill" data-category="executive">💼 Executive Briefing</button>
+                  <button type="button" class="template-cat-pill" data-category="split">🪞 Split-Screen 3D</button>
+                </div>
+
+                <!-- Template Cards Carousel -->
+                <div class="template-cards-carousel" id="template-cards-carousel">
+                  <!-- Card 1: Modern Bento Grid -->
+                  <div class="prompt-template-card active" data-template-id="bento-modular" data-category="bento">
+                    <div>
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex align-items-center gap-1.5">
+                          <span class="fs-5">🍱</span>
+                          <div>
+                            <div class="text-white fw-bold small">Ultra-Modern Bento</div>
+                            <div class="text-white-50" style="font-size: 0.68rem;">Modular Grid • Kinetic Glass</div>
+                          </div>
+                        </div>
+                        <span class="card-selected-badge">✓ Active</span>
+                      </div>
+                      <div class="d-flex align-items-center gap-1.5 mb-2">
+                        <span class="color-swatch-dot" style="background: #4f46e5;" title="Primary: Electric Indigo"></span>
+                        <span class="color-swatch-dot" style="background: #10b981;" title="Secondary: Emerald Green"></span>
+                        <span class="color-swatch-dot" style="background: #0f172a;" title="Ambient: Midnight Slate"></span>
+                        <span class="text-white-50 ms-1" style="font-size: 0.68rem;">Indigo / Emerald</span>
+                      </div>
+                      <p class="text-white-50 small mb-2" style="font-size: 0.72rem; line-height: 1.4;">
+                        Modular Bento cards with 3D tilt perspective, ambient glass glow, and interactive KPI badges.
+                      </p>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top border-white-subtle">
+                      <span class="badge bg-white-subtle text-white-50" style="font-size: 0.65rem;">✨ 3D Tilt Cards</span>
+                      <span class="text-indigo-subtle small fw-semibold" style="font-size: 0.7rem;">Use Style →</span>
+                    </div>
+                  </div>
+
+                  <!-- Card 2: Cyberpunk Neural HUD -->
+                  <div class="prompt-template-card" data-template-id="cyber-hud" data-category="ai">
+                    <div>
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex align-items-center gap-1.5">
+                          <span class="fs-5">🤖</span>
+                          <div>
+                            <div class="text-white fw-bold small">Cyberpunk Neural HUD</div>
+                            <div class="text-white-50" style="font-size: 0.68rem;">AI Telemetry • Holographic</div>
+                          </div>
+                        </div>
+                        <span class="card-selected-badge">✓ Active</span>
+                      </div>
+                      <div class="d-flex align-items-center gap-1.5 mb-2">
+                        <span class="color-swatch-dot" style="background: #00e5ff;" title="Primary: Neon Cyan"></span>
+                        <span class="color-swatch-dot" style="background: #a855f7;" title="Secondary: Hyper Violet"></span>
+                        <span class="color-swatch-dot" style="background: #090d16;" title="Ambient: OLED Obsidian"></span>
+                        <span class="text-white-50 ms-1" style="font-size: 0.68rem;">Cyan / Hyper-Violet</span>
+                      </div>
+                      <p class="text-white-50 small mb-2" style="font-size: 0.72rem; line-height: 1.4;">
+                        Futuristic HUD with telemetry metrics, holographic glow, neural graphs, and live sub-100ms inference benchmarks.
+                      </p>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top border-white-subtle">
+                      <span class="badge bg-white-subtle text-white-50" style="font-size: 0.65rem;">⚡ Telemetry Glow</span>
+                      <span class="text-indigo-subtle small fw-semibold" style="font-size: 0.7rem;">Use Style →</span>
+                    </div>
+                  </div>
+
+                  <!-- Card 3: Developer Terminal IDE -->
+                  <div class="prompt-template-card" data-template-id="terminal-ide" data-category="developer">
+                    <div>
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex align-items-center gap-1.5">
+                          <span class="fs-5">💻</span>
+                          <div>
+                            <div class="text-white fw-bold small">Developer Terminal IDE</div>
+                            <div class="text-white-50" style="font-size: 0.68rem;">Terminal Workstation • Monospace</div>
+                          </div>
+                        </div>
+                        <span class="card-selected-badge">✓ Active</span>
+                      </div>
+                      <div class="d-flex align-items-center gap-1.5 mb-2">
+                        <span class="color-swatch-dot" style="background: #22c55e;" title="Primary: Phosphor Emerald"></span>
+                        <span class="color-swatch-dot" style="background: #38bdf8;" title="Secondary: Sky Blue"></span>
+                        <span class="color-swatch-dot" style="background: #0a0e14;" title="Ambient: Matrix Carbon"></span>
+                        <span class="text-white-50 ms-1" style="font-size: 0.68rem;">Matrix Green / Sky</span>
+                      </div>
+                      <p class="text-white-50 small mb-2" style="font-size: 0.72rem; line-height: 1.4;">
+                        Monospace workstation with dynamic typewriter terminal prompts, interactive code trees, and live commit feeds.
+                      </p>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top border-white-subtle">
+                      <span class="badge bg-white-subtle text-white-50" style="font-size: 0.65rem;">⌨️ Cursor Typing</span>
+                      <span class="text-indigo-subtle small fw-semibold" style="font-size: 0.7rem;">Use Style →</span>
+                    </div>
+                  </div>
+
+                  <!-- Card 4: Minimalist Swiss Editorial -->
+                  <div class="prompt-template-card" data-template-id="swiss-minimal" data-category="minimalist">
+                    <div>
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex align-items-center gap-1.5">
+                          <span class="fs-5">📐</span>
+                          <div>
+                            <div class="text-white fw-bold small">Minimalist Swiss Editorial</div>
+                            <div class="text-white-50" style="font-size: 0.68rem;">Monograph • Clean Typography</div>
+                          </div>
+                        </div>
+                        <span class="card-selected-badge">✓ Active</span>
+                      </div>
+                      <div class="d-flex align-items-center gap-1.5 mb-2">
+                        <span class="color-swatch-dot" style="background: #18181b;" title="Primary: Obsidian Charcoal"></span>
+                        <span class="color-swatch-dot" style="background: #e11d48;" title="Secondary: Crimson Carmine"></span>
+                        <span class="color-swatch-dot" style="background: #f8fafc;" title="Ambient: Ivory White"></span>
+                        <span class="text-white-50 ms-1" style="font-size: 0.68rem;">Charcoal / Crimson</span>
+                      </div>
+                      <p class="text-white-50 small mb-2" style="font-size: 0.72rem; line-height: 1.4;">
+                        Asymmetrical high-contrast monograph with bold serif/grotesk typography, hairline dividers, and crimson highlights.
+                      </p>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top border-white-subtle">
+                      <span class="badge bg-white-subtle text-white-50" style="font-size: 0.65rem;">📐 Hairline Dividers</span>
+                      <span class="text-indigo-subtle small fw-semibold" style="font-size: 0.7rem;">Use Style →</span>
+                    </div>
+                  </div>
+
+                  <!-- Card 5: Creative Neo-Studio -->
+                  <div class="prompt-template-card" data-template-id="creative-studio" data-category="creative">
+                    <div>
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex align-items-center gap-1.5">
+                          <span class="fs-5">🎨</span>
+                          <div>
+                            <div class="text-white fw-bold small">Creative Neo-Studio</div>
+                            <div class="text-white-50" style="font-size: 0.68rem;">Neo-Display • Fluid Gradients</div>
+                          </div>
+                        </div>
+                        <span class="card-selected-badge">✓ Active</span>
+                      </div>
+                      <div class="d-flex align-items-center gap-1.5 mb-2">
+                        <span class="color-swatch-dot" style="background: #f97316;" title="Primary: Sunset Terracotta"></span>
+                        <span class="color-swatch-dot" style="background: #8b5cf6;" title="Secondary: Amethyst Violet"></span>
+                        <span class="color-swatch-dot" style="background: #1e1b4b;" title="Ambient: Royal Slate"></span>
+                        <span class="text-white-50 ms-1" style="font-size: 0.68rem;">Terracotta / Violet</span>
+                      </div>
+                      <p class="text-white-50 small mb-2" style="font-size: 0.72rem; line-height: 1.4;">
+                        Expressive studio aesthetic with sunset terracotta gradients, magnetic physics, and floating project showcase cards.
+                      </p>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top border-white-subtle">
+                      <span class="badge bg-white-subtle text-white-50" style="font-size: 0.65rem;">💫 Fluid Hover</span>
+                      <span class="text-indigo-subtle small fw-semibold" style="font-size: 0.7rem;">Use Style →</span>
+                    </div>
+                  </div>
+
+                  <!-- Card 6: Executive Leadership Dossier -->
+                  <div class="prompt-template-card" data-template-id="executive-dossier" data-category="executive">
+                    <div>
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex align-items-center gap-1.5">
+                          <span class="fs-5">💼</span>
+                          <div>
+                            <div class="text-white fw-bold small">Executive Dossier</div>
+                            <div class="text-white-50" style="font-size: 0.68rem;">2-Column • Strategic Impact</div>
+                          </div>
+                        </div>
+                        <span class="card-selected-badge">✓ Active</span>
+                      </div>
+                      <div class="d-flex align-items-center gap-1.5 mb-2">
+                        <span class="color-swatch-dot" style="background: #0f172a;" title="Primary: Executive Navy"></span>
+                        <span class="color-swatch-dot" style="background: #2563eb;" title="Secondary: Cobalt Blue"></span>
+                        <span class="color-swatch-dot" style="background: #f59e0b;" title="Ambient: Champagne Gold"></span>
+                        <span class="text-white-50 ms-1" style="font-size: 0.68rem;">Navy / Cobalt / Gold</span>
+                      </div>
+                      <p class="text-white-50 small mb-2" style="font-size: 0.72rem; line-height: 1.4;">
+                        Prestigious 2-column dossier with business KPI matrices, multi-million enterprise impact metrics, and board-ready roadmaps.
+                      </p>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top border-white-subtle">
+                      <span class="badge bg-white-subtle text-white-50" style="font-size: 0.65rem;">📊 KPI Growth Tickers</span>
+                      <span class="text-indigo-subtle small fw-semibold" style="font-size: 0.7rem;">Use Style →</span>
+                    </div>
+                  </div>
+
+                  <!-- Card 7: Algorithmic Data Science Lab -->
+                  <div class="prompt-template-card" data-template-id="data-science-lab" data-category="ai">
+                    <div>
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex align-items-center gap-1.5">
+                          <span class="fs-5">🔬</span>
+                          <div>
+                            <div class="text-white fw-bold small">Data Science Lab</div>
+                            <div class="text-white-50" style="font-size: 0.68rem;">Scientific Bento • Benchmarks</div>
+                          </div>
+                        </div>
+                        <span class="card-selected-badge">✓ Active</span>
+                      </div>
+                      <div class="d-flex align-items-center gap-1.5 mb-2">
+                        <span class="color-swatch-dot" style="background: #0d9488;" title="Primary: Precision Teal"></span>
+                        <span class="color-swatch-dot" style="background: #f59e0b;" title="Secondary: Amber Gold"></span>
+                        <span class="color-swatch-dot" style="background: #0b192c;" title="Ambient: Oceanic Navy"></span>
+                        <span class="text-white-50 ms-1" style="font-size: 0.68rem;">Teal / Amber Gold</span>
+                      </div>
+                      <p class="text-white-50 small mb-2" style="font-size: 0.72rem; line-height: 1.4;">
+                        High-precision scientific dashboard with ML benchmark curves, data pipeline diagrams, and research publication links.
+                      </p>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top border-white-subtle">
+                      <span class="badge bg-white-subtle text-white-50" style="font-size: 0.65rem;">📈 Pipeline Models</span>
+                      <span class="text-indigo-subtle small fw-semibold" style="font-size: 0.7rem;">Use Style →</span>
+                    </div>
+                  </div>
+
+                  <!-- Card 8: Interactive Split-Screen 3D -->
+                  <div class="prompt-template-card" data-template-id="split-screen-showcase" data-category="split">
+                    <div>
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex align-items-center gap-1.5">
+                          <span class="fs-5">🪞</span>
+                          <div>
+                            <div class="text-white fw-bold small">Split-Screen 3D</div>
+                            <div class="text-white-50" style="font-size: 0.68rem;">50/50 Dual Panel • Parallax</div>
+                          </div>
+                        </div>
+                        <span class="card-selected-badge">✓ Active</span>
+                      </div>
+                      <div class="d-flex align-items-center gap-1.5 mb-2">
+                        <span class="color-swatch-dot" style="background: #f43f5e;" title="Primary: Neon Rose"></span>
+                        <span class="color-swatch-dot" style="background: #7c3aed;" title="Secondary: Electric Purple"></span>
+                        <span class="color-swatch-dot" style="background: #111827;" title="Ambient: Frosted Obsidian"></span>
+                        <span class="text-white-50 ms-1" style="font-size: 0.68rem;">Rose / Electric Purple</span>
+                      </div>
+                      <p class="text-white-50 small mb-2" style="font-size: 0.72rem; line-height: 1.4;">
+                        Sticky brand hero on the left with live demo popovers, accompanied by a parallax deep-dive project wall on the right.
+                      </p>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top border-white-subtle">
+                      <span class="badge bg-white-subtle text-white-50" style="font-size: 0.65rem;">🌊 Parallax Scroll</span>
+                      <span class="text-indigo-subtle small fw-semibold" style="font-size: 0.7rem;">Use Style →</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <!-- Interactive Prompt Editor Card -->
-              <div class="prompt-editor-card mb-3">
+              <div class="prompt-editor-card mb-3" id="prompt-editor-card">
                 <!-- Editor Toolbar -->
                 <div class="prompt-editor-toolbar d-flex justify-content-between align-items-center flex-wrap gap-2">
                   <div class="d-flex align-items-center gap-2">
@@ -571,7 +971,10 @@
                     </span>
                     <span id="prompt-char-count" class="text-white-50 small" style="font-size: 0.72rem;">0 characters</span>
                   </div>
-                  <div class="d-flex align-items-center gap-1.5">
+                  <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                    <button type="button" id="btn-reset-template" class="btn btn-sm btn-outline-light py-0.5 px-2 rounded-pill fw-medium small d-flex align-items-center gap-1" style="font-size: 0.72rem;" title="Reset prompt to original template text">
+                      <span>↺</span> Reset Template
+                    </button>
                     <button type="button" id="btn-auto-draft-prompt" class="btn btn-sm btn-outline-light py-0.5 px-2 rounded-pill fw-medium small d-flex align-items-center gap-1" style="font-size: 0.72rem;" title="Synthesize an editable prompt from your profile facts">
                       <span>🪄</span> Auto-Draft
                     </button>
@@ -586,51 +989,81 @@
 
                 <!-- Textarea -->
                 <div class="position-relative p-2">
-                  <textarea id="input-ai-prompt" rows="4" class="form-control prompt-textarea w-100" placeholder="Type or customize your prompt here... e.g. Create an exceptional modern portfolio for a Senior AI &amp; Full Stack Engineer with modular Bento grid layout, dark mode, verified skills, and interactive project showcases..."></textarea>
+                  <textarea id="input-ai-prompt" rows="4" class="form-control prompt-textarea w-100" placeholder="Select a template above or type your prompt... e.g. Create an award-winning portfolio with modern Bento grid layout, dark mode, verified skills, and interactive project showcases..."></textarea>
                 </div>
 
-                <!-- Quick Prompt Customization Modifiers / Pills -->
+                <!-- Quick Prompt Customization Modifiers / Dimension Fine-Tuner Studio -->
                 <div class="prompt-editor-footer">
-                  <div class="d-flex justify-content-between align-items-center mb-1.5">
-                    <span class="text-white-50 small fw-semibold" style="font-size: 0.72rem;">⚡ Quick Modifiers (Tap to inject or customize):</span>
-                    <span class="text-white-50 small" style="font-size: 0.68rem;">Click any tag to customize</span>
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-white-50 small fw-bold" style="font-size: 0.74rem;">⚡ Customize Prompt Directives (Click to inject or update):</span>
+                    <span class="text-white-50 small" style="font-size: 0.68rem;">Updates active prompt text</span>
                   </div>
-                  <div class="d-flex flex-wrap gap-1.5" id="prompt-modifiers-container">
-                    <button type="button" class="prompt-mod-pill" data-append="with modern Bento modular grid layout and clean aesthetic">🍱 Bento Grid</button>
-                    <button type="button" class="prompt-mod-pill" data-append="in developer terminal IDE aesthetic with dark workstation feel">💻 Terminal IDE</button>
-                    <button type="button" class="prompt-mod-pill" data-append="with AI neural telemetry HUD aesthetic and cyan glow">🤖 Neural HUD</button>
-                    <button type="button" class="prompt-mod-pill" data-append="in luxury NOVA editorial boutique showcase style">🌟 NOVA Editorial</button>
-                    <button type="button" class="prompt-mod-pill" data-append="in ultra-clean minimalist Swiss typography style">📐 Minimal Swiss</button>
-                    <button type="button" class="prompt-mod-pill" data-append="in deep OLED midnight dark theme">🌙 OLED Dark</button>
-                    <button type="button" class="prompt-mod-pill" data-append="highlighting quantified business KPIs and scale metrics">📊 Quantified KPIs</button>
-                    <button type="button" class="prompt-mod-pill" data-append="showcasing distributed high-throughput architecture">🚀 High Scale</button>
-                    <button type="button" class="prompt-mod-pill" data-append="tailored for elite recruiter discovery and interview conversion">💼 Recruiter Ready</button>
-                  </div>
-                </div>
-              </div>
 
-              <!-- Quick Prompt Starters -->
-              <div class="mb-3">
-                <div class="d-flex justify-content-between align-items-center mb-1.5">
-                  <div class="text-white-50 small fw-semibold">💡 Load Inspiring Template Prompts:</div>
-                  <span class="text-white-50 small" style="font-size: 0.68rem;">Loads full editable prompt</span>
-                </div>
-                <div class="d-flex flex-wrap gap-2" id="prompt-starters-container">
-                  <button type="button" class="prompt-starter-chip" data-prompt="Create a high-impact portfolio for a Senior AI &amp; ML Engineer specializing in Large Language Models, PyTorch, and LangChain with 5 years experience. Use a futuristic dark cyber aesthetic with neon cyan and violet accents, highlighting agentic AI projects and sub-100ms inference optimization.">
-                    🤖 AI &amp; LLM Specialist
-                  </button>
-                  <button type="button" class="prompt-starter-chip" data-prompt="Build a clean, high-growth SaaS Product Engineer portfolio with 4 years experience in Next.js, TypeScript, and FastAPI. Emphasize modular Bento grid design, electric indigo colors, and 99.9% uptime reliability metrics.">
-                    ⚡ SaaS Product Lead (Bento)
-                  </button>
-                  <button type="button" class="prompt-starter-chip" data-prompt="Create a minimalist, Swiss editorial style portfolio for a Principal Cloud &amp; DevOps Architect. Focus on Kubernetes, AWS, and Terraform with ultra-readable typography, clean obsidian slate colors, and enterprise cost reduction stats.">
-                    ☁️ Cloud &amp; DevOps Architect
-                  </button>
-                  <button type="button" class="prompt-starter-chip" data-prompt="Design a creative, asymmetric neo-display portfolio for a Senior UI/UX &amp; Frontend Engineer with expertise in React, Three.js, and design systems. Use warm terracotta and vibrant violet accents with interactive showcase projects.">
-                    🎨 Creative Frontend &amp; UI/UX
-                  </button>
-                  <button type="button" class="prompt-starter-chip" data-prompt="Build an executive 2-column briefing portfolio for a Director of Engineering with 10+ years experience leading teams of 25+ engineers, enterprise migrations, and executive strategy.">
-                    🏢 Executive Tech Director
-                  </button>
+                  <!-- Dimension 1: Layout -->
+                  <div class="mb-2">
+                    <div class="customizer-dimension-title mb-1">📐 Layout Archetype:</div>
+                    <div class="d-flex flex-wrap gap-1.5" id="dim-layout-pills">
+                      <button type="button" class="dim-mod-pill" data-dimension="layout" data-value="with modern Bento modular grid layout and responsive multi-span cards">🍱 Bento Grid</button>
+                      <button type="button" class="dim-mod-pill" data-dimension="layout" data-value="in developer terminal IDE console aesthetic with monospace code cards and CLI interface">💻 Terminal IDE</button>
+                      <button type="button" class="dim-mod-pill" data-dimension="layout" data-value="with AI neural telemetry HUD layout, status badges, and radar benchmarks">🤖 Neural HUD</button>
+                      <button type="button" class="dim-mod-pill" data-dimension="layout" data-value="in ultra-clean minimalist Swiss asymmetric editorial typography style">📐 Minimal Swiss</button>
+                      <button type="button" class="dim-mod-pill" data-dimension="layout" data-value="with modern 50/50 interactive split-screen layout and sticky personal brand hero">🪞 Split Screen</button>
+                      <button type="button" class="dim-mod-pill" data-dimension="layout" data-value="in prestigious 2-column executive briefing dossier layout highlighting board-level impact">💼 Executive Dossier</button>
+                      <button type="button" class="dim-mod-pill" data-dimension="layout" data-value="in expressive creative studio showcase style with floating project vignettes">🎨 Creative Studio</button>
+                    </div>
+                  </div>
+
+                  <!-- Dimension 2: Theme & Colors -->
+                  <div class="mb-2">
+                    <div class="customizer-dimension-title mb-1">🎨 Theme &amp; Colors:</div>
+                    <div class="d-flex flex-wrap gap-1.5" id="dim-color-pills">
+                      <button type="button" class="dim-mod-pill" data-dimension="color" data-value="using electric indigo (#4f46e5) and vibrant emerald (#10b981) accents over deep slate">
+                        <span class="color-swatch-dot" style="background: #4f46e5;"></span> Electric Indigo &amp; Emerald
+                      </button>
+                      <button type="button" class="dim-mod-pill" data-dimension="color" data-value="using luminous cyber cyan (#00e5ff) and neon magenta (#ec4899) accents">
+                        <span class="color-swatch-dot" style="background: #00e5ff;"></span> Cyber Cyan &amp; Neon
+                      </button>
+                      <button type="button" class="dim-mod-pill" data-dimension="color" data-value="using phosphor emerald (#22c55e) and sky blue (#38bdf8) highlights">
+                        <span class="color-swatch-dot" style="background: #22c55e;"></span> Matrix Emerald &amp; Slate
+                      </button>
+                      <button type="button" class="dim-mod-pill" data-dimension="color" data-value="using warm sunset terracotta (#f97316) and amber gold (#d97706) tones">
+                        <span class="color-swatch-dot" style="background: #f97316;"></span> Sunset Terracotta
+                      </button>
+                      <button type="button" class="dim-mod-pill" data-dimension="color" data-value="using executive royal navy (#0f172a), cobalt blue (#2563eb), and champagne gold (#f59e0b) accents">
+                        <span class="color-swatch-dot" style="background: #2563eb;"></span> Royal Navy &amp; Gold
+                      </button>
+                      <button type="button" class="dim-mod-pill" data-dimension="color" data-value="using high-contrast minimalist monochrome (#18181b) with crimson carmine (#e11d48) highlights">
+                        <span class="color-swatch-dot" style="background: #18181b;"></span> Swiss Monochrome
+                      </button>
+                      <button type="button" class="dim-mod-pill" data-dimension="color" data-value="using Nordic frost blue (#0284c7) and steel slate (#64748b) tones">
+                        <span class="color-swatch-dot" style="background: #0284c7;"></span> Nordic Frost
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Dimension 3: Animations & Effects -->
+                  <div class="mb-2">
+                    <div class="customizer-dimension-title mb-1">✨ Animations &amp; Visual FX:</div>
+                    <div class="d-flex flex-wrap gap-1.5" id="dim-animation-pills">
+                      <button type="button" class="dim-mod-pill" data-dimension="animation" data-value="featuring interactive 3D perspective card tilt physics and ambient luminous glass glow on hover">✨ 3D Tilt Cards &amp; Glass Glow</button>
+                      <button type="button" class="dim-mod-pill" data-dimension="animation" data-value="featuring dynamic typewriter terminal headline cursor and live code commit telemetry">⌨️ Terminal Cursor Typing</button>
+                      <button type="button" class="dim-mod-pill" data-dimension="animation" data-value="featuring smooth parallax depth scrolling and frosted glass refraction blur">🌊 Parallax Depth &amp; Glass</button>
+                      <button type="button" class="dim-mod-pill" data-dimension="animation" data-value="featuring animated kinetic metric counters and quantified KPI growth tickers">📈 Kinetic KPI Counters</button>
+                      <button type="button" class="dim-mod-pill" data-dimension="animation" data-value="featuring magnetic fluid hover physics and subtle gradient mesh waves">💫 Magnetic Fluid Physics</button>
+                      <button type="button" class="dim-mod-pill" data-dimension="animation" data-value="featuring shimmering luminous micro-borders and subtle elevation lift">🌟 Shimmering Glow Borders</button>
+                    </div>
+                  </div>
+
+                  <!-- Dimension 4: Atmosphere & Tone -->
+                  <div>
+                    <div class="customizer-dimension-title mb-1">🌓 Atmosphere &amp; Tone:</div>
+                    <div class="d-flex flex-wrap gap-1.5" id="dim-tone-pills">
+                      <button type="button" class="dim-mod-pill" data-dimension="tone" data-value="in deep OLED midnight dark theme with high-contrast elements">🌙 Deep OLED Dark</button>
+                      <button type="button" class="dim-mod-pill" data-dimension="tone" data-value="in ultra-clean bright minimalist light theme with generous whitespace">☀️ Ultra-Clean Light</button>
+                      <button type="button" class="dim-mod-pill" data-dimension="tone" data-value="tailored for elite recruiter discovery with ATS verified credentials and interview conversion focus">💼 Recruiter Ready</button>
+                      <button type="button" class="dim-mod-pill" data-dimension="tone" data-value="emphasizing sub-100ms latency reduction, distributed scale, and high throughput metrics">🚀 High Scale</button>
+                    </div>
+                  </div>
                 </div>
               </div>
 

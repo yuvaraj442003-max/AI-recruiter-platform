@@ -749,13 +749,13 @@ def _generate_deterministic_portfolio(
         layout = "developer"
     elif any(k in p_lower for k in ["bento", "modular", "apple", "linear"]):
         layout = "modern"
-    elif any(k in p_lower for k in ["swiss", "minimalist", "minimal monograph"]):
+    elif any(k in p_lower for k in ["swiss", "minimalist", "minimal monograph", "monograph"]):
         layout = "minimal"
-    elif any(k in p_lower for k in ["corporate", "briefing", "2-column", "executive briefing"]):
+    elif any(k in p_lower for k in ["corporate", "briefing", "2-column", "executive briefing", "dossier"]):
         layout = "corporate"
-    elif any(k in p_lower for k in ["neural hud", "ai tech", "cyber telemetry", "futuristic"]):
+    elif any(k in p_lower for k in ["neural hud", "ai tech", "cyber telemetry", "futuristic", "hud", "telemetry"]):
         layout = "ai_tech"
-    elif any(k in p_lower for k in ["neo-display", "asymmetric", "creative studio"]):
+    elif any(k in p_lower for k in ["neo-display", "asymmetric", "creative studio", "studio"]):
         layout = "creative"
     elif any(k in p_lower for k in ["split screen", "split-screen", "dual panel"]):
         layout = "split_screen"
