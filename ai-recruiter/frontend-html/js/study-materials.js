@@ -2380,7 +2380,8 @@
     if (quizLoadingTitle) quizLoadingTitle.textContent = `Preparing ${slug.toUpperCase()} Mock Exam...`;
     if (quizLoadingSubtext) quizLoadingSubtext.textContent = `Assembling real questions & patterns modeled on ${slug.toUpperCase()} aptitude cutoffs...`;
 
-    if (milestoneQuizModal) milestoneQuizModal.show();
+    const targetModal = quizModal || (quizModalEl ? (bootstrap.Modal.getInstance(quizModalEl) || new bootstrap.Modal(quizModalEl)) : null);
+    if (targetModal) targetModal.show();
 
     try {
       const res = await api.studyMaterials.startCompanyMockTest(slug);
@@ -2402,7 +2403,7 @@
       renderCurrentQuestion();
     } catch (err) {
       alert("Failed to start company mock exam: " + err.message);
-      if (milestoneQuizModal) milestoneQuizModal.hide();
+      if (targetModal) targetModal.hide();
     }
   };
 
