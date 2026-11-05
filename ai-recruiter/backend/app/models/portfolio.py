@@ -57,6 +57,7 @@ class Portfolio(Base, TimestampMixin):
     services: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     social_links: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     custom_css: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    generation_prompt: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     # Relationship to CandidateProfile
     candidate: Mapped["CandidateProfile"] = relationship(back_populates="portfolio")

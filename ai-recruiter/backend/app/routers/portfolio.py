@@ -199,6 +199,7 @@ def generate_portfolio_from_prompt_endpoint(
         portfolio.background_image = gen_data["background_image"]
     if "custom_css" in gen_data and gen_data["custom_css"]:
         portfolio.custom_css = gen_data["custom_css"]
+    portfolio.generation_prompt = payload.prompt
     portfolio.card_style = gen_data.get("card_style", portfolio.card_style or "glass")
     portfolio.button_style = gen_data.get("button_style", portfolio.button_style or "rounded")
     portfolio.dark_mode = bool(gen_data.get("dark_mode", portfolio.dark_mode))

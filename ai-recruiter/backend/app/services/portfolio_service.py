@@ -900,6 +900,8 @@ def update_candidate_portfolio(db: Session, portfolio: Portfolio, updates: Dict[
         portfolio.about = updates["about"]
     if "custom_css" in updates:
         portfolio.custom_css = updates["custom_css"]
+    if "generation_prompt" in updates:
+        portfolio.generation_prompt = updates["generation_prompt"]
 
     # JSON fields
     json_fields = [
@@ -1203,6 +1205,7 @@ def format_portfolio_dict(portfolio: Portfolio, public_only: bool = False, db: O
             "layout": portfolio.layout,
             "custom_css": custom_css_val,
             "portrait_mask": portrait_mask_val,
+            "generation_prompt": getattr(portfolio, "generation_prompt", None),
             "section_order": order_data,
             "section_visibility": vis_data,
             "slug": portfolio.slug,
@@ -1230,6 +1233,7 @@ def format_portfolio_dict(portfolio: Portfolio, public_only: bool = False, db: O
         "layout": portfolio.layout,
         "custom_css": custom_css_val,
         "portrait_mask": portrait_mask_val,
+        "generation_prompt": getattr(portfolio, "generation_prompt", None),
         "profile_image": portfolio.profile_image or (cand.profile_photo if cand else None),
         "background_image": effective_bg,
         "professional_headline": portfolio.professional_headline,

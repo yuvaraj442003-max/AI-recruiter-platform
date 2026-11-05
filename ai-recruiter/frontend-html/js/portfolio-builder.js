@@ -30,8 +30,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   const modalDeleteSlug = document.getElementById("modal-delete-slug");
   const deleteBtnSpinner = document.getElementById("delete-btn-spinner");
 
-  // DOM Elements - Prompt Center
+  // DOM Elements - Prompt Center & Editor
   const inputAiPrompt = document.getElementById("input-ai-prompt");
+  const btnAutoDraftPrompt = document.getElementById("btn-auto-draft-prompt");
+  const btnCopyPrompt = document.getElementById("btn-copy-prompt");
+  const btnClearPrompt = document.getElementById("btn-clear-prompt");
+  const promptCharCount = document.getElementById("prompt-char-count");
+  const promptEditBadge = document.getElementById("prompt-edit-badge");
+  const promptModPills = document.querySelectorAll(".prompt-mod-pill");
   const checkIncludeResume = document.getElementById("check-include-resume");
   const btnGenerateGemini = document.getElementById("btn-generate-with-gemini");
   const btnGenerateIcon = document.getElementById("btn-generate-icon");
@@ -245,6 +251,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   function setupInitialDefaultPortfolio(user) {
     currentPortfolio = {
       candidate_name: user?.name || "Candidate",
+      generation_prompt: "",
       profile_image: user?.profile_photo || "",
       portrait_mask: "mask-pebble",
       professional_headline: "",
@@ -352,6 +359,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     chromeSlugDisplay.textContent = currentPortfolio.slug || "candidate";
 
     updatePublishStatusBadge();
+
+    // Prompt Center Sync: Pre-fill existing prompt or smart candidate draft so it's always editable
+    if (inputAiPrompt) {
+      if (currentPortfolio.generation_prompt && currentPortfolio.generation_prompt.trim()) {
+        inputAiPrompt.value = currentPortfolio.generation_prompt.trim();
+      } else if (!inputAiPrompt.value || !inputAiPrompt.value.trim()) {
+        inputAiPrompt.value = buildSmartCandidatePrompt(currentPortfolio, Session.getUser());
+      }
+      adjustPromptHeight();
+      updatePromptCharCount();
+    }
 
     // Render Sub-Sections in UI
     renderProfileImageEditor();
@@ -513,21 +531,170 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   /**
-   * Binds Prompt Starters & Gemini Generation
+   * Automatically resizes the prompt textarea based on content length
+   */
+  function adjustPromptHeight() {
+    if (!inputAiPrompt) return;
+    inputAiPrompt.style.height = "auto";
+    const newH = Math.max(105, Math.min(inputAiPrompt.scrollHeight, 320));
+    inputAiPrompt.style.height = `${newH}px`;
+  }
+
+  /**
+   * Updates live character count and editor status badge
+   */
+  function updatePromptCharCount() {
+    if (!inputAiPrompt) return;
+    const count = (inputAiPrompt.value || "").length;
+    if (promptCharCount) {
+      promptCharCount.textContent = `${count} characters`;
+    }
+    if (promptEditBadge) {
+      if (count > 0) {
+        promptEditBadge.innerHTML = `<span>✏️</span> Customizing Prompt`;
+        promptEditBadge.className = "badge bg-indigo-subtle text-light small d-flex align-items-center gap-1";
+      } else {
+        promptEditBadge.innerHTML = `<span>💡</span> Ready for Prompt`;
+        promptEditBadge.className = "badge bg-secondary-subtle text-white-50 small d-flex align-items-center gap-1";
+      }
+    }
+  }
+
+  /**
+   * Synthesizes an intelligent, personalized candidate prompt based on verified profile facts
+   */
+  function buildSmartCandidatePrompt(portfolio, user) {
+    const name = (portfolio?.candidate_name || user?.name || "Candidate").trim();
+    const headline = (portfolio?.professional_headline || "Software Engineer").trim();
+    const layout = portfolio?.layout || "modern";
+    const theme = portfolio?.theme_id || "modern";
+    const skillsObj = portfolio?.skills || {};
+    let skillList = [];
+    if (Array.isArray(skillsObj)) {
+      skillList = skillsObj;
+    } else if (typeof skillsObj === "object" && skillsObj !== null) {
+      skillList = Object.values(skillsObj).flat();
+    }
+    const topSkills = skillList.filter(s => typeof s === "string" && s.trim()).slice(0, 6).join(", ");
+
+    let p = `Create a high-impact, modern portfolio website for ${name}, ${headline}`;
+    if (topSkills) {
+      p += ` with verified expertise in ${topSkills}`;
+    }
+    p += `. Highlight scalable architecture, clean responsive design, and quantified achievements using a ${layout} layout in ${theme} theme.`;
+    return p;
+  }
+
+  /**
+   * Binds Prompt Starters, Custom Modifiers, Live Editing, and Gemini Generation
    */
   function bindPromptStarters() {
+    // 1. Textarea auto-resize and live character count
+    if (inputAiPrompt) {
+      inputAiPrompt.addEventListener("input", () => {
+        adjustPromptHeight();
+        updatePromptCharCount();
+      });
+    }
+
+    // 2. Auto-Draft from Profile button
+    if (btnAutoDraftPrompt) {
+      btnAutoDraftPrompt.addEventListener("click", () => {
+        const user = Session.getUser();
+        const smartPrompt = buildSmartCandidatePrompt(currentPortfolio, user);
+        inputAiPrompt.value = smartPrompt;
+        adjustPromptHeight();
+        updatePromptCharCount();
+        inputAiPrompt.focus();
+        showAlert("✨ Prompt drafted from your profile facts! You can now freely edit, customize, or tweak every word.", "info");
+      });
+    }
+
+    // 3. Copy Prompt button
+    if (btnCopyPrompt) {
+      btnCopyPrompt.addEventListener("click", () => {
+        const val = (inputAiPrompt.value || "").trim();
+        if (!val) {
+          showAlert("Prompt is empty, nothing to copy.", "warning");
+          return;
+        }
+        navigator.clipboard.writeText(val);
+        const orig = btnCopyPrompt.innerHTML;
+        btnCopyPrompt.innerHTML = `<span>✓</span> Copied!`;
+        btnCopyPrompt.classList.replace("btn-outline-light", "btn-success");
+        setTimeout(() => {
+          btnCopyPrompt.innerHTML = orig;
+          btnCopyPrompt.classList.replace("btn-success", "btn-outline-light");
+        }, 2000);
+      });
+    }
+
+    // 4. Clear Prompt button
+    if (btnClearPrompt) {
+      btnClearPrompt.addEventListener("click", () => {
+        inputAiPrompt.value = "";
+        adjustPromptHeight();
+        updatePromptCharCount();
+        inputAiPrompt.focus();
+        showAlert("Prompt cleared. Type a custom prompt or tap any modifier/idea below.", "info");
+      });
+    }
+
+    // 5. Quick Modifiers Pills (e.g. + Bento Grid, + Terminal IDE, + Quantified KPIs)
+    promptModPills.forEach(pill => {
+      pill.addEventListener("click", () => {
+        const appendText = pill.getAttribute("data-append");
+        if (!appendText) return;
+
+        let currentVal = (inputAiPrompt.value || "").trim();
+        if (!currentVal) {
+          const user = Session.getUser();
+          currentVal = `Create an exceptional portfolio for ${currentPortfolio?.candidate_name || user?.name || "Candidate"}`;
+        }
+
+        // Avoid duplicate appends
+        if (!currentVal.toLowerCase().includes(appendText.toLowerCase())) {
+          if (/[.!?]$/.test(currentVal)) {
+            currentVal += ` Also design it ${appendText}.`;
+          } else if (/,$/.test(currentVal)) {
+            currentVal += ` ${appendText}`;
+          } else {
+            currentVal += `, ${appendText}`;
+          }
+        }
+
+        inputAiPrompt.value = currentVal;
+        adjustPromptHeight();
+        updatePromptCharCount();
+        inputAiPrompt.focus();
+
+        pill.classList.add("active");
+        setTimeout(() => pill.classList.remove("active"), 1200);
+        showAlert(`✨ Preference added to prompt! You can continue editing your prompt above.`, "info");
+      });
+    });
+
+    // 6. Inspiring Template Starters
     promptStarters.forEach(chip => {
       chip.addEventListener("click", () => {
         const text = chip.getAttribute("data-prompt");
         if (text) {
           inputAiPrompt.value = text;
+          adjustPromptHeight();
+          updatePromptCharCount();
           inputAiPrompt.focus();
+
+          promptStarters.forEach(c => c.classList.remove("active"));
+          chip.classList.add("active");
+
           btnGenerateGemini.classList.add("pulse-glow");
           setTimeout(() => btnGenerateGemini.classList.remove("pulse-glow"), 1000);
+          showAlert("💡 Template prompt loaded! You can now freely edit, modify, or customize every sentence above.", "info");
         }
       });
     });
 
+    // 7. Generate button click
     btnGenerateGemini.addEventListener("click", async () => {
       const promptText = (inputAiPrompt.value || "").trim();
       if (!promptText) {
@@ -557,6 +724,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (res && res.data) {
           currentPortfolio = res.data;
+          currentPortfolio.generation_prompt = promptText;
           syncDataToUI();
           renderLivePreview();
           if (portfolioReadyBanner) portfolioReadyBanner.classList.remove("d-none");
@@ -1935,6 +2103,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const customCssValue = currentPortfolio.custom_css || (currentPortfolio.portrait_mask ? JSON.stringify({ portrait_mask: currentPortfolio.portrait_mask }) : undefined);
         const payload = {
           theme_id: currentPortfolio.theme_id,
+          generation_prompt: (inputAiPrompt?.value || currentPortfolio.generation_prompt || "").trim(),
           profile_image: currentPortfolio.profile_image,
           candidate_name: (inputCandidateName?.value || currentPortfolio.candidate_name || "").trim(),
           primary_color: currentPortfolio.primary_color,

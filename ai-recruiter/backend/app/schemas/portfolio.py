@@ -117,6 +117,7 @@ class PortfolioUpdateRequest(BaseModel):
     section_order: Optional[list[str]] = None
     section_visibility: Optional[Dict[str, bool]] = None
     custom_css: Optional[str] = None
+    generation_prompt: Optional[str] = None
 
 
 class PortfolioThemeUpdateRequest(BaseModel):
@@ -222,7 +223,9 @@ class PortfolioResponse(BaseModel):
     section_order: list[str] = Field(default_factory=list)
     section_visibility: Dict[str, bool] = Field(default_factory=dict)
     custom_css: Optional[str] = None
+    generation_prompt: Optional[str] = None
     portrait_mask: Optional[str] = None
+    generation_prompt: Optional[str] = None
     public_url: str
     created_at: datetime
     updated_at: datetime
@@ -254,6 +257,7 @@ class PublicPortfolioResponse(BaseModel):
     card_style: str
     layout: str
     custom_css: Optional[str] = None
+    generation_prompt: Optional[str] = None
     portrait_mask: Optional[str] = None
     section_order: list[str] = Field(default_factory=list)
     section_visibility: Dict[str, bool] = Field(default_factory=dict)

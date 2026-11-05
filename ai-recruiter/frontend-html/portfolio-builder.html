@@ -41,27 +41,77 @@
       background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
       pointer-events: none;
     }
+    .prompt-editor-card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(129, 140, 248, 0.35);
+      border-radius: 16px;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .prompt-editor-card:focus-within {
+      border-color: #818cf8;
+      box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.25), 0 8px 30px rgba(0, 0, 0, 0.45);
+    }
+    .prompt-editor-toolbar {
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.55rem 0.85rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
     .prompt-textarea {
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid rgba(129, 140, 248, 0.3);
+      background: transparent;
+      border: none;
       color: #f8fafc;
-      border-radius: 14px;
-      font-size: 0.92rem;
-      line-height: 1.5;
-      padding: 0.85rem 1rem;
-      resize: vertical;
-      transition: all 0.25s ease;
-      backdrop-filter: blur(8px);
+      font-size: 0.93rem;
+      line-height: 1.55;
+      padding: 0.75rem 0.85rem;
+      min-height: 105px;
+      max-height: 320px;
+      resize: none;
+      width: 100%;
+      box-shadow: none !important;
     }
     .prompt-textarea:focus {
-      background: rgba(15, 23, 42, 0.9);
-      border-color: #818cf8;
-      box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.25);
+      background: transparent;
       color: #ffffff;
       outline: none;
+      box-shadow: none !important;
     }
     .prompt-textarea::placeholder {
-      color: #94a3b8;
+      color: #64748b;
+      font-style: italic;
+    }
+    .prompt-editor-footer {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.55rem 0.85rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .prompt-mod-pill {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #e2e8f0;
+      border-radius: 50rem;
+      padding: 0.25rem 0.65rem;
+      font-size: 0.72rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      white-space: nowrap;
+    }
+    .prompt-mod-pill:hover {
+      background: rgba(99, 102, 241, 0.35);
+      border-color: #818cf8;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+    .prompt-mod-pill.active {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      border-color: #a5b4fc;
+      color: #ffffff;
     }
     .prompt-starter-chip {
       background: rgba(255, 255, 255, 0.08);
@@ -499,38 +549,83 @@
           <div class="col-xl-5 col-lg-6" id="builder-controls-column">
 
             <!-- 1. MASTER GEMINI PROMPT HERO -->
-            <!-- 1. MASTER GEMINI PROMPT HERO -->
             <div class="prompt-hero-box mb-4">
               <div class="d-flex justify-content-between align-items-center mb-2">
                 <div class="d-flex align-items-center gap-2">
                   <span class="fs-5">✨</span>
                   <h5 class="fw-bold mb-0 text-white">Generate Your Portfolio with AI</h5>
                 </div>
-                <span class="badge bg-light text-dark fw-semibold" style="font-size: 0.72rem;">Triple-Gemini AI Engine</span>
+                <span class="badge bg-white-subtle text-white border border-white-subtle fw-semibold" style="font-size: 0.72rem;">Triple-Gemini AI Engine</span>
               </div>
               <p class="text-white-50 small mb-3">
-                Enter a prompt describing your role, skills, experience, and style preferences. Our AI will synthesize your complete portfolio website.
+                Describe your dream portfolio, or customize and fine-tune your prompt below using quick preference modifiers and starter templates.
               </p>
 
-              <!-- Prompt Input -->
-              <div class="mb-3 position-relative">
-                <textarea id="input-ai-prompt" rows="4" class="form-control prompt-textarea w-100" placeholder="e.g. Create an award-winning portfolio for a Lead AI Systems Engineer with 6 years experience in LLMs, distributed training, and PyTorch. Highlight high-scale microservices, dark cyberpunk theme with neon cyan accents, latency reduction metrics, and an interactive terminal feel..."></textarea>
+              <!-- Interactive Prompt Editor Card -->
+              <div class="prompt-editor-card mb-3">
+                <!-- Editor Toolbar -->
+                <div class="prompt-editor-toolbar d-flex justify-content-between align-items-center flex-wrap gap-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span id="prompt-edit-badge" class="badge bg-indigo-subtle text-light small d-flex align-items-center gap-1" style="font-size: 0.72rem;">
+                      <span>✏️</span> Active Prompt Editor
+                    </span>
+                    <span id="prompt-char-count" class="text-white-50 small" style="font-size: 0.72rem;">0 characters</span>
+                  </div>
+                  <div class="d-flex align-items-center gap-1.5">
+                    <button type="button" id="btn-auto-draft-prompt" class="btn btn-sm btn-outline-light py-0.5 px-2 rounded-pill fw-medium small d-flex align-items-center gap-1" style="font-size: 0.72rem;" title="Synthesize an editable prompt from your profile facts">
+                      <span>🪄</span> Auto-Draft
+                    </button>
+                    <button type="button" id="btn-copy-prompt" class="btn btn-sm btn-outline-light py-0.5 px-2 rounded-pill fw-medium small d-flex align-items-center gap-1" style="font-size: 0.72rem;" title="Copy prompt to clipboard">
+                      <span>📋</span> Copy
+                    </button>
+                    <button type="button" id="btn-clear-prompt" class="btn btn-sm btn-outline-light py-0.5 px-2 rounded-pill fw-medium small d-flex align-items-center gap-1" style="font-size: 0.72rem;" title="Clear prompt text">
+                      <span>✕</span> Clear
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Textarea -->
+                <div class="position-relative p-2">
+                  <textarea id="input-ai-prompt" rows="4" class="form-control prompt-textarea w-100" placeholder="Type or customize your prompt here... e.g. Create an exceptional modern portfolio for a Senior AI &amp; Full Stack Engineer with modular Bento grid layout, dark mode, verified skills, and interactive project showcases..."></textarea>
+                </div>
+
+                <!-- Quick Prompt Customization Modifiers / Pills -->
+                <div class="prompt-editor-footer">
+                  <div class="d-flex justify-content-between align-items-center mb-1.5">
+                    <span class="text-white-50 small fw-semibold" style="font-size: 0.72rem;">⚡ Quick Modifiers (Tap to inject or customize):</span>
+                    <span class="text-white-50 small" style="font-size: 0.68rem;">Click any tag to customize</span>
+                  </div>
+                  <div class="d-flex flex-wrap gap-1.5" id="prompt-modifiers-container">
+                    <button type="button" class="prompt-mod-pill" data-append="with modern Bento modular grid layout and clean aesthetic">🍱 Bento Grid</button>
+                    <button type="button" class="prompt-mod-pill" data-append="in developer terminal IDE aesthetic with dark workstation feel">💻 Terminal IDE</button>
+                    <button type="button" class="prompt-mod-pill" data-append="with AI neural telemetry HUD aesthetic and cyan glow">🤖 Neural HUD</button>
+                    <button type="button" class="prompt-mod-pill" data-append="in luxury NOVA editorial boutique showcase style">🌟 NOVA Editorial</button>
+                    <button type="button" class="prompt-mod-pill" data-append="in ultra-clean minimalist Swiss typography style">📐 Minimal Swiss</button>
+                    <button type="button" class="prompt-mod-pill" data-append="in deep OLED midnight dark theme">🌙 OLED Dark</button>
+                    <button type="button" class="prompt-mod-pill" data-append="highlighting quantified business KPIs and scale metrics">📊 Quantified KPIs</button>
+                    <button type="button" class="prompt-mod-pill" data-append="showcasing distributed high-throughput architecture">🚀 High Scale</button>
+                    <button type="button" class="prompt-mod-pill" data-append="tailored for elite recruiter discovery and interview conversion">💼 Recruiter Ready</button>
+                  </div>
+                </div>
               </div>
 
               <!-- Quick Prompt Starters -->
               <div class="mb-3">
-                <div class="text-white-50 small mb-2 fw-semibold">Try inspiring prompt ideas:</div>
+                <div class="d-flex justify-content-between align-items-center mb-1.5">
+                  <div class="text-white-50 small fw-semibold">💡 Load Inspiring Template Prompts:</div>
+                  <span class="text-white-50 small" style="font-size: 0.68rem;">Loads full editable prompt</span>
+                </div>
                 <div class="d-flex flex-wrap gap-2" id="prompt-starters-container">
-                  <button type="button" class="prompt-starter-chip" data-prompt="Create a high-impact portfolio for a Senior AI & ML Engineer specializing in Large Language Models, PyTorch, and LangChain with 5 years experience. Use a futuristic dark cyber aesthetic with neon cyan and violet accents, highlighting agentic AI projects and sub-100ms inference optimization.">
+                  <button type="button" class="prompt-starter-chip" data-prompt="Create a high-impact portfolio for a Senior AI &amp; ML Engineer specializing in Large Language Models, PyTorch, and LangChain with 5 years experience. Use a futuristic dark cyber aesthetic with neon cyan and violet accents, highlighting agentic AI projects and sub-100ms inference optimization.">
                     🤖 AI &amp; LLM Specialist
                   </button>
                   <button type="button" class="prompt-starter-chip" data-prompt="Build a clean, high-growth SaaS Product Engineer portfolio with 4 years experience in Next.js, TypeScript, and FastAPI. Emphasize modular Bento grid design, electric indigo colors, and 99.9% uptime reliability metrics.">
                     ⚡ SaaS Product Lead (Bento)
                   </button>
-                  <button type="button" class="prompt-starter-chip" data-prompt="Create a minimalist, Swiss editorial style portfolio for a Principal Cloud & DevOps Architect. Focus on Kubernetes, AWS, and Terraform with ultra-readable typography, clean obsidian slate colors, and enterprise cost reduction stats.">
+                  <button type="button" class="prompt-starter-chip" data-prompt="Create a minimalist, Swiss editorial style portfolio for a Principal Cloud &amp; DevOps Architect. Focus on Kubernetes, AWS, and Terraform with ultra-readable typography, clean obsidian slate colors, and enterprise cost reduction stats.">
                     ☁️ Cloud &amp; DevOps Architect
                   </button>
-                  <button type="button" class="prompt-starter-chip" data-prompt="Design a creative, asymmetric neo-display portfolio for a Senior UI/UX & Frontend Engineer with expertise in React, Three.js, and design systems. Use warm terracotta and vibrant violet accents with interactive showcase projects.">
+                  <button type="button" class="prompt-starter-chip" data-prompt="Design a creative, asymmetric neo-display portfolio for a Senior UI/UX &amp; Frontend Engineer with expertise in React, Three.js, and design systems. Use warm terracotta and vibrant violet accents with interactive showcase projects.">
                     🎨 Creative Frontend &amp; UI/UX
                   </button>
                   <button type="button" class="prompt-starter-chip" data-prompt="Build an executive 2-column briefing portfolio for a Director of Engineering with 10+ years experience leading teams of 25+ engineers, enterprise migrations, and executive strategy.">
