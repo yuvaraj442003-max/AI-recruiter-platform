@@ -2179,3 +2179,35 @@
 
 
 
+
+
+// -------------------------------------------------------------------------
+// Custom Portfolio Prompt Launchers
+// -------------------------------------------------------------------------
+window.applyDashPromptIdea = function(type) {
+  const input = document.getElementById("dash-custom-prompt-input");
+  const ideas = {
+    bento: "Create an award-winning portfolio with a modern Bento modular grid layout for an innovative engineer. Use a deep midnight slate theme with electric indigo (#4f46e5) and vibrant emerald (#10b981) accents. Feature frosted glassmorphic cards, 3D perspective tilt physics on hover, interactive metric counters, and showcase high-impact projects with live demo links.",
+    terminal: "Create an authentic Developer Terminal IDE portfolio with a dark workstation code aesthetic. Use a Matrix carbon black background (#0a0e14) with phosphor emerald green (#22c55e) and sky blue (#38bdf8) syntax highlights. Include an interactive typewriter terminal headline, collapsible code file trees, git commit activity graph, and live system status pills.",
+    cyber: "Design a futuristic Cyberpunk Neural HUD portfolio for an advanced AI & Systems Specialist. Use an ultra-dark OLED obsidian palette with glowing neon cyan (#00e5ff) and hyper-violet (#a855f7) accents. Incorporate telemetry radar stats, neural network architecture flowcharts, sub-100ms inference benchmarks, and animated terminal command line widgets.",
+    swiss: "Build an ultra-clean, minimalist Swiss editorial monograph portfolio for a Principal Architect. Use an asymmetrical high-contrast grid with ivory light or obsidian charcoal tones, crisp hairline borders, and striking crimson carmine (#e11d48) accents. Focus on bold typography, executive impact summaries, and refined, distraction-free case studies.",
+    creative: "Design an expressive, creative neo-studio portfolio for a Senior UI/UX & Frontend Creative Technologist. Use warm sunset terracotta (#f97316) and amethyst violet (#8b5cf6) gradients over deep slate. Feature floating organic project vignettes, magnetic fluid hover physics, bold typography badges, and an interactive project sandbox.",
+    executive: "Construct a prestigious Executive Briefing Dossier portfolio for an Engineering Director & Technology Leader. Use an authoritative 2-column layout with deep royal navy (#0f172a), cobalt blue (#2563eb), and champagne gold (#f59e0b) accents. Highlight team scaling metrics (30+ engineers), multi-million cloud cost optimization, and board-level strategic roadmaps."
+  };
+  if (input && ideas[type]) {
+    input.value = ideas[type];
+    input.focus();
+  }
+};
+
+window.submitDashCustomPrompt = function() {
+  const input = document.getElementById("dash-custom-prompt-input");
+  const promptText = input ? input.value.trim() : "";
+  if (!promptText) {
+    alert("Please enter or select a prompt describing your desired portfolio!");
+    if (input) input.focus();
+    return;
+  }
+  sessionStorage.setItem("pending_portfolio_prompt", promptText);
+  window.location.href = `portfolio-builder.html?prompt=${encodeURIComponent(promptText)}&autoGenerate=true`;
+};

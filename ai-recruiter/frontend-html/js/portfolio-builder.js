@@ -250,6 +250,29 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.warn("Could not load candidate portfolio:", err);
       setupInitialDefaultPortfolio(user);
     }
+
+    // Check for incoming custom prompt from website/homepage launcher or URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const incomingPrompt = urlParams.get("prompt") || sessionStorage.getItem("pending_portfolio_prompt");
+    const autoGenRequested = urlParams.get("autoGenerate") === "true" || !!sessionStorage.getItem("pending_portfolio_prompt");
+
+    if (incomingPrompt && incomingPrompt.trim()) {
+      sessionStorage.removeItem("pending_portfolio_prompt");
+      if (inputAiPrompt) {
+        inputAiPrompt.value = incomingPrompt.trim();
+        adjustPromptHeight();
+        updatePromptCharCount();
+        if (promptEditBadge) {
+          promptEditBadge.innerHTML = `<span>✨</span> Custom Prompt Loaded`;
+          promptEditBadge.className = "badge bg-indigo-subtle text-light small d-flex align-items-center gap-1";
+        }
+      }
+      if (autoGenRequested && btnGenerateGemini) {
+        setTimeout(() => {
+          btnGenerateGemini.click();
+        }, 350);
+      }
+    }
   }
 
   function setupInitialDefaultPortfolio(user) {

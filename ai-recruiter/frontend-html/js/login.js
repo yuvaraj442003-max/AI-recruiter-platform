@@ -90,7 +90,16 @@
       const res = await authAPI.login({ email, password, expected_role: expectedRole });
       Session.save(res.data);
       const role = res.data?.user?.role || expectedRole;
-      window.location.href = dashboardUrlForRole(role);
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectUrl = urlParams.get("redirect");
+      const pendingPrompt = sessionStorage.getItem("pending_portfolio_prompt");
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      } else if (pendingPrompt) {
+        window.location.href = "portfolio-builder.html?autoGenerate=true";
+      } else {
+        window.location.href = dashboardUrlForRole(role);
+      }
     } catch (err) {
       showError(err.message || "Invalid email or password.");
     } finally {
@@ -109,7 +118,16 @@
       const res = await authAPI.google(credential, expectedRole);
       Session.save(res.data);
       const role = res.data?.user?.role || res.data?.role || expectedRole;
-      window.location.href = dashboardUrlForRole(role);
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectUrl = urlParams.get("redirect");
+      const pendingPrompt = sessionStorage.getItem("pending_portfolio_prompt");
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      } else if (pendingPrompt) {
+        window.location.href = "portfolio-builder.html?autoGenerate=true";
+      } else {
+        window.location.href = dashboardUrlForRole(role);
+      }
     } catch (err) {
       showError(err.message || "Google Sign-In failed.");
     } finally {

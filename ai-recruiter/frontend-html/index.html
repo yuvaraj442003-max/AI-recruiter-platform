@@ -133,6 +133,24 @@
       border-color: rgba(255, 255, 255, 0.3);
       box-shadow: 0 8px 24px -4px rgba(79, 70, 229, 0.6), 0 0 15px rgba(124, 58, 237, 0.4);
     }
+    .home-prompt-chip {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      border-radius: 999px;
+      padding: 0.25rem 0.72rem;
+      font-size: 0.74rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+    }
+    .home-prompt-chip:hover {
+      background: rgba(99, 102, 241, 0.35);
+      border-color: #818cf8;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
     .browser-frame-container {
       background: #0f172a;
       border: 1px solid rgba(255, 255, 255, 0.14);
@@ -611,6 +629,64 @@
         <p class="lead text-light opacity-80 mx-auto mb-4" style="max-width: 720px; font-size: 1.15rem; line-height: 1.65;">
           Tired of flat PDFs? AI Recruiter transforms your resume, verified coding sandbox scores, and interview rubrics into a live, interactive personal website with custom subdomains and recruiter-verified badges.
         </p>
+
+        <!-- INTERACTIVE CUSTOM PORTFOLIO PROMPT CREATOR -->
+        <div class="website-prompt-card mx-auto mb-4 text-start" style="max-width: 860px; background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(129, 140, 248, 0.35); border-radius: 20px; padding: 1.6rem; box-shadow: 0 16px 45px -10px rgba(79, 70, 229, 0.45); backdrop-filter: blur(16px);">
+          <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+              <span class="fs-5">✨</span>
+              <h5 class="fw-bold mb-0 text-white">Create Your Portfolio with Your Own Prompt</h5>
+            </div>
+            <span class="badge bg-indigo-subtle text-light border border-white-subtle fw-semibold" style="font-size: 0.72rem;">Triple-Gemini AI Engine</span>
+          </div>
+          <p class="text-white-50 small mb-3">
+            Describe the portfolio you want in your own words — specifying your preferred design, layout, theme, colors, and requirements. The AI will generate a unique, modern website tailored to your exact prompt.
+          </p>
+
+          <!-- Prompt Textarea -->
+          <div class="position-relative mb-2.5">
+            <textarea id="home-portfolio-prompt" rows="3" class="form-control" style="background: rgba(30, 41, 59, 0.75); border: 1px solid rgba(129, 140, 248, 0.4); color: #ffffff; border-radius: 14px; font-size: 0.95rem; resize: none; padding: 0.85rem; line-height: 1.55;" placeholder="Describe your dream portfolio... e.g. Create a sleek modern Bento grid portfolio for a Senior AI &amp; Cloud Systems Engineer with dark obsidian theme, neon cyan accents, sub-100ms latency metrics, interactive 3D cards, and live project demos..."></textarea>
+          </div>
+
+          <!-- Quick Template Starters & Preference Modifiers -->
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-1.5 flex-wrap gap-1">
+              <span class="text-white-50 small fw-semibold" style="font-size: 0.72rem;">⚡ Quick Style Templates &amp; Directives (Click to load or customize):</span>
+              <span class="text-white-50 small" style="font-size: 0.68rem;">Tap any chip to inject</span>
+            </div>
+            <div class="d-flex flex-wrap gap-1.5">
+              <button type="button" class="home-prompt-chip" onclick="applyHomePromptIdea('bento')">🍱 Bento Grid</button>
+              <button type="button" class="home-prompt-chip" onclick="applyHomePromptIdea('terminal')">💻 Terminal IDE</button>
+              <button type="button" class="home-prompt-chip" onclick="applyHomePromptIdea('cyber')">🤖 Cyberpunk HUD</button>
+              <button type="button" class="home-prompt-chip" onclick="applyHomePromptIdea('swiss')">📐 Minimal Swiss</button>
+              <button type="button" class="home-prompt-chip" onclick="applyHomePromptIdea('creative')">🎨 Creative Studio</button>
+              <button type="button" class="home-prompt-chip" onclick="applyHomePromptIdea('executive')">💼 Executive Dossier</button>
+              <button type="button" class="home-prompt-chip" onclick="applyHomePromptModifier('with electric indigo and emerald green accents')">🔮 Indigo &amp; Emerald</button>
+              <button type="button" class="home-prompt-chip" onclick="applyHomePromptModifier('with glowing neon cyan and violet highlights')">💎 Cyber Cyan</button>
+              <button type="button" class="home-prompt-chip" onclick="applyHomePromptModifier('in deep OLED midnight dark theme')">🌙 OLED Dark</button>
+              <button type="button" class="home-prompt-chip" onclick="applyHomePromptModifier('featuring interactive 3D perspective card tilt physics and glass glow')">✨ 3D Tilt Cards</button>
+              <button type="button" class="home-prompt-chip" onclick="applyHomePromptModifier('highlighting quantified business KPIs and scale metrics')">📊 Scale KPIs</button>
+            </div>
+          </div>
+
+          <!-- Bottom Action Row -->
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 pt-2 border-top border-white-subtle">
+            <div class="text-white-50 small d-flex align-items-center gap-2" style="font-size: 0.75rem;">
+              <span>🔒 100% Genuine Facts</span>
+              <span>•</span>
+              <span>Interactive Live Preview</span>
+              <span>•</span>
+              <span>Subdomain Hosting</span>
+            </div>
+            <button type="button" class="btn btn-gradient fw-bold px-4 py-2.5 rounded-pill shadow-sm d-inline-flex align-items-center gap-2" onclick="generatePortfolioFromHomePrompt()">
+              <span>🚀 Generate Portfolio with AI</span> <span>&rarr;</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="text-center text-white-50 small mb-2 fw-semibold" style="letter-spacing: 0.05em; font-size: 0.75rem;">
+          OR EXPLORE INTERACTIVE LIVE SHOWCASE THEMES BELOW
+        </div>
 
         <!-- Interactive Theme Switcher Tabs -->
         <div class="d-flex flex-wrap justify-content-center gap-2 pt-2" id="portfolio-theme-selector">
@@ -1551,6 +1627,63 @@
           const btnText = document.getElementById("copy-mockup-btn-text");
           if (btnText) btnText.textContent = "Copied!";
         });
+      }
+    }
+
+    const homePromptIdeas = {
+      bento: "Create an award-winning portfolio with a modern Bento modular grid layout for an innovative engineer. Use a deep midnight slate theme with electric indigo (#4f46e5) and vibrant emerald (#10b981) accents. Feature frosted glassmorphic cards, 3D perspective tilt physics on hover, interactive metric counters, and showcase high-impact projects with live demo links.",
+      terminal: "Create an authentic Developer Terminal IDE portfolio with a dark workstation code aesthetic. Use a Matrix carbon black background (#0a0e14) with phosphor emerald green (#22c55e) and sky blue (#38bdf8) syntax highlights. Include an interactive typewriter terminal headline, collapsible code file trees, git commit activity graph, and live system status pills.",
+      cyber: "Design a futuristic Cyberpunk Neural HUD portfolio for an advanced AI & Systems Specialist. Use an ultra-dark OLED obsidian palette with glowing neon cyan (#00e5ff) and hyper-violet (#a855f7) accents. Incorporate telemetry radar stats, neural network architecture flowcharts, sub-100ms inference benchmarks, and animated terminal command line widgets.",
+      swiss: "Build an ultra-clean, minimalist Swiss editorial monograph portfolio for a Principal Architect. Use an asymmetrical high-contrast grid with ivory light or obsidian charcoal tones, crisp hairline borders, and striking crimson carmine (#e11d48) accents. Focus on bold typography, executive impact summaries, and refined, distraction-free case studies.",
+      creative: "Design an expressive, creative neo-studio portfolio for a Senior UI/UX & Frontend Creative Technologist. Use warm sunset terracotta (#f97316) and amethyst violet (#8b5cf6) gradients over deep slate. Feature floating organic project vignettes, magnetic fluid hover physics, bold typography badges, and an interactive project sandbox.",
+      executive: "Construct a prestigious Executive Briefing Dossier portfolio for an Engineering Director & Technology Leader. Use an authoritative 2-column layout with deep royal navy (#0f172a), cobalt blue (#2563eb), and champagne gold (#f59e0b) accents. Highlight team scaling metrics (30+ engineers), multi-million cloud cost optimization, and board-level strategic roadmaps."
+    };
+
+    function applyHomePromptIdea(type) {
+      const input = document.getElementById("home-portfolio-prompt");
+      if (input && homePromptIdeas[type]) {
+        input.value = homePromptIdeas[type];
+        input.focus();
+      }
+    }
+
+    function applyHomePromptModifier(mod) {
+      const input = document.getElementById("home-portfolio-prompt");
+      if (!input) return;
+      let val = input.value.trim();
+      if (!val) {
+        val = "Create an exceptional modern portfolio website";
+      }
+      if (!val.toLowerCase().includes(mod.toLowerCase())) {
+        if (/[.!?]$/.test(val)) {
+          val += ` Also design it ${mod}.`;
+        } else {
+          val += `, ${mod}`;
+        }
+      }
+      input.value = val;
+      input.focus();
+    }
+
+    function generatePortfolioFromHomePrompt() {
+      const input = document.getElementById("home-portfolio-prompt");
+      const promptText = input ? input.value.trim() : "";
+      if (!promptText) {
+        if (input) {
+          input.focus();
+          input.style.borderColor = "#f43f5e";
+          setTimeout(() => input.style.borderColor = "", 1500);
+        }
+        alert("Please describe the portfolio you want or click one of the ideas to get started!");
+        return;
+      }
+
+      sessionStorage.setItem("pending_portfolio_prompt", promptText);
+
+      if (typeof Session !== "undefined" && Session.isLoggedIn()) {
+        window.location.href = `portfolio-builder.html?prompt=${encodeURIComponent(promptText)}&autoGenerate=true`;
+      } else {
+        window.location.href = `login.html?redirect=${encodeURIComponent("portfolio-builder.html?autoGenerate=true")}`;
       }
     }
 
