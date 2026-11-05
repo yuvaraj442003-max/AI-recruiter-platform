@@ -1257,7 +1257,7 @@
     if (!students || students.length === 0) {
       tableBody.innerHTML = `
         <tr>
-          <td colspan="8" class="text-center py-5 text-muted">
+          <td colspan="9" class="text-center py-5 text-muted">
             <div class="mb-2 fs-2">🎓</div>
             <div class="fw-semibold">No student learning activities found</div>
             <small class="text-muted">Try adjusting your search criteria or filter options.</small>
@@ -1268,85 +1268,143 @@
     }
 
     const rows = students.map((s) => {
-      // 1. Preparing Topics Badges
-      let topicsHtml = "";
-      if (s.preparing_topics && s.preparing_topics.length > 0) {
-        const visibleTopics = s.preparing_topics.slice(0, 3);
-        topicsHtml = visibleTopics.map(t => `<span class="badge bg-light text-dark border me-1 mb-1 small">${escapeHtml(t)}</span>`).join("");
-        if (s.preparing_topics.length > 3) {
-          topicsHtml += `<span class="badge bg-secondary-subtle text-secondary small" title="${s.preparing_topics.slice(3).map(escapeHtml).join(', ')}">+${s.preparing_topics.length - 3} more</span>`;
-        }
-      } else {
-        topicsHtml = `<span class="text-muted small">No topics chosen</span>`;
-      }
-
-      // 2. Aptitude Tests Info
-      let aptitudeHtml = "";
-      if (s.tests_count > 0) {
-        const scoreBadgeClass = s.avg_score >= 70 ? "bg-success" : s.avg_score >= 50 ? "bg-warning text-dark" : "bg-danger";
-        aptitudeHtml = `
-          <div>
-            <span class="badge ${scoreBadgeClass} fw-bold">${s.avg_score}% Avg</span>
-            <span class="small text-muted ms-1">(${s.tests_count} test${s.tests_count > 1 ? 's' : ''})</span>
-          </div>
-          <div class="small text-muted mt-1">
-            Pass: <strong>${s.passed_count}</strong> / Fail: <strong>${s.failed_count}</strong> (${s.pass_rate}%)
-          </div>
-        `;
-      } else {
-        aptitudeHtml = `<span class="badge bg-light text-muted border">No tests attended</span>`;
-      }
-
-      // 3. Learning / Roadmap Progress
-      const rmBarColor = s.roadmap_progress >= 70 ? "bg-success" : s.roadmap_progress >= 40 ? "bg-info" : "bg-warning";
-      const learningHtml = `
-        <div class="d-flex align-items-center justify-content-between small mb-1">
-          <span class="fw-bold">${s.roadmap_progress}%</span>
-          <span class="text-muted">${s.milestones_completed_count} milestones</span>
-        </div>
-        <div class="progress" style="height: 6px;">
-          <div class="progress-bar ${rmBarColor}" style="width: ${s.roadmap_progress}%;"></div>
-        </div>
-        <div class="small text-muted mt-1">⏱️ ${s.total_time_spent_mins}m spent</div>
-      `;
-
-      // 4. Consistency
-      const streakHtml = s.daily_streak > 0 
-        ? `<div class="fw-bold text-danger small">🔥 ${s.daily_streak} Day Streak</div>`
-        : `<div class="text-muted small">No active streak</div>`;
-      const consistencyHtml = `
-        ${streakHtml}
-        <span class="badge ${s.consistency_badge || 'bg-light text-secondary'} small mt-1">${escapeHtml(s.consistency_label || 'Inactive')}</span>
-      `;
-
-      // 5. Trend
-      let trendHtml = "";
-      if (s.trend === "improving") {
-        trendHtml = `<span class="badge bg-success-subtle text-success border border-success fw-bold px-2 py-1" title="Scores are improving across recent tests">↗ Improving</span>`;
-      } else if (s.trend === "declining") {
-        trendHtml = `<span class="badge bg-danger-subtle text-danger border border-danger fw-bold px-2 py-1" title="Scores are declining, requires attention">↘ Declining</span>`;
-      } else if (s.trend === "steady") {
-        trendHtml = `<span class="badge bg-primary-subtle text-primary border border-primary fw-bold px-2 py-1">➔ Steady</span>`;
-      } else if (s.trend === "baseline") {
-        trendHtml = `<span class="badge bg-light text-secondary border px-2 py-1">🎯 1 Test (Base)</span>`;
-      } else {
-        trendHtml = `<span class="badge bg-light text-muted border px-2 py-1">No Tests</span>`;
-      }
-
-      // 6. Status & Star Rating
-      let statusHtml = "";
-      if (s.performance_status === "Performing Well") {
-        statusHtml = `<span class="badge bg-success text-white px-2.5 py-1.5 rounded-pill fw-bold">Performing Well ✅</span>`;
-      } else if (s.performance_status === "Moderate Progress") {
-        statusHtml = `<span class="badge bg-warning text-dark px-2.5 py-1.5 rounded-pill fw-bold">Moderate Progress ⚠️</span>`;
-      } else {
-        statusHtml = `<span class="badge bg-danger text-white px-2.5 py-1.5 rounded-pill fw-bold">Needs Improvement ❌</span>`;
-      }
-      const stars = "★".repeat(s.rating_stars || 1) + "☆".repeat(5 - (s.rating_stars || 1));
-
-      // 7. Student Academic Details
+      // 1. Student Academic Details
       const collegeDisplay = s.college_name ? escapeHtml(s.college_name) : "College not set";
       const branchDisplay = [s.degree, s.branch].filter(Boolean).map(escapeHtml).join(" - ");
+
+      // 2. Active Course & Phase
+      const courseIcon = s.active_course_icon || "📘";
+      const courseName = s.active_course_name || "Software Engineering Track";
+      const phaseName = s.active_phase_name || "Phase 1: Foundations";
+      const sprintStatus = s.sprint_status || "Sprint Active: Day 1 of 90";
+
+      const courseHtml = `
+        <div>
+          <div class="fw-bold text-dark d-flex align-items-center gap-1.5" title="${escapeHtml(courseName)}">
+            <span>${courseIcon}</span>
+            <span class="text-truncate" style="max-width: 190px;">${escapeHtml(courseName)}</span>
+          </div>
+          <div class="d-flex align-items-center gap-1 mt-1 flex-wrap">
+            <span class="badge bg-indigo-subtle text-primary border" style="font-size: 0.68rem;">
+              ${escapeHtml(phaseName)}
+            </span>
+            <span class="badge bg-light text-secondary border" style="font-size: 0.68rem;">
+              ${escapeHtml(sprintStatus.replace("Sprint Active: ", ""))}
+            </span>
+          </div>
+        </div>
+      `;
+
+      // 3. Topic Mastery Breakdown (Completed / Ongoing / Pending)
+      const doneCount = s.completed_topics_count || 0;
+      const ongoingCount = s.ongoing_topics_count || 0;
+      const pendingCount = s.pending_topics_count || Math.max(0, (s.total_course_topics || 50) - doneCount - ongoingCount);
+      const totalCount = Math.max(1, doneCount + ongoingCount + pendingCount);
+      const donePct = Math.round((doneCount / totalCount) * 100);
+      const ongoingPct = Math.round((ongoingCount / totalCount) * 100);
+      const pendingPct = Math.max(0, 100 - donePct - ongoingPct);
+
+      const topicBreakdownHtml = `
+        <div>
+          <div class="d-flex align-items-center gap-1 small mb-1 flex-wrap">
+            <span class="badge bg-success-subtle text-success border border-success px-1.5 py-0.5" style="font-size: 0.68rem;" title="Completed Topics">✓ ${doneCount} Done</span>
+            <span class="badge bg-warning-subtle text-dark border border-warning px-1.5 py-0.5" style="font-size: 0.68rem;" title="Ongoing Topics">⚡ ${ongoingCount} Active</span>
+            <span class="badge bg-light text-secondary border px-1.5 py-0.5" style="font-size: 0.68rem;" title="Pending Topics">⏳ ${pendingCount}</span>
+          </div>
+          <div class="progress" style="height: 6px; border-radius: 999px; overflow: hidden; background: #e2e8f0;" title="${doneCount} Done, ${ongoingCount} Ongoing, ${pendingCount} Pending">
+            <div class="progress-bar bg-success" style="width: ${donePct}%;"></div>
+            <div class="progress-bar bg-warning" style="width: ${ongoingPct}%;"></div>
+            <div class="progress-bar bg-secondary-subtle" style="width: ${pendingPct}%;"></div>
+          </div>
+          <small class="text-muted" style="font-size: 0.68rem;">${doneCount}/${totalCount} topics mastered</small>
+        </div>
+      `;
+
+      // 4. Learning / Course Progress
+      const courseProgress = Math.round(s.course_progress_percentage || s.roadmap_progress || 0);
+      const rmBarColor = courseProgress >= 70 ? "bg-success" : courseProgress >= 40 ? "bg-info" : "bg-warning";
+      const progressHtml = `
+        <div>
+          <div class="d-flex align-items-center justify-content-between small mb-1">
+            <span class="fw-bold fs-6 text-dark">${courseProgress}%</span>
+            <span class="badge ${courseProgress > 0 ? 'bg-primary-subtle text-primary' : 'bg-light text-secondary'} border" style="font-size: 0.68rem;">
+              ${courseProgress >= 100 ? 'Completed' : courseProgress > 0 ? 'In Progress' : 'Not Started'}
+            </span>
+          </div>
+          <div class="progress mb-1" style="height: 6px; border-radius: 999px;">
+            <div class="progress-bar ${rmBarColor}" style="width: ${courseProgress}%;"></div>
+          </div>
+          <small class="text-muted" style="font-size: 0.68rem;">⏱️ ${s.total_time_spent_mins || 0}m study time</small>
+        </div>
+      `;
+
+      // 5. Aptitude & Coding Performance
+      const aptitudeScoreClass = s.avg_score >= 70 ? "bg-success" : s.avg_score >= 50 ? "bg-warning text-dark" : "bg-danger";
+      const codingScoreClass = s.avg_coding_score >= 70 ? "bg-primary" : s.avg_coding_score >= 50 ? "bg-info text-dark" : "bg-secondary";
+
+      const scoresHtml = `
+        <div>
+          <div class="d-flex align-items-center gap-1 mb-1">
+            <span class="badge ${s.tests_count > 0 ? aptitudeScoreClass : 'bg-light text-muted border'} px-1.5 py-0.5" style="font-size: 0.7rem;">
+              ${s.tests_count > 0 ? `${s.avg_score}% Aptitude` : 'No Tests'}
+            </span>
+            <span class="text-muted small" style="font-size: 0.68rem;">(${s.tests_count} test${s.tests_count === 1 ? '' : 's'})</span>
+          </div>
+          <div class="d-flex align-items-center gap-1">
+            <span class="badge ${s.coding_assessments_count > 0 ? codingScoreClass : 'bg-light text-muted border'} px-1.5 py-0.5" style="font-size: 0.7rem;">
+              ${s.coding_assessments_count > 0 ? `${s.avg_coding_score}% Coding` : 'No Coding'}
+            </span>
+            <span class="text-muted small" style="font-size: 0.68rem;">(${s.coding_assessments_count || 0} labs)</span>
+          </div>
+        </div>
+      `;
+
+      // 6. Consistency
+      const streakHtml = s.daily_streak > 0 
+        ? `<div class="fw-bold text-danger small">🔥 ${s.daily_streak}d Streak</div>`
+        : `<div class="text-muted small">No streak</div>`;
+      const consistencyHtml = `
+        <div>
+          ${streakHtml}
+          <span class="badge ${s.consistency_badge || 'bg-light text-secondary'} small mt-0.5" style="font-size: 0.68rem;">${escapeHtml(s.consistency_label || 'Inactive')}</span>
+        </div>
+      `;
+
+      // 7. Trend
+      let trendHtml = "";
+      if (s.trend === "improving") {
+        trendHtml = `<span class="badge bg-success-subtle text-success border border-success fw-bold px-2 py-1" title="${escapeHtml(s.improvement_notes || 'Scores are improving across recent assessments')}">↗ Improving</span>`;
+      } else if (s.trend === "declining") {
+        trendHtml = `<span class="badge bg-danger-subtle text-danger border border-danger fw-bold px-2 py-1" title="${escapeHtml(s.improvement_notes || 'Scores are softening, requires guidance')}">↘ Declining</span>`;
+      } else if (s.trend === "steady") {
+        trendHtml = `<span class="badge bg-primary-subtle text-primary border border-primary fw-bold px-2 py-1">➔ Steady</span>`;
+      } else {
+        trendHtml = `<span class="badge bg-light text-muted border px-2 py-1">Baseline</span>`;
+      }
+
+      // 8. Performance Status & Readiness Rating
+      let statusBadge = "";
+      if (s.performance_status === "Performing Well") {
+        statusBadge = `<span class="badge bg-success text-white px-2 py-1 rounded-pill fw-bold" style="font-size: 0.7rem;">Performing Well ✅</span>`;
+      } else if (s.performance_status === "Moderate Progress") {
+        statusBadge = `<span class="badge bg-warning text-dark px-2 py-1 rounded-pill fw-bold" style="font-size: 0.7rem;">Moderate Progress ⚠️</span>`;
+      } else {
+        statusBadge = `<span class="badge bg-danger text-white px-2 py-1 rounded-pill fw-bold" style="font-size: 0.7rem;">Needs Support ❌</span>`;
+      }
+
+      const readinessScore = s.placement_readiness_score || 50;
+      const readinessBadgeClass = readinessScore >= 75 ? "bg-success-subtle text-success border-success" : readinessScore >= 50 ? "bg-primary-subtle text-primary border-primary" : "bg-warning-subtle text-dark border-warning";
+
+      const readinessHtml = `
+        <div>
+          ${statusBadge}
+          <div class="mt-1">
+            <span class="badge ${readinessBadgeClass} border small" style="font-size: 0.68rem;">
+              Readiness: <strong>${readinessScore}/100</strong>
+            </span>
+          </div>
+        </div>
+      `;
 
       return `
         <tr>
@@ -1355,27 +1413,25 @@
               <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 38px; height: 38px; min-width: 38px; font-size: 14px;">
                 ${escapeHtml((s.name || "S").charAt(0).toUpperCase())}
               </div>
-              <div class="overflow-hidden">
+              <div class="overflow-hidden" style="max-width: 210px;">
                 <div class="fw-bold text-dark text-truncate">${escapeHtml(s.name)}</div>
                 <div class="text-muted small text-truncate">${escapeHtml(s.email)}</div>
-                <div class="text-secondary small mt-0.5 text-truncate" title="${collegeDisplay}">
+                <div class="text-secondary small text-truncate" title="${collegeDisplay}">
                   🏛️ ${collegeDisplay} ${branchDisplay ? `(${branchDisplay})` : ''}
                 </div>
               </div>
             </div>
           </td>
-          <td>${topicsHtml}</td>
-          <td>${aptitudeHtml}</td>
-          <td>${learningHtml}</td>
+          <td>${courseHtml}</td>
+          <td>${topicBreakdownHtml}</td>
+          <td>${progressHtml}</td>
+          <td>${scoresHtml}</td>
           <td>${consistencyHtml}</td>
           <td>${trendHtml}</td>
-          <td>
-            ${statusHtml}
-            <div class="small text-warning mt-1" style="font-size: 11px;">${stars}</div>
-          </td>
+          <td>${readinessHtml}</td>
           <td class="text-end">
-            <button class="btn btn-sm btn-outline-success fw-semibold text-nowrap" onclick="window.openStudentActivityDetailModal('${s.user_id}')">
-              🔍 View Details
+            <button class="btn btn-sm btn-outline-success fw-bold text-nowrap d-inline-flex align-items-center gap-1 shadow-sm" onclick="window.openStudentActivityDetailModal('${s.user_id}')">
+              <span>🔍</span> Track Learning
             </button>
           </td>
         </tr>
@@ -1395,7 +1451,7 @@
     modalBody.innerHTML = `
       <div class="text-center py-5">
         <div class="spinner-border text-success" role="status"></div>
-        <p class="mt-2 text-muted">Loading detailed student activities...</p>
+        <p class="mt-2 text-muted">Loading real-time learning telemetry and progress...</p>
       </div>
     `;
 
@@ -1406,53 +1462,145 @@
 
     try {
       const res = await (window.studentAPI || api.student).getStudentActivityDetail(userId);
-      const student = res.data || res;
+      const s = res.data || res;
 
-      if (modalName) modalName.textContent = `${student.name} — Career Guidance & Aptitude Telemetry`;
-      if (modalSubtitle) modalSubtitle.textContent = `${student.college_name || 'Academic Institution'} • ${student.degree || 'Student'} ${student.branch ? '(' + student.branch + ')' : ''} • Target Role: ${student.target_role || 'General'}`;
+      if (modalName) modalName.textContent = `${s.name} — Real-Time Learning Telemetry & Performance`;
+      if (modalSubtitle) modalSubtitle.textContent = `${s.college_name || 'Academic Institution'} • ${s.degree || 'Student'} ${s.branch ? '(' + s.branch + ')' : ''} • Target Role: ${s.target_role || 'General'}`;
 
-      // Build Modal Body HTML
-      const statusBadge = student.performance_status === "Performing Well"
+      // 1. Status Badges
+      const statusBadge = s.performance_status === "Performing Well"
         ? '<span class="badge bg-success text-white px-3 py-1.5 rounded-pill fs-6">Performing Well ✅</span>'
-        : student.performance_status === "Moderate Progress"
+        : s.performance_status === "Moderate Progress"
         ? '<span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill fs-6">Moderate Progress ⚠️</span>'
         : '<span class="badge bg-danger text-white px-3 py-1.5 rounded-pill fs-6">Needs Improvement ❌</span>';
 
-      const trendBadge = student.trend === "improving"
-        ? '<span class="badge bg-success-subtle text-success border border-success fw-bold px-3 py-1.5 rounded-pill">↗ Performance Improving</span>'
-        : student.trend === "declining"
-        ? '<span class="badge bg-danger-subtle text-danger border border-danger fw-bold px-3 py-1.5 rounded-pill">↘ Performance Declining</span>'
-        : '<span class="badge bg-primary-subtle text-primary border border-primary fw-bold px-3 py-1.5 rounded-pill">➔ Steady Performance</span>';
+      const trendBadge = s.trend === "improving"
+        ? '<span class="badge bg-success-subtle text-success border border-success fw-bold px-3 py-1.5 rounded-pill">↗ Score Trajectory Improving</span>'
+        : s.trend === "declining"
+        ? '<span class="badge bg-danger-subtle text-danger border border-danger fw-bold px-3 py-1.5 rounded-pill">↘ Score Trajectory Declining</span>'
+        : '<span class="badge bg-primary-subtle text-primary border border-primary fw-bold px-3 py-1.5 rounded-pill">➔ Steady Trajectory</span>';
 
-      // Topics Badges
-      const prepTopics = (student.preparing_topics && student.preparing_topics.length > 0)
-        ? student.preparing_topics.map(t => `<span class="badge bg-light text-dark border px-2.5 py-1.5 me-1 mb-1">${escapeHtml(t)}</span>`).join("")
-        : '<span class="text-muted">No specific topics selected</span>';
+      const readinessScore = s.placement_readiness_score || 50;
 
-      const strongBadges = (student.strong_areas && student.strong_areas.length > 0)
-        ? student.strong_areas.map(t => `<span class="badge bg-success-subtle text-success border border-success px-2.5 py-1.5 me-1 mb-1">💪 ${escapeHtml(t)}</span>`).join("")
-        : '<span class="text-muted small">None identified yet</span>';
+      // 2. Build Topic Mastery Lists (Completed Correctly, Ongoing, Pending)
+      const completedTopicsList = s.completed_topics || [];
+      const ongoingTopicsList = s.ongoing_topics || [];
+      const pendingTopicsList = s.pending_topics || [];
 
-      const weakBadges = (student.weak_areas && student.weak_areas.length > 0)
-        ? student.weak_areas.map(t => `<span class="badge bg-danger-subtle text-danger border border-danger px-2.5 py-1.5 me-1 mb-1">⚠️ ${escapeHtml(t)}</span>`).join("")
-        : '<span class="text-muted small">None identified yet</span>';
+      // Completed Topics HTML
+      let completedHtml = "";
+      if (completedTopicsList.length > 0) {
+        completedHtml = completedTopicsList.map(t => `
+          <div class="p-2.5 rounded-3 mb-2 bg-success-subtle border border-success-subtle d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <span class="text-success fs-5">✓</span>
+              <div>
+                <div class="fw-bold text-dark small">${escapeHtml(t.title || 'Topic')}</div>
+                <div class="text-muted" style="font-size: 0.72rem;">${escapeHtml(t.phase_name || 'Phase')} • ${t.hours || 4} hrs • Completed Correctly</div>
+              </div>
+            </div>
+            <span class="badge bg-success text-white rounded-pill px-2.5 py-1 small">100% Mastered</span>
+          </div>
+        `).join("");
+      } else {
+        completedHtml = `<div class="p-4 text-center text-muted border rounded-3 bg-light">No completed topics yet. Candidate is currently beginning coursework.</div>`;
+      }
 
-      // Tests Table Rows
+      // Ongoing Topics HTML
+      let ongoingHtml = "";
+      if (ongoingTopicsList.length > 0) {
+        ongoingHtml = ongoingTopicsList.map(t => `
+          <div class="p-2.5 rounded-3 mb-2 bg-warning-subtle border border-warning-subtle d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <span class="text-warning-emphasis fs-5">⚡</span>
+              <div>
+                <div class="fw-bold text-dark small">${escapeHtml(t.title || 'Topic')}</div>
+                <div class="text-muted" style="font-size: 0.72rem;">${escapeHtml(t.phase_name || 'Phase')} • In Progress</div>
+              </div>
+            </div>
+            <div style="min-width: 120px;">
+              <div class="d-flex justify-content-between small text-muted mb-1" style="font-size: 0.7rem;">
+                <span>Active</span>
+                <span>${t.progress_percent || 50}%</span>
+              </div>
+              <div class="progress" style="height: 5px;">
+                <div class="progress-bar bg-warning" style="width: ${t.progress_percent || 50}%;"></div>
+              </div>
+            </div>
+          </div>
+        `).join("");
+      } else {
+        ongoingHtml = `<div class="p-4 text-center text-muted border rounded-3 bg-light">No active in-progress topics at this moment.</div>`;
+      }
+
+      // Pending Topics HTML
+      let pendingHtml = "";
+      if (pendingTopicsList.length > 0) {
+        pendingHtml = pendingTopicsList.slice(0, 15).map(t => `
+          <div class="p-2 rounded-2 mb-1.5 bg-white border d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <span class="text-muted">⏳</span>
+              <span class="small text-secondary">${escapeHtml(t.title || 'Topic')}</span>
+            </div>
+            <span class="badge bg-light text-muted border" style="font-size: 0.68rem;">Pending • ${escapeHtml(t.phase_name || 'Upcoming')}</span>
+          </div>
+        `).join("");
+        if (pendingTopicsList.length > 15) {
+          pendingHtml += `<div class="text-center text-muted small py-2">+ ${pendingTopicsList.length - 15} additional upcoming topics in curriculum</div>`;
+        }
+      } else {
+        pendingHtml = `<div class="p-4 text-center text-muted border rounded-3 bg-light">All curriculum topics unlocked or completed!</div>`;
+      }
+
+      // 3. Build Daily Plan Tasks HTML
+      const dailyTasks = s.daily_plan_tasks || [];
+      let dailyTasksHtml = "";
+      if (dailyTasks.length > 0) {
+        dailyTasksHtml = dailyTasks.map(t => {
+          const isDone = t.status === "Completed";
+          const isInProg = t.status === "In Progress";
+          const icon = t.type === "Watch" ? "🎥" : t.type === "Practice" ? "💻" : t.type === "Read" ? "📖" : "📝";
+          const statusBadge = isDone 
+            ? '<span class="badge bg-success-subtle text-success border border-success">✓ Completed Correctly</span>'
+            : isInProg
+            ? '<span class="badge bg-warning-subtle text-dark border border-warning">⚡ In Progress</span>'
+            : '<span class="badge bg-light text-secondary border">⏳ Pending</span>';
+
+          return `
+            <div class="p-3 rounded-3 mb-2 ${isDone ? 'bg-success-subtle border border-success-subtle' : 'bg-white border'} d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <div class="d-flex align-items-center gap-2">
+                <span class="fs-4">${icon}</span>
+                <div>
+                  <div class="fw-bold text-dark small">${escapeHtml(t.type)}: ${escapeHtml(t.title)}</div>
+                  <div class="text-muted" style="font-size: 0.72rem;">Duration: ${escapeHtml(t.duration || '30 mins')}</div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                ${statusBadge}
+              </div>
+            </div>
+          `;
+        }).join("");
+      } else {
+        dailyTasksHtml = `<div class="p-4 text-center text-muted border rounded-3 bg-light">No daily plan tasks recorded for today.</div>`;
+      }
+
+      // 4. Aptitude Tests History Rows
       let testRowsHtml = "";
-      if (student.recent_attempts && student.recent_attempts.length > 0) {
-        testRowsHtml = student.recent_attempts.map((att, idx) => {
+      if (s.recent_attempts && s.recent_attempts.length > 0) {
+        testRowsHtml = s.recent_attempts.map((att, idx) => {
           const passBadge = att.is_passed
             ? '<span class="badge bg-success-subtle text-success border border-success">PASSED</span>'
             : '<span class="badge bg-danger-subtle text-danger border border-danger">FAILED</span>';
           const scoreClass = att.score_percentage >= 70 ? 'text-success' : att.score_percentage >= 50 ? 'text-warning' : 'text-danger';
-          const mins = Math.floor(att.time_taken_seconds / 60);
-          const secs = att.time_taken_seconds % 60;
+          const mins = Math.floor((att.time_taken_seconds || 0) / 60);
+          const secs = (att.time_taken_seconds || 0) % 60;
           const timeFormatted = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
 
           return `
             <tr>
               <td class="fw-semibold">#${idx + 1} ${escapeHtml(att.title)}</td>
-              <td class="text-muted small">${escapeHtml(att.created_at || '—')}</td>
+              <td class="text-muted small">${escapeHtml(att.date || 'Recently')}</td>
               <td><span class="fw-bold fs-6 ${scoreClass}">${att.score_percentage}%</span></td>
               <td>${passBadge}</td>
               <td class="small">
@@ -1468,105 +1616,296 @@
         testRowsHtml = `
           <tr>
             <td colspan="6" class="text-center py-4 text-muted">
-              Student has not attended any aptitude tests yet in the Career Guidance section.
+              Student has not attended any aptitude assessments yet.
             </td>
           </tr>
         `;
       }
 
+      // 5. Coding Attempts Rows
+      const codingAttempts = s.recent_coding_attempts || [];
+      let codingRowsHtml = "";
+      if (codingAttempts.length > 0) {
+        codingRowsHtml = codingAttempts.map((ca, idx) => {
+          const passBadge = ca.passed
+            ? '<span class="badge bg-success-subtle text-success border border-success">PASSED</span>'
+            : '<span class="badge bg-danger-subtle text-danger border border-danger">FAILED</span>';
+          const mins = Math.floor((ca.time_taken_seconds || 0) / 60);
+          const secs = (ca.time_taken_seconds || 0) % 60;
+          const timeFormatted = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+
+          return `
+            <tr>
+              <td class="fw-semibold">#${idx + 1} ${escapeHtml(ca.title)}</td>
+              <td class="text-muted small">${escapeHtml(ca.date)}</td>
+              <td><span class="fw-bold fs-6 ${ca.percentage >= 70 ? 'text-success' : 'text-warning'}">${ca.percentage}%</span></td>
+              <td>${passBadge}</td>
+              <td class="small text-muted">${escapeHtml(ca.status)}</td>
+              <td class="text-muted small">⏱️ ${timeFormatted}</td>
+            </tr>
+          `;
+        }).join("");
+      } else {
+        codingRowsHtml = `
+          <tr>
+            <td colspan="6" class="text-center py-4 text-muted">
+              No practical coding assessment records logged yet.
+            </td>
+          </tr>
+        `;
+      }
+
+      // 6. Phases Breakdown HTML
+      const phasesList = s.phases_breakdown || [];
+      let phasesHtml = "";
+      if (phasesList.length > 0) {
+        phasesHtml = phasesList.map(ph => `
+          <div class="col-md-6 mb-3">
+            <div class="p-3 rounded-3 border bg-white shadow-sm h-100">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-bold text-dark small">Phase ${ph.phase_num}: ${escapeHtml(ph.name)}</span>
+                <span class="badge ${ph.progress_percent >= 100 ? 'bg-success' : ph.progress_percent > 0 ? 'bg-primary' : 'bg-light text-muted border'} rounded-pill" style="font-size: 0.68rem;">
+                  ${ph.progress_percent >= 100 ? 'Completed' : ph.progress_percent > 0 ? 'In Progress' : (ph.is_locked ? 'Locked' : 'Available')}
+                </span>
+              </div>
+              <div class="text-muted mb-2" style="font-size: 0.72rem;">${escapeHtml(ph.subtitle || '')}</div>
+              <div class="d-flex justify-content-between small text-muted mb-1" style="font-size: 0.7rem;">
+                <span>${ph.completed_count || 0}/${ph.topics_count || 0} topics completed</span>
+                <span class="fw-bold">${ph.progress_percent || 0}%</span>
+              </div>
+              <div class="progress" style="height: 6px; border-radius: 999px;">
+                <div class="progress-bar ${ph.progress_percent >= 100 ? 'bg-success' : 'bg-primary'}" style="width: ${ph.progress_percent || 0}%;"></div>
+              </div>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      // Build complete modal body
       modalBody.innerHTML = `
-        <!-- Status & Evaluation Banner -->
+        <!-- Evaluation Callout Banner -->
         <div class="card border-0 bg-light p-3 rounded-4 mb-4 shadow-sm">
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
             <div>
-              <div class="small text-muted text-uppercase fw-semibold mb-1">Overall Learning Evaluation</div>
-              <div class="d-flex align-items-center gap-2">
+              <div class="small text-muted text-uppercase fw-semibold mb-1">Placement Preparation Telemetry</div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
                 ${statusBadge}
                 ${trendBadge}
-                <span class="badge ${student.consistency_badge || 'bg-light text-secondary'} px-3 py-1.5 rounded-pill">
-                  🔥 ${student.daily_streak} Day Streak (${escapeHtml(student.consistency_label)})
+                <span class="badge bg-info-subtle text-info border border-info px-3 py-1.5 rounded-pill fw-bold">
+                  🎯 Placement Readiness: ${readinessScore}/100
+                </span>
+                <span class="badge ${s.consistency_badge || 'bg-light text-secondary'} px-3 py-1.5 rounded-pill">
+                  🔥 ${s.daily_streak} Day Streak (${escapeHtml(s.consistency_label)})
                 </span>
               </div>
             </div>
             <div class="text-end">
               <div class="small text-muted">Last Active Date</div>
-              <div class="fw-bold text-dark">${escapeHtml(student.last_active_date || 'No recent activity')}</div>
+              <div class="fw-bold text-dark">${escapeHtml(s.last_active_date || 'Active Today')}</div>
             </div>
           </div>
+          ${s.improvement_notes ? `
+            <div class="alert alert-info py-2 px-3 mt-3 mb-0 small d-flex align-items-center gap-2 rounded-3 border-0 bg-white shadow-xs">
+              <span>📈</span>
+              <span><strong>Performance Trajectory:</strong> ${escapeHtml(s.improvement_notes)}</span>
+            </div>
+          ` : ''}
         </div>
 
-        <!-- 4 KPI Stat Boxes -->
+        <!-- 4 Top Telemetry Metric Cards -->
         <div class="row g-3 mb-4">
           <div class="col-sm-6 col-lg-3">
             <div class="p-3 border rounded-3 bg-white shadow-sm h-100">
-              <div class="small text-muted fw-semibold">Tests Attended</div>
-              <div class="fs-4 fw-bold text-primary">${student.tests_count}</div>
-              <small class="text-muted">${student.passed_count} Passed / ${student.failed_count} Failed</small>
+              <div class="small text-muted fw-semibold mb-1">📘 Active Learning Course</div>
+              <div class="fs-6 fw-bold text-dark text-truncate" title="${escapeHtml(s.active_course_name || 'Java Track')}">
+                ${s.active_course_icon || '📘'} ${escapeHtml(s.active_course_name || 'Java Enterprise')}
+              </div>
+              <small class="text-primary fw-semibold">${escapeHtml(s.active_phase_name || 'Phase 1: Foundations')}</small>
+              <div class="text-muted" style="font-size: 0.72rem;">${escapeHtml(s.sprint_status || 'Day 1 of 90')}</div>
             </div>
           </div>
           <div class="col-sm-6 col-lg-3">
             <div class="p-3 border rounded-3 bg-white shadow-sm h-100">
-              <div class="small text-muted fw-semibold">Average Test Score</div>
-              <div class="fs-4 fw-bold text-success">${student.avg_score}%</div>
-              <small class="text-muted">Best Score: <strong>${student.best_score}%</strong></small>
+              <div class="small text-muted fw-semibold mb-1">🎯 Topic Mastery &amp; Progress</div>
+              <div class="fs-4 fw-bold text-success">${s.course_progress_percentage || s.roadmap_progress || 0}%</div>
+              <small class="text-muted"><strong>${s.completed_topics_count || 0}</strong> Done • <strong>${s.ongoing_topics_count || 0}</strong> Active • <strong>${s.pending_topics_count || 0}</strong> Pending</small>
             </div>
           </div>
           <div class="col-sm-6 col-lg-3">
             <div class="p-3 border rounded-3 bg-white shadow-sm h-100">
-              <div class="small text-muted fw-semibold">Roadmap Progress</div>
-              <div class="fs-4 fw-bold text-info">${student.roadmap_progress}%</div>
-              <small class="text-muted">${student.milestones_completed_count} Milestones Completed</small>
+              <div class="small text-muted fw-semibold mb-1">🧠 Aptitude Assessment Average</div>
+              <div class="fs-4 fw-bold text-primary">${s.avg_score}%</div>
+              <small class="text-muted">${s.passed_count} Passed / ${s.failed_count} Failed (${s.tests_count} Tests)</small>
             </div>
           </div>
           <div class="col-sm-6 col-lg-3">
             <div class="p-3 border rounded-3 bg-white shadow-sm h-100">
-              <div class="small text-muted fw-semibold">Total Study Time</div>
-              <div class="fs-4 fw-bold text-dark">${student.total_time_spent_mins} <span class="fs-6 fw-normal">mins</span></div>
-              <small class="text-muted">Across all attempts</small>
+              <div class="small text-muted fw-semibold mb-1">💻 Coding Practice &amp; Sandboxes</div>
+              <div class="fs-4 fw-bold text-info">${s.avg_coding_score}%</div>
+              <small class="text-muted">${s.coding_assessments_count || 0} Coding Labs • ⏱️ ${s.total_time_spent_mins || 0}m study</small>
             </div>
           </div>
         </div>
 
-        <!-- Preparation Topics, Strengths & Weaknesses -->
-        <div class="card border mb-4 rounded-3 shadow-sm">
-          <div class="card-body p-3">
-            <h6 class="fw-bold mb-2">📚 Preparation Topics &amp; Focus Domains</h6>
-            <div class="mb-3">${prepTopics}</div>
-            <div class="row g-3">
-              <div class="col-md-6">
-                <div class="small fw-bold text-success mb-1">💪 Strong Subject Areas (&gt;= 70%):</div>
-                <div>${strongBadges}</div>
+        <!-- Tabbed Detailed Telemetry Console -->
+        <ul class="nav nav-pills mb-3 border-bottom pb-2 gap-2" id="studentDetailTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active rounded-pill fw-semibold small py-1.5 px-3" id="tab-topics-btn" data-bs-toggle="pill" data-bs-target="#tab-topics-pane" type="button" role="tab">
+              📚 Course &amp; Topics Tracker (${s.completed_topics_count || 0}/${s.total_course_topics || 50})
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill fw-semibold small py-1.5 px-3" id="tab-daily-btn" data-bs-toggle="pill" data-bs-target="#tab-daily-pane" type="button" role="tab">
+              📅 Today's Study Tasks (${dailyTasks.length})
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill fw-semibold small py-1.5 px-3" id="tab-aptitude-btn" data-bs-toggle="pill" data-bs-target="#tab-aptitude-pane" type="button" role="tab">
+              🧠 Aptitude Test History (${s.recent_attempts ? s.recent_attempts.length : 0})
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill fw-semibold small py-1.5 px-3" id="tab-coding-btn" data-bs-toggle="pill" data-bs-target="#tab-coding-pane" type="button" role="tab">
+              💻 Coding Sandbox Attempts (${codingAttempts.length})
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill fw-semibold small py-1.5 px-3" id="tab-phases-btn" data-bs-toggle="pill" data-bs-target="#tab-phases-pane" type="button" role="tab">
+              🗺️ 4-Phase Curriculum Breakdown
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="studentDetailTabsContent">
+          <!-- Pane 1: Course & Topics Tracker -->
+          <div class="tab-pane fade show active" id="tab-topics-pane" role="tabpanel">
+            <div class="card border rounded-3 mb-3 shadow-sm">
+              <div class="card-header bg-white py-2.5 border-bottom d-flex justify-content-between align-items-center">
+                <span class="fw-bold small text-dark">Course Curriculum Progression</span>
+                <span class="badge bg-light text-secondary border small">${s.course_progress_percentage || 0}% Completed</span>
               </div>
-              <div class="col-md-6">
-                <div class="small fw-bold text-danger mb-1">⚠️ Areas Needing Support (&lt; 60%):</div>
-                <div>${weakBadges}</div>
+              <div class="card-body p-3">
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <div class="p-2.5 rounded-3 bg-success-subtle border border-success-subtle mb-2">
+                      <div class="fw-bold text-success small d-flex justify-content-between align-items-center">
+                        <span>✅ Completed Topics (${completedTopicsList.length})</span>
+                        <span class="badge bg-success text-white">Correct</span>
+                      </div>
+                      <small class="text-muted" style="font-size: 0.7rem;">Verified learned topics</small>
+                    </div>
+                    <div style="max-height: 380px; overflow-y: auto; padding-right: 4px;">
+                      ${completedHtml}
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="p-2.5 rounded-3 bg-warning-subtle border border-warning-subtle mb-2">
+                      <div class="fw-bold text-dark small d-flex justify-content-between align-items-center">
+                        <span>⚡ Ongoing Topics (${ongoingTopicsList.length})</span>
+                        <span class="badge bg-warning text-dark">Active</span>
+                      </div>
+                      <small class="text-muted" style="font-size: 0.7rem;">Currently being studied</small>
+                    </div>
+                    <div style="max-height: 380px; overflow-y: auto; padding-right: 4px;">
+                      ${ongoingHtml}
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="p-2.5 rounded-3 bg-light border mb-2">
+                      <div class="fw-bold text-secondary small d-flex justify-content-between align-items-center">
+                        <span>⏳ Pending Topics (${pendingTopicsList.length})</span>
+                        <span class="badge bg-secondary text-white">Upcoming</span>
+                      </div>
+                      <small class="text-muted" style="font-size: 0.7rem;">Next in placement sprint</small>
+                    </div>
+                    <div style="max-height: 380px; overflow-y: auto; padding-right: 4px;">
+                      ${pendingHtml}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Aptitude Test History Table -->
-        <div class="card border rounded-3 shadow-sm">
-          <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-            <h6 class="fw-bold mb-0">🧠 Aptitude Test Attendance &amp; Score History</h6>
-            <span class="badge bg-light text-dark border">${student.recent_attempts ? student.recent_attempts.length : 0} Attempts Logged</span>
+          <!-- Pane 2: Today's Daily Plan Tasks -->
+          <div class="tab-pane fade" id="tab-daily-pane" role="tabpanel">
+            <div class="card border rounded-3 mb-3 shadow-sm">
+              <div class="card-header bg-white py-2.5 border-bottom d-flex justify-content-between align-items-center">
+                <span class="fw-bold small text-dark">Today's Daily Plan &amp; Study Tasks</span>
+                <span class="badge bg-light text-secondary border small">${dailyTasks.filter(t => t.status === 'Completed').length}/${dailyTasks.length} Done Today</span>
+              </div>
+              <div class="card-body p-3">
+                ${dailyTasksHtml}
+              </div>
+            </div>
           </div>
-          <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-              <thead class="table-light small text-muted text-uppercase">
-                <tr>
-                  <th>Topic / Test Name</th>
-                  <th>Date Attended</th>
-                  <th>Score</th>
-                  <th>Status</th>
-                  <th>Correct / Wrong</th>
-                  <th>Time Taken</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${testRowsHtml}
-              </tbody>
-            </table>
+
+          <!-- Pane 3: Aptitude Assessment History -->
+          <div class="tab-pane fade" id="tab-aptitude-pane" role="tabpanel">
+            <div class="card border rounded-3 mb-3 shadow-sm">
+              <div class="card-header bg-white py-2.5 border-bottom d-flex justify-content-between align-items-center">
+                <span class="fw-bold small text-dark">Aptitude Test Log &amp; Question Accuracy</span>
+                <span class="badge bg-light text-dark border">${s.recent_attempts ? s.recent_attempts.length : 0} Tests Evaluated</span>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light small text-muted text-uppercase">
+                    <tr>
+                      <th>Test Title</th>
+                      <th>Date</th>
+                      <th>Score</th>
+                      <th>Status</th>
+                      <th>Correct / Wrong</th>
+                      <th>Time Taken</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${testRowsHtml}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pane 4: Coding Sandbox Attempts -->
+          <div class="tab-pane fade" id="tab-coding-pane" role="tabpanel">
+            <div class="card border rounded-3 mb-3 shadow-sm">
+              <div class="card-header bg-white py-2.5 border-bottom d-flex justify-content-between align-items-center">
+                <span class="fw-bold small text-dark">Practical Coding Sandbox Challenges</span>
+                <span class="badge bg-light text-dark border">${codingAttempts.length} Coding Labs</span>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light small text-muted text-uppercase">
+                    <tr>
+                      <th>Challenge Name</th>
+                      <th>Date</th>
+                      <th>Score</th>
+                      <th>Status</th>
+                      <th>Submission State</th>
+                      <th>Time Taken</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${codingRowsHtml}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pane 5: 4-Phase Curriculum Breakdown -->
+          <div class="tab-pane fade" id="tab-phases-pane" role="tabpanel">
+            <div class="card border rounded-3 mb-3 shadow-sm">
+              <div class="card-header bg-white py-2.5 border-bottom">
+                <span class="fw-bold small text-dark">4-Phase Placement Curriculum Roadmap</span>
+              </div>
+              <div class="card-body p-3">
+                <div class="row">
+                  ${phasesHtml || '<div class="col-12 text-muted text-center py-4">No curriculum phase details available.</div>'}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       `;
@@ -1581,7 +1920,7 @@
 
   window.openStudentActivityDetailModal = openStudentActivityDetailModal;
 
-  // Filter Listeners for Student Monitor
+    // Filter Listeners for Student Monitor
   let smSearchTimeout = null;
   const smSearchInput = document.getElementById("sm-filter-search");
   if (smSearchInput) {

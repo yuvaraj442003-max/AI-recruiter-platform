@@ -534,6 +534,132 @@ def _build_student_monitor_item(u: User, db: Session) -> StudentLearningMonitorI
     elif streak >= 3:
         strong_areas.append(f"High dedication with active {streak}-day practice streak")
 
+    # 8. Real-Time Course & Topic Learning Telemetry
+    journey_data = {}
+    try:
+        from app.services.candidate_learning_journey_service import get_candidate_learning_journey
+        journey_data = get_candidate_learning_journey(db, u.id)
+    except Exception as journey_err:
+        logger.warning("Could not load candidate learning journey for user %s: %s", u.id, journey_err)
+
+    active_course_id = journey_data.get("selected_course", "java")
+    active_course_name = journey_data.get("course_track", {}).get("name") or journey_data.get("target_track", "Core & Advanced Java Enterprise Systems")
+    active_course_icon = journey_data.get("course_track", {}).get("icon", "📘")
+    course_progress_percentage = float(journey_data.get("overall_progress_percent", roadmap_progress or 0.0))
+    active_phase_num = int(journey_data.get("active_phase_num", 1))
+    active_phase_name = str(journey_data.get("active_phase_name", "Phase 1: Foundations"))
+    schedule_ov = journey_data.get("schedule_overview", {})
+    sprint_status = schedule_ov.get("sprint_status", "Sprint Active: Day 1 of 90")
+    expected_completion = journey_data.get("expected_completion_date", "TBD")
+    start_date = journey_data.get("start_date", "Ready Today")
+
+    # Extract all phases and topic states (completed, ongoing, pending)
+    journey_phases = journey_data.get("phases", [])
+    completed_topics = []
+    ongoing_topics = []
+    pending_topics = []
+    phases_breakdown = []
+
+    for ph in journey_phases:
+        courses = ph.get("courses", [])
+        ph_completed = 0
+        for c in courses:
+            is_done = c.get("progress_percent", 0) >= 100 or c.get("status") == "completed"
+            if is_done:
+                ph_completed += 1
+                completed_topics.append({
+                    "id": c.get("id"),
+                    "title": c.get("title"),
+                    "phase_num": ph.get("phase_num"),
+                    "phase_name": ph.get("name"),
+                    "hours": c.get("hours", 4),
+                    "progress_percent": 100,
+                    "status": "completed",
+                    "is_correct": True,
+                })
+            elif c.get("progress_percent", 0) > 0 or c.get("status") == "in_progress":
+                ongoing_topics.append({
+                    "id": c.get("id"),
+                    "title": c.get("title"),
+                    "phase_num": ph.get("phase_num"),
+                    "phase_name": ph.get("name"),
+                    "hours": c.get("hours", 4),
+                    "progress_percent": c.get("progress_percent", 0),
+                    "status": "in_progress",
+                    "is_correct": False,
+                })
+            else:
+                pending_topics.append({
+                    "id": c.get("id"),
+                    "title": c.get("title"),
+                    "phase_num": ph.get("phase_num"),
+                    "phase_name": ph.get("name"),
+                    "hours": c.get("hours", 4),
+                    "progress_percent": 0,
+                    "status": "pending",
+                    "is_correct": False,
+                })
+
+        phases_breakdown.append({
+            "phase_num": ph.get("phase_num"),
+            "name": ph.get("name"),
+            "subtitle": ph.get("subtitle"),
+            "progress_percent": ph.get("progress_percent", 0.0),
+            "is_completed": ph.get("is_completed", False),
+            "is_locked": ph.get("is_locked", False),
+            "topics_count": len(courses),
+            "completed_count": ph_completed,
+        })
+
+    total_course_topics = len(completed_topics) + len(ongoing_topics) + len(pending_topics)
+    if total_course_topics == 0:
+        total_course_topics = 50
+
+    # Daily Plan Tasks (Watch, Practice, Read, Assessment)
+    daily_plan_tasks = journey_data.get("today_plan", {}).get("tasks", [])
+
+    # Coding Attempts
+    coding_attempts = []
+    if profile:
+        from app.models.coding import CandidateCodingAttempt
+        raw_coding = db.query(CandidateCodingAttempt).filter(CandidateCodingAttempt.candidate_id == profile.id).order_by(CandidateCodingAttempt.created_at.desc()).all()
+        for ca in raw_coding:
+            coding_attempts.append({
+                "id": str(ca.id),
+                "title": ca.assessment.title if ca.assessment else "Practical Coding Sandbox",
+                "score": float(ca.score or 0.0),
+                "percentage": float(ca.percentage or 0.0),
+                "passed": bool(ca.passed),
+                "status": ca.status or "Submitted",
+                "time_taken_seconds": int(ca.time_taken or 0),
+                "date": ca.created_at.strftime("%Y-%m-%d %H:%M") if ca.created_at else "Recently",
+            })
+
+    coding_count = len(coding_attempts)
+    avg_coding_score = round(sum(ca["percentage"] for ca in coding_attempts) / coding_count, 1) if coding_count > 0 else 0.0
+
+    # Calculate overall placement readiness composite score (0-100)
+    apt_comp = (avg_score / 100.0) * 35.0
+    coding_comp = (avg_coding_score / 100.0) * 25.0 if coding_count > 0 else (15.0 if tests_count > 0 else 5.0)
+    roadmap_comp = (course_progress_percentage / 100.0) * 25.0
+    streak_comp = min(15.0, (streak / 7.0) * 15.0)
+    placement_readiness_score = int(round(apt_comp + coding_comp + roadmap_comp + streak_comp))
+    placement_readiness_score = max(5, min(100, placement_readiness_score))
+
+    # Improvement notes
+    diff_val = 0.0
+    if len(scores) >= 2:
+        diff_val = scores[-1] - scores[0]
+    improvement_notes = ""
+    if trend == "improving":
+        improvement_notes = f"Demonstrating positive score trajectory (+{abs(diff_val):.1f}% improvement across assessments). Actively advancing topics."
+    elif trend == "declining":
+        improvement_notes = f"Recent assessment scores softened by {abs(diff_val):.1f}%. Candidate may benefit from targeted topic revision."
+    elif trend == "steady":
+        improvement_notes = f"Maintaining consistent performance at ~{avg_score}% accuracy with regular study habits."
+    else:
+        improvement_notes = "Baseline activity recorded. Real-time telemetry tracking active."
+
     recent_items = [
         StudentAptitudeAttemptItem(
             id=a["id"],
@@ -569,9 +695,9 @@ def _build_student_monitor_item(u: User, db: Session) -> StudentLearningMonitorI
         failed_count=failed_count,
         pass_rate=pass_rate,
         total_time_spent_mins=total_time_mins,
-        roadmap_progress=roadmap_progress,
-        roadmaps_enrolled=roadmaps_enrolled,
-        milestones_completed_count=milestones_count,
+        roadmap_progress=course_progress_percentage or roadmap_progress,
+        roadmaps_enrolled=roadmaps_enrolled or (1 if active_course_name else 0),
+        milestones_completed_count=len(completed_topics) or milestones_count,
         daily_streak=streak,
         last_active_date=last_active,
         is_consistent=is_consistent,
@@ -586,6 +712,29 @@ def _build_student_monitor_item(u: User, db: Session) -> StudentLearningMonitorI
         weak_areas=weak_areas,
         strong_areas=strong_areas,
         recent_attempts=recent_items,
+        active_course_id=active_course_id,
+        active_course_name=active_course_name,
+        active_course_icon=active_course_icon,
+        course_progress_percentage=course_progress_percentage,
+        active_phase_num=active_phase_num,
+        active_phase_name=active_phase_name,
+        sprint_status=sprint_status,
+        expected_completion_date=expected_completion,
+        start_date=start_date,
+        total_course_topics=total_course_topics,
+        completed_topics_count=len(completed_topics),
+        ongoing_topics_count=len(ongoing_topics),
+        pending_topics_count=len(pending_topics),
+        completed_topics=completed_topics,
+        ongoing_topics=ongoing_topics,
+        pending_topics=pending_topics,
+        daily_plan_tasks=daily_plan_tasks,
+        coding_assessments_count=coding_count,
+        avg_coding_score=avg_coding_score,
+        recent_coding_attempts=coding_attempts[:10],
+        phases_breakdown=phases_breakdown,
+        placement_readiness_score=placement_readiness_score,
+        improvement_notes=improvement_notes,
     )
 
 

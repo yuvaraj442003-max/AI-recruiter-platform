@@ -411,6 +411,31 @@ class StudentLearningMonitorItem(BaseModel):
     strong_areas: List[str] = []
     recent_attempts: List[StudentAptitudeAttemptItem] = []
 
+    # Real-Time Course, Topic, & Coding Learning Telemetry
+    active_course_id: Optional[str] = "java"
+    active_course_name: Optional[str] = "Core & Advanced Java Enterprise Systems"
+    active_course_icon: Optional[str] = "☕"
+    course_progress_percentage: float = 0.0
+    active_phase_num: int = 1
+    active_phase_name: str = "Phase 1: Foundations"
+    sprint_status: str = "Sprint Active: Day 1 of 90"
+    expected_completion_date: Optional[str] = None
+    start_date: Optional[str] = None
+    total_course_topics: int = 50
+    completed_topics_count: int = 0
+    ongoing_topics_count: int = 0
+    pending_topics_count: int = 50
+    completed_topics: List[Dict[str, Any]] = []
+    ongoing_topics: List[Dict[str, Any]] = []
+    pending_topics: List[Dict[str, Any]] = []
+    daily_plan_tasks: List[Dict[str, Any]] = []
+    coding_assessments_count: int = 0
+    avg_coding_score: float = 0.0
+    recent_coding_attempts: List[Dict[str, Any]] = []
+    phases_breakdown: List[Dict[str, Any]] = []
+    placement_readiness_score: int = 50
+    improvement_notes: str = ""
+
 
 class RecruiterStudentMonitorSummary(BaseModel):
     total_students: int = 0
