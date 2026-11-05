@@ -6119,6 +6119,160 @@ const PortfolioThemesEngine = (() => {
   /**
    * Main render dispatch function
    */
+  function renderCustomHtmlLayout(data, activeSections) {
+    const rawHtml = (data.custom_html || "").trim();
+    const name = escapeHtml(data.candidate_name || "Candidate Name");
+    const headline = escapeHtml(data.professional_headline || "Software Engineer & Innovator");
+    const about = escapeHtml(data.about || "");
+    const photo = data.profile_image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80";
+    const email = escapeHtml(data.candidate_email || (data.social_links && data.social_links.email) || "candidate@example.com");
+    const phone = escapeHtml((data.social_links && data.social_links.phone) || "+1 (555) 000-0000");
+    const location = escapeHtml((data.social_links && data.social_links.location) || "San Francisco, CA");
+    const github = (data.social_links && data.social_links.github) || "#";
+    const linkedin = (data.social_links && data.social_links.linkedin) || "#";
+    const website = (data.social_links && data.social_links.website) || "#";
+    const primary = data.primary_color || "#4f46e5";
+    const secondary = data.secondary_color || "#06b6d4";
+
+    // Formatted Skill Badges
+    const skillsList = Array.isArray(data.skills) ? data.skills : (typeof data.skills === "string" ? data.skills.split(",").map(s => s.trim()) : []);
+    const skillsHtml = skillsList.length ? skillsList.map(s => {
+      const sName = typeof s === "object" ? (s.name || s.skill || "") : s;
+      return `<span class="badge rounded-pill px-3 py-2 fw-semibold text-white me-2 mb-2 shadow-sm" style="background: linear-gradient(135deg, ${primary}, ${secondary}); font-size: 0.85rem;">${escapeHtml(sName)}</span>`;
+    }).join("") : `<span class="text-muted">No skills listed yet</span>`;
+
+    // Formatted Projects
+    const projectsList = Array.isArray(data.projects) ? data.projects : [];
+    const projectsHtml = projectsList.length ? projectsList.map(p => {
+      const pTitle = escapeHtml(p.title || p.name || "Engineering Project");
+      const pDesc = escapeHtml(p.description || p.summary || "");
+      const pTech = Array.isArray(p.technologies) ? p.technologies : (typeof p.technologies === "string" ? p.technologies.split(",") : []);
+      const pTechPills = pTech.map(t => `<span class="badge bg-light text-dark border me-1 small">${escapeHtml(t.trim())}</span>`).join("");
+      const pLink = p.live_url || p.link || "#";
+      const pRepo = p.github_url || p.repo || "#";
+      return `
+        <div class="col-md-6 mb-4">
+          <div class="card h-100 border-0 shadow-sm rounded-4 p-4" style="background: rgba(255,255,255,0.9); backdrop-filter: blur(12px); border-top: 4px solid ${primary} !important;">
+            <h4 class="fw-bold mb-2 text-dark">${pTitle}</h4>
+            <p class="text-secondary small mb-3" style="line-height: 1.6;">${pDesc}</p>
+            <div class="mb-3">${pTechPills}</div>
+            <div class="mt-auto d-flex gap-2">
+              ${pLink !== "#" ? `<a href="${pLink}" target="_blank" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold" style="background: ${primary}; border: none;">Live Demo &rarr;</a>` : ""}
+              ${pRepo !== "#" ? `<a href="${pRepo}" target="_blank" class="btn btn-sm btn-outline-dark rounded-pill px-3 fw-semibold">GitHub</a>` : ""}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("") : `<div class="col-12 text-muted">No projects added yet</div>`;
+
+    // Formatted Experience
+    const expList = Array.isArray(data.experience) ? data.experience : [];
+    const expHtml = expList.length ? expList.map(e => {
+      const eRole = escapeHtml(e.title || e.role || "Role");
+      const eCompany = escapeHtml(e.company || "Company");
+      const eDuration = escapeHtml(e.duration || `${e.start_date || ""} - ${e.end_date || "Present"}`);
+      const eDesc = escapeHtml(e.description || "");
+      return `
+        <div class="p-3 mb-3 rounded-3 border bg-white shadow-sm">
+          <div class="d-flex justify-content-between align-items-baseline flex-wrap">
+            <h5 class="fw-bold mb-1 text-dark">${eRole} <span class="fw-normal text-muted">at</span> ${eCompany}</h5>
+            <span class="badge bg-primary-subtle text-primary small rounded-pill">${eDuration}</span>
+          </div>
+          <p class="text-secondary small mb-0 mt-2">${eDesc}</p>
+        </div>
+      `;
+    }).join("") : `<div class="text-muted">No experience entries yet</div>`;
+
+    // Formatted Education
+    const eduList = Array.isArray(data.education) ? data.education : [];
+    const eduHtml = eduList.length ? eduList.map(ed => {
+      const degree = escapeHtml(ed.degree || "Degree");
+      const inst = escapeHtml(ed.institution || ed.school || "University");
+      const year = escapeHtml(ed.year || "");
+      return `
+        <div class="p-3 mb-2 rounded-3 border bg-white">
+          <h6 class="fw-bold mb-0 text-dark">${degree}</h6>
+          <small class="text-muted">${inst} ${year ? `(${year})` : ""}</small>
+        </div>
+      `;
+    }).join("") : "";
+
+    // Formatted Social Links
+    const socialHtml = `
+      <div class="d-flex gap-2 flex-wrap">
+        ${github && github !== "#" ? `<a href="${github}" target="_blank" class="btn btn-sm btn-outline-dark rounded-pill px-3">GitHub</a>` : ""}
+        ${linkedin && linkedin !== "#" ? `<a href="${linkedin}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3">LinkedIn</a>` : ""}
+        ${email ? `<a href="mailto:${email}" class="btn btn-sm btn-primary rounded-pill px-3" style="background: ${primary}; border: none;">Email Me</a>` : ""}
+      </div>
+    `;
+
+    let processedHtml = rawHtml;
+
+    if (!processedHtml) {
+      // Clean onboarding empty state
+      processedHtml = `
+        <div class="container py-5">
+          <div class="card border-0 shadow-lg rounded-4 p-5 text-center bg-white" style="border-top: 6px solid ${primary} !important;">
+            <div class="display-3 mb-3">💻</div>
+            <h2 class="fw-bold text-dark mb-2">Custom HTML Integration Mode</h2>
+            <p class="text-muted mx-auto mb-4" style="max-width: 600px;">
+              Your portfolio is set to render your custom HTML website code. Paste your HTML in the 
+              <strong>Custom HTML Code</strong> tab on the left to see your personalized site live!
+            </p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+              <button onclick="document.getElementById('tab-btn-custom-html')?.click()" class="btn btn-primary px-4 py-2.5 rounded-pill fw-bold shadow-sm" style="background: linear-gradient(135deg, ${primary}, ${secondary}); border: none;">
+                ✏️ Open HTML Editor
+              </button>
+            </div>
+            <div class="mt-4 p-3 bg-light rounded-3 text-start small font-monospace mx-auto" style="max-width: 550px;">
+              <span class="text-muted">// Available profile placeholders:</span><br>
+              <span class="text-primary">{{FULL_NAME}}</span> &bull; 
+              <span class="text-primary">{{HEADLINE}}</span> &bull; 
+              <span class="text-primary">{{ABOUT}}</span> &bull; 
+              <span class="text-primary">{{SKILLS}}</span> &bull; 
+              <span class="text-primary">{{PROJECTS}}</span> &bull; 
+              <span class="text-primary">{{EXPERIENCE}}</span> &bull; 
+              <span class="text-primary">{{EMAIL}}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      // Replace Placeholders / Tokens (case-insensitive)
+      processedHtml = processedHtml
+        .replace(/{{\s*FULL_NAME\s*}}/gi, name)
+        .replace(/{{\s*NAME\s*}}/gi, name)
+        .replace(/{{\s*HEADLINE\s*}}/gi, headline)
+        .replace(/{{\s*ROLE\s*}}/gi, headline)
+        .replace(/{{\s*ABOUT\s*}}/gi, about)
+        .replace(/{{\s*BIO\s*}}/gi, about)
+        .replace(/{{\s*PROFILE_IMAGE\s*}}/gi, photo)
+        .replace(/{{\s*PHOTO\s*}}/gi, photo)
+        .replace(/{{\s*EMAIL\s*}}/gi, email)
+        .replace(/{{\s*PHONE\s*}}/gi, phone)
+        .replace(/{{\s*LOCATION\s*}}/gi, location)
+        .replace(/{{\s*GITHUB\s*}}/gi, github)
+        .replace(/{{\s*LINKEDIN\s*}}/gi, linkedin)
+        .replace(/{{\s*WEBSITE\s*}}/gi, website)
+        .replace(/{{\s*PRIMARY_COLOR\s*}}/gi, primary)
+        .replace(/{{\s*SECONDARY_COLOR\s*}}/gi, secondary)
+        .replace(/{{\s*SKILLS\s*}}/gi, skillsHtml)
+        .replace(/{{\s*PROJECTS\s*}}/gi, `<div class="row">${projectsHtml}</div>`)
+        .replace(/{{\s*EXPERIENCE\s*}}/gi, expHtml)
+        .replace(/{{\s*EDUCATION\s*}}/gi, eduHtml)
+        .replace(/{{\s*SOCIAL_LINKS\s*}}/gi, socialHtml);
+    }
+
+    const customCssTag = data.custom_css ? `<style id="injected-custom-css">${data.custom_css}</style>` : "";
+
+    return `
+      <div class="custom-html-portfolio-wrapper" style="font-family: ${data.font || 'Plus Jakarta Sans'}, sans-serif; min-height: 100vh;">
+        ${customCssTag}
+        ${processedHtml}
+      </div>
+    `;
+  }
+
   function render(targetElement, portfolioData) {
     if (!targetElement || !portfolioData) return;
 
@@ -6150,6 +6304,9 @@ const PortfolioThemesEngine = (() => {
 
     // Resolve layout: supports custom layout architecture selection or theme default
     const layoutAliasMap = {
+      "custom_html": "custom_html",
+      "custom": "custom_html",
+      "html": "custom_html",
       "modern": "modern",
       "bento": "modern",
       "developer": "developer",
@@ -6190,7 +6347,9 @@ const PortfolioThemesEngine = (() => {
 
     // Dispatch to the requested Layout Engine (or NOVA Editorial Agency Engine)
     let layoutHtml = "";
-    if (resolvedLayout === "developer") {
+    if (resolvedLayout === "custom_html" || portfolioData.layout === "custom_html" || portfolioData.use_custom_html) {
+      layoutHtml = renderCustomHtmlLayout(portfolioData, activeSections);
+    } else if (resolvedLayout === "developer") {
       layoutHtml = renderDeveloperIdeLayout(portfolioData, activeSections);
     } else if (resolvedLayout === "modern") {
       layoutHtml = renderModernBentoLayout(portfolioData, activeSections);

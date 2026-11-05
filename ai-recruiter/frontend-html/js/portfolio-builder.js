@@ -22,6 +22,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnQuickEditPreview = document.getElementById("btn-quick-edit-preview");
   const portfolioReadyBanner = document.getElementById("portfolio-ready-banner");
   const tabBtnContent = document.getElementById("tab-btn-content");
+  const tabBtnCustomHtml = document.getElementById("tab-btn-custom-html");
+  const switchUseCustomHtml = document.getElementById("switch-use-custom-html");
+  const lblUseCustomHtml = document.getElementById("lbl-use-custom-html");
+  const textareaCustomHtml = document.getElementById("textarea-custom-html");
+  const btnApplyCustomHtml = document.getElementById("btn-apply-custom-html");
+  const btnLoadStarterHtml = document.getElementById("btn-load-starter-html");
+  const btnCopyCustomHtml = document.getElementById("btn-copy-custom-html");
+  const btnClearCustomHtml = document.getElementById("btn-clear-custom-html");
+  const btnBannerCustomHtml = document.getElementById("btn-banner-custom-html");
+  const btnQuickNavContent = document.getElementById("btn-quick-nav-content");
+  const btnQuickNavCustomHtml = document.getElementById("btn-quick-nav-custom-html");
+  const btnQuickNavStyles = document.getElementById("btn-quick-nav-styles");
   const studioInspectorCard = document.getElementById("studio-inspector-card");
   const btnDeletePortfolio = document.getElementById("btn-delete-portfolio");
   const btnDeletePortfolioTab = document.getElementById("btn-delete-portfolio-tab");
@@ -213,6 +225,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     bindContentControls();
     bindPublishAndExportControls();
     bindEditModeControls();
+    bindCustomHtmlControls();
     bindDeleteControls();
 
     // Check user authentication
@@ -253,6 +266,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Check for incoming custom prompt from website/homepage launcher or URL parameter
     const urlParams = new URLSearchParams(window.location.search);
+    // URL tab navigation router
+    const tabParam = (urlParams.get("tab") || "").toLowerCase();
+    if (tabParam === "content" || tabParam === "edit" || tabParam === "details") {
+      setTimeout(() => openEditMode(), 300);
+    } else if (tabParam === "custom_html" || tabParam === "html" || tabParam === "code") {
+      setTimeout(() => openCustomHtmlMode(), 300);
+    } else if (tabParam === "styles" || tabParam === "design") {
+      setTimeout(() => openStylesMode(), 300);
+    }
+
     const incomingPrompt = urlParams.get("prompt") || sessionStorage.getItem("pending_portfolio_prompt");
     const autoGenRequested = urlParams.get("autoGenerate") === "true" || !!sessionStorage.getItem("pending_portfolio_prompt");
 
@@ -332,6 +355,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Layout Architecture
     if (selectLayoutArchitecture) {
       selectLayoutArchitecture.value = currentPortfolio.layout || "nova";
+    }
+
+    // Custom HTML Code sync
+    if (textareaCustomHtml) {
+      textareaCustomHtml.value = currentPortfolio.custom_html || "";
+    }
+    if (switchUseCustomHtml) {
+      const isCustomHtmlActive = currentPortfolio.layout === "custom_html" || Boolean(currentPortfolio.use_custom_html);
+      switchUseCustomHtml.checked = isCustomHtmlActive;
+      if (lblUseCustomHtml) lblUseCustomHtml.textContent = isCustomHtmlActive ? "Active" : "Inactive";
     }
 
     // Style Tokens
@@ -2325,6 +2358,205 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  function openCustomHtmlMode() {
+    if (tabBtnCustomHtml && window.bootstrap && bootstrap.Tab) {
+      const bsTab = bootstrap.Tab.getOrCreateInstance(tabBtnCustomHtml);
+      bsTab.show();
+    }
+    const target = document.getElementById("tab-custom-html") || document.getElementById("studio-inspector-card");
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    if (textareaCustomHtml) {
+      setTimeout(() => textareaCustomHtml.focus(), 350);
+    }
+  }
+
+  function openStylesMode() {
+    if (tabBtnStyles && window.bootstrap && bootstrap.Tab) {
+      const bsTab = bootstrap.Tab.getOrCreateInstance(tabBtnStyles);
+      bsTab.show();
+    }
+    const target = document.getElementById("tab-styles") || document.getElementById("studio-inspector-card");
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  function bindCustomHtmlControls() {
+    if (btnBannerCustomHtml) {
+      btnBannerCustomHtml.addEventListener("click", () => openCustomHtmlMode());
+    }
+    if (btnQuickNavContent) {
+      btnQuickNavContent.addEventListener("click", () => openEditMode());
+    }
+    if (btnQuickNavCustomHtml) {
+      btnQuickNavCustomHtml.addEventListener("click", () => openCustomHtmlMode());
+    }
+    if (btnQuickNavStyles) {
+      btnQuickNavStyles.addEventListener("click", () => openStylesMode());
+    }
+
+    if (switchUseCustomHtml) {
+      switchUseCustomHtml.addEventListener("change", () => {
+        if (!currentPortfolio) return;
+        const isActive = switchUseCustomHtml.checked;
+        if (lblUseCustomHtml) lblUseCustomHtml.textContent = isActive ? "Active" : "Inactive";
+        if (isActive) {
+          currentPortfolio.layout = "custom_html";
+          currentPortfolio.use_custom_html = true;
+          if (selectLayoutArchitecture) selectLayoutArchitecture.value = "custom_html";
+        } else {
+          currentPortfolio.layout = "modern";
+          currentPortfolio.use_custom_html = false;
+          if (selectLayoutArchitecture) selectLayoutArchitecture.value = "modern";
+        }
+        renderLivePreview();
+      });
+    }
+
+    // Insert token buttons
+    document.querySelectorAll(".btn-insert-tag").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const tag = btn.getAttribute("data-tag");
+        if (!tag || !textareaCustomHtml) return;
+        const start = textareaCustomHtml.selectionStart;
+        const end = textareaCustomHtml.selectionEnd;
+        const val = textareaCustomHtml.value;
+        textareaCustomHtml.value = val.substring(0, start) + tag + val.substring(end);
+        textareaCustomHtml.focus();
+        textareaCustomHtml.selectionStart = textareaCustomHtml.selectionEnd = start + tag.length;
+        if (currentPortfolio) {
+          currentPortfolio.custom_html = textareaCustomHtml.value;
+          renderLivePreview();
+        }
+      });
+    });
+
+    // Starter template button
+    if (btnLoadStarterHtml) {
+      btnLoadStarterHtml.addEventListener("click", () => {
+        const starter = `<!-- Custom Portfolio Website Starter Template -->
+<div class="container py-5">
+  <!-- Hero Section -->
+  <header class="text-center py-5 mb-5 rounded-4 p-5 shadow-sm" style="background: linear-gradient(135deg, rgba(79,70,229,0.08) 0%, rgba(6,182,212,0.08) 100%); border: 1px solid rgba(79,70,229,0.15);">
+    <img src="{{PROFILE_IMAGE}}" alt="{{FULL_NAME}}" class="rounded-circle shadow-lg mb-4 border border-4 border-white" style="width: 140px; height: 140px; object-fit: cover;">
+    <h1 class="display-4 fw-bold text-dark mb-2 tracking-tight">{{FULL_NAME}}</h1>
+    <p class="lead fw-semibold text-primary mb-3">{{HEADLINE}}</p>
+    <p class="mx-auto text-secondary mb-4" style="max-width: 650px; line-height: 1.7; font-size: 1.05rem;">{{ABOUT}}</p>
+    <div class="d-flex justify-content-center gap-3">
+      {{SOCIAL_LINKS}}
+    </div>
+  </header>
+
+  <!-- Technical Skills Section -->
+  <section class="mb-5">
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <h3 class="fw-bold mb-0 text-dark">⚡ Core Expertise &amp; Skills</h3>
+    </div>
+    <div class="p-4 rounded-4 bg-white shadow-sm border">
+      {{SKILLS}}
+    </div>
+  </section>
+
+  <!-- Featured Projects Section -->
+  <section class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="fw-bold mb-0 text-dark">🚀 Featured Projects</h3>
+      <span class="badge bg-primary-subtle text-primary px-3 py-1.5 rounded-pill small fw-bold">Engineering Showcase</span>
+    </div>
+    {{PROJECTS}}
+  </section>
+
+  <!-- Work Experience Section -->
+  <section class="mb-5">
+    <h3 class="fw-bold mb-3 text-dark">💼 Experience &amp; Impact</h3>
+    {{EXPERIENCE}}
+  </section>
+
+  <!-- Education Section -->
+  <section class="mb-5">
+    <h3 class="fw-bold mb-3 text-dark">🎓 Education</h3>
+    {{EDUCATION}}
+  </section>
+
+  <!-- Footer Contact -->
+  <footer class="text-center py-4 border-top mt-5 text-muted small">
+    <p class="mb-1">&copy; 2026 {{FULL_NAME}}. All rights reserved.</p>
+    <p class="mb-0">Reach out at <a href="mailto:{{EMAIL}}" class="text-primary fw-semibold">{{EMAIL}}</a></p>
+  </footer>
+</div>`;
+
+        if (!textareaCustomHtml.value.trim() || confirm("Load starter template? This will replace the editor text.")) {
+          textareaCustomHtml.value = starter;
+          if (currentPortfolio) {
+            currentPortfolio.custom_html = starter;
+            currentPortfolio.layout = "custom_html";
+            currentPortfolio.use_custom_html = true;
+            if (switchUseCustomHtml) {
+              switchUseCustomHtml.checked = true;
+              if (lblUseCustomHtml) lblUseCustomHtml.textContent = "Active";
+            }
+            if (selectLayoutArchitecture) selectLayoutArchitecture.value = "custom_html";
+            renderLivePreview();
+          }
+          showAlert("📄 Starter HTML template loaded successfully!", "info");
+        }
+      });
+    }
+
+    if (btnCopyCustomHtml) {
+      btnCopyCustomHtml.addEventListener("click", () => {
+        if (!textareaCustomHtml) return;
+        navigator.clipboard.writeText(textareaCustomHtml.value || "").then(() => {
+          btnCopyCustomHtml.textContent = "✓ Copied!";
+          setTimeout(() => { btnCopyCustomHtml.textContent = "📋 Copy"; }, 2000);
+        });
+      });
+    }
+
+    if (btnClearCustomHtml) {
+      btnClearCustomHtml.addEventListener("click", () => {
+        if (!confirm("Are you sure you want to clear your custom HTML code?")) return;
+        if (textareaCustomHtml) textareaCustomHtml.value = "";
+        if (currentPortfolio) {
+          currentPortfolio.custom_html = "";
+          renderLivePreview();
+        }
+      });
+    }
+
+    if (btnApplyCustomHtml) {
+      btnApplyCustomHtml.addEventListener("click", () => {
+        if (!currentPortfolio) return;
+        currentPortfolio.custom_html = textareaCustomHtml.value;
+        currentPortfolio.layout = "custom_html";
+        currentPortfolio.use_custom_html = true;
+        if (switchUseCustomHtml) {
+          switchUseCustomHtml.checked = true;
+          if (lblUseCustomHtml) lblUseCustomHtml.textContent = "Active";
+        }
+        if (selectLayoutArchitecture) selectLayoutArchitecture.value = "custom_html";
+        renderLivePreview();
+        showAlert("✨ Custom HTML applied and rendered in live preview!", "success");
+      });
+    }
+
+    let htmlDebounceTimer = null;
+    if (textareaCustomHtml) {
+      textareaCustomHtml.addEventListener("input", () => {
+        clearTimeout(htmlDebounceTimer);
+        htmlDebounceTimer = setTimeout(() => {
+          if (!currentPortfolio) return;
+          currentPortfolio.custom_html = textareaCustomHtml.value;
+          if (currentPortfolio.layout === "custom_html" || (switchUseCustomHtml && switchUseCustomHtml.checked)) {
+            renderLivePreview();
+          }
+        }, 500);
+      });
+    }
+  }
+
   function bindEditModeControls() {
     if (btnToggleEditMode) btnToggleEditMode.addEventListener("click", () => openEditMode());
     if (btnBannerEdit) btnBannerEdit.addEventListener("click", () => openEditMode());
@@ -2357,6 +2589,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           card_style: currentPortfolio.card_style,
           button_style: currentPortfolio.button_style,
           custom_css: customCssValue,
+          custom_html: currentPortfolio.custom_html || (textareaCustomHtml ? textareaCustomHtml.value : undefined),
           dark_mode: currentPortfolio.dark_mode,
           professional_headline: currentPortfolio.professional_headline,
           about: currentPortfolio.about,

@@ -1096,9 +1096,14 @@
                   <div class="small text-secondary">Your portfolio is loaded in the live preview. Click <strong>Edit Portfolio</strong> to customize details or fix any inaccuracies.</div>
                 </div>
               </div>
-              <button id="btn-banner-edit" class="btn btn-primary btn-sm fw-bold px-3 py-2 text-nowrap d-flex align-items-center gap-1 shadow-sm">
-                <span>✏️</span> Edit Details
-              </button>
+              <div class="d-flex gap-2">
+                <button id="btn-banner-edit" class="btn btn-primary btn-sm fw-bold px-3 py-2 text-nowrap d-flex align-items-center gap-1 shadow-sm">
+                  <span>✏️</span> Edit Details
+                </button>
+                <button id="btn-banner-custom-html" class="btn btn-outline-primary btn-sm fw-bold px-3 py-2 text-nowrap d-flex align-items-center gap-1">
+                  <span>💻</span> Custom HTML
+                </button>
+              </div>
             </div>
 
             <!-- 2. CONVERSATIONAL AI REFINE BAR -->
@@ -1193,12 +1198,41 @@
               </div>
             </div>
 
+            <!-- PORTFOLIO EDIT & CUSTOMIZATION QUICK BAR -->
+            <div class="card border-0 shadow-sm p-3 mb-4 rounded-4" id="portfolio-edit-quickbar" style="background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%); border: 1px solid #bbf7d0 !important;">
+              <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="fs-4">✏️</span>
+                  <div>
+                    <h6 class="fw-bold mb-0 text-dark">Portfolio Editor &amp; Code Hub</h6>
+                    <small class="text-secondary">Easily edit generated details, tweak content, or integrate your own custom HTML website code.</small>
+                  </div>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                  <button type="button" id="btn-quick-nav-content" class="btn btn-sm btn-success fw-bold px-3 shadow-sm d-flex align-items-center gap-1">
+                    <span>✏️</span> Edit Details &amp; Content
+                  </button>
+                  <button type="button" id="btn-quick-nav-custom-html" class="btn btn-sm btn-dark fw-bold px-3 shadow-sm d-flex align-items-center gap-1">
+                    <span>💻</span> Custom HTML Code
+                  </button>
+                  <button type="button" id="btn-quick-nav-styles" class="btn btn-sm btn-outline-primary fw-semibold px-2.5 d-flex align-items-center gap-1">
+                    <span>🎨</span> Styles
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <!-- 4. STUDIO INSPECTOR TABS (Content, Styles, Publishing) -->
             <div class="card border-0 shadow-sm p-3 mb-4 rounded-4 bg-white" id="studio-inspector-card">
               <ul class="nav studio-tabs mb-3 border-bottom pb-2" role="tablist">
                 <li class="nav-item">
                   <button class="nav-link active" id="tab-btn-content" data-bs-toggle="tab" data-bs-target="#tab-content" type="button">
                     ✏️ Edit Details &amp; Content
+                  </button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" id="tab-btn-custom-html" data-bs-toggle="tab" data-bs-target="#tab-custom-html" type="button">
+                    💻 Custom HTML Code
                   </button>
                 </li>
                 <li class="nav-item">
@@ -1225,6 +1259,7 @@
                     </div>
                     <p class="text-muted small mb-2" style="font-size: 0.78rem;">Choose the core layout framework for your portfolio experience:</p>
                     <select id="select-layout-architecture" class="form-select form-select-sm fw-semibold">
+                      <option value="custom_html">💻 Custom HTML Code Integration</option>
                       <option value="modern" selected>🍱 Modern Bento Grid (Apple/Linear Modular)</option>
                       <option value="developer">💻 Developer Terminal (Hacker IDE Workstation)</option>
                       <option value="ai_tech">🤖 AI Neural HUD (Futuristic Telemetry)</option>
@@ -1696,6 +1731,71 @@
 
                 </div>
 
+                <!-- TAB: CUSTOM HTML CODE INTEGRATION -->
+                <div class="tab-pane fade" id="tab-custom-html" role="tabpanel">
+                  <div class="p-3 mb-3 bg-light rounded-3 border">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <div>
+                        <h6 class="fw-bold mb-0 text-dark d-flex align-items-center gap-1.5">
+                          <span>💻</span> Integrate Your Own HTML Website
+                        </h6>
+                        <small class="text-muted">Paste your existing portfolio HTML code and customize it with your profile data.</small>
+                      </div>
+                      <div class="form-check form-switch m-0">
+                        <input class="form-check-input" type="checkbox" id="switch-use-custom-html" role="switch" style="cursor: pointer; width: 2.4rem; height: 1.25rem;">
+                        <label class="form-check-label small fw-bold ms-1" for="switch-use-custom-html" id="lbl-use-custom-html">Active</label>
+                      </div>
+                    </div>
+                    <p class="text-muted small mb-3" style="font-size: 0.8rem;">
+                      Have your own HTML code? Paste it below to render your custom portfolio. You can click on the profile placeholders below to automatically inject dynamic details from your candidate profile!
+                    </p>
+
+                    <!-- Quick Placeholder Insert Buttons -->
+                    <div class="mb-3">
+                      <label class="form-label small fw-bold mb-1 text-secondary">Insert Profile Placeholders into Code:</label>
+                      <div class="d-flex flex-wrap gap-1" id="custom-html-placeholders">
+                        <button type="button" class="btn btn-xs btn-outline-primary rounded-pill py-0.5 px-2 small btn-insert-tag" data-tag="{{FULL_NAME}}">+ {{FULL_NAME}}</button>
+                        <button type="button" class="btn btn-xs btn-outline-primary rounded-pill py-0.5 px-2 small btn-insert-tag" data-tag="{{HEADLINE}}">+ {{HEADLINE}}</button>
+                        <button type="button" class="btn btn-xs btn-outline-primary rounded-pill py-0.5 px-2 small btn-insert-tag" data-tag="{{ABOUT}}">+ {{ABOUT}}</button>
+                        <button type="button" class="btn btn-xs btn-outline-primary rounded-pill py-0.5 px-2 small btn-insert-tag" data-tag="{{PROFILE_IMAGE}}">+ {{PROFILE_IMAGE}}</button>
+                        <button type="button" class="btn btn-xs btn-outline-primary rounded-pill py-0.5 px-2 small btn-insert-tag" data-tag="{{SKILLS}}">+ {{SKILLS}}</button>
+                        <button type="button" class="btn btn-xs btn-outline-primary rounded-pill py-0.5 px-2 small btn-insert-tag" data-tag="{{PROJECTS}}">+ {{PROJECTS}}</button>
+                        <button type="button" class="btn btn-xs btn-outline-primary rounded-pill py-0.5 px-2 small btn-insert-tag" data-tag="{{EXPERIENCE}}">+ {{EXPERIENCE}}</button>
+                        <button type="button" class="btn btn-xs btn-outline-primary rounded-pill py-0.5 px-2 small btn-insert-tag" data-tag="{{EDUCATION}}">+ {{EDUCATION}}</button>
+                        <button type="button" class="btn btn-xs btn-outline-primary rounded-pill py-0.5 px-2 small btn-insert-tag" data-tag="{{EMAIL}}">+ {{EMAIL}}</button>
+                        <button type="button" class="btn btn-xs btn-outline-primary rounded-pill py-0.5 px-2 small btn-insert-tag" data-tag="{{SOCIAL_LINKS}}">+ {{SOCIAL_LINKS}}</button>
+                      </div>
+                    </div>
+
+                    <!-- Code Actions Toolbar -->
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <span class="small text-muted fw-semibold">HTML Code:</span>
+                      <div class="d-flex gap-1.5">
+                        <button type="button" id="btn-load-starter-html" class="btn btn-sm btn-outline-primary py-0.5 px-2 small fw-semibold">
+                          📄 Load Starter Template
+                        </button>
+                        <button type="button" id="btn-copy-custom-html" class="btn btn-sm btn-outline-secondary py-0.5 px-2 small">
+                          📋 Copy
+                        </button>
+                        <button type="button" id="btn-clear-custom-html" class="btn btn-sm btn-outline-danger py-0.5 px-2 small">
+                          🗑️ Clear
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- HTML Editor Textarea -->
+                    <div class="position-relative mb-2">
+                      <textarea id="textarea-custom-html" class="form-control font-monospace small" rows="18" placeholder="<!-- Paste your custom HTML code here... -->&#10;<section class=&quot;hero&quot;>&#10;  <h1>{{FULL_NAME}}</h1>&#10;  <p>{{HEADLINE}}</p>&#10;  <div>{{ABOUT}}</div>&#10;</section>&#10;<section class=&quot;skills&quot;>&#10;  {{SKILLS}}&#10;</section>" style="font-size: 0.82rem; background: #0f172a; color: #38bdf8; border: 1px solid #1e293b; tab-size: 2; line-height: 1.5;"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                      <small class="text-muted">Changes preview live automatically in the right stage.</small>
+                      <button type="button" id="btn-apply-custom-html" class="btn btn-sm btn-primary fw-bold px-3 py-1">
+                        ✨ Apply &amp; Preview Code
+                      </button>
+                    </div>
+                  </div>
+                </div>
                 <!-- TAB 3: URL & PUBLISH -->
                 <div class="tab-pane fade" id="tab-publish" role="tabpanel">
                   <div class="p-3 bg-light rounded-3 mb-3">

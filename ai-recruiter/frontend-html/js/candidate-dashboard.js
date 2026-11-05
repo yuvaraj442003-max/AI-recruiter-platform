@@ -232,6 +232,8 @@
       const btnCopy = document.getElementById("dash-btn-copy-link");
       const btnView = document.getElementById("dash-btn-view-portfolio");
       const btnDelete = document.getElementById("dash-btn-delete-portfolio");
+      const btnEditDetails = document.getElementById("dash-btn-edit-details");
+      const btnCustomHtml = document.getElementById("dash-btn-custom-html");
       const actionText = document.getElementById("dash-portfolio-action-text");
 
       if (port) {
@@ -259,6 +261,8 @@
           themeBadge.classList.remove("d-none");
         }
         if (actionText) actionText.textContent = "Edit Portfolio";
+        if (btnEditDetails) btnEditDetails.classList.remove("d-none");
+        if (btnCustomHtml) btnCustomHtml.classList.remove("d-none");
 
         if (port.is_published) {
           if (statusBadge) {
@@ -295,6 +299,8 @@
         }
       } else {
         if (btnDelete) btnDelete.classList.add("d-none");
+        if (btnEditDetails) btnEditDetails.classList.add("d-none");
+        if (btnCustomHtml) btnCustomHtml.classList.add("d-none");
         if (urlContainer) urlContainer.classList.add("d-none");
         if (btnCopy) btnCopy.classList.add("d-none");
         if (btnView) btnView.classList.add("d-none");

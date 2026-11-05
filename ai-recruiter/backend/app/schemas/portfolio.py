@@ -117,6 +117,7 @@ class PortfolioUpdateRequest(BaseModel):
     section_order: Optional[list[str]] = None
     section_visibility: Optional[Dict[str, bool]] = None
     custom_css: Optional[str] = None
+    custom_html: Optional[str] = None
     generation_prompt: Optional[str] = None
 
 
@@ -223,6 +224,7 @@ class PortfolioResponse(BaseModel):
     section_order: list[str] = Field(default_factory=list)
     section_visibility: Dict[str, bool] = Field(default_factory=dict)
     custom_css: Optional[str] = None
+    custom_html: Optional[str] = None
     generation_prompt: Optional[str] = None
     portrait_mask: Optional[str] = None
     generation_prompt: Optional[str] = None
