@@ -261,6 +261,18 @@
           themeBadge.classList.remove("d-none");
         }
         if (actionText) actionText.textContent = "Edit Portfolio";
+        if (port.generation_prompt) {
+          const dashInput = document.getElementById("dash-custom-prompt-input");
+          if (dashInput) dashInput.value = port.generation_prompt;
+        }
+        const promptBtnText = document.getElementById("dash-prompt-btn-text");
+        if (promptBtnText) promptBtnText.textContent = "Edit Prompt & Regenerate";
+        const promptModalTitle = document.getElementById("dash-prompt-modal-title");
+        if (promptModalTitle) promptModalTitle.textContent = "Edit & Regenerate Portfolio Prompt";
+        const promptModalSub = document.getElementById("dash-prompt-modal-subtitle");
+        if (promptModalSub) promptModalSub.textContent = "Modify your prompt directives, styles, or requirements and regenerate your website.";
+        const submitPromptText = document.getElementById("dash-submit-prompt-text");
+        if (submitPromptText) submitPromptText.textContent = "Update & Regenerate Portfolio →";
         if (btnEditDetails) btnEditDetails.classList.remove("d-none");
         if (btnCustomHtml) btnCustomHtml.classList.remove("d-none");
 
@@ -311,6 +323,10 @@
         if (themeBadge) themeBadge.classList.add("d-none");
         if (descEl) descEl.textContent = "You haven't created a portfolio yet. Build your professional portfolio in 1 click!";
         if (actionText) actionText.textContent = "Build Portfolio";
+        const promptBtnTextNoPort = document.getElementById("dash-prompt-btn-text");
+        if (promptBtnTextNoPort) promptBtnTextNoPort.textContent = "Create with Custom Prompt";
+        const submitPromptTextNoPort = document.getElementById("dash-submit-prompt-text");
+        if (submitPromptTextNoPort) submitPromptTextNoPort.textContent = "Generate Portfolio Now →";
       }
     } catch (err) {
       console.debug("Portfolio status not loaded:", err);
@@ -2203,6 +2219,17 @@ window.applyDashPromptIdea = function(type) {
   if (input && ideas[type]) {
     input.value = ideas[type];
     input.focus();
+  }
+};
+
+window.editDashPromptInStudio = function() {
+  const input = document.getElementById("dash-custom-prompt-input");
+  const promptText = input ? input.value.trim() : "";
+  if (promptText) {
+    sessionStorage.setItem("pending_portfolio_prompt", promptText);
+    window.location.href = `portfolio-builder.html?prompt=${encodeURIComponent(promptText)}&editPrompt=true`;
+  } else {
+    window.location.href = `portfolio-builder.html?editPrompt=true`;
   }
 };
 

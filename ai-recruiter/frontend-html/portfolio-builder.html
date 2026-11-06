@@ -41,6 +41,10 @@
       background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
       pointer-events: none;
     }
+    .prompt-editor-focused {
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.45), 0 10px 25px -5px rgba(79, 70, 229, 0.3) !important;
+      transition: box-shadow 0.3s ease;
+    }
     .prompt-editor-card {
       background: rgba(15, 23, 42, 0.85);
       border: 1px solid rgba(129, 140, 248, 0.35);
@@ -648,9 +652,14 @@
             <span>🤝</span> Share &amp; Pitch
           </button>
 
+          <!-- Edit Prompt & Regenerate Button -->
+          <button id="btn-header-edit-prompt" class="btn btn-sm btn-outline-primary fw-bold px-3 py-2 shadow-sm d-flex align-items-center gap-1" title="Modify generation prompt and regenerate website">
+            <span>✨</span> Edit Prompt &amp; Regenerate
+          </button>
+
           <!-- Edit Portfolio Button -->
-          <button id="btn-toggle-edit-mode" class="btn btn-sm btn-outline-primary fw-bold px-3 py-2 shadow-sm d-flex align-items-center gap-1" title="Modify details and customize sections">
-            <span>✏️</span> Edit Portfolio
+          <button id="btn-toggle-edit-mode" class="btn btn-sm btn-outline-secondary fw-semibold px-3 py-2 shadow-sm d-flex align-items-center gap-1" title="Modify details and customize sections">
+            <span>✏️</span> Edit Details
           </button>
 
           <!-- Export Standalone HTML -->
@@ -972,6 +981,9 @@
                     <span id="prompt-char-count" class="text-white-50 small" style="font-size: 0.72rem;">0 characters</span>
                   </div>
                   <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                    <button type="button" id="btn-prompt-edit-toggle" class="btn btn-sm btn-outline-light py-0.5 px-2 rounded-pill fw-medium small d-flex align-items-center gap-1" style="font-size: 0.72rem;" title="Edit or modify prompt text">
+                      <span>✏️</span> Edit Prompt
+                    </button>
                     <button type="button" id="btn-reset-template" class="btn btn-sm btn-outline-light py-0.5 px-2 rounded-pill fw-medium small d-flex align-items-center gap-1" style="font-size: 0.72rem;" title="Reset prompt to original template text">
                       <span>↺</span> Reset Template
                     </button>
@@ -1096,11 +1108,14 @@
                   <div class="small text-secondary">Your portfolio is loaded in the live preview. Click <strong>Edit Portfolio</strong> to customize details or fix any inaccuracies.</div>
                 </div>
               </div>
-              <div class="d-flex gap-2">
-                <button id="btn-banner-edit" class="btn btn-primary btn-sm fw-bold px-3 py-2 text-nowrap d-flex align-items-center gap-1 shadow-sm">
+              <div class="d-flex gap-2 flex-wrap">
+                <button id="btn-banner-edit-prompt" class="btn btn-primary btn-sm fw-bold px-3 py-2 text-nowrap d-flex align-items-center gap-1 shadow-sm" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); border: none;">
+                  <span>✨</span> Edit Prompt &amp; Regenerate
+                </button>
+                <button id="btn-banner-edit" class="btn btn-outline-primary btn-sm fw-bold px-3 py-2 text-nowrap d-flex align-items-center gap-1">
                   <span>✏️</span> Edit Details
                 </button>
-                <button id="btn-banner-custom-html" class="btn btn-outline-primary btn-sm fw-bold px-3 py-2 text-nowrap d-flex align-items-center gap-1">
+                <button id="btn-banner-custom-html" class="btn btn-outline-dark btn-sm fw-bold px-3 py-2 text-nowrap d-flex align-items-center gap-1">
                   <span>💻</span> Custom HTML
                 </button>
               </div>
@@ -1209,6 +1224,9 @@
                   </div>
                 </div>
                 <div class="d-flex gap-2 flex-wrap">
+                  <button type="button" id="btn-quick-nav-prompt" class="btn btn-sm btn-primary fw-bold px-3 shadow-sm d-flex align-items-center gap-1" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); border: none;">
+                    <span>✨</span> Edit Prompt &amp; Regenerate
+                  </button>
                   <button type="button" id="btn-quick-nav-content" class="btn btn-sm btn-success fw-bold px-3 shadow-sm d-flex align-items-center gap-1">
                     <span>✏️</span> Edit Details &amp; Content
                   </button>
@@ -1490,6 +1508,25 @@
 
                 <!-- TAB 2: CONTENT & SECTIONS -->
                 <div class="tab-pane fade show active" id="tab-content" role="tabpanel">
+
+                  <!-- Active AI Generation Prompt Card -->
+                  <div class="mb-3 p-3 rounded-3 border" id="sec-ai-prompt" style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.05) 0%, rgba(124, 58, 237, 0.05) 100%); border-left: 4px solid #4f46e5 !important;">
+                    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="fs-5">✨</span>
+                        <div>
+                          <label class="form-label fw-bold small mb-0 text-dark">Portfolio Generation Prompt</label>
+                          <small class="text-muted d-block" style="font-size: 0.72rem;">The natural language prompt used by Gemini to generate this website</small>
+                        </div>
+                      </div>
+                      <button type="button" id="btn-section-edit-prompt" class="btn btn-sm btn-primary fw-bold px-3 rounded-pill shadow-sm d-flex align-items-center gap-1" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); border: none;">
+                        <span>✏️</span> Edit Prompt &amp; Regenerate
+                      </button>
+                    </div>
+                    <div class="p-2.5 rounded-3 bg-white border small text-secondary font-monospace" id="display-active-prompt" style="font-size: 0.8rem; line-height: 1.5; max-height: 100px; overflow-y: auto;">
+                      (No prompt entered yet — click Edit Prompt to synthesize one)
+                    </div>
+                  </div>
 
                   <!-- Quick Jump Navigation -->
                   <div class="d-flex flex-wrap gap-1 mb-3 p-2 bg-light rounded-3 border">
@@ -1844,8 +1881,11 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-2 flex-wrap">
-                  <button type="button" class="btn btn-sm btn-outline-primary fw-semibold d-flex align-items-center gap-1" id="btn-quick-edit-preview" title="Edit portfolio content and details">
-                    <span>✏️</span> Edit Portfolio
+                  <button type="button" class="btn btn-sm btn-outline-primary fw-bold d-flex align-items-center gap-1" id="btn-quick-edit-prompt" title="Modify your generation prompt and regenerate website" style="background: rgba(79, 70, 229, 0.08); color: #4f46e5; border: 1px solid rgba(79, 70, 229, 0.25);">
+                    <span>✨</span> Edit Prompt &amp; Regenerate
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary fw-semibold d-flex align-items-center gap-1" id="btn-quick-edit-preview" title="Edit portfolio content and details">
+                    <span>✏️</span> Edit Details
                   </button>
 
                   <!-- Live Dark / Light Mode Switcher -->

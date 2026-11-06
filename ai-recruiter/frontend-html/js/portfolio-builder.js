@@ -43,6 +43,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const deleteBtnSpinner = document.getElementById("delete-btn-spinner");
 
   // DOM Elements - Prompt Center & Editor
+  const btnHeaderEditPrompt = document.getElementById("btn-header-edit-prompt");
+  const btnQuickEditPrompt = document.getElementById("btn-quick-edit-prompt");
+  const btnBannerEditPrompt = document.getElementById("btn-banner-edit-prompt");
+  const btnQuickNavPrompt = document.getElementById("btn-quick-nav-prompt");
+  const btnSectionEditPrompt = document.getElementById("btn-section-edit-prompt");
+  const btnPromptEditToggle = document.getElementById("btn-prompt-edit-toggle");
+  const displayActivePrompt = document.getElementById("display-active-prompt");
   const inputAiPrompt = document.getElementById("input-ai-prompt");
   const btnAutoDraftPrompt = document.getElementById("btn-auto-draft-prompt");
   const btnCopyPrompt = document.getElementById("btn-copy-prompt");
@@ -277,7 +284,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     const incomingPrompt = urlParams.get("prompt") || sessionStorage.getItem("pending_portfolio_prompt");
-    const autoGenRequested = urlParams.get("autoGenerate") === "true" || !!sessionStorage.getItem("pending_portfolio_prompt");
+    const editPromptRequested = urlParams.get("editPrompt") === "true" || tabParam === "prompt";
+    const autoGenRequested = !editPromptRequested && (urlParams.get("autoGenerate") === "true" || !!sessionStorage.getItem("pending_portfolio_prompt"));
 
     if (incomingPrompt && incomingPrompt.trim()) {
       sessionStorage.removeItem("pending_portfolio_prompt");
@@ -294,7 +302,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         setTimeout(() => {
           btnGenerateGemini.click();
         }, 350);
+      } else if (editPromptRequested) {
+        setTimeout(() => {
+          openPromptEditMode();
+          showAlert("✏️ Prompt loaded! You can modify or customize your prompt below, then click 'Regenerate Portfolio' when ready.", "info");
+        }, 350);
       }
+    } else if (editPromptRequested) {
+      setTimeout(() => {
+        openPromptEditMode();
+      }, 350);
     }
   }
 
@@ -429,6 +446,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
       adjustPromptHeight();
       updatePromptCharCount();
+      if (btnGenerateText && currentPortfolio.id) {
+        btnGenerateText.textContent = "Regenerate Portfolio";
+      }
+      if (promptEditBadge) {
+        promptEditBadge.innerHTML = "<span>✓</span> Active Generation Prompt Loaded";
+        promptEditBadge.className = "badge bg-indigo-subtle text-light small d-flex align-items-center gap-1";
+      }
+    }
+    if (displayActivePrompt) {
+      displayActivePrompt.textContent = currentPortfolio.generation_prompt || inputAiPrompt?.value || "(No prompt entered yet — click Edit Prompt to synthesize one)";
     }
 
     // Render Sub-Sections in UI
@@ -773,6 +800,40 @@ document.addEventListener("DOMContentLoaded", async () => {
   /**
    * Binds Prompt Starters, Creative Templates, Dimension Modifiers, Live Editing, and Gemini Generation
    */
+  /**
+   * Focuses and reveals the prompt editor so users can easily modify or customize their prompt
+   */
+  function openPromptEditMode() {
+    if (controlsColumn && controlsColumn.classList.contains("d-none")) {
+      controlsColumn.classList.remove("d-none");
+      if (previewColumn) previewColumn.className = "col-xl-7 col-lg-6";
+      if (btnToggleExpand) btnToggleExpand.innerHTML = "⛶ Expand";
+    }
+
+    const target = document.getElementById("prompt-editor-card") || document.getElementById("input-ai-prompt");
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      target.classList.add("prompt-editor-focused");
+      setTimeout(() => target.classList.remove("prompt-editor-focused"), 1800);
+    }
+
+    if (inputAiPrompt) {
+      setTimeout(() => {
+        inputAiPrompt.focus();
+        const len = inputAiPrompt.value.length;
+        inputAiPrompt.setSelectionRange(len, len);
+      }, 350);
+    }
+
+    if (promptEditBadge) {
+      promptEditBadge.innerHTML = "<span>✏️</span> Editing Prompt — Modify & Regenerate";
+      promptEditBadge.className = "badge bg-warning-subtle text-warning-emphasis small d-flex align-items-center gap-1";
+    }
+    if (currentPortfolio && currentPortfolio.id && btnGenerateText) {
+      btnGenerateText.textContent = "Regenerate Portfolio";
+    }
+  }
+
   function bindPromptStarters() {
     // 1. Textarea auto-resize and live character count
     if (inputAiPrompt) {
@@ -969,6 +1030,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     });
 
+    // Wire Edit Prompt & Regenerate buttons
+    if (btnHeaderEditPrompt) btnHeaderEditPrompt.addEventListener("click", () => openPromptEditMode());
+    if (btnQuickEditPrompt) btnQuickEditPrompt.addEventListener("click", () => openPromptEditMode());
+    if (btnBannerEditPrompt) btnBannerEditPrompt.addEventListener("click", () => openPromptEditMode());
+    if (btnQuickNavPrompt) btnQuickNavPrompt.addEventListener("click", () => openPromptEditMode());
+    if (btnSectionEditPrompt) btnSectionEditPrompt.addEventListener("click", () => openPromptEditMode());
+    if (btnPromptEditToggle) btnPromptEditToggle.addEventListener("click", () => openPromptEditMode());
+
     // 7. Generate button click
     btnGenerateGemini.addEventListener("click", async () => {
       const promptText = (inputAiPrompt.value || "").trim();
@@ -1003,8 +1072,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           syncDataToUI();
           renderLivePreview();
           if (portfolioReadyBanner) portfolioReadyBanner.classList.remove("d-none");
+          if (btnGenerateText) btnGenerateText.textContent = "Regenerate Portfolio";
+          if (displayActivePrompt) displayActivePrompt.textContent = promptText;
           openEditMode();
-          showAlert("✨ Portfolio generated successfully! Review below and customize any details or correct any information.", "success");
+          showAlert("✨ Portfolio generated successfully! You can now edit your details below, or click 'Edit Prompt & Regenerate' anytime to update your prompt.", "success");
         } else {
           throw new Error(res?.message || "Generation did not return portfolio data");
         }
