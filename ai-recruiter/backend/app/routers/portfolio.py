@@ -32,6 +32,8 @@ from app.models.user import User, UserRole
 from app.schemas.common import APIResponse
 from app.schemas.portfolio import (
     CheckSlugResponse,
+    GeneratePortfolioCodeRequest,
+    GeneratePortfolioCodeResponse,
     HeadlineGenerateRequest,
     HeadlineGenerateResponse,
     ImproveAboutRequest,
@@ -52,6 +54,7 @@ from app.schemas.portfolio import (
 )
 from app.ai.portfolio_prompt_service import (
     generate_portfolio_from_prompt,
+    generate_portfolio_html_code_with_gemini,
     refine_portfolio_section,
 )
 from app.services.portfolio_service import (

@@ -269,3 +269,17 @@ class PublicPortfolioResponse(BaseModel):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class GeneratePortfolioCodeRequest(BaseModel):
+    prompt: str
+    include_placeholders: bool = True
+    refinement: bool = False
+    existing_code: Optional[str] = None
+
+
+class GeneratePortfolioCodeResponse(BaseModel):
+    html_code: str
+    css_code: Optional[str] = None
+    prompt_used: str
+    detected_archetype: str

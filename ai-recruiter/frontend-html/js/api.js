@@ -951,6 +951,13 @@ const portfolioAPI = {
       include_resume: options.include_resume !== false,
       refinement: Boolean(options.refinement),
     }),
+  generateHtmlCode: (prompt, options = {}) =>
+    api.post("/portfolio/generate-code", {
+      prompt,
+      include_placeholders: options.include_placeholders !== false,
+      refinement: Boolean(options.refinement),
+      existing_code: options.existing_code || undefined,
+    }),
   refineSection: (section, instruction) =>
     api.post("/portfolio/refine-section", { section, instruction }),
   generate: async (formDataOrPayload) => {

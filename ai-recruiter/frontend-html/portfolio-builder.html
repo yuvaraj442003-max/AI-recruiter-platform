@@ -1783,7 +1783,63 @@
                         <label class="form-check-label small fw-bold ms-1" for="switch-use-custom-html" id="lbl-use-custom-html">Active</label>
                       </div>
                     </div>
-                    <p class="text-muted small mb-3" style="font-size: 0.8rem;">
+                                        <!-- 1. AI BESPOKE HTML/CSS CODE GENERATOR -->
+                    <div class="card border-0 mb-3 rounded-3 shadow-sm text-white overflow-hidden" id="ai-code-generator-card" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border: 1px solid rgba(99, 102, 241, 0.35) !important;">
+                      <div class="p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                          <div class="d-flex align-items-center gap-2">
+                            <span class="fs-4">🪄</span>
+                            <div>
+                              <h6 class="fw-bold mb-0 text-white">AI Bespoke HTML/CSS Code Generator</h6>
+                              <small class="text-white-50">Generate complete, modern, custom website code from natural language prompts via Gemini AI</small>
+                            </div>
+                          </div>
+                          <span class="badge text-light small px-2 py-1 rounded-pill" style="background: rgba(99, 102, 241, 0.3); border: 1px solid rgba(99, 102, 241, 0.5);">Gemini Code Engine</span>
+                        </div>
+
+                        <!-- Natural Language Prompt for HTML Code -->
+                        <div class="mb-2">
+                          <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label small fw-semibold text-white-50 mb-0">Describe the Website Code or Structure You Want:</label>
+                            <div class="form-check form-switch m-0">
+                              <input class="form-check-input" type="checkbox" id="check-code-use-tokens" checked style="cursor: pointer;">
+                              <label class="form-check-label text-white-50 small ms-1" for="check-code-use-tokens" style="font-size: 0.72rem;">Use Profile Tokens ({{FULL_NAME}}, etc.)</label>
+                            </div>
+                          </div>
+                          <textarea id="input-code-gen-prompt" rows="2" class="form-control font-monospace small" style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.15); color: #38bdf8; font-size: 0.8rem;" placeholder="e.g. Create an ultra-modern portfolio website with dark glassmorphism hero, animated gradient background, interactive project cards with live links, and glowing skill pills..."></textarea>
+                        </div>
+
+                        <!-- Quick Code Archetype Starters (Click to inject & generate) -->
+                        <div class="mb-3">
+                          <div class="small fw-semibold text-white-50 mb-1" style="font-size: 0.7rem;">⚡ Quick Code Archetypes:</div>
+                          <div class="d-flex flex-wrap gap-1">
+                            <button type="button" class="btn btn-xs btn-outline-light rounded-pill py-0.5 px-2 small btn-code-preset" data-code-prompt="Create an ultra-modern Bento Grid portfolio website with dark glass cards, glowing purple-cyan rim light, 3D tilt effects, and modular project showcases">🍱 Modern Bento</button>
+                            <button type="button" class="btn btn-xs btn-outline-light rounded-pill py-0.5 px-2 small btn-code-preset" data-code-prompt="Create a Hacker Terminal IDE developer portfolio with green and sky blue monospace styling, simulated CLI prompt, interactive command buttons, and live GitHub commit feeds">💻 Terminal IDE</button>
+                            <button type="button" class="btn btn-xs btn-outline-light rounded-pill py-0.5 px-2 small btn-code-preset" data-code-prompt="Create a Cyberpunk Neural HUD portfolio with telemetry stats, dark obsidian background, glowing neon cyan accents, radar metrics, and futuristic wireframe cards">🤖 Cyberpunk HUD</button>
+                            <button type="button" class="btn btn-xs btn-outline-light rounded-pill py-0.5 px-2 small btn-code-preset" data-code-prompt="Create a Swiss Minimalist Monograph portfolio with pure stark black and ivory contrast, elegant serif typography, crisp hairline borders, and crimson accents">📐 Minimal Swiss</button>
+                            <button type="button" class="btn btn-xs btn-outline-light rounded-pill py-0.5 px-2 small btn-code-preset" data-code-prompt="Create an Executive Briefing 2-column dossier portfolio for a Technology Leader with royal navy and gold accents, leadership KPI counters, and board-level roadmaps">💼 Executive Dossier</button>
+                            <button type="button" class="btn btn-xs btn-outline-light rounded-pill py-0.5 px-2 small btn-code-preset" data-code-prompt="Create a Creative Neo-Studio portfolio with warm sunset gradient cards, floating project vignettes, fluid hover animations, and an interactive contact box">🎨 Creative Studio</button>
+                          </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 pt-2 border-top border-white-subtle">
+                          <span class="text-white-50 small" id="ai-code-status-msg" style="font-size: 0.74rem;">Ready to generate bespoke HTML/CSS code</span>
+                          <div class="d-flex gap-2">
+                            <button type="button" id="btn-convert-current-design-code" class="btn btn-sm btn-outline-light py-1 px-3 fw-semibold small d-flex align-items-center gap-1.5" title="Extract current active theme & layout into editable HTML/CSS code">
+                              <span>⚡</span> Extract Current Design to Code
+                            </button>
+                            <button type="button" id="btn-generate-ai-code" class="btn btn-sm btn-primary py-1 px-3.5 fw-bold shadow-sm d-flex align-items-center gap-1.5" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); border: none;">
+                              <span id="ai-code-btn-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                              <span id="ai-code-btn-icon">✨</span>
+                              <span id="ai-code-btn-text">Generate Code with Gemini</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+<p class="text-muted small mb-3" style="font-size: 0.8rem;">
                       Have your own HTML code? Paste it below to render your custom portfolio. You can click on the profile placeholders below to automatically inject dynamic details from your candidate profile!
                     </p>
 

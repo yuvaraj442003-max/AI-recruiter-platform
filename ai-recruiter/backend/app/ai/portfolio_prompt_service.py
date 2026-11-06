@@ -1054,3 +1054,402 @@ def refine_portfolio_section(
         return f"{current_data} | {instruction.title()}"
 
     return current_data
+
+
+
+def generate_portfolio_html_code_with_gemini(
+    prompt: str,
+    candidate_name: str = "Candidate",
+    candidate_context: Optional[Dict[str, Any]] = None,
+    include_placeholders: bool = True,
+    existing_code: Optional[str] = None,
+) -> Dict[str, Any]:
+    """
+    AI Code Generator: Generates bespoke production-ready HTML/CSS code from
+    natural language prompts using Gemini with profile placeholder integration.
+    """
+    p_lower = (prompt or "").lower()
+    
+    # Detect layout / design archetype
+    archetype = "modern_bento"
+    if "terminal" in p_lower or "ide" in p_lower or "hacker" in p_lower or "cli" in p_lower or "developer" in p_lower:
+        archetype = "terminal_ide"
+    elif "cyber" in p_lower or "hud" in p_lower or "radar" in p_lower or "neural" in p_lower or "telemetry" in p_lower:
+        archetype = "cyberpunk_hud"
+    elif "swiss" in p_lower or "minimal" in p_lower or "monograph" in p_lower:
+        archetype = "minimal_swiss"
+    elif "executive" in p_lower or "dossier" in p_lower or "corporate" in p_lower or "leader" in p_lower:
+        archetype = "executive_dossier"
+    elif "creative" in p_lower or "studio" in p_lower or "asymmetric" in p_lower or "vignette" in p_lower:
+        archetype = "creative_studio"
+
+    system_instruction = (
+        "You are a world-class Principal Frontend Architect and HTML/CSS/JS Engineer. "
+        "Your task is to generate complete, bespoke, production-ready, beautiful HTML code "
+        "with an embedded <style> block for a personal portfolio website based on the user's prompt.\n\n"
+        "RULES:\n"
+        "1. Output valid semantic HTML5 with an embedded <style> section containing modern CSS variables, "
+        "responsive flex/grid, card hover effects, subtle glassmorphism, and elegant typography.\n"
+        "2. If include_placeholders is enabled, use standard double-brace template tokens:\n"
+        "   {{FULL_NAME}} - Candidate full name\n"
+        "   {{HEADLINE}} - Professional headline\n"
+        "   {{ABOUT}} - Bio / executive summary\n"
+        "   {{PROFILE_IMAGE}} - Candidate portrait photo URL\n"
+        "   {{SKILLS}} - Formatted skills tags / chips container\n"
+        "   {{PROJECTS}} - Featured projects showcase cards\n"
+        "   {{EXPERIENCE}} - Career experience timeline items\n"
+        "   {{EDUCATION}} - Academic degrees and credentials\n"
+        "   {{EMAIL}} - Contact email address\n"
+        "   {{SOCIAL_LINKS}} - Social media buttons (GitHub, LinkedIn, Email)\n"
+        "3. Provide rich sections: Header/Navbar, Hero with portrait & CTA, About, Skills, Projects, Experience, and Contact Footer.\n"
+        "4. Return ONLY clean HTML code. Do not wrap in markdown or explanatory prose."
+    )
+
+    user_prompt = (
+        f"Candidate Name: {candidate_name}\n"
+        f"Desired Design & Code Directives: {prompt}\n"
+        f"Detected Archetype: {archetype}\n"
+        f"Include Profile Placeholders: {include_placeholders}\n"
+    )
+    if existing_code:
+        user_prompt += f"Existing Code to Refine/Extend:\n{existing_code[:1200]}\n"
+
+    try:
+        model_name = getattr(settings, "GEMINI_SYNTHESIS_MODEL", "gemini-3-flash-preview")
+        raw_response = generate(
+            system_prompt=system_instruction,
+            user_prompt=user_prompt,
+            max_tokens=4000,
+            model=model_name,
+        )
+        if raw_response and ("<section" in raw_response or "<div" in raw_response or "<header" in raw_response):
+            cleaned_html = raw_response.strip()
+            # Clean markdown code blocks if present
+            if cleaned_html.startswith("```html"):
+                cleaned_html = cleaned_html[7:]
+            elif cleaned_html.startswith("```"):
+                cleaned_html = cleaned_html[3:]
+            if cleaned_html.endswith("```"):
+                cleaned_html = cleaned_html[:-3]
+            cleaned_html = cleaned_html.strip()
+            
+            return {
+                "html_code": cleaned_html,
+                "prompt_used": prompt,
+                "detected_archetype": archetype,
+            }
+    except Exception as e:
+        logger.warning("Gemini HTML code generation call failed: %s. Using deterministic bespoke template.", e)
+
+    # Deterministic Bespoke Fallback Templates based on archetype
+    fallback_code = _build_deterministic_archetype_code(archetype, prompt)
+    return {
+        "html_code": fallback_code,
+        "prompt_used": prompt,
+        "detected_archetype": archetype,
+    }
+
+
+def _build_deterministic_archetype_code(archetype: str, prompt: str) -> str:
+    """
+    Synthesizes rich bespoke HTML/CSS templates for each design archetype.
+    """
+    if archetype == "terminal_ide":
+        return """<!-- Bespoke Developer Terminal IDE Portfolio Code -->
+<style>
+  :root {
+    --term-bg: #0d1117;
+    --term-card: #161b22;
+    --term-border: #30363d;
+    --term-green: #238636;
+    --term-text: #c9d1d9;
+    --term-accent: #58a6ff;
+    --term-green-text: #3fb950;
+  }
+  .term-wrapper {
+    background: var(--term-bg);
+    color: var(--term-text);
+    font-family: 'Fira Code', monospace, sans-serif;
+    min-height: 100vh;
+    padding: 2.5rem 1rem;
+  }
+  .term-card {
+    background: var(--term-card);
+    border: 1px solid var(--term-border);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+  .term-header {
+    background: #090d12;
+    border-bottom: 1px solid var(--term-border);
+    padding: 10px 16px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+  .dot-red { background: #ff5f56; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #27c93f; }
+  .term-command { color: var(--term-green-text); }
+  .term-comment { color: #8b949e; }
+</style>
+
+<div class="term-wrapper">
+  <div class="container" style="max-width: 980px;">
+    <!-- Terminal Window -->
+    <div class="term-card mb-4">
+      <div class="term-header d-flex justify-content-between align-items-center">
+        <div class="d-flex gap-2">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+        </div>
+        <small class="text-secondary font-monospace">session: {{FULL_NAME}}@workstation ~ zsh</small>
+        <span></span>
+      </div>
+      <div class="p-4 p-md-5">
+        <div class="mb-4 d-flex align-items-center gap-4 flex-wrap">
+          <img src="{{PROFILE_IMAGE}}" alt="{{FULL_NAME}}" class="rounded-3 border border-secondary" style="width: 100px; height: 100px; object-fit: cover;">
+          <div>
+            <div class="term-command fs-5 mb-1">$ whoami</div>
+            <h1 class="display-6 fw-bold text-white mb-1">{{FULL_NAME}}</h1>
+            <p class="text-info mb-2" style="color: var(--term-accent) !important;">{{HEADLINE}}</p>
+            <div class="term-comment small">// Location: Global &bull; Status: Available for Opportunities</div>
+          </div>
+        </div>
+
+        <div class="mb-4 p-3 rounded-2" style="background: rgba(0,0,0,0.3); border-left: 3px solid var(--term-green-text);">
+          <div class="term-comment mb-1"># Bio & Engineering Philosophy</div>
+          <p class="mb-0 small text-light" style="line-height: 1.7;">{{ABOUT}}</p>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap mb-2">
+          {{SOCIAL_LINKS}}
+        </div>
+      </div>
+    </div>
+
+    <!-- Skills Output -->
+    <div class="term-card p-4 mb-4">
+      <div class="term-command mb-3">$ cat /skills/active_stack.json</div>
+      <div class="p-3 rounded-2" style="background: rgba(0,0,0,0.3);">
+        {{SKILLS}}
+      </div>
+    </div>
+
+    <!-- Projects Section -->
+    <div class="term-card p-4 mb-4">
+      <div class="term-command mb-3">$ git log --featured-projects --oneline</div>
+      {{PROJECTS}}
+    </div>
+
+    <!-- Experience Timeline -->
+    <div class="term-card p-4 mb-4">
+      <div class="term-command mb-3">$ cat /career/experience.log</div>
+      {{EXPERIENCE}}
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 text-secondary small">
+      <p class="mb-1">&copy; 2026 {{FULL_NAME}} &bull; Built with AI Terminal Code Generator</p>
+      <p class="mb-0">Contact: <a href="mailto:{{EMAIL}}" class="text-info">{{EMAIL}}</a></p>
+    </footer>
+  </div>
+</div>"""
+
+    elif archetype == "cyberpunk_hud":
+        return """<!-- Bespoke Cyberpunk Neural HUD Portfolio Code -->
+<style>
+  :root {
+    --cyber-bg: #090d16;
+    --cyber-cyan: #00e5ff;
+    --cyber-purple: #a855f7;
+    --cyber-card: rgba(15, 23, 42, 0.85);
+    --cyber-border: rgba(0, 229, 255, 0.25);
+  }
+  .cyber-wrapper {
+    background: radial-gradient(circle at 50% 10%, #1e1b4b 0%, #090d16 65%);
+    color: #e2e8f0;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 3rem 1rem;
+    position: relative;
+  }
+  .cyber-card {
+    background: var(--cyber-card);
+    border: 1px solid var(--cyber-border);
+    border-radius: 16px;
+    backdrop-filter: blur(16px);
+    transition: all 0.3s ease;
+  }
+  .cyber-card:hover {
+    border-color: var(--cyber-cyan);
+    box-shadow: 0 0 25px rgba(0, 229, 255, 0.2);
+  }
+  .cyber-glow-text {
+    color: #fff;
+    text-shadow: 0 0 18px rgba(0, 229, 255, 0.6);
+  }
+  .hud-badge {
+    background: rgba(0, 229, 255, 0.1);
+    color: var(--cyber-cyan);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+</style>
+
+<div class="cyber-wrapper">
+  <div class="container" style="max-width: 1020px;">
+    <!-- Neural Hero -->
+    <div class="cyber-card p-4 p-md-5 mb-4 text-center text-md-start">
+      <div class="row align-items-center g-4">
+        <div class="col-md-4 text-center">
+          <div class="position-relative d-inline-block">
+            <img src="{{PROFILE_IMAGE}}" alt="{{FULL_NAME}}" class="rounded-4 border" style="width: 160px; height: 160px; object-fit: cover; border-color: var(--cyber-cyan) !important; box-shadow: 0 0 30px rgba(0,229,255,0.25);">
+            <div class="position-absolute bottom-0 start-50 translate-middle-x mb-n2">
+              <span class="hud-badge">ONLINE &bull; 99.9%</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-8">
+          <span class="hud-badge mb-2 d-inline-block">NEURAL HUD INTERFACE</span>
+          <h1 class="display-5 fw-extrabold cyber-glow-text mb-2">{{FULL_NAME}}</h1>
+          <h4 class="fw-semibold mb-3" style="color: var(--cyber-cyan);">{{HEADLINE}}</h4>
+          <p class="text-secondary small mb-4" style="line-height: 1.7; font-size: 0.95rem;">{{ABOUT}}</p>
+          <div class="d-flex gap-2 flex-wrap justify-content-center justify-content-md-start">
+            {{SOCIAL_LINKS}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Telemetry Skills -->
+    <div class="cyber-card p-4 mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold mb-0 text-white">⚡ Neural Skills & Telemetry</h4>
+        <span class="hud-badge">BENCHMARKED</span>
+      </div>
+      {{SKILLS}}
+    </div>
+
+    <!-- Projects Grid -->
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3 px-2">
+        <h4 class="fw-bold mb-0 text-white">🚀 High-Impact Projects</h4>
+        <span class="hud-badge">REPOSITORIES</span>
+      </div>
+      {{PROJECTS}}
+    </div>
+
+    <!-- Career Experience -->
+    <div class="cyber-card p-4 mb-4">
+      <h4 class="fw-bold mb-3 text-white">💼 Career Timeline & Impact</h4>
+      {{EXPERIENCE}}
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 text-secondary small">
+      <p class="mb-1">&copy; 2026 {{FULL_NAME}} &bull; High-Throughput Cyberpunk HUD</p>
+      <p class="mb-0">Secure Email: <a href="mailto:{{EMAIL}}" style="color: var(--cyber-cyan);">{{EMAIL}}</a></p>
+    </footer>
+  </div>
+</div>"""
+
+    # Default: Modern Modular Bento Grid
+    return """<!-- Bespoke Modern Bento Grid Portfolio Code -->
+<style>
+  :root {
+    --bento-primary: #4f46e5;
+    --bento-secondary: #06b6d4;
+    --bento-card-bg: rgba(255, 255, 255, 0.9);
+    --bento-border: rgba(79, 70, 229, 0.12);
+  }
+  .bento-wrapper {
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    color: #0f172a;
+    min-height: 100vh;
+    padding: 3rem 1rem;
+  }
+  .bento-card {
+    background: var(--bento-card-bg);
+    border: 1px solid var(--bento-border);
+    border-radius: 20px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(12px);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .bento-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 32px -8px rgba(79, 70, 229, 0.15);
+  }
+  .bento-gradient-text {
+    background: linear-gradient(135deg, var(--bento-primary), var(--bento-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+</style>
+
+<div class="bento-wrapper">
+  <div class="container" style="max-width: 1040px;">
+    <!-- Bento Hero Card -->
+    <div class="bento-card p-4 p-md-5 mb-4 border-0 shadow-sm" style="border-top: 5px solid var(--bento-primary) !important;">
+      <div class="row align-items-center g-4">
+        <div class="col-md-3 text-center">
+          <img src="{{PROFILE_IMAGE}}" alt="{{FULL_NAME}}" class="rounded-circle shadow-lg border border-4 border-white" style="width: 140px; height: 140px; object-fit: cover;">
+        </div>
+        <div class="col-md-9 text-center text-md-start">
+          <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 fw-bold small mb-2">Verified Professional</span>
+          <h1 class="display-5 fw-extrabold text-dark mb-1 tracking-tight">{{FULL_NAME}}</h1>
+          <p class="lead fw-bold bento-gradient-text mb-3">{{HEADLINE}}</p>
+          <p class="text-secondary small mb-4" style="line-height: 1.7; font-size: 0.98rem;">{{ABOUT}}</p>
+          <div class="d-flex gap-2 flex-wrap justify-content-center justify-content-md-start">
+            {{SOCIAL_LINKS}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skills Bento Box -->
+    <div class="bento-card p-4 mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold mb-0 text-dark">⚡ Technical Stack & Expertise</h4>
+        <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 small">Proficiencies</span>
+      </div>
+      <div class="p-2">
+        {{SKILLS}}
+      </div>
+    </div>
+
+    <!-- Featured Projects Grid -->
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3 px-2">
+        <h4 class="fw-bold mb-0 text-dark">🚀 Featured Projects</h4>
+        <span class="badge bg-primary text-white rounded-pill px-3 py-1 small">Showcase</span>
+      </div>
+      {{PROJECTS}}
+    </div>
+
+    <!-- Experience Timeline -->
+    <div class="bento-card p-4 mb-4">
+      <h4 class="fw-bold mb-3 text-dark">💼 Professional Journey</h4>
+      {{EXPERIENCE}}
+    </div>
+
+    <!-- Education & Credentials -->
+    <div class="bento-card p-4 mb-4">
+      <h4 class="fw-bold mb-3 text-dark">🎓 Education & Certifications</h4>
+      {{EDUCATION}}
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 border-top text-muted small">
+      <p class="mb-1">&copy; 2026 {{FULL_NAME}}. All rights reserved.</p>
+      <p class="mb-0">Get in touch: <a href="mailto:{{EMAIL}}" class="text-primary fw-semibold">{{EMAIL}}</a></p>
+    </footer>
+  </div>
+</div>"""

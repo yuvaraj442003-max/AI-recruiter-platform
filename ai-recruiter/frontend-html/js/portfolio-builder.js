@@ -23,6 +23,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   const portfolioReadyBanner = document.getElementById("portfolio-ready-banner");
   const tabBtnContent = document.getElementById("tab-btn-content");
   const tabBtnCustomHtml = document.getElementById("tab-btn-custom-html");
+  const inputCodeGenPrompt = document.getElementById("input-code-gen-prompt");
+  const checkCodeUseTokens = document.getElementById("check-code-use-tokens");
+  const btnGenerateAiCode = document.getElementById("btn-generate-ai-code");
+  const aiCodeBtnSpinner = document.getElementById("ai-code-btn-spinner");
+  const aiCodeBtnIcon = document.getElementById("ai-code-btn-icon");
+  const aiCodeBtnText = document.getElementById("ai-code-btn-text");
+  const aiCodeStatusMsg = document.getElementById("ai-code-status-msg");
+  const btnConvertCurrentDesignCode = document.getElementById("btn-convert-current-design-code");
   const switchUseCustomHtml = document.getElementById("switch-use-custom-html");
   const lblUseCustomHtml = document.getElementById("lbl-use-custom-html");
   const textareaCustomHtml = document.getElementById("textarea-custom-html");
@@ -2624,6 +2632,121 @@ document.addEventListener("DOMContentLoaded", async () => {
             renderLivePreview();
           }
         }, 500);
+      });
+    }
+    // AI Bespoke HTML/CSS Code Generator Controls
+    const codePresets = document.querySelectorAll(".btn-code-preset");
+    codePresets.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const prompt = btn.getAttribute("data-code-prompt");
+        if (prompt && inputCodeGenPrompt) {
+          inputCodeGenPrompt.value = prompt;
+          inputCodeGenPrompt.focus();
+          if (aiCodeStatusMsg) {
+            aiCodeStatusMsg.textContent = "Preset selected: Ready to generate bespoke code.";
+          }
+        }
+      });
+    });
+
+    if (btnGenerateAiCode) {
+      btnGenerateAiCode.addEventListener("click", async () => {
+        const prompt = (inputCodeGenPrompt?.value || "").trim() || "Create an ultra-modern portfolio website with dark glassmorphism hero, animated gradient background, interactive project cards with live links, and glowing skill pills";
+
+        btnGenerateAiCode.disabled = true;
+        if (aiCodeBtnSpinner) aiCodeBtnSpinner.classList.remove("d-none");
+        if (aiCodeBtnIcon) aiCodeBtnIcon.classList.add("d-none");
+        if (aiCodeBtnText) aiCodeBtnText.textContent = "Synthesizing Code...";
+        if (aiCodeStatusMsg) aiCodeStatusMsg.textContent = "Gemini AI is generating bespoke HTML/CSS code...";
+
+        try {
+          const res = await portfolioAPI.generateHtmlCode(prompt, {
+            include_placeholders: checkCodeUseTokens ? checkCodeUseTokens.checked : true,
+            existing_code: textareaCustomHtml?.value || "",
+          });
+
+          if (res && res.data && res.data.html_code) {
+            const generatedHtml = res.data.html_code;
+            if (textareaCustomHtml) textareaCustomHtml.value = generatedHtml;
+
+            if (currentPortfolio) {
+              currentPortfolio.custom_html = generatedHtml;
+              currentPortfolio.layout = "custom_html";
+              currentPortfolio.use_custom_html = true;
+              if (switchUseCustomHtml) {
+                switchUseCustomHtml.checked = true;
+                if (lblUseCustomHtml) lblUseCustomHtml.textContent = "Active";
+              }
+              if (selectLayoutArchitecture) selectLayoutArchitecture.value = "custom_html";
+              renderLivePreview();
+            }
+
+            if (aiCodeStatusMsg) aiCodeStatusMsg.textContent = "✓ Bespoke code synthesized and loaded live!";
+            showAlert("✨ Bespoke HTML/CSS code generated with Gemini AI! Your custom website is active in the live preview.", "success");
+
+            // Auto save so the generated code persists
+            if (btnSavePortfolio) {
+              setTimeout(() => btnSavePortfolio.click(), 400);
+            }
+          } else {
+            throw new Error(res?.message || "Code generation failed");
+          }
+        } catch (err) {
+          console.error("AI Code Generation error:", err);
+          if (aiCodeStatusMsg) aiCodeStatusMsg.textContent = "⚠️ Code generation error, check console.";
+          showAlert(err.message || "Could not generate bespoke HTML code. Please check your network or try again.", "danger");
+        } finally {
+          btnGenerateAiCode.disabled = false;
+          if (aiCodeBtnSpinner) aiCodeBtnSpinner.classList.add("d-none");
+          if (aiCodeBtnIcon) aiCodeBtnIcon.classList.remove("d-none");
+          if (aiCodeBtnText) aiCodeBtnText.textContent = "Generate Code with Gemini";
+        }
+      });
+    }
+
+    if (btnConvertCurrentDesignCode) {
+      btnConvertCurrentDesignCode.addEventListener("click", () => {
+        if (!currentPortfolio) return;
+        const currentStageHtml = previewStage ? previewStage.innerHTML.trim() : "";
+        if (!currentStageHtml) {
+          showAlert("Preview is currently empty. Generate or load a portfolio first.", "warning");
+          return;
+        }
+
+        const font = currentPortfolio.font || "Plus Jakarta Sans";
+        const primary = currentPortfolio.primary_color || "#4f46e5";
+        const secondary = currentPortfolio.secondary_color || "#06b6d4";
+        const isDark = Boolean(currentPortfolio.dark_mode);
+
+        const extractedCode = `<!-- Extracted Portfolio Website Code (${(currentPortfolio.layout || "modern").toUpperCase()}) -->
+<style>
+  :root {
+    --primary-color: ${primary};
+    --secondary-color: ${secondary};
+  }
+  .extracted-portfolio-root {
+    font-family: '${font}', system-ui, sans-serif;
+    color: ${isDark ? '#f8fafc' : '#0f172a'};
+    background: ${isDark ? '#090d16' : '#ffffff'};
+    min-height: 100vh;
+  }
+</style>
+
+<div class="extracted-portfolio-root" data-bs-theme="${isDark ? 'dark' : 'light'}">
+${currentStageHtml}
+</div>`;
+
+        if (textareaCustomHtml) textareaCustomHtml.value = extractedCode;
+        currentPortfolio.custom_html = extractedCode;
+        currentPortfolio.layout = "custom_html";
+        currentPortfolio.use_custom_html = true;
+        if (switchUseCustomHtml) {
+          switchUseCustomHtml.checked = true;
+          if (lblUseCustomHtml) lblUseCustomHtml.textContent = "Active";
+        }
+        if (selectLayoutArchitecture) selectLayoutArchitecture.value = "custom_html";
+        renderLivePreview();
+        showAlert("⚡ Current visual design compiled and extracted into editable HTML code!", "info");
       });
     }
   }
