@@ -30,9 +30,48 @@
   const companyGuidesGrid = document.getElementById("company-guides-grid");
   const filterBtns = document.querySelectorAll(".filter-btn");
 
+  // Safe Bootstrap Modal Helpers
+  function getModalInstance(el) {
+    if (!el) return null;
+    if (typeof bootstrap !== "undefined" && bootstrap && bootstrap.Modal) {
+      return bootstrap.Modal.getOrCreateInstance(el);
+    }
+    return null;
+  }
+
+  function showModalSafely(modalEl) {
+    if (!modalEl) return;
+    const inst = getModalInstance(modalEl);
+    if (inst) {
+      inst.show();
+    } else {
+      modalEl.classList.add("show");
+      modalEl.style.display = "block";
+      document.body.classList.add("modal-open");
+    }
+  }
+
+  function hideModalSafely(modalEl) {
+    if (!modalEl) return;
+    const inst = getModalInstance(modalEl);
+    if (inst) {
+      try { inst.hide(); } catch (_) {}
+    }
+    modalEl.classList.remove("show");
+    modalEl.style.display = "none";
+    document.body.classList.remove("modal-open");
+    const backdrop = document.querySelector(".modal-backdrop");
+    if (backdrop && !document.querySelector(".modal.show")) {
+      backdrop.remove();
+    }
+  }
+
   // Reader Modal Elements
   const articleModalEl = document.getElementById("articleReaderModal");
-  const articleModal = articleModalEl ? new bootstrap.Modal(articleModalEl) : null;
+  const articleModal = {
+    show: () => showModalSafely(articleModalEl),
+    hide: () => hideModalSafely(articleModalEl),
+  };
   const modalCategoryBadge = document.getElementById("modal-category-badge");
   const modalArticleTitle = document.getElementById("modal-article-title");
   const modalReadTime = document.getElementById("modal-read-time");
@@ -40,9 +79,14 @@
   const modalCompanyTag = document.getElementById("modal-company-tag");
   const modalArticleBody = document.getElementById("modal-article-body");
 
-  // Quiz Modal Elements (shared for milestone timed quiz & daily placement assessment)
+  // Quiz Modal Elements (shared for milestone timed quiz, daily placement assessment & company mock tests)
   const quizModalEl = document.getElementById("milestoneQuizModal");
-  const quizModal = quizModalEl ? new bootstrap.Modal(quizModalEl) : null;
+  const showQuizModal = () => showModalSafely(quizModalEl);
+  const hideQuizModal = () => hideModalSafely(quizModalEl);
+  const quizModal = {
+    show: showQuizModal,
+    hide: hideQuizModal,
+  };
   const quizModalBadge = document.getElementById("quiz-modal-badge");
   const quizModalTitle = document.getElementById("quiz-modal-title");
   const quizTimerPill = document.getElementById("quiz-timer-pill");
@@ -82,7 +126,10 @@
 
   // Practice Drawer Modal Elements
   const drawerModalEl = document.getElementById("milestonePracticeDrawerModal");
-  const drawerModal = drawerModalEl ? new bootstrap.Modal(drawerModalEl) : null;
+  const drawerModal = {
+    show: () => showModalSafely(drawerModalEl),
+    hide: () => hideModalSafely(drawerModalEl),
+  };
   const drawerSubjectBadge = document.getElementById("drawer-subject-badge");
   const drawerHoursBadge = document.getElementById("drawer-hours-badge");
   const drawerMilestoneTitle = document.getElementById("drawer-milestone-title");
@@ -96,7 +143,10 @@
 
   // Topic Selection & Track Elements
   const topicModalEl = document.getElementById("topicSelectorModal");
-  const topicModal = topicModalEl ? new bootstrap.Modal(topicModalEl) : null;
+  const topicModal = {
+    show: () => showModalSafely(topicModalEl),
+    hide: () => hideModalSafely(topicModalEl),
+  };
   const activeTopicsChipsContainer = document.getElementById("active-topics-chips-container");
   const activeTopicsCount = document.getElementById("active-topics-count");
   const trackDailyStreak = document.getElementById("track-daily-streak");
@@ -112,7 +162,10 @@
 
   // Prescribed Textbooks DOM Elements
   const bookChaptersModalEl = document.getElementById("bookChaptersModal");
-  const bookChaptersModal = bookChaptersModalEl ? new bootstrap.Modal(bookChaptersModalEl) : null;
+  const bookChaptersModal = {
+    show: () => showModalSafely(bookChaptersModalEl),
+    hide: () => hideModalSafely(bookChaptersModalEl),
+  };
   const bookModalIcon = document.getElementById("book-modal-icon");
   const bookModalSubjectBadge = document.getElementById("book-modal-subject-badge");
   const bookModalEditionBadge = document.getElementById("book-modal-edition-badge");
@@ -1435,7 +1488,19 @@
     if (quizQText) quizQText.textContent = q.question;
 
     if (quizOptionsContainer) {
-      const options = q.options || [];
+      let options = [];
+      try {
+        if (Array.isArray(q.options)) {
+          options = q.options;
+        } else if (typeof q.options === "string") {
+          options = JSON.parse(q.options);
+        }
+      } catch (_) {
+        options = ["Option A", "Option B", "Option C", "Option D"];
+      }
+      if (!Array.isArray(options) || !options.length) {
+        options = ["Option A", "Option B", "Option C", "Option D"];
+      }
       const currentSelected = activeQuiz.answers[q.id];
 
       quizOptionsContainer.innerHTML = options.map((opt, oIdx) => {
@@ -1899,7 +1964,7 @@
           </div>
 
           <div class="d-flex flex-column flex-sm-row flex-lg-column gap-2 flex-shrink-0">
-            <button class="btn btn-light text-primary fw-bold rounded-pill px-4 py-2.5 shadow-sm d-flex align-items-center justify-content-center gap-2" onclick="startCompanyMockExam('${c.slug}')">
+            <button class="btn btn-light text-primary fw-bold rounded-pill px-4 py-2.5 shadow-sm d-flex align-items-center justify-content-center gap-2" onclick="startCompanyMockExam('${c.slug}', this)">
               <span>⚡</span>
               <span>Take ${escapeHtml(c.slug.toUpperCase())} Timed Mock Test</span>
             </button>
@@ -2247,7 +2312,7 @@
           Take our timed placement exam simulator modeled on the latest 2026 ${escapeHtml(c.name)} exam pattern. Strictly 30 seconds per question with instant scorecard and detailed solutions.
         </p>
         <div class="d-flex justify-content-center gap-2">
-          <button class="btn btn-white bg-white text-primary fw-bold rounded-pill px-4 py-2.5 shadow-sm" onclick="startCompanyMockExam('${c.slug}')">
+          <button class="btn btn-white bg-white text-primary fw-bold rounded-pill px-4 py-2.5 shadow-sm" onclick="startCompanyMockExam('${c.slug}', this)">
             ⚡ Start Timed ${escapeHtml(c.slug.toUpperCase())} Mock Test
           </button>
         </div>
@@ -2351,11 +2416,18 @@
     }
   };
 
-  window.startCompanyMockExam = async function (slug) {
+  window.startCompanyMockExam = async function (slug, btnEl = null) {
+    const targetSlug = (slug || activeCompanySlug || "amazon").toLowerCase().trim();
+    if (btnEl) {
+      btnEl.disabled = true;
+      btnEl.dataset.origHtml = btnEl.innerHTML;
+      btnEl.innerHTML = `<span class="spinner-border spinner-border-sm me-1.5" role="status"></span> Preparing Exam...`;
+    }
+
     if (activeQuiz.timerInterval) clearInterval(activeQuiz.timerInterval);
     activeQuiz = {
       quizType: "company",
-      companySlug: slug,
+      companySlug: targetSlug,
       sessionId: null,
       questions: [],
       currentIndex: 0,
@@ -2365,7 +2437,7 @@
       startTime: Date.now(),
     };
 
-    if (quizModalTitle) quizModalTitle.textContent = `${slug.toUpperCase()} Placement Mock Exam`;
+    if (quizModalTitle) quizModalTitle.textContent = `${targetSlug.toUpperCase()} Placement Mock Exam`;
     if (quizModalBadge) {
       quizModalBadge.textContent = "🏢 Company Pattern • 30s/q Timed Speed";
       quizModalBadge.className = "badge bg-primary text-white fw-bold px-3 py-1 rounded-pill";
@@ -2377,22 +2449,21 @@
 
     const quizLoadingTitle = document.getElementById("quiz-loading-title");
     const quizLoadingSubtext = document.getElementById("quiz-loading-subtext");
-    if (quizLoadingTitle) quizLoadingTitle.textContent = `Preparing ${slug.toUpperCase()} Mock Exam...`;
-    if (quizLoadingSubtext) quizLoadingSubtext.textContent = `Assembling real questions & patterns modeled on ${slug.toUpperCase()} aptitude cutoffs...`;
+    if (quizLoadingTitle) quizLoadingTitle.textContent = `Preparing ${targetSlug.toUpperCase()} Mock Exam...`;
+    if (quizLoadingSubtext) quizLoadingSubtext.textContent = `Assembling real questions & patterns modeled on ${targetSlug.toUpperCase()} aptitude cutoffs...`;
 
-    const targetModal = quizModal || (quizModalEl ? (bootstrap.Modal.getInstance(quizModalEl) || new bootstrap.Modal(quizModalEl)) : null);
-    if (targetModal) targetModal.show();
+    showQuizModal();
 
     try {
-      const res = await api.studyMaterials.startCompanyMockTest(slug);
-      const data = res.data;
+      const res = await api.studyMaterials.startCompanyMockTest(targetSlug);
+      const data = res?.data;
       if (!data || !data.questions || !data.questions.length) {
         throw new Error("No questions available for this company test");
       }
 
       activeQuiz.sessionId = data.session_id;
       activeQuiz.questions = data.questions;
-      activeQuiz.timeRemaining = data.duration_minutes * 60;
+      activeQuiz.timeRemaining = (data.duration_minutes || Math.ceil(data.questions.length * 30 / 60)) * 60;
       activeQuiz.currentIndex = 0;
       activeQuiz.answers = {};
 
@@ -2402,8 +2473,14 @@
       startQuizTimer();
       renderCurrentQuestion();
     } catch (err) {
-      alert("Failed to start company mock exam: " + err.message);
-      if (targetModal) targetModal.hide();
+      console.error("Failed to start company mock exam:", err);
+      alert("Failed to start company mock exam: " + (err.message || "Network or server error"));
+      hideQuizModal();
+    } finally {
+      if (btnEl) {
+        btnEl.disabled = false;
+        if (btnEl.dataset.origHtml) btnEl.innerHTML = btnEl.dataset.origHtml;
+      }
     }
   };
 

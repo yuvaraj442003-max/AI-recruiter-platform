@@ -1627,7 +1627,7 @@ def get_company_intelligence(slug: str, db: Session = Depends(get_db)):
 @router.post("/companies/{slug}/start-test", response_model=APIResponse[DailyAssessmentStartResponse])
 def start_company_mock_test(
     slug: str,
-    current_user: User = Depends(require_role(UserRole.candidate)),
+    current_user: User = Depends(require_role(UserRole.candidate, UserRole.recruiter, UserRole.admin)),
     db: Session = Depends(get_db),
 ):
     """
@@ -1636,42 +1636,60 @@ def start_company_mock_test(
     Strictly 30-45 seconds per question to build corporate exam speed.
     """
     from app.services.company_intelligence_service import get_company_intelligence_detail
-    detail = get_company_intelligence_detail(slug, db=db)
+    clean_slug = slug.lower().strip()
+    detail = get_company_intelligence_detail(clean_slug, db=db)
+    if not detail:
+        clean_norm = clean_slug.replace("-", "_").replace(" ", "_")
+        detail = get_company_intelligence_detail(clean_norm, db=db)
     if not detail:
         raise NotFoundError(f"Company '{slug}' not found")
 
     sample_questions = detail.get("sample_questions", [])
-    assessment_id = f"company-{slug}-{uuid.uuid4().hex[:6]}"
+    assessment_id = f"company-{clean_slug}-{uuid.uuid4().hex[:6]}"
     session_id = f"session-company-{uuid.uuid4().hex[:12]}"
 
     stored_questions = []
     questions_out = []
 
-    # 1. Include verified company sample questions first
+    # 1. Include verified company sample questions first (sanitized and validated)
     for idx, sq in enumerate(sample_questions):
         qid = f"{session_id}-q{idx+1}"
-        stored_questions.append({
+        raw_options = sq.get("options")
+        if isinstance(raw_options, list) and len(raw_options) >= 2:
+            opts = [str(o) for o in raw_options]
+        else:
+            opts = ["Option A", "Option B", "Option C", "Option D"]
+
+        try:
+            corr_idx = int(sq.get("correct_option_index", 0))
+            if corr_idx < 0 or corr_idx >= len(opts):
+                corr_idx = 0
+        except (ValueError, TypeError):
+            corr_idx = 0
+
+        q_item = {
             "id": qid,
-            "question": sq["question"],
-            "options": sq["options"],
-            "correct_option_index": sq["correct_option_index"],
-            "explanation": sq["explanation"],
-            "difficulty": sq.get("difficulty", "medium"),
+            "question": str(sq.get("question", f"Question {idx+1}")),
+            "options": opts,
+            "correct_option_index": corr_idx,
+            "explanation": str(sq.get("explanation", "Refer to verified corporate exam derivation.")),
+            "difficulty": str(sq.get("difficulty", "medium")),
             "marks": 1.0,
-            "topic": sq.get("tag", detail["name"]),
-        })
+            "topic": str(sq.get("tag", detail.get("name", "Company Aptitude"))),
+        }
+        stored_questions.append(q_item)
         questions_out.append(
             MilestoneQuizQuestionOut(
                 id=qid,
-                question=sq["question"],
-                options=sq["options"],
-                topic=sq.get("tag", detail["name"]),
-                difficulty=sq.get("difficulty", "medium"),
+                question=q_item["question"],
+                options=q_item["options"],
+                topic=q_item["topic"],
+                difficulty=q_item["difficulty"],
                 marks=1.0,
             )
         )
 
-    # 2. Augment up to 8 questions using company's top quantitative and reasoning topics
+    # 2. Augment up to 8-10 questions if fewer than 8 available
     needed = 8 - len(questions_out)
     if needed > 0:
         top_topics = []
@@ -1691,24 +1709,25 @@ def start_company_mock_test(
             )
             for idx, eq in enumerate(extra_qs):
                 qid = f"{session_id}-q{len(questions_out)+1}"
+                eq_opts = [str(o) for o in eq.options] if isinstance(eq.options, list) and len(eq.options) >= 2 else ["Option A", "Option B", "Option C", "Option D"]
                 stored_questions.append({
                     "id": qid,
-                    "question": eq.question,
-                    "options": eq.options,
-                    "correct_option_index": eq.correct_option_index,
-                    "explanation": eq.explanation,
-                    "difficulty": eq.difficulty,
-                    "marks": eq.marks,
+                    "question": str(eq.question),
+                    "options": eq_opts,
+                    "correct_option_index": int(eq.correct_option_index) if 0 <= int(eq.correct_option_index) < len(eq_opts) else 0,
+                    "explanation": str(eq.explanation or "Refer to verified corporate exam derivation."),
+                    "difficulty": str(eq.difficulty or "medium"),
+                    "marks": float(eq.marks or 1.0),
                     "topic": f"{detail['name']} {eq.topic_name}",
                 })
                 questions_out.append(
                     MilestoneQuizQuestionOut(
                         id=qid,
-                        question=eq.question,
-                        options=eq.options,
+                        question=str(eq.question),
+                        options=eq_opts,
                         topic=f"{detail['name']} {eq.topic_name}",
-                        difficulty=eq.difficulty,
-                        marks=eq.marks,
+                        difficulty=str(eq.difficulty or "medium"),
+                        marks=float(eq.marks or 1.0),
                     )
                 )
         except Exception as e:
@@ -1716,7 +1735,7 @@ def start_company_mock_test(
 
     ACTIVE_AI_QUIZZES[session_id] = {
         "assessment_id": assessment_id,
-        "company_slug": slug,
+        "company_slug": clean_slug,
         "company_name": detail["name"],
         "questions": stored_questions,
         "created_at": time.time(),
@@ -1728,7 +1747,7 @@ def start_company_mock_test(
         assessment_id=assessment_id,
         session_id=session_id,
         date_str=f"{detail['name']} Mock Drive",
-        topics_covered=[t["section"] for t in detail.get("exam_pattern", [])[:4]],
+        topics_covered=[t["section"] for t in detail.get("exam_pattern", [])[:4]] or [detail["name"]],
         duration_minutes=duration_mins,
         total_questions=len(questions_out),
         passing_percentage=65.0,
@@ -1741,12 +1760,13 @@ def start_company_mock_test(
 def submit_company_mock_test(
     slug: str,
     payload: DailyAssessmentSubmitRequest,
-    current_user: User = Depends(require_role(UserRole.candidate)),
+    current_user: User = Depends(require_role(UserRole.candidate, UserRole.recruiter, UserRole.admin)),
     db: Session = Depends(get_db),
 ):
     """
     Submits and evaluates the student's company-specific mock exam.
     Returns score, percentile feedback, and question-by-question explanations.
+    Synchronizes results with StudentLearningPreference so recruiters can track progress.
     """
     session_data = ACTIVE_AI_QUIZZES.get(payload.session_id)
     if not session_data:
@@ -1775,7 +1795,11 @@ def submit_company_mock_test(
             is_correct = False
             user_selected = None
         else:
-            user_selected = int(user_ans)
+            try:
+                user_selected = int(user_ans)
+            except (ValueError, TypeError):
+                user_selected = None
+
             if user_selected == correct_idx:
                 correct_count += 1
                 score += q_marks
@@ -1804,6 +1828,45 @@ def submit_company_mock_test(
         if passed
         else f"You scored {percentage}%. The typical {company_name} cutoff is 65-70%. Review the step-by-step solutions below and practice more questions."
     )
+
+    # Synchronize score with StudentLearningPreference for real-time Recruiter tracking
+    try:
+        from app.models.student import StudentLearningPreference
+        pref = db.query(StudentLearningPreference).filter(StudentLearningPreference.user_id == current_user.id).first()
+        today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        if not pref:
+            pref = StudentLearningPreference(
+                user_id=current_user.id,
+                selected_topics_json="[]",
+                custom_topics_json="[]",
+                daily_streak=1,
+                last_assessment_date=today_str,
+                history_json="[]",
+            )
+            db.add(pref)
+        else:
+            if pref.last_assessment_date != today_str:
+                pref.daily_streak = (pref.daily_streak or 0) + 1
+                pref.last_assessment_date = today_str
+
+        history = json.loads(pref.history_json) if pref.history_json else []
+        history.append({
+            "assessment_id": assessment_id,
+            "company": company_name,
+            "date": today_str,
+            "score": score,
+            "total_marks": total_marks,
+            "percentage": percentage,
+            "passed": passed,
+            "time_taken_seconds": payload.time_taken_seconds,
+            "topics_count": len(questions),
+            "type": "company_mock_test",
+        })
+        pref.history_json = json.dumps(history[-20:])
+        db.commit()
+    except Exception as sync_err:
+        logger.warning(f"Failed to record student preference history: {sync_err}")
+        db.rollback()
 
     data = DailyAssessmentResultResponse(
         assessment_id=assessment_id,

@@ -811,6 +811,57 @@ COMPANY_RECENT_QUESTIONS: Dict[str, List[Dict[str, Any]]] = {
                 "Therefore, 10 strips are sufficient."
             ),
         },
+        {
+            "id": "amz-q8",
+            "question": "A stream processing pipeline receives telemetry messages at an average rate of 120 messages per minute following a Poisson distribution. What is the standard deviation of the number of messages received in a 1-minute window?",
+            "options": ["10.95", "12.00", "14.14", "60.00"],
+            "correct_option_index": 0,
+            "section": "Quantitative Ability",
+            "topic": "Poisson Distribution & Traffic Variance",
+            "tag": "Amazon Systems Aptitude",
+            "difficulty": "medium",
+            "explanation": (
+                "For a Poisson distribution with mean arrival rate λ = 120 messages/min:\n"
+                "1. Mean μ = λ = 120.\n"
+                "2. Variance σ² = λ = 120.\n"
+                "3. Standard deviation σ = √λ = √120 ≈ 10.954.\n"
+                "Therefore, the standard deviation is approximately 10.95."
+            ),
+        },
+        {
+            "id": "amz-q9",
+            "question": "In an in-memory LRU (Least Recently Used) cache implementation requiring strict O(1) time complexity for both get(key) and put(key, value) operations, which combination of data structures is required?",
+            "options": ["Doubly Linked List + Hash Map", "Singly Linked List + Binary Search Tree", "Fixed Array + Min-Heap", "Dual Monotonic Stacks"],
+            "correct_option_index": 0,
+            "section": "Technical Pseudocode & Puzzles",
+            "topic": "LRU Cache Design & Data Structures",
+            "tag": "Amazon SDE-1 Core",
+            "difficulty": "medium",
+            "explanation": (
+                "To achieve strict O(1) time complexity:\n"
+                "1. Hash Map provides O(1) key lookups returning pointers directly to nodes in the list.\n"
+                "2. Doubly Linked List enables O(1) node removal and repositioning to the head (most recently used).\n"
+                "3. Eviction of the least recently used element from the tail also takes O(1) time."
+            ),
+        },
+        {
+            "id": "amz-q10",
+            "question": "Which Amazon Leadership Principle explicitly requires leaders to 'have backbone; disagree and commit'?",
+            "options": [
+                "Leaders are obligated to respectfully challenge decisions when they disagree, even when doing so is uncomfortable or exhausting, and once a decision is determined, they commit wholly.",
+                "Leaders prioritize speed and unanimity above all technical debates to avoid delaying project deliverables.",
+                "Leaders escalate disagreements immediately to executive sponsors before discussing with peers.",
+                "Leaders compromise technical requirements to maintain team social cohesion."
+            ],
+            "correct_option_index": 0,
+            "section": "Logical Reasoning",
+            "topic": "Amazon Leadership Principles & Ownership",
+            "tag": "Amazon Leadership Evaluation",
+            "difficulty": "easy",
+            "explanation": (
+                "Amazon's 'Have Backbone; Disagree and Commit' states: 'Leaders are obligated to respectfully challenge decisions when they disagree, even when doing so is uncomfortable or exhausting. Leaders have conviction and are tenacious. They do not compromise for the sake of social cohesion. Once a decision is determined, they commit wholly.'"
+            ),
+        },
     ],
     "deloitte": [
         {
