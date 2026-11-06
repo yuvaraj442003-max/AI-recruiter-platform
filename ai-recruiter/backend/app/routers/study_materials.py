@@ -1627,7 +1627,7 @@ def get_company_intelligence(slug: str, db: Session = Depends(get_db)):
 @router.post("/companies/{slug}/start-test", response_model=APIResponse[DailyAssessmentStartResponse])
 def start_company_mock_test(
     slug: str,
-    current_user: User = Depends(require_role(UserRole.candidate, UserRole.recruiter, UserRole.admin)),
+    current_user: User = Depends(require_role(UserRole.candidate, UserRole.recruiter, UserRole.admin, UserRole.company_admin, UserRole.superadmin)),
     db: Session = Depends(get_db),
 ):
     """
@@ -1760,7 +1760,7 @@ def start_company_mock_test(
 def submit_company_mock_test(
     slug: str,
     payload: DailyAssessmentSubmitRequest,
-    current_user: User = Depends(require_role(UserRole.candidate, UserRole.recruiter, UserRole.admin)),
+    current_user: User = Depends(require_role(UserRole.candidate, UserRole.recruiter, UserRole.admin, UserRole.company_admin, UserRole.superadmin)),
     db: Session = Depends(get_db),
 ):
     """

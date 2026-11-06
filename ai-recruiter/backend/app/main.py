@@ -416,6 +416,7 @@ app.include_router(student_router.router, prefix="/api/v1")
 app.include_router(aptitude_router.router, prefix="/api/v1")
 app.include_router(aptitude_router.router, prefix="/api")
 app.include_router(study_materials_router.router, prefix="/api/v1")
+app.include_router(study_materials_router.router, prefix="/api")
 app.include_router(weekly_challenge_router.router, prefix="/api/v1")
 app.include_router(vector_router.router, prefix="/api/v1")
 
