@@ -504,6 +504,137 @@ def synthesize_portfolio_with_gemini(
     return merged
 
 
+def generate_single_prompt_portfolio_with_gemini(
+    prompt: str,
+    candidate_name: str = "Candidate",
+    candidate_context: Optional[Dict[str, Any]] = None,
+    previous_portfolio: Optional[Dict[str, Any]] = None,
+    is_refinement: bool = False,
+) -> Optional[Dict[str, Any]]:
+    """
+    SINGLE-PROMPT MASTER GEMINI ENGINE:
+    Takes the user's natural language creation prompt as the PRIMARY creative driver.
+    Gemini deeply analyzes the prompt requirements (role, aesthetic, tone, colors, layout archetype,
+    card style, button style, background, and features) and synthesizes a unique, bespoke modern
+    portfolio specification in one unified master LLM pass.
+    Strictly grounds factual employment and education credentials from candidate_context (Rule 21).
+    """
+    model_name = getattr(settings, "GEMINI_MODEL", "gemini-3-flash-preview")
+    logger.info("[Single-Prompt Gemini Master Engine (%s)] Analyzing user prompt & synthesizing portfolio: '%s'...", model_name, prompt[:100])
+
+    # Build factual candidate context grounding
+    ctx_parts = []
+    if candidate_context:
+        if candidate_context.get("name"):
+            ctx_parts.append(f"Candidate Real Name: {candidate_context['name']}")
+        if candidate_context.get("headline"):
+            ctx_parts.append(f"Current Headline / Role: {candidate_context['headline']}")
+        if candidate_context.get("skills"):
+            ctx_parts.append(f"Verified Candidate Skills: {json.dumps(candidate_context['skills'])}")
+        if candidate_context.get("experience"):
+            ctx_parts.append(f"AUTHENTIC WORK EXPERIENCE (Keep real employer names & titles): {json.dumps(candidate_context['experience'][:6])}")
+        if candidate_context.get("projects"):
+            ctx_parts.append(f"AUTHENTIC PROJECTS & REPOSITORIES (Keep real deliverables & URLs): {json.dumps(candidate_context['projects'][:6])}")
+        if candidate_context.get("education"):
+            ctx_parts.append(f"AUTHENTIC EDUCATION (Keep real degrees & universities): {json.dumps(candidate_context['education'][:4])}")
+        if candidate_context.get("certifications"):
+            ctx_parts.append(f"CERTIFICATIONS: {json.dumps(candidate_context['certifications'][:4])}")
+        if candidate_context.get("resume_text"):
+            ctx_parts.append(f"RESUME EXCERPT: {candidate_context['resume_text'][:2000]}")
+
+    resume_grounding_str = "\n".join(ctx_parts) if ctx_parts else f"Candidate Name: {candidate_name}"
+
+    system_instruction = (
+        "You are Gemini AI, the world's most elite AI Portfolio Architect and Principal Creative Director.\n"
+        "Your mission is to deeply analyze the user's natural language creation prompt and synthesize a stunning, modern, bespoke portfolio website specification.\n\n"
+        "=== PRIMARY DIRECTIVE: USER CREATION PROMPT ===\n"
+        "The user's prompt is your PRIMARY directive for:\n"
+        "- Role & Professional Identity (e.g. Full Stack Developer, AI/ML Specialist, Cloud Architect, Creative Technologist)\n"
+        "- Layout Architecture: choose the ideal archetype:\n"
+        "    * 'modern': high-impact SaaS bento grid, clean responsive cards, impressive modern look\n"
+        "    * 'developer': terminal/IDE code window, dark matrix aesthetic, CLI vibe\n"
+        "    * 'ai_tech': cyberpunk neural HUD, glowing neon accents, futuristic data badges\n"
+        "    * 'minimal': Swiss typographic grid, monochrome elegance, hairline borders\n"
+        "    * 'corporate': executive two-column briefing, enterprise prestige\n"
+        "    * 'creative': vibrant artistic studio, pop-art badges, bold typography\n"
+        "    * 'dark': dark luxury obsidian glassmorphism, carbon backdrop\n"
+        "    * 'split_screen': modern hero with dual-panel showcase\n"
+        "    * 'nova': editorial agency magazine aesthetic\n"
+        "- Visual Mood & Colors: extract exact hex colors matching prompt or role mood (e.g. #4f46e5 indigo, #06b6d4 cyan, #10b981 emerald, #f97316 orange, #8b5cf6 violet)\n"
+        "- Typography: Plus Jakarta Sans | Inter | Outfit | Fira Code | Poppins\n"
+        "- Card & Button Styling: card_style: 'glass' | 'flat' | 'elevated' | 'bordered'; button_style: 'rounded' | 'pill' | 'sharp' | 'glow'\n"
+        "- Portrait Mask: 'mask-studio-bento' | 'mask-arch' | 'mask-corner-curve' | 'mask-pebble' | 'mask-asymmetric-pill'\n"
+        "- Background Style: 'mesh' | 'grid' | 'dots' | 'clean'\n"
+        "- Dark Mode: boolean true/false based on prompt intent\n"
+        "- Narrative Tone & About Section: craft a bespoke, compelling 2-3 paragraph professional story matching the prompt's tone\n"
+        "- 4 High-Impact Quantified Metrics: derived from authentic accomplishments\n"
+        "- 3 Core Value Proposition Services / Pillars: demonstrating technical offering\n\n"
+        "=== FACTUAL GROUNDING RULES (Rule 21) ===\n"
+        "1. Strictly preserve all authentic employer names, genuine job titles, genuine university degrees, and genuine projects from the candidate context.\n"
+        "2. NEVER invent fake companies or fictitious academic credentials.\n"
+        "3. Preserve all real project URLs (live demos, GitHub links) without fabricating fictional links.\n"
+        "4. Seamlessly blend the user's prompt desires with the candidate's authentic career history.\n\n"
+        "OUTPUT REQUIREMENT: Return ONLY a valid JSON object matching the exact schema below. No markdown backticks, no markdown code block, no preamble.\n\n"
+        "JSON SCHEMA:\n"
+        "{\n"
+        '  "full_name": "string",\n'
+        '  "professional_headline": "string (e.g. Senior Full Stack Engineer & Cloud Architect)",\n'
+        '  "headline_options": ["Option 1", "Option 2", "Option 3"],\n'
+        '  "about": "string (2-3 paragraphs of compelling, prompt-aligned professional narrative)",\n'
+        '  "domain": "string",\n'
+        '  "layout": "modern" | "developer" | "ai_tech" | "minimal" | "corporate" | "creative" | "dark" | "split_screen" | "nova",\n'
+        '  "theme_id": "string",\n'
+        '  "primary_color": "#hex",\n'
+        '  "secondary_color": "#hex",\n'
+        '  "font": "string",\n'
+        '  "background_style": "mesh" | "grid" | "dots" | "clean",\n'
+        '  "background_image": "URL string or \'none\'",\n'
+        '  "portrait_mask": "mask-studio-bento" | "mask-arch" | "mask-corner-curve" | "mask-pebble" | "mask-asymmetric-pill",\n'
+        '  "card_style": "glass" | "flat" | "elevated" | "bordered",\n'
+        '  "button_style": "rounded" | "pill" | "sharp" | "glow",\n'
+        '  "dark_mode": boolean,\n'
+        '  "impact_metrics": [{"value": "string", "label": "string", "icon": "string"}],\n'
+        '  "skills": {"Category Name": ["Skill1", "Skill2", "Skill3"]},\n'
+        '  "services": [{"title": "string", "description": "string", "icon": "string"}],\n'
+        '  "projects": [{"name": "string", "description": "string", "key_features": ["string"], "technologies": ["string"], "live_demo_url": "string", "github_url": "string"}],\n'
+        '  "experience": [{"title": "string", "company": "string", "location": "string", "start_date": "string", "end_date": "string", "is_current": boolean, "description": "string", "highlights": ["string"], "technologies": ["string"]}],\n'
+        '  "education": [{"degree": "string", "institution": "string", "end_year": "string", "grade": "string"}],\n'
+        '  "certifications": [{"name": "string", "organization": "string", "year": "string"}],\n'
+        '  "social_links": {"email": "string", "location": "string", "github": "string", "linkedin": "string"},\n'
+        '  "suggested_slug": "string"\n'
+        "}"
+    )
+
+    user_prompt_content = (
+        f"=== USER CREATION PROMPT (PRIMARY DIRECTIVE) ===\n"
+        f"{prompt}\n\n"
+        f"=== CANDIDATE FACTUAL BACKGROUND (GROUNDING CONTEXT) ===\n"
+        f"{resume_grounding_str}\n"
+    )
+    if is_refinement and previous_portfolio:
+        user_prompt_content += (
+            f"\n=== PREVIOUS PORTFOLIO STATE ===\n"
+            f"Layout: {previous_portfolio.get('layout')}, Theme: {previous_portfolio.get('theme_id')}, "
+            f"Headline: {previous_portfolio.get('professional_headline')}, Colors: {previous_portfolio.get('primary_color')}\n"
+        )
+
+    raw_response = generate(
+        system_prompt=system_instruction,
+        user_prompt=user_prompt_content,
+        max_tokens=4000,
+        model=model_name,
+    )
+
+    parsed = _extract_json_from_llm_response(raw_response) if raw_response else None
+    if parsed and isinstance(parsed, dict) and parsed.get("professional_headline"):
+        logger.info("[Single-Prompt Gemini Master Engine (%s)] Generation succeeded! Layout=%s, Theme=%s, Primary=%s",
+                    model_name, parsed.get("layout"), parsed.get("theme_id"), parsed.get("primary_color"))
+        return parsed
+
+    logger.warning("[Single-Prompt Gemini Master Engine (%s)] LLM output did not yield complete portfolio JSON.", model_name)
+    return None
+
+
 def generate_portfolio_from_prompt(
     prompt: str,
     candidate_name: str = "Candidate",
@@ -512,22 +643,38 @@ def generate_portfolio_from_prompt(
     is_refinement: bool = False,
 ) -> Dict[str, Any]:
     """
-    Main entry point: Generates a complete portfolio specification using three separate Gemini models:
-      1. Model 1 (GEMINI_RESUME_MODEL): Deeply analyzes authentic resume credentials and projects.
-      2. Model 2 (GEMINI_PROMPT_MODEL): Deeply analyzes user prompt instructions and extracts design tokens.
-      3. Model 3 (GEMINI_PORTFOLIO_MODEL): Synthesizes both into the complete, award-winning portfolio website.
+    Main entry point: Generates a complete portfolio specification driven by the user's creation prompt.
+    1. Single-Prompt Master Pass: Gemini AI directly analyzes user prompt requirements and synthesizes
+       a bespoke modern portfolio with factual candidate grounding.
+    2. Multi-Model Fallback: If single pass requires enrichment, invokes the 3-stage pipeline.
+    3. Deterministic Safety Fallback: Always guarantees production-ready result with zero downtime.
     """
     prompt = (prompt or "").strip()
     if not prompt:
-        prompt = "Create a modern, high-impact portfolio showcasing engineering excellence and clean design."
+        prompt = "Create a modern, professional website with a unique design and layout. Visually attractive, creative, impressive, with a clean and responsive user interface."
 
-    # Stage 1: Analyze Resume with Gemini Model 1
+    # Stage 1: Single-Prompt Master Gemini Generation (Primary Engine)
+    single_prompt_result = generate_single_prompt_portfolio_with_gemini(
+        prompt=prompt,
+        candidate_name=candidate_name,
+        candidate_context=candidate_context,
+        previous_portfolio=previous_portfolio,
+        is_refinement=is_refinement,
+    )
+    if single_prompt_result and isinstance(single_prompt_result, dict) and single_prompt_result.get("professional_headline"):
+        logger.info("Single-Prompt Gemini Portfolio Generation completed successfully!")
+        return _normalize_generated_portfolio(
+            single_prompt_result,
+            candidate_name,
+            prompt,
+            candidate_context=candidate_context,
+            previous_portfolio=previous_portfolio,
+        )
+
+    # Stage 2: 3-Stage Pipeline Fallback
+    logger.info("Invoking 3-model Gemini pipeline fallback...")
     resume_intel = analyze_resume_with_gemini(candidate_name, candidate_context)
-
-    # Stage 2: Analyze Prompt & Design Intent with Gemini Model 2
     design_dir = analyze_prompt_with_gemini(prompt, candidate_context, previous_portfolio, is_refinement)
-
-    # Stage 3: Synthesize Complete Portfolio with Gemini Model 3
     final_portfolio = synthesize_portfolio_with_gemini(
         candidate_name=candidate_name,
         prompt=prompt,

@@ -1055,15 +1055,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
-      setAiLoading(true, "Triple-Gemini Pipeline Active...", "Model 1: Analyzing authentic resume credentials, projects & career facts...");
+      setAiLoading(true, "✨ Gemini AI Analyzing Prompt & Synthesizing Portfolio...", "Analyzing your role, layout directives, colors, and authentic credentials...");
 
-      // Multi-model step progression
+      // Step progression
       const t1 = setTimeout(() => {
-        aiLoadingStep.textContent = "Model 2: Analyzing prompt intent for layout, colors, background & UI styling...";
+        aiLoadingStep.textContent = "Gemini AI: Architecting unique layout, bespoke copy, and design tokens...";
       }, 1400);
       const t2 = setTimeout(() => {
-        aiLoadingStep.textContent = "Model 3: Synthesizing bespoke portfolio specification and creative copy...";
-      }, 3200);
+        aiLoadingStep.textContent = "Gemini AI: Synthesizing live responsive components, impact metrics & services...";
+      }, 3000);
 
       try {
         const res = await portfolioAPI.generateFromPrompt(promptText, {

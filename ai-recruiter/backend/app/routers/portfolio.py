@@ -202,6 +202,8 @@ def generate_portfolio_from_prompt_endpoint(
         portfolio.background_image = gen_data["background_image"]
     if "custom_css" in gen_data and gen_data["custom_css"]:
         portfolio.custom_css = gen_data["custom_css"]
+    elif "portrait_mask" in gen_data and gen_data["portrait_mask"]:
+        portfolio.custom_css = json.dumps({"portrait_mask": gen_data["portrait_mask"]})
     if "custom_html" in gen_data and gen_data["custom_html"]:
         portfolio.custom_html = gen_data["custom_html"]
     portfolio.generation_prompt = payload.prompt
