@@ -184,7 +184,7 @@ html,
 }
 
 /* Ensure all interactive layout content sits securely above the background */
-.portfolio-theme-root > *:not(.portfolio-background-canvas):not(.portfolio-domain-ambient-layer) {
+.portfolio-theme-root > *:not(.portfolio-background-canvas):not(.portfolio-domain-ambient-layer):not(.portfolio-ambient-aurora) {
   position: relative;
   z-index: 2;
 }
@@ -3746,4 +3746,433 @@ body[data-bs-theme="dark"] .metrics-strip-enhanced {
     width: 100%;
     justify-content: center;
   }
+}
+
+
+/* ==============================================================
+   2026 NEXT-GEN AMBIENT AURORA CANVAS & CYBER GRID
+   ============================================================== */
+.portfolio-ambient-aurora {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  height: 950px !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+  overflow: hidden !important;
+}
+
+.portfolio-ambient-aurora .aurora-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.38;
+  pointer-events: none;
+  animation: auroraFloat 18s ease-in-out infinite alternate;
+}
+
+.portfolio-ambient-aurora .aurora-orb-1 {
+  top: -120px;
+  left: 12%;
+  width: 650px;
+  height: 650px;
+}
+
+.portfolio-ambient-aurora .aurora-orb-2 {
+  top: 120px;
+  right: -80px;
+  width: 580px;
+  height: 580px;
+  animation-delay: -6s;
+}
+
+.portfolio-ambient-aurora .aurora-orb-3 {
+  top: 420px;
+  left: 30%;
+  width: 520px;
+  height: 520px;
+  animation-delay: -12s;
+}
+
+@keyframes auroraFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(45px, 35px) scale(1.08); }
+  100% { transform: translate(-35px, 55px) scale(0.95); }
+}
+
+.portfolio-ambient-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse at 50% 25%, rgba(0, 0, 0, 0.9) 0%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 25%, rgba(0, 0, 0, 0.9) 0%, transparent 80%);
+  pointer-events: none;
+}
+
+/* ==============================================================
+   2026 DEVELOPER WORKSTATION & TERMINAL SUITE (CREATIVE & MODERN)
+   ============================================================== */
+.dev-ide-window {
+  background: rgba(13, 17, 23, 0.92) !important;
+  backdrop-filter: blur(28px) !important;
+  -webkit-backdrop-filter: blur(28px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 20px !important;
+  box-shadow: 
+    0 35px 85px -20px rgba(0, 0, 0, 0.85),
+    0 0 60px -10px rgba(56, 189, 248, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+  overflow: hidden;
+  margin-bottom: 2.5rem;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  position: relative;
+  z-index: 2;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.dev-ide-window:hover {
+  border-color: rgba(56, 189, 248, 0.4) !important;
+  box-shadow: 
+    0 40px 95px -15px rgba(0, 0, 0, 0.9),
+    0 0 75px -5px rgba(99, 102, 241, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+.dev-window-bar {
+  background: rgba(22, 27, 34, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dev-window-dots {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.dev-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.dev-window-dots:hover .dev-dot {
+  filter: brightness(1.2);
+}
+.dev-dot-red { background: #ff5f56; box-shadow: 0 0 8px rgba(255, 95, 86, 0.4); }
+.dev-dot-yellow { background: #ffbd2e; box-shadow: 0 0 8px rgba(255, 189, 46, 0.4); }
+.dev-dot-green { background: #27c93f; box-shadow: 0 0 8px rgba(39, 201, 63, 0.4); }
+
+.dev-window-title {
+  color: #94a3b8;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+}
+.dev-window-title .dev-file-active {
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.dev-window-branch {
+  color: #818cf8;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.dev-file-tabs {
+  background: rgba(18, 22, 30, 0.95);
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.dev-tab {
+  padding: 10px 22px;
+  font-size: 0.84rem;
+  color: #94a3b8;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.dev-tab:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #f1f5f9;
+}
+.dev-tab.active {
+  background: rgba(13, 17, 23, 0.95);
+  color: #ffffff;
+  border-bottom-color: #38bdf8;
+  box-shadow: inset 0 2px 0 #38bdf8;
+}
+
+.dev-code-editor {
+  padding: 2rem;
+  background: rgba(13, 17, 23, 0.85);
+  color: #e2e8f0;
+  font-size: 0.94rem;
+  line-height: 1.8;
+}
+.dev-line-num {
+  color: #475569;
+  user-select: none;
+  display: inline-block;
+  width: 2.2rem;
+  text-align: right;
+  margin-right: 1.25rem;
+  font-weight: 500;
+}
+.dev-keyword { color: #f43f5e; font-weight: 700; text-shadow: 0 0 12px rgba(244, 63, 94, 0.2); }
+.dev-type { color: #38bdf8; font-weight: 600; }
+.dev-prop { color: #4ade80; }
+.dev-str { color: #fbbf24; }
+.dev-comment { color: #64748b; font-style: italic; }
+
+/* Holographic Glass Developer Card */
+.dev-avatar-holo-card {
+  background: linear-gradient(165deg, rgba(26, 32, 44, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 20px;
+  padding: 1.75rem 1.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 20px 45px rgba(0, 0, 0, 0.65),
+    0 0 35px rgba(56, 189, 248, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.dev-avatar-holo-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(56, 189, 248, 0.6);
+  box-shadow: 
+    0 30px 65px rgba(0, 0, 0, 0.75),
+    0 0 50px rgba(99, 102, 241, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.dev-avatar-holo-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 50% 10%, rgba(56, 189, 248, 0.15), transparent 50%);
+  pointer-events: none;
+}
+
+.dev-avatar-ring {
+  position: relative;
+  width: 125px;
+  height: 125px;
+  margin: 0 auto 1.25rem;
+  border-radius: 24px;
+  padding: 3px;
+  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #ec4899 100%);
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
+}
+.dev-avatar-ring img, .dev-avatar-ring .dev-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 21px;
+  background: #0d1117;
+}
+.dev-avatar-ring .dev-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #f8fafc;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  letter-spacing: -0.03em;
+}
+
+.dev-card-name {
+  font-weight: 800;
+  font-size: 1.35rem;
+  margin-bottom: 0.35rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #93c5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.dev-card-role {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+}
+
+.status-radar-beacon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #4ade80;
+  letter-spacing: 0.02em;
+  margin-bottom: 1.25rem;
+}
+.radar-dot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+}
+.radar-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: #22c55e;
+  opacity: 0.8;
+  animation: radarPulse 1.8s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+@keyframes radarPulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(3.2); opacity: 0; }
+}
+
+.dev-tech-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  font-size: 0.74rem;
+  font-family: 'Fira Code', monospace;
+  color: #38bdf8;
+  margin: 2px;
+}
+
+.dev-btn-cta {
+  background: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%);
+  color: #ffffff !important;
+  font-weight: 700;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.86rem;
+  padding: 9px 20px;
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(56, 189, 248, 0.35);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.dev-btn-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.55);
+  color: #ffffff !important;
+}
+
+.dev-btn-ghost {
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0 !important;
+  font-weight: 600;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.86rem;
+  padding: 9px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.dev-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #38bdf8;
+  color: #38bdf8 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(56, 189, 248, 0.25);
+}
+
+.dev-terminal-box {
+  background: rgba(10, 14, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 1.5rem 1.75rem;
+  font-family: 'Fira Code', monospace;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  position: relative;
+  overflow: hidden;
+}
+.dev-terminal-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #38bdf8, #818cf8, #ec4899);
+}
+
+.dev-repo-card {
+  background: rgba(22, 27, 34, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 14px;
+  padding: 1.5rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+.dev-repo-card:hover {
+  border-color: rgba(56, 189, 248, 0.5);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(56, 189, 248, 0.15);
+}
+.dev-repo-title {
+  color: #38bdf8;
+  font-family: 'Fira Code', monospace;
+  font-size: 1.05rem;
+  transition: color 0.2s ease;
+}
+.dev-repo-card:hover .dev-repo-title {
+  color: #7dd3fc;
+}
+.dev-repo-desc {
+  color: #94a3b8;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  margin-top: 0.5rem;
+}
+.dev-repo-tech-pill {
+  padding: 3px 9px;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 6px;
+  font-size: 0.74rem;
+  color: #38bdf8;
+  font-family: 'Fira Code', monospace;
+  font-weight: 500;
 }
