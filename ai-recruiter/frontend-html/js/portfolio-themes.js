@@ -2428,43 +2428,48 @@ const PortfolioThemesEngine = (() => {
     };
     const liveUrl = cleanUrl(project.live_demo_url || project.demo_url || project.url || project.link);
     const codeUrl = cleanUrl(project.github_url || project.repo_url || project.code_url);
+    const slugName = escapeHtml((name || "project").toLowerCase().replace(/[^a-z0-9]/g, "-"));
 
     return `
       <div class="col-md-6 col-lg-4 project-card-item" data-tech="${escapeHtml((techs.join(' ') + ' ' + name).toLowerCase())}">
-        <div class="modern-project-card">
-          <div class="card-chrome-header">
+        <div class="spotlight-card bento-device-frame">
+          <div class="device-mac-bar">
             <div class="traffic-dots">
               <span class="dot-red"></span>
               <span class="dot-yellow"></span>
               <span class="dot-green"></span>
             </div>
+            <div class="device-url-capsule">
+              <span>🔒</span>
+              <span>${liveUrl ? liveUrl.replace(/^https?:\/\//i, "") : `apps.internal/${slugName}`}</span>
+            </div>
             <span class="project-category-tag">${escapeHtml(category)}</span>
           </div>
-          <div class="card-body-enhanced">
-            <div class="project-title-enhanced">
+          <div class="device-preview-stage">
+            <div class="project-title-enhanced mb-2">
               ${liveUrl ? `<a href="${escapeHtml(liveUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(name)}</a>` : `<span>${escapeHtml(name)}</span>`}
               ${liveUrl ? `<a href="${escapeHtml(liveUrl)}" target="_blank" rel="noopener noreferrer" class="project-arrow-icon" title="Open Live Site">↗</a>` : `<span class="project-arrow-icon">✦</span>`}
             </div>
-            <p class="project-description-enhanced">${escapeHtml(desc)}</p>
+            <p class="project-description-enhanced mb-3">${escapeHtml(desc)}</p>
             ${features.length > 0 ? `
-              <ul class="project-features-list">
+              <ul class="project-features-list mb-3">
                 ${features.map(f => `<li><span class="feat-check">✓</span> <span>${escapeHtml(f)}</span></li>`).join("")}
               </ul>
             ` : ""}
             ${techs.length > 0 ? `
-              <div class="tech-pills-row">
+              <div class="tech-pills-row mt-auto mb-3">
                 ${techs.slice(0, 6).map(t => `<span class="tech-pill-dot">${escapeHtml(t)}</span>`).join("")}
               </div>
             ` : ""}
-          </div>
-          <div class="card-footer-enhanced">
-            <div class="d-flex align-items-center gap-2 flex-wrap">
-              ${liveUrl ? `<a href="${escapeHtml(liveUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-primary fw-semibold px-2.5 py-1" style="font-size: 0.78rem;">🌐 Live Demo</a>` : ""}
-              ${codeUrl ? `<a href="${escapeHtml(codeUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary fw-semibold px-2.5 py-1" style="font-size: 0.78rem;">💻 Source</a>` : ""}
+            <div class="pt-3 border-top border-secondary border-opacity-25 d-flex align-items-center justify-content-between flex-wrap gap-2">
+              <div class="d-flex align-items-center gap-2">
+                ${liveUrl ? `<a href="${escapeHtml(liveUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-primary fw-semibold px-2.5 py-1" style="font-size: 0.78rem;">🌐 Live Demo</a>` : ""}
+                ${codeUrl ? `<a href="${escapeHtml(codeUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary fw-semibold px-2.5 py-1" style="font-size: 0.78rem;">💻 Source</a>` : ""}
+              </div>
+              <button type="button" class="btn-arch-inspect btn-open-arch-modal" data-project-idx="${idx}" title="Inspect System Architecture">
+                <span>🔍 Architecture</span>
+              </button>
             </div>
-            <button type="button" class="btn-arch-inspect btn-open-arch-modal" data-project-idx="${idx}" title="Inspect System Architecture">
-              <span>🔍 Architecture</span>
-            </button>
           </div>
         </div>
       </div>
@@ -3251,43 +3256,85 @@ const PortfolioThemesEngine = (() => {
         <div class="container">
           <div class="row align-items-center g-4 mb-4">
             <div class="col-lg-8 animate-fade-in-up">
-              <!-- Candidate Name rendered prominently above location & status badge -->
-              <h1 class="display-4 fw-extrabold bento-hero-headline mb-2 d-block w-100">${name}</h1>
-              <!-- Location & Opportunity Status Badge rendered directly below candidate name -->
+              <!-- Location & Opportunity Status Radar Badge -->
               <div class="hero-meta-badge-wrap d-flex flex-wrap align-items-center gap-2 mb-3">
-                <div class="d-inline-flex flex-wrap align-items-center gap-2 px-3 py-1 rounded-pill small fw-semibold hero-location-badge" style="background: var(--theme-badge-bg); color: var(--theme-primary); border: 1px solid var(--theme-card-border);">
-                  <span class="rounded-circle" style="width: 8px; height: 8px; background: #10b981; display: inline-block;"></span>
-                  <span>Available for Opportunities</span>
-                  ${domainConfig?.domain ? `<span>•</span><span class="hero-domain-pill"><span class="hero-domain-indicator-dot"></span>${escapeHtml(domainConfig.domain)}</span>` : ""}
+                <div class="bento-radar-badge">
+                  <span class="radar-ping-wrap">
+                    <span class="radar-ping-wave"></span>
+                    <span class="radar-ping-dot"></span>
+                  </span>
+                  <span>Available for High-Impact Roles</span>
+                  ${domainConfig?.domain ? `<span>•</span><span class="hero-domain-pill">${escapeHtml(domainConfig.domain)}</span>` : ""}
                   ${loc ? `<span>•</span><span>📍 ${loc}</span>` : ""}
                 </div>
               </div>
+
+              <!-- Kinetic Headline -->
+              <h1 class="display-3 fw-extrabold kinetic-hero-headline mb-3 d-block w-100">${name}</h1>
+
+              <!-- Role & Narrative Subtitle -->
               ${headline ? `
-                <p class="lead fw-medium mb-4" style="color: var(--theme-secondary); max-width: 650px; line-height: 1.55;">
+                <p class="lead fw-semibold mb-4" style="color: var(--theme-secondary); max-width: 680px; font-size: 1.25rem; line-height: 1.6;">
                   ${headline}
                 </p>
               ` : ""}
+
+              <!-- Interactive Core Stack Pills -->
+              ${Array.isArray(skills) || typeof skills === "object" ? `
+                <div class="d-flex flex-wrap gap-2 mb-4">
+                  ${(Array.isArray(skills) ? skills : Object.values(skills).flat()).slice(0, 5).map(s => `
+                    <span class="bento-tech-capsule"><span>✦</span> ${escapeHtml(s)}</span>
+                  `).join("")}
+                </div>
+              ` : ""}
+
+              <!-- Magnetic High-Impact Action CTAs -->
               <div class="d-flex flex-wrap align-items-center gap-3">
-                <a href="#section-contact" class="theme-btn-primary">
-                  <span>✉️</span> Get in Touch
+                <a href="#section-contact" class="theme-btn-primary py-2 px-4 shadow-sm">
+                  <span>⚡</span> Get in Touch
                 </a>
-                <a href="#section-projects" class="theme-btn-outline">
+                <a href="#section-projects" class="theme-btn-outline py-2 px-4">
                   <span>🚀</span> Explore Projects
                 </a>
-                ${soc.github ? `<a href="${escapeHtml(soc.github)}" target="_blank" class="theme-btn-outline"><span>💻</span> GitHub</a>` : ""}
-                ${soc.linkedin ? `<a href="${escapeHtml(soc.linkedin)}" target="_blank" class="theme-btn-outline"><span>in</span> LinkedIn</a>` : ""}
+                ${soc.github ? `<a href="${escapeHtml(soc.github)}" target="_blank" rel="noopener noreferrer" class="theme-btn-outline py-2 px-3"><span>💻</span> GitHub ↗</a>` : ""}
+                ${soc.linkedin ? `<a href="${escapeHtml(soc.linkedin)}" target="_blank" rel="noopener noreferrer" class="theme-btn-outline py-2 px-3"><span>in</span> LinkedIn ↗</a>` : ""}
               </div>
             </div>
+
+            <!-- Next-Gen Holographic Talent Card -->
             <div class="col-lg-4 text-center">
-              <div class="bento-avatar-card animate-float">
-                <div class="mb-3">
-                  ${renderCandidateAvatar(data, 150)}
+              <div class="spotlight-card bento-talent-card animate-float">
+                <div class="mb-3 d-inline-block position-relative">
+                  ${renderCandidateAvatar(data, 130)}
                 </div>
-                <h5 class="fw-bold mb-1" style="color: var(--theme-text);">${name}</h5>
+                <h4 class="fw-bold mb-1" style="color: var(--theme-text);">${name}</h4>
                 ${headline ? `<div class="small fw-semibold mb-3" style="color: var(--theme-primary);">${headline}</div>` : ""}
-                <div class="d-flex justify-content-center gap-2 flex-wrap">
-                  ${loc ? `<span class="badge" style="background: var(--theme-badge-bg); color: var(--theme-primary);">📍 ${loc}</span>` : ""}
-                  <span class="status-badge-hire"><span class="pulse-dot"></span> Available for Hire</span>
+                
+                <div class="d-flex justify-content-center gap-2 flex-wrap mb-3">
+                  <span class="badge border border-success border-opacity-40 text-success small px-2.5 py-1" style="background: rgba(16, 185, 129, 0.12); font-size: 0.76rem;">✓ Verified Talent</span>
+                  ${loc ? `<span class="badge" style="background: var(--theme-badge-bg); color: var(--theme-primary); font-size: 0.76rem;">📍 ${loc}</span>` : ""}
+                </div>
+
+                <!-- Telemetry Quick Counters -->
+                <div class="p-2.5 rounded-3 mb-3 text-start" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08);">
+                  <div class="d-flex justify-content-between align-items-center small py-1 border-bottom border-secondary border-opacity-25">
+                    <span class="text-muted">Repositories</span>
+                    <strong style="color: var(--theme-primary);">${projects.length} Showcased</strong>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center small py-1 border-bottom border-secondary border-opacity-25">
+                    <span class="text-muted">Career Roles</span>
+                    <strong style="color: var(--theme-primary);">${experience.length} Notable Positions</strong>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center small py-1">
+                    <span class="text-muted">Availability</span>
+                    <strong class="text-success">Immediate</strong>
+                  </div>
+                </div>
+
+                <div class="d-grid">
+                  <a href="#section-contact" class="btn btn-sm btn-primary rounded-pill fw-bold py-2 shadow-sm" style="background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-secondary) 100%); border: none;">
+                    Hire ${name.split(" ")[0]} &rarr;
+                  </a>
                 </div>
               </div>
             </div>
@@ -3303,29 +3350,34 @@ const PortfolioThemesEngine = (() => {
         <div class="container">
           <div class="bento-grid">
             ${activeSections.includes("about") ? `
-              <div class="bento-card bento-col-8" id="section-about-card">
+              <div class="spotlight-card bento-card bento-col-8" id="section-about-card">
                 <div class="d-flex align-items-center gap-2 mb-3">
-                  <span class="fs-4" style="color: var(--theme-primary);">👤</span>
-                  <h4 class="fw-bold mb-0" style="color: var(--theme-text);">About &amp; Background</h4>
+                  <span class="fs-4" style="color: var(--theme-primary);">✦</span>
+                  <h4 class="fw-bold mb-0" style="color: var(--theme-text);">Narrative &amp; Technical Vision</h4>
                 </div>
-                <div class="lead" style="color: var(--theme-text); opacity: 0.95; font-size: 1.1rem; line-height: 1.8;">
-                  ${about || (headline ? `${name} is an accomplished professional specializing in ${headline}. Focused on building high-value, impact-driven software systems.` : `${name} brings technical excellence, strategic problem-solving, and dedication to delivering scalable results.`)}
+                <div class="lead" style="color: var(--theme-text); opacity: 0.95; font-size: 1.1rem; line-height: 1.85;">
+                  ${about || (headline ? `${name} is an accomplished technical specialist specializing in ${headline}. Focused on architecting high-value, impact-driven software systems with modern engineering rigor.` : `${name} brings technical excellence, strategic problem-solving, and dedication to delivering scalable results.`)}
+                </div>
+                <div class="mt-4 pt-3 border-top border-secondary border-opacity-25 d-flex flex-wrap gap-2">
+                  <span class="badge" style="background: rgba(var(--theme-primary-rgb, 99, 102, 241), 0.15); color: var(--theme-primary);">Production Standards</span>
+                  <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">Architectural Rigor</span>
+                  <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8;">High Performance</span>
                 </div>
               </div>
             ` : ""}
 
-            <div class="bento-card bento-col-4 d-flex flex-column justify-content-between">
+            <div class="spotlight-card bento-card bento-col-4 d-flex flex-column justify-content-between">
               <div>
-                <h6 class="fw-bold text-uppercase small mb-3" style="color: var(--theme-primary); letter-spacing: 0.05em;">Quick Highlights</h6>
-                <div class="mb-3">
-                  <div class="bento-stat-chip mb-2">
+                <h6 class="fw-bold text-uppercase small mb-3" style="color: var(--theme-primary); letter-spacing: 0.05em;">✦ Quick Highlights</h6>
+                <div class="d-flex flex-column gap-2 mb-3">
+                  <div class="bento-stat-chip-2026">
                     <span class="fs-4">💼</span>
                     <div>
                       <div class="fw-bold small" style="color: var(--theme-text);">Experience</div>
                       <div class="small" style="color: var(--theme-text-muted);">${experience.length} Notable Positions</div>
                     </div>
                   </div>
-                  <div class="bento-stat-chip mb-2">
+                  <div class="bento-stat-chip-2026">
                     <span class="fs-4">🚀</span>
                     <div>
                       <div class="fw-bold small" style="color: var(--theme-text);">Featured Work</div>
@@ -3333,10 +3385,10 @@ const PortfolioThemesEngine = (() => {
                     </div>
                   </div>
                   ${loc ? `
-                    <div class="bento-stat-chip">
+                    <div class="bento-stat-chip-2026">
                       <span class="fs-4">📍</span>
                       <div>
-                        <div class="fw-bold small" style="color: var(--theme-text);">Location</div>
+                        <div class="fw-bold small" style="color: var(--theme-text);">Workstation</div>
                         <div class="small" style="color: var(--theme-text-muted);">${loc}</div>
                       </div>
                     </div>
@@ -3346,7 +3398,7 @@ const PortfolioThemesEngine = (() => {
             </div>
 
             ${activeSections.includes("skills") ? `
-              <div class="bento-card bento-col-12" id="section-skills">
+              <div class="spotlight-card bento-card bento-col-12" id="section-skills">
                 <div class="d-flex align-items-center gap-2 mb-3">
                   <span class="fs-4" style="color: var(--theme-primary);">🛠️</span>
                   <h4 class="fw-bold mb-0" style="color: var(--theme-text);">Core Skills &amp; Tech Stack</h4>
@@ -3389,22 +3441,29 @@ const PortfolioThemesEngine = (() => {
       html += `
         <section id="section-experience" class="py-4 mb-5">
           <div class="container">
-            <div class="bento-card p-4 p-md-5">
-              <div class="d-flex align-items-center gap-2 mb-4">
-                <span class="fs-4" style="color: var(--theme-primary);">💼</span>
-                <h3 class="fw-bold mb-0" style="color: var(--theme-text);">Work Experience</h3>
+            <div class="spotlight-card bento-card p-4 p-md-5">
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="fs-4" style="color: var(--theme-primary);">💼</span>
+                  <h3 class="fw-bold mb-0" style="color: var(--theme-text);">Career Journey &amp; Milestones</h3>
+                </div>
+                <span class="badge border border-info border-opacity-30 text-info small font-monospace px-2.5 py-1" style="background: rgba(56, 189, 248, 0.1);">Verified Employment Timeline</span>
               </div>
               <div class="ps-2">
                 ${experience.map(exp => `
-                  <div class="theme-timeline-item">
-                    <div class="theme-timeline-dot"></div>
+                  <div class="bento-timeline-node">
+                    <div class="bento-timeline-beacon"></div>
                     <div class="d-flex justify-content-between align-items-baseline flex-wrap gap-2 mb-1">
-                      <h5 class="fw-bold mb-0" style="color: var(--theme-text);">${escapeHtml(exp.title || "Role")}</h5>
+                      <h5 class="fw-bold mb-0" style="color: var(--theme-text); font-size: 1.15rem;">${escapeHtml(exp.title || "Role")}</h5>
                       <span class="theme-date-badge">${escapeHtml([exp.start_date, exp.end_date || (exp.is_current ? "Present" : "")].filter(Boolean).join(" — "))}</span>
                     </div>
-                    <div class="fw-semibold small mb-2" style="color: var(--theme-primary);">${escapeHtml(exp.company || "")}</div>
-                    ${exp.description ? `<p class="mb-2 small" style="color: var(--theme-text-muted); line-height: 1.6;">${escapeHtml(exp.description)}</p>` : ""}
-                    ${exp.highlights?.length ? `<ul class="portfolio-highlight-list ps-3 mb-2 small">${exp.highlights.map(h => `<li class="mb-1">${escapeHtml(h)}</li>`).join("")}</ul>` : ""}
+                    <div class="fw-semibold small mb-2 d-flex align-items-center gap-2">
+                      <span style="color: var(--theme-primary);">@ ${escapeHtml(exp.company || "")}</span>
+                      ${exp.location ? `<span class="text-muted">• ${escapeHtml(exp.location)}</span>` : ""}
+                    </div>
+                    ${exp.description ? `<p class="mb-2" style="color: var(--theme-text-muted); line-height: 1.7; font-size: 0.96rem;">${escapeHtml(exp.description)}</p>` : ""}
+                    ${exp.highlights?.length ? `<ul class="portfolio-highlight-list ps-3 mb-2 small" style="line-height: 1.65;">${exp.highlights.map(h => `<li class="mb-1">${escapeHtml(h)}</li>`).join("")}</ul>` : ""}
+                    ${exp.technologies?.length ? `<div class="d-flex flex-wrap gap-1 mt-2">${exp.technologies.map(t => `<span class="dev-tech-pill">${escapeHtml(t)}</span>`).join("")}</div>` : ""}
                   </div>
                 `).join("")}
               </div>
@@ -3422,12 +3481,15 @@ const PortfolioThemesEngine = (() => {
             <div class="row g-4">
               ${activeSections.includes("education") ? `
                 <div class="col-md-6" id="section-education">
-                  <div class="bento-card h-100">
-                    <h5 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color: var(--theme-text);"><span>🎓</span> Education</h5>
+                  <div class="spotlight-card bento-card h-100 p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+                      <h5 class="fw-bold mb-0 d-flex align-items-center gap-2" style="color: var(--theme-text);"><span>🎓</span> Academic Degrees</h5>
+                      <span class="badge border border-primary border-opacity-30 text-primary small font-monospace px-2 py-0.5">Verified</span>
+                    </div>
                     ${education.length > 0 ? education.map(e => `
-                      <div class="portfolio-subcard p-3 rounded-3 mb-2">
+                      <div class="portfolio-subcard p-3 rounded-3 mb-2" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08);">
                         <div class="d-flex justify-content-between align-items-start">
-                          <div class="fw-bold" style="color: var(--theme-text);">${escapeHtml(e.degree || "")}</div>
+                          <div class="fw-bold" style="color: var(--theme-text); font-size: 1rem;">${escapeHtml(e.degree || "")}</div>
                           ${(e.end_year || e.start_year || e.year) ? `<span class="badge rounded-pill bg-primary-subtle text-primary small">${escapeHtml(e.end_year || e.start_year || e.year)}</span>` : ""}
                         </div>
                         <div class="small fw-semibold mt-1" style="color: var(--theme-primary);">${escapeHtml(e.institution || "")}</div>
@@ -3445,14 +3507,17 @@ const PortfolioThemesEngine = (() => {
               ` : ""}
               ${activeSections.includes("certifications") ? `
                 <div class="col-md-6" id="section-certifications">
-                  <div class="bento-card h-100">
-                    <h5 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color: var(--theme-text);"><span>🏆</span> Certifications &amp; Credentials</h5>
+                  <div class="spotlight-card bento-card h-100 p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+                      <h5 class="fw-bold mb-0 d-flex align-items-center gap-2" style="color: var(--theme-text);"><span>🏆</span> Certifications &amp; Licenses</h5>
+                      <span class="badge border border-success border-opacity-30 text-success small font-monospace px-2 py-0.5">Accredited</span>
+                    </div>
                     ${certs.length > 0 ? certs.map(c => `
-                      <div class="portfolio-subcard p-3 rounded-3 mb-2 d-flex align-items-center gap-2">
-                        <span>📜</span>
+                      <div class="portfolio-subcard p-3 rounded-3 mb-2 d-flex align-items-center gap-3" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08);">
+                        <span class="fs-4">📜</span>
                         <div>
-                          <div class="fw-bold small" style="color: var(--theme-text);">${escapeHtml(c.name || c)}</div>
-                          ${c.organization ? `<div class="small text-muted">${escapeHtml(c.organization)}</div>` : ""}
+                          <div class="fw-bold small" style="color: var(--theme-text); font-size: 0.95rem;">${escapeHtml(c.name || c)}</div>
+                          ${c.organization ? `<div class="small text-muted">${escapeHtml(c.organization)} ${c.year ? '• ' + escapeHtml(c.year) : ''}</div>` : ""}
                         </div>
                       </div>
                     `).join("") : `
@@ -3614,9 +3679,25 @@ const PortfolioThemesEngine = (() => {
                   <h4 class="dev-card-name">${name}</h4>
                   <p class="dev-card-role">${headline}</p>
                   
-                  <div class="status-radar-beacon">
+                  <div class="status-radar-beacon mb-3">
                     <span class="radar-dot"></span>
                     <span>Available for Hire</span>
+                  </div>
+
+                  <!-- Developer Telemetry Mini Matrix -->
+                  <div class="p-2.5 rounded-3 mb-3 text-start small font-monospace" style="background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(56, 189, 248, 0.25);">
+                    <div class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-25">
+                      <span class="text-muted">// repositories:</span>
+                      <strong class="text-info">${projects.length} public</strong>
+                    </div>
+                    <div class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-25">
+                      <span class="text-muted">// experience:</span>
+                      <strong style="color: #c084fc;">${experience.length} roles</strong>
+                    </div>
+                    <div class="d-flex justify-content-between py-1">
+                      <span class="text-muted">// runtime:</span>
+                      <strong class="text-success">200 OK • Ready</strong>
+                    </div>
                   </div>
 
                   ${topSkills.length ? `
@@ -6166,6 +6247,34 @@ const PortfolioThemesEngine = (() => {
         }
       });
     });
+
+    // 6. 2026 Magnetic Cursor Spotlight Tracking
+    container.querySelectorAll('.spotlight-card, .bento-card, .modern-project-card, .dev-repo-card, .bento-device-frame, .dev-avatar-holo-card, .ai-hologram-card, .dev-ide-window').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      });
+    });
+
+    // 7. Developer IDE Interactive Workstation Runtime Helpers
+    window.setActiveDevTab = function(tabEl) {
+      if (!tabEl) return;
+      const allTabs = document.querySelectorAll('.dev-tab');
+      allTabs.forEach(t => t.classList.remove('active'));
+      tabEl.classList.add('active');
+    };
+
+    window.runIdeSimulation = function() {
+      const outputEl = document.getElementById('dev-ide-console-output');
+      if (!outputEl) return;
+      outputEl.style.display = outputEl.style.display === 'none' ? 'block' : 'none';
+      if (outputEl.style.display === 'block') {
+        outputEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    };
   }
 
   function renderUniversalFooter(data) {

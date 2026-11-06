@@ -4176,3 +4176,324 @@ body[data-bs-theme="dark"] .metrics-strip-enhanced {
   font-family: 'Fira Code', monospace;
   font-weight: 500;
 }
+
+/* ==============================================================
+   2026 NEXT-GEN MAGNETIC SPOTLIGHT BENTO & DEVICE FRAMES
+   ============================================================== */
+
+/* Spotlight Interactive Glowing Card */
+.spotlight-card {
+  position: relative;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+  box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+body[data-bs-theme="light"] .spotlight-card {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.spotlight-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    650px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(var(--theme-primary-rgb, 99, 102, 241), 0.22),
+    transparent 45%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  z-index: 1;
+}
+
+.spotlight-card:hover::before {
+  opacity: 1;
+}
+
+.spotlight-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(var(--theme-primary-rgb, 99, 102, 241), 0.5);
+  box-shadow: 
+    0 30px 60px -15px rgba(0, 0, 0, 0.75),
+    0 0 35px -5px rgba(var(--theme-primary-rgb, 99, 102, 241), 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+body[data-bs-theme="light"] .spotlight-card:hover {
+  box-shadow: 
+    0 30px 60px -15px rgba(0, 0, 0, 0.14),
+    0 0 35px -5px rgba(var(--theme-primary-rgb, 99, 102, 241), 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+/* Kinetic Gradient Typography */
+.kinetic-hero-headline {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 45%, var(--theme-primary, #6366f1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  text-shadow: 0 0 50px rgba(var(--theme-primary-rgb, 99, 102, 241), 0.25);
+}
+
+body[data-bs-theme="light"] .kinetic-hero-headline {
+  background: linear-gradient(135deg, #0f172a 0%, #334155 50%, var(--theme-primary, #4f46e5) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+}
+
+/* Status Radar Beacon with Dynamic Pulsing Dot */
+.bento-radar-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #34d399;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(8px);
+}
+
+.radar-ping-wrap {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.radar-ping-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #10b981;
+}
+.radar-ping-wave {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #10b981;
+  opacity: 0.75;
+  animation: radarWave 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes radarWave {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  75%, 100% { transform: scale(2.6); opacity: 0; }
+}
+
+/* Bento Holographic Talent Card */
+.bento-talent-card {
+  background: rgba(17, 24, 39, 0.85);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
+  padding: 2.25rem 1.75rem;
+  box-shadow: 
+    0 30px 70px -15px rgba(0, 0, 0, 0.7),
+    0 0 50px -10px rgba(var(--theme-primary-rgb, 99, 102, 241), 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+body[data-bs-theme="light"] .bento-talent-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 
+    0 30px 70px -15px rgba(0, 0, 0, 0.12),
+    0 0 50px -10px rgba(var(--theme-primary-rgb, 99, 102, 241), 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.bento-talent-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 
+    0 40px 90px -15px rgba(0, 0, 0, 0.85),
+    0 0 65px -5px rgba(var(--theme-primary-rgb, 99, 102, 241), 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+/* Flagship Mac Device Frame Mockup for Featured Projects */
+.bento-device-frame {
+  border-radius: 20px;
+  background: rgba(13, 17, 23, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 
+    0 25px 60px -15px rgba(0, 0, 0, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+body[data-bs-theme="light"] .bento-device-frame {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 
+    0 25px 60px -15px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.bento-device-frame:hover {
+  transform: translateY(-6px);
+  border-color: rgba(var(--theme-primary-rgb, 99, 102, 241), 0.5);
+  box-shadow: 
+    0 35px 80px -10px rgba(0, 0, 0, 0.85),
+    0 0 45px rgba(var(--theme-primary-rgb, 99, 102, 241), 0.25);
+}
+
+.device-mac-bar {
+  background: rgba(22, 27, 34, 0.95);
+  padding: 11px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body[data-bs-theme="light"] .device-mac-bar {
+  background: rgba(241, 245, 249, 0.95);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.device-url-capsule {
+  flex-grow: 1;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-family: 'Fira Code', monospace;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body[data-bs-theme="light"] .device-url-capsule {
+  background: #ffffff;
+  border-color: rgba(203, 213, 225, 0.8);
+  color: #475569;
+}
+
+.device-preview-stage {
+  padding: 1.75rem;
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.85) 100%);
+  position: relative;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+body[data-bs-theme="light"] .device-preview-stage {
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+}
+
+/* Bento Quick Highlights Chips */
+.bento-stat-chip-2026 {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.2s ease;
+}
+
+body[data-bs-theme="light"] .bento-stat-chip-2026 {
+  background: rgba(241, 245, 249, 0.7);
+  border-color: rgba(226, 232, 240, 0.8);
+}
+
+.bento-stat-chip-2026:hover {
+  background: rgba(var(--theme-primary-rgb, 99, 102, 241), 0.12);
+  border-color: rgba(var(--theme-primary-rgb, 99, 102, 241), 0.35);
+  transform: translateX(4px);
+}
+
+/* Categorized Tech Capsules */
+.bento-tech-capsule {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 16px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f1f5f9;
+  font-size: 0.84rem;
+  font-weight: 600;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(8px);
+}
+
+body[data-bs-theme="light"] .bento-tech-capsule {
+  background: rgba(241, 245, 249, 0.8);
+  border-color: rgba(203, 213, 225, 0.8);
+  color: #1e293b;
+}
+
+.bento-tech-capsule:hover {
+  background: rgba(var(--theme-primary-rgb, 99, 102, 241), 0.22);
+  border-color: rgba(var(--theme-primary-rgb, 99, 102, 241), 0.55);
+  color: #ffffff;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(var(--theme-primary-rgb, 99, 102, 241), 0.35);
+}
+
+/* Timeline Connection Node 2026 */
+.bento-timeline-node {
+  position: relative;
+  padding-left: 28px;
+  padding-bottom: 2rem;
+  border-left: 2px solid rgba(var(--theme-primary-rgb, 99, 102, 241), 0.3);
+}
+.bento-timeline-node:last-child {
+  border-left: 2px solid transparent;
+  padding-bottom: 0;
+}
+.bento-timeline-beacon {
+  position: absolute;
+  left: -8px;
+  top: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--theme-primary, #6366f1);
+  border: 3px solid rgba(15, 23, 42, 0.95);
+  box-shadow: 0 0 12px rgba(var(--theme-primary-rgb, 99, 102, 241), 0.7);
+}
+body[data-bs-theme="light"] .bento-timeline-beacon {
+  border-color: #ffffff;
+}
