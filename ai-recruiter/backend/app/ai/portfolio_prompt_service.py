@@ -22,38 +22,36 @@ logger = logging.getLogger("ai_recruiter.portfolio_prompt")
 
 # Curated Theme & Style mapping suggestions based on prompt keywords
 THEME_PRESETS_BY_KEYWORD = {
-    # High-Priority Intent Phrases (Modern, Professional, Clean, Neat, Well-Organized Websites)
-    "handcrafted": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "hand-crafted": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "hand crafted": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "experienced web designer": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "experienced designer": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "web designer": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "manually designed": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "not a template": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "not like a template": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    # Hand-Crafted & Bespoke Designer Layout Archetypes (Artisanal, High-Aesthetic Studio Quality)
+    "handcrafted": {"theme_id": "saas_craft", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "hand-crafted": {"theme_id": "saas_craft", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "hand crafted": {"theme_id": "saas_craft", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "experienced web designer": {"theme_id": "saas_craft", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "experienced designer": {"theme_id": "saas_craft", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "web designer": {"theme_id": "saas_craft", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "manually designed": {"theme_id": "saas_craft", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "not a template": {"theme_id": "saas_prism", "layout": "split_screen", "font": "Plus Jakarta Sans", "primary_color": "#6366f1", "secondary_color": "#ec4899", "dark_mode": True, "bg": "mesh", "mask": "mask-studio-bento"},
+    "not like a template": {"theme_id": "saas_prism", "layout": "split_screen", "font": "Plus Jakarta Sans", "primary_color": "#6366f1", "secondary_color": "#ec4899", "dark_mode": True, "bg": "mesh", "mask": "mask-studio-bento"},
+    "unique layout": {"theme_id": "saas_prism", "layout": "split_screen", "font": "Plus Jakarta Sans", "primary_color": "#6366f1", "secondary_color": "#ec4899", "dark_mode": True, "bg": "mesh", "mask": "mask-studio-bento"},
+    "unique design": {"theme_id": "saas_prism", "layout": "split_screen", "font": "Plus Jakarta Sans", "primary_color": "#6366f1", "secondary_color": "#ec4899", "dark_mode": True, "bg": "mesh", "mask": "mask-studio-bento"},
+    "creative studio": {"theme_id": "creative_editorial_art", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "creative neo-studio": {"theme_id": "creative_editorial_art", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "neo-studio": {"theme_id": "creative_editorial_art", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "creative": {"theme_id": "creative_editorial_art", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": False, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "split screen": {"theme_id": "saas_prism", "layout": "split_screen", "font": "Plus Jakarta Sans", "primary_color": "#f43f5e", "secondary_color": "#7c3aed", "dark_mode": True, "bg": "mesh", "mask": "mask-studio-bento"},
+    "split-screen": {"theme_id": "saas_prism", "layout": "split_screen", "font": "Plus Jakarta Sans", "primary_color": "#f43f5e", "secondary_color": "#7c3aed", "dark_mode": True, "bg": "mesh", "mask": "mask-studio-bento"},
+    "split": {"theme_id": "saas_prism", "layout": "split_screen", "font": "Plus Jakarta Sans", "primary_color": "#f43f5e", "secondary_color": "#7c3aed", "dark_mode": True, "bg": "mesh", "mask": "mask-studio-bento"},
+
+    # Modern & Clean SaaS Bento Archetypes
+    "bento": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#10b981", "dark_mode": True, "bg": "mesh", "mask": "mask-studio-bento"},
+    "modern bento": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#10b981", "dark_mode": True, "bg": "mesh", "mask": "mask-studio-bento"},
+    "linear": {"theme_id": "linear_noir", "layout": "modern", "font": "Inter", "primary_color": "#5e6ad2", "secondary_color": "#a5b4fc", "dark_mode": True, "bg": "dots", "mask": "mask-studio-bento"},
+    "stripe": {"theme_id": "saas_stripe", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#635bff", "secondary_color": "#00d4ff", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
     "clean": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
     "neat": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
     "well-organized": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
     "well organized": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
     "polished": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "polished layout": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "excellent presentation": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "visually appealing": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "clean, neat, professional": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "clean and neat": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "modern professional": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "modern, professional": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "modern website": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "professional website": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "unique design": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "unique layout": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "clean and responsive": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "responsive user interface": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "visually attractive": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "impressive": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "attractive": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
-    "bento": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
     "modern": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
     "professional": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
 
@@ -567,38 +565,33 @@ def generate_single_prompt_portfolio_with_gemini(
     system_instruction = (
         "You are Gemini AI, the world's most elite AI Portfolio Architect and Principal Creative Director.\n"
         "Your mission is to deeply analyze the user's natural language creation prompt and synthesize a stunning, modern, bespoke portfolio website specification.\n\n"
-        "=== PRIMARY DIRECTIVE: USER CREATION PROMPT ===\n"
-        "The user's prompt is your PRIMARY directive for:\n"
-        "- Role & Professional Identity (e.g. Full Stack Developer, AI/ML Specialist, Cloud Architect, Creative Technologist)\n"
-        "- Layout Architecture: choose the ideal archetype:\n"
-        "    * 'modern': high-impact SaaS bento grid, clean responsive cards, impressive modern look\n"
-        "    * 'developer': terminal/IDE code window, dark matrix aesthetic, CLI vibe\n"
-        "    * 'ai_tech': cyberpunk neural HUD, glowing neon accents, futuristic data badges\n"
-        "    * 'minimal': Swiss typographic grid, monochrome elegance, hairline borders\n"
-        "    * 'corporate': executive two-column briefing, enterprise prestige\n"
-        "    * 'creative': vibrant artistic studio, pop-art badges, bold typography\n"
-        "    * 'dark': dark luxury obsidian glassmorphism, carbon backdrop\n"
-        "    * 'split_screen': modern hero with dual-panel showcase\n"
-        "    * 'nova': editorial agency magazine aesthetic\n"
-        "- Visual Mood & Colors: extract exact hex colors matching prompt or role mood (e.g. #4f46e5 indigo, #06b6d4 cyan, #10b981 emerald, #f97316 orange, #8b5cf6 violet)\n"
+        "=== HAND-CRAFTED DESIGNER EXCELLENCE & BESPOKE QUALITY ===\n"
+        "1. Every portfolio generated MUST feel and look like a professionally hand-crafted website, as if manually designed and developed by an experienced principal web designer (Awwwards / Linear / Stripe caliber).\n"
+        "2. STRICTLY AVOID generic, cookie-cutter AI templates. Each portfolio MUST have a unique, modern, creative, and visually appealing layout tailored to the candidate's engineering persona.\n"
+        "3. DO NOT default every portfolio to 'modern' with indigo/cyan! Choose the archetype and palette that best expresses the candidate's authentic persona:\n"
+        "    * 'creative': for creative technologists, frontend engineers, UI/UX designers, or when requested 'handcrafted', 'web designer', 'creative layout', 'unique layout'. Pair with warm sunset terracotta (#f97316) / amethyst (#8b5cf6) or duotone rose (#f43f5e) / violet (#7c3aed), Outfit font, and asymmetric pill masks.\n"
+        "    * 'split_screen': 50/50 dual-panel layout with sticky hero on left and scrolling case studies on right. Ideal for full-stack product engineers. Pair with vivid accents like rose (#f43f5e) / purple (#7c3aed) or indigo / cyan.\n"
+        "    * 'developer': terminal/IDE code window, dark matrix carbon aesthetic, monospace Fira Code, live git commit telemetry. Ideal for backend, systems, and DevOps engineers.\n"
+        "    * 'ai_tech': cyberpunk neural HUD, glowing neon cyan (#00e5ff) and hyper-violet (#a855f7) accents, futuristic data telemetry.\n"
+        "    * 'dark': dark luxury obsidian titanium, deep OLED black with subtle ultraviolet/sky micro-borders.\n"
+        "    * 'minimal': Swiss typographic monograph with high contrast, monochrome and vivid vermilion (#e11d48) accent.\n"
+        "    * 'corporate': executive two-column briefing, enterprise prestige in deep navy (#0f172a) and champagne gold (#f59e0b).\n"
+        "    * 'modern': high-impact SaaS bento grid with kinetic glass cards.\n"
+        "    * 'nova': boutique editorial agency magazine aesthetic with warm sand and teal accents.\n"
+        "- Visual Mood & Colors: extract exact hex colors matching prompt or role mood. Ensure strong visual identity.\n"
         "- Typography: Plus Jakarta Sans | Inter | Outfit | Fira Code | Poppins\n"
         "- Card & Button Styling: card_style: 'glass' | 'flat' | 'elevated' | 'bordered'; button_style: 'rounded' | 'pill' | 'sharp' | 'glow'\n"
         "- Portrait Mask: 'mask-studio-bento' | 'mask-arch' | 'mask-corner-curve' | 'mask-pebble' | 'mask-asymmetric-pill'\n"
         "- Background Style: 'mesh' | 'grid' | 'dots' | 'clean'\n"
         "- Dark Mode: boolean true/false based on prompt intent\n"
-        "- Narrative Tone & About Section: craft a bespoke, compelling 2-3 paragraph professional story matching the prompt's tone\n"
-        "- 4 High-Impact Quantified Metrics: derived from authentic accomplishments\n"
+        "- Narrative Tone & About Section: craft an authentic, human-authored 2-3 paragraph professional story that emphasizes real engineering decisions, architectural trade-offs, and measurable outcomes. BAN generic buzzwords ('passionate problem solver', 'leveraging synergies').\n"
+        "- 4 High-Impact Quantified Metrics: derived from authentic accomplishments with concrete units (e.g. '99.99% Uptime', '14M+ Daily Events', '45ms P99 Latency', '12k+ GitHub Stars').\n"
         "- 3 Core Value Proposition Services / Pillars: demonstrating technical offering\n\n"
         "=== FACTUAL GROUNDING RULES (Rule 21) ===\n"
         "1. Strictly preserve all authentic employer names, genuine job titles, genuine university degrees, and genuine projects from the candidate context.\n"
         "2. NEVER invent fake companies or fictitious academic credentials.\n"
         "3. Preserve all real project URLs (live demos, GitHub links) without fabricating fictional links.\n"
         "4. Seamlessly blend the user's prompt desires with the candidate's authentic career history.\n\n"
-        "=== GOLD STANDARD PRESENTATION & CLEAN DESIGN RULES ===\n"
-        "1. Every portfolio generated MUST have a clean, neat, professional, well-organized, and visually appealing design.\n"
-        "2. Ensure polished layout architecture, harmonious color contrast, balanced whitespace, and excellent presentation.\n"
-        "3. Organize skills cleanly into 3-4 distinct technical competencies (e.g. Frontend Architecture, Backend & Distributed Systems, Cloud & DevOps, Core Engineering).\n"
-        "4. For featured projects, provide clear, concise, impactful descriptions highlighting business value and real technical outcomes.\n"
         "OUTPUT REQUIREMENT: Return ONLY a valid JSON object matching the exact schema below. No markdown backticks, no markdown code block, no preamble.\n\n"
         "JSON SCHEMA:\n"
         "{\n"
@@ -745,6 +738,22 @@ def _normalize_generated_portfolio(
 
     theme_id = data.get("theme_id") or "modern"
     layout = data.get("layout") or "modern"
+    theme_id = data.get("theme_id")
+    if not theme_id or (theme_id == "modern" and layout != "modern"):
+        layout_to_theme = {
+            "creative": "saas_craft",
+            "split_screen": "saas_prism",
+            "developer": "tech_matrix",
+            "ai_tech": "ai_tech",
+            "dark": "dark_obsidian",
+            "minimal": "swiss_zurich",
+            "corporate": "exec_enterprise_cto",
+            "nova": "editorial",
+            "timeline": "timeline_journey",
+            "dashboard": "dashboard",
+        }
+        theme_id = layout_to_theme.get(layout, "modern")
+
     primary_color = data.get("primary_color") or "#4f46e5"
     secondary_color = data.get("secondary_color") or "#06b6d4"
     font = data.get("font") or "Plus Jakarta Sans"
@@ -761,6 +770,27 @@ def _normalize_generated_portfolio(
                     "label": str(m["label"]),
                     "icon": m.get("icon") or "⚡",
                 })
+    if not impact_metrics and candidate_context:
+        try:
+            cand_role = candidate_context.get("headline") or candidate_context.get("professional_headline") or "Software Engineer"
+            cand_skills = candidate_context.get("skills") or []
+            flat_sk = []
+            if isinstance(cand_skills, dict):
+                for sub in cand_skills.values():
+                    flat_sk.extend(sub if isinstance(sub, list) else [sub])
+            elif isinstance(cand_skills, list):
+                flat_sk = cand_skills
+            exp_yrs = float(candidate_context.get("experience_years", 0.0)) if candidate_context.get("experience_years") else 0.0
+            cand_projs = candidate_context.get("projects") or []
+            impact_metrics = generate_impact_metrics(
+                role=cand_role,
+                skills=flat_sk,
+                experience_years=exp_yrs,
+                project_count=len(cand_projs) if isinstance(cand_projs, list) else 0,
+                verified_metrics=candidate_context.get("metrics_and_impact"),
+            )
+        except Exception:
+            impact_metrics = []
 
     # Skills
     raw_skills = data.get("skills") or {}
@@ -832,6 +862,24 @@ def _normalize_generated_portfolio(
                     "description": s.get("description") or "",
                     "icon": s.get("icon") or "💡",
                 })
+    if not services and candidate_context:
+        try:
+            cand_role = candidate_context.get("headline") or candidate_context.get("professional_headline") or "Software Engineer"
+            cand_skills = candidate_context.get("skills") or []
+            flat_sk = []
+            if isinstance(cand_skills, dict):
+                for sub in cand_skills.values():
+                    flat_sk.extend(sub if isinstance(sub, list) else [sub])
+            elif isinstance(cand_skills, list):
+                flat_sk = cand_skills
+            exp_yrs = float(candidate_context.get("experience_years", 0.0)) if candidate_context.get("experience_years") else 0.0
+            services = generate_value_services(
+                role=cand_role,
+                skills=flat_sk,
+                experience_years=exp_yrs,
+            )
+        except Exception:
+            services = []
 
     # Education — strictly from resume, NEVER inject fake universities
     raw_edu = data.get("education") or []
@@ -934,30 +982,47 @@ def _generate_deterministic_portfolio(
     if not matched_preset:
         matched_preset = THEME_PRESETS_BY_KEYWORD["modern"]
 
-    # 1. Layout detection
-    if any(k in p_lower for k in [
-        "modern, professional", "modern professional", "modern website", "professional website",
-        "unique design", "unique layout", "clean and responsive", "responsive user interface",
-        "visually attractive", "impressive", "attractive", "modern", "professional",
-        "bento", "modular", "apple", "linear", "clean"
-    ]):
-        layout = "modern"
-    elif any(k in p_lower for k in ["terminal", "ide", "hacker", "developer workstation", "cli interface"]):
-        layout = "developer"
-    elif any(k in p_lower for k in ["neural hud", "ai tech", "cyber telemetry", "futuristic", "hud", "telemetry", "cyberpunk"]):
-        layout = "ai_tech"
-    elif any(k in p_lower for k in ["split screen", "split-screen", "dual panel"]):
+    # 1. Specialized layout archetypes (Checked first to prevent generic "clean"/"modern" over-matching)
+    if any(k in p_lower for k in ["split screen", "split-screen", "split", "dual panel", "two panel", "two-column hero"]):
         layout = "split_screen"
-    elif any(k in p_lower for k in ["swiss", "minimalist", "minimal monograph", "monograph"]):
-        layout = "minimal"
-    elif any(k in p_lower for k in ["corporate", "briefing", "2-column", "executive briefing", "dossier"]):
-        layout = "corporate"
-    elif any(k in p_lower for k in ["creative studio", "neo-display", "pop art"]):
+    elif any(k in p_lower for k in ["terminal", "ide", "hacker", "developer workstation", "cli", "code aesthetic", "monospace", "github"]):
+        layout = "developer"
+    elif any(k in p_lower for k in ["neural hud", "ai tech", "cyber telemetry", "futuristic", "hud", "telemetry", "cyberpunk", "holographic"]):
+        layout = "ai_tech"
+    elif any(k in p_lower for k in ["creative studio", "neo-display", "neo-studio", "pop art", "avant-garde", "creative", "artistic", "terracotta"]):
         layout = "creative"
-    elif any(k in p_lower for k in ["dark luxury", "oled", "midnight"]):
+    elif any(k in p_lower for k in ["swiss", "minimalist", "minimal monograph", "monograph", "bauhaus", "hairline"]):
+        layout = "minimal"
+    elif any(k in p_lower for k in ["corporate", "briefing", "2-column", "executive briefing", "dossier", "leadership", "boardroom"]):
+        layout = "corporate"
+    elif any(k in p_lower for k in ["dark luxury", "oled", "midnight", "obsidian", "carbon"]):
         layout = "dark"
-    elif any(k in p_lower for k in ["nova", "editorial", "boutique", "agency"]):
+    elif any(k in p_lower for k in ["nova", "editorial", "boutique", "magazine"]):
         layout = "nova"
+    elif any(k in p_lower for k in ["timeline", "journey", "chronicle"]):
+        layout = "timeline"
+    elif any(k in p_lower for k in ["dashboard", "cockpit", "analytics lab"]):
+        layout = "dashboard"
+    elif any(k in p_lower for k in [
+        "handcrafted", "hand-crafted", "hand crafted", "experienced web designer", "experienced designer",
+        "web designer", "not a template", "not like a template", "unique, modern, creative", "unique layout",
+        "creative and visually appealing", "manually designed"
+    ]):
+        # Dynamic hand-crafted layout assignment based on candidate context
+        cand_text = f"{candidate_name} {candidate_context.get('headline', '') if candidate_context else ''} {candidate_context.get('skills', '') if candidate_context else ''}".lower()
+        if any(w in cand_text for w in ["front", "design", "ui", "ux", "creative", "web", "react"]):
+            layout = "creative"
+        elif any(w in cand_text for w in ["ai", "machine learning", "data", "deep learning"]):
+            layout = "ai_tech"
+        elif any(w in cand_text for w in ["back", "system", "devops", "cloud", "python", "golang", "java"]):
+            layout = "developer"
+        elif any(w in cand_text for w in ["lead", "manager", "product", "director", "exec"]):
+            layout = "corporate"
+        else:
+            cand_seed = abs(hash(f"{candidate_name}_{prompt}"))
+            layout = ["creative", "split_screen", "dark", "modern", "nova"][cand_seed % 5]
+    elif any(k in p_lower for k in ["bento", "modular", "apple", "linear", "modern bento"]):
+        layout = "modern"
     else:
         layout = matched_preset.get("layout", "modern")
 
@@ -1135,8 +1200,71 @@ def _generate_deterministic_portfolio(
         role = ""
         skills = {}
 
+    # Align theme_id and design tokens with chosen layout archetype
+    layout_theme_defaults = {
+        "creative": {"theme_id": "saas_craft", "font": "Outfit", "button_style": "pill", "card_style": "glass", "mask": "mask-asymmetric-pill"},
+        "split_screen": {"theme_id": "saas_prism", "font": "Plus Jakarta Sans", "button_style": "rounded", "card_style": "glass", "mask": "mask-studio-bento"},
+        "developer": {"theme_id": "tech_matrix", "font": "Fira Code", "button_style": "sharp", "card_style": "bordered", "mask": "mask-studio-bento"},
+        "ai_tech": {"theme_id": "ai_tech", "font": "Plus Jakarta Sans", "button_style": "glow", "card_style": "glass", "mask": "mask-corner-curve"},
+        "dark": {"theme_id": "dark_obsidian", "font": "Inter", "button_style": "rounded", "card_style": "glass", "mask": "mask-studio-bento"},
+        "minimal": {"theme_id": "swiss_zurich", "font": "Inter", "button_style": "rounded", "card_style": "flat", "mask": "mask-arch"},
+        "corporate": {"theme_id": "exec_enterprise_cto", "font": "Plus Jakarta Sans", "button_style": "sharp", "card_style": "elevated", "mask": "mask-arch"},
+        "nova": {"theme_id": "editorial", "font": "Plus Jakarta Sans", "button_style": "rounded", "card_style": "glass", "mask": "mask-pebble"},
+        "timeline": {"theme_id": "timeline_journey", "font": "Plus Jakarta Sans", "button_style": "rounded", "card_style": "glass", "mask": "mask-pebble"},
+        "dashboard": {"theme_id": "dashboard", "font": "Plus Jakarta Sans", "button_style": "rounded", "card_style": "bordered", "mask": "mask-studio-bento"},
+        "modern": {"theme_id": matched_preset.get("theme_id", "modern"), "font": matched_preset.get("font", "Plus Jakarta Sans"), "button_style": "rounded", "card_style": "glass", "mask": "mask-studio-bento"},
+    }
+    cur_layout_config = layout_theme_defaults.get(layout, layout_theme_defaults["modern"])
+    chosen_theme_id = cur_layout_config["theme_id"]
+    chosen_font = cur_layout_config["font"]
+    chosen_btn_style = cur_layout_config["button_style"]
+    chosen_card_style = cur_layout_config["card_style"]
+    if portrait_mask == "mask-pebble":
+        portrait_mask = cur_layout_config["mask"]
+
+    # Auto generate metrics & services from candidate context if missing
+    if not achievements and candidate_context:
+        try:
+            cand_role = candidate_context.get("headline") or candidate_context.get("professional_headline") or role or "Software Engineer"
+            cand_skills = candidate_context.get("skills") or []
+            flat_sk = []
+            if isinstance(cand_skills, dict):
+                for sub in cand_skills.values():
+                    flat_sk.extend(sub if isinstance(sub, list) else [sub])
+            elif isinstance(cand_skills, list):
+                flat_sk = cand_skills
+            exp_yrs = float(candidate_context.get("experience_years", 0.0)) if candidate_context.get("experience_years") else 0.0
+            cand_projs = candidate_context.get("projects") or projects or []
+            achievements = generate_impact_metrics(
+                role=cand_role,
+                skills=flat_sk,
+                experience_years=exp_yrs,
+                project_count=len(cand_projs) if isinstance(cand_projs, list) else 0,
+                verified_metrics=candidate_context.get("metrics_and_impact"),
+            )
+        except Exception:
+            achievements = []
+    if not services and candidate_context:
+        try:
+            cand_role = candidate_context.get("headline") or candidate_context.get("professional_headline") or "Software Engineer"
+            cand_skills = candidate_context.get("skills") or []
+            flat_sk = []
+            if isinstance(cand_skills, dict):
+                for sub in cand_skills.values():
+                    flat_sk.extend(sub if isinstance(sub, list) else [sub])
+            elif isinstance(cand_skills, list):
+                flat_sk = cand_skills
+            exp_yrs = float(candidate_context.get("experience_years", 0.0)) if candidate_context.get("experience_years") else 0.0
+            services = generate_value_services(
+                role=cand_role,
+                skills=flat_sk,
+                experience_years=exp_yrs,
+            )
+        except Exception:
+            services = []
+
     slug_base = re.sub(r"[^a-z0-9\-]+", "-", candidate_name.lower().replace(" ", "-")).strip("-") or "candidate"
-    slug = f"{slug_base}-{matched_preset['theme_id']}"
+    slug = f"{slug_base}-{chosen_theme_id}"
 
     return {
         "full_name": candidate_name,
@@ -1153,16 +1281,16 @@ def _generate_deterministic_portfolio(
             f"seamless user experience, and continuous innovation, I thrive on solving complex engineering challenges."
         ) if role else "",
         "domain": domain,
-        "theme_id": matched_preset["theme_id"],
+        "theme_id": chosen_theme_id,
         "primary_color": primary_color,
         "secondary_color": secondary_color,
-        "font": matched_preset["font"],
+        "font": chosen_font,
         "background_style": matched_preset["bg"],
         "background_image": bg_image,
         "portrait_mask": portrait_mask,
         "custom_css": json.dumps({"portrait_mask": portrait_mask}),
-        "card_style": "glass" if dark_mode else "elevated",
-        "button_style": "rounded",
+        "card_style": chosen_card_style,
+        "button_style": chosen_btn_style,
         "dark_mode": dark_mode,
         "layout": layout,
         "impact_metrics": achievements if achievements else [],

@@ -828,6 +828,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       dark_mode: true,
       animation: "🌊 Parallax Dual-Scroll & Frosted Glass",
       prompt: "Create a modern 50/50 Split-Screen portfolio for a Full-Stack Product Builder. Feature a sticky personal brand hero on the left with glowing social links and dynamic availability badge, and an immersive scrollable project showcase on the right with frosted glass refraction, live demo popovers, and smooth parallax depth scrolling."
+    },
+    {
+      id: "handcrafted-designer",
+      category: "creative",
+      name: "Hand-Crafted Web Designer",
+      badge: "Bespoke Studio • Fluid Aesthetics",
+      icon: "✨",
+      layout: "creative",
+      theme_id: "saas_craft",
+      primary_color: "#f97316",
+      secondary_color: "#8b5cf6",
+      ambient_color: "#0f172a",
+      dark_mode: true,
+      animation: "💫 Fluid Micro-Interactions & Specular Glass",
+      prompt: "Create an award-winning, professionally hand-crafted portfolio website as if manually designed and developed by an experienced principal web designer. Use an expressive, modern layout with bespoke typography, glassmorphic cards, warm studio gradients, quantified engineering metrics, and showcase my authentic projects with live links."
     }
   ];
 

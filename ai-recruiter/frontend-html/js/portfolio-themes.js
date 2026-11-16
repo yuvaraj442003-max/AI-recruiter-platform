@@ -3265,6 +3265,10 @@ const PortfolioThemesEngine = (() => {
             <div class="col-lg-8 animate-fade-in-up">
               <!-- Location & Opportunity Status Radar Badge -->
               <div class="hero-meta-badge-wrap d-flex flex-wrap align-items-center gap-2 mb-3">
+                <span class="handcrafted-designer-pill">
+                  <span class="handcrafted-pulsing-dot"></span>
+                  ✦ Hand-Crafted • Verified
+                </span>
                 <div class="bento-radar-badge">
                   <span class="radar-ping-wrap">
                     <span class="radar-ping-wave"></span>
@@ -4042,6 +4046,12 @@ const PortfolioThemesEngine = (() => {
         <section class="mb-5 pb-4" id="section-home">
           <div class="row align-items-center g-4">
             <div class="col-lg-8">
+              <div class="d-inline-flex align-items-center mb-3">
+                <span class="handcrafted-designer-pill">
+                  <span class="handcrafted-pulsing-dot"></span>
+                  ✦ Hand-Crafted • Bespoke Studio
+                </span>
+              </div>
               <h1 class="creative-hero-title mb-2 d-block w-100">
                 Hello, I'm <span style="background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${name}</span>.
               </h1>
@@ -5447,7 +5457,13 @@ const PortfolioThemesEngine = (() => {
           <div class="col-lg-5">
             <div class="split-sticky-sidebar split-hero-card" id="section-home">
               <div class="mb-3">
-                <img src="${avatar}" alt="${name}" class="rounded-4 mb-3 border shadow-sm" style="width: 120px; height: 120px; object-fit: cover;" />
+                <div class="d-inline-flex align-items-center mb-3">
+                  <span class="handcrafted-designer-pill">
+                    <span class="handcrafted-pulsing-dot"></span>
+                    ✦ Hand-Crafted • Verified Portfolio
+                  </span>
+                </div>
+                ${renderCandidateAvatar(data, 120, "mb-3")}
                 <h1 class="display-6 fw-bold mb-1" style="color: var(--theme-text);">${name}</h1>
                 ${loc ? `<div class="d-inline-flex align-items-center gap-1 small text-muted mb-2">📍 ${loc}</div>` : ""}
                 <p class="lead text-muted fs-6 mb-3">${headline}</p>
