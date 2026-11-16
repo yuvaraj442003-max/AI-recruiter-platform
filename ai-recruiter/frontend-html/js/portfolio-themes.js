@@ -3569,147 +3569,268 @@ const PortfolioThemesEngine = (() => {
     const certs = data.certifications || [];
     const safeSlug = escapeHtml(data.slug || (name ? name.toLowerCase().replace(/[^a-z0-9]/g, "-") : "candidate"));
 
+    const firstName = name.split(" ")[0] || "Developer";
     const initials = name.split(" ").filter(Boolean).map(n => n[0]).join("").slice(0, 2).toUpperCase() || "KT";
     const rawSkillsList = Array.isArray(skills) ? skills : Object.values(skills).flat();
-    const topSkills = rawSkillsList.slice(0, 5);
+    const topSkills = rawSkillsList.slice(0, 6);
 
     let html = `
-      <!-- IDE Window Chrome -->
-      <div class="container py-4">
-        <div class="dev-ide-window">
+      <!-- Ambient Studio Mesh Layer -->
+      <div class="portfolio-ambient-aurora">
+        <div class="aurora-orb aurora-orb-1"></div>
+        <div class="aurora-orb aurora-orb-2"></div>
+        <div class="aurora-orb aurora-orb-3"></div>
+      </div>
+      <div class="portfolio-ambient-grid"></div>
+
+      <div class="container py-4 position-relative" style="z-index: 2;">
+        <!-- Flagship Developer IDE Workstation Window -->
+        <div class="dev-ide-window mb-5 shadow-lg">
           <!-- Window Title Bar -->
           <div class="dev-window-bar">
             <div class="dev-window-dots">
               <span class="dev-dot dev-dot-red" title="Close"></span>
               <span class="dev-dot dev-dot-yellow" title="Minimize"></span>
               <span class="dev-dot dev-dot-green" title="Expand"></span>
-              <span class="ms-2 dev-window-title">craft-os ~ /src/portfolio/<span class="dev-file-active">${safeSlug}.tsx</span></span>
+              <span class="ms-2 dev-window-title d-none d-sm-inline">code-studio ~ /src/portfolio/<span class="dev-file-active">${safeSlug}.tsx</span></span>
             </div>
             <div class="dev-window-branch">
-              <span>⌥ git:(main)*</span>
-              <span>•</span>
+              <span class="d-none d-md-inline">⌥ git:(main)*</span>
+              <span class="d-none d-md-inline">•</span>
               <span class="status-radar-beacon py-0 px-2.5 my-0" style="font-size: 0.72rem;">
                 <span class="radar-dot"></span> Available for Hire
               </span>
             </div>
           </div>
 
-          <!-- File Editor Tabs -->
-          <div class="dev-file-tabs">
-            <a href="#section-home" class="dev-tab active" onclick="window.setActiveDevTab && window.setActiveDevTab(this)">
-              <span>🔷</span> Profile.tsx
-            </a>
-            <a href="#section-about" class="dev-tab" onclick="window.setActiveDevTab && window.setActiveDevTab(this)">
-              <span>📄</span> about.md
-            </a>
-            <a href="#section-skills" class="dev-tab" onclick="window.setActiveDevTab && window.setActiveDevTab(this)">
-              <span>📦</span> dependencies.json
-            </a>
-            <a href="#section-projects" class="dev-tab" onclick="window.setActiveDevTab && window.setActiveDevTab(this)">
-              <span>🚀</span> repositories.rs
-            </a>
-            <a href="#section-experience" class="dev-tab" onclick="window.setActiveDevTab && window.setActiveDevTab(this)">
-              <span>🪵</span> git-log.sh
-            </a>
-            <a href="#section-contact" class="dev-tab" onclick="window.setActiveDevTab && window.setActiveDevTab(this)">
-              <span>⚡</span> ping.cli
-            </a>
-          </div>
+          <!-- IDE Workbench Multi-Panel Frame -->
+          <div class="vscode-workbench">
+            <!-- Activity Bar (Desktop Only) -->
+            <div class="vscode-activity-bar d-none d-lg-flex">
+              <div class="vscode-activity-icon active" title="Explorer (Ctrl+Shift+E)">📁</div>
+              <div class="vscode-activity-icon" title="Search (Ctrl+Shift+F)">🔍</div>
+              <div class="vscode-activity-icon" title="Source Control (Ctrl+Shift+G)">⌥</div>
+              <div class="vscode-activity-icon" title="Run and Debug (Ctrl+Shift+D)">▶</div>
+              <div class="vscode-activity-icon" title="Extensions">🧩</div>
+              <div class="vscode-activity-icon mt-auto" title="Settings">⚙️</div>
+            </div>
 
-          <!-- Code Hero Block -->
-          <div class="dev-code-editor" id="section-home">
-            <div class="row align-items-center g-4">
-              <div class="col-lg-8">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                  <span class="dev-comment">// High-Performance Technical Profile &amp; Architecture Spec</span>
-                  <span class="badge border border-info border-opacity-30 text-info small" style="font-size: 0.72rem; background: rgba(56, 189, 248, 0.1);">TypeScript 5.5 • Strict Mode</span>
+            <!-- File Explorer Sidebar (Desktop Only) -->
+            <div class="vscode-sidebar d-none d-xl-flex">
+              <div class="vscode-sidebar-header">Explorer: portfolio-v2026</div>
+              <div class="vscode-sidebar-section">
+                <div class="vscode-sidebar-section-title">▼ src/portfolio</div>
+                <div class="vscode-filetree-item active" onclick="window.setActiveDevTab && window.setActiveDevTab(this, 'section-home')">
+                  <span class="ft-icon" style="color: #38bdf8;">🔷</span>
+                  <span>Profile.tsx</span>
+                  <span class="ft-modified" title="Modified"></span>
                 </div>
-                <div><span class="dev-line-num">1</span><span class="dev-keyword">export interface</span> <span class="dev-type">DeveloperProfile</span> {</div>
-                <div><span class="dev-line-num">2</span>  <span class="dev-keyword">readonly</span> <span class="dev-prop">name</span>: <span class="dev-type">string</span>;</div>
-                <div><span class="dev-line-num">3</span>  <span class="dev-keyword">readonly</span> <span class="dev-prop">role</span>: <span class="dev-type">string</span>;</div>
-                <div><span class="dev-line-num">4</span>  <span class="dev-keyword">readonly</span> <span class="dev-prop">location</span>: <span class="dev-type">string</span>;</div>
-                <div><span class="dev-line-num">5</span>  <span class="dev-keyword">readonly</span> <span class="dev-prop">availability</span>: <span class="dev-str">"Immediate"</span> | <span class="dev-str">"Relocation"</span>;</div>
-                <div><span class="dev-line-num">6</span>  <span class="dev-keyword">readonly</span> <span class="dev-prop">coreStack</span>: <span class="dev-type">string[]</span>;</div>
-                <div><span class="dev-line-num">7</span>}</div>
-                <div class="mt-2"><span class="dev-line-num">8</span><span class="dev-keyword">export const</span> <span class="dev-prop">developer</span>: <span class="dev-type">DeveloperProfile</span> = {</div>
-                <div><span class="dev-line-num">9</span>  <span class="dev-prop">name</span>: <span class="dev-str">"${name}"</span>,</div>
-                <div><span class="dev-line-num">10</span>  <span class="dev-prop">role</span>: <span class="dev-str">"${headline}"</span>,</div>
-                <div><span class="dev-line-num">11</span>  <span class="dev-prop">location</span>: <span class="dev-str">"${loc}"</span>,</div>
-                <div><span class="dev-line-num">12</span>  <span class="dev-prop">availability</span>: <span class="dev-str">"Immediate"</span>,</div>
-                <div><span class="dev-line-num">13</span>  <span class="dev-prop">coreStack</span>: [${topSkills.map(s => `<span class="dev-str">"${escapeHtml(s)}"</span>`).join(", ")}],</div>
-                <div><span class="dev-line-num">14</span>};</div>
-                
-                <div class="mt-4 pt-2 d-flex flex-wrap gap-2 align-items-center">
-                  <a href="#section-contact" class="dev-btn-cta">
-                    <span>⚡</span> $ ./contact.sh
-                  </a>
-                  <a href="#section-projects" class="dev-btn-ghost">
-                    <span>🚀</span> $ git checkout projects
-                  </a>
-                  <button type="button" class="dev-btn-ghost" onclick="window.runIdeSimulation && window.runIdeSimulation()">
-                    <span>▶</span> Run Simulation
-                  </button>
-                  ${soc.github ? `<a href="${escapeHtml(soc.github)}" target="_blank" class="dev-btn-ghost"><span>💻</span> GitHub ↗</a>` : ""}
+                <div class="vscode-filetree-item" onclick="window.setActiveDevTab && window.setActiveDevTab(this, 'section-about')">
+                  <span class="ft-icon" style="color: #c084fc;">📄</span>
+                  <span>about.md</span>
                 </div>
+                <div class="vscode-filetree-item" onclick="window.setActiveDevTab && window.setActiveDevTab(this, 'section-skills')">
+                  <span class="ft-icon" style="color: #f59e0b;">📦</span>
+                  <span>package.json</span>
+                </div>
+                <div class="vscode-filetree-item" onclick="window.setActiveDevTab && window.setActiveDevTab(this, 'section-projects')">
+                  <span class="ft-icon" style="color: #fb923c;">🚀</span>
+                  <span>repositories.rs</span>
+                  <span class="ft-added">${projects.length}</span>
+                </div>
+                <div class="vscode-filetree-item" onclick="window.setActiveDevTab && window.setActiveDevTab(this, 'section-experience')">
+                  <span class="ft-icon" style="color: #4ade80;">🪵</span>
+                  <span>git-log.sh</span>
+                  <span class="ft-added">${experience.length}</span>
+                </div>
+                <div class="vscode-filetree-item" onclick="window.setActiveDevTab && window.setActiveDevTab(this, 'section-contact')">
+                  <span class="ft-icon" style="color: #ec4899;">⚡</span>
+                  <span>ping.cli</span>
+                </div>
+              </div>
 
-                <!-- Simulation Output Terminal Drawer -->
-                <div id="dev-ide-console-output" class="mt-3 p-3 rounded-3" style="display: none; background: #080c14; border: 1px solid rgba(56, 189, 248, 0.35); font-family: 'Fira Code', monospace;">
-                  <div class="d-flex align-items-center justify-content-between mb-2 pb-1 border-bottom border-secondary border-opacity-25">
-                    <span class="small text-info fw-bold">🚀 runtime simulation output</span>
-                    <span class="badge bg-success text-white small">Build passed (0 errors)</span>
+              <!-- Quick Mini Telemetry in Sidebar -->
+              <div class="p-3 mt-auto border-top border-secondary border-opacity-25 small font-monospace" style="background: rgba(0,0,0,0.3); font-size: 0.72rem;">
+                <div class="text-muted mb-1">// CANDIDATE RUNTIME</div>
+                <div class="d-flex justify-content-between text-info">
+                  <span>Engine:</span> <strong>Node 20 / TS 5.5</strong>
+                </div>
+                <div class="d-flex justify-content-between text-success">
+                  <span>Status:</span> <strong>100% Ready</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Editor Workstation Stage -->
+            <div class="vscode-editor-pane">
+              <!-- File Tabs Bar -->
+              <div class="dev-file-tabs">
+                <a href="#section-home" class="dev-tab active" onclick="window.setActiveDevTab && window.setActiveDevTab(this, 'section-home')">
+                  <span>🔷</span> Profile.tsx
+                </a>
+                <a href="#section-about" class="dev-tab" onclick="window.setActiveDevTab && window.setActiveDevTab(this, 'section-about')">
+                  <span>📄</span> about.md
+                </a>
+                <a href="#section-skills" class="dev-tab" onclick="window.setActiveDevTab && window.setActiveDevTab(this, 'section-skills')">
+                  <span>📦</span> package.json
+                </a>
+                <a href="#section-projects" class="dev-tab" onclick="window.setActiveDevTab && window.setActiveDevTab(this, 'section-projects')">
+                  <span>🚀</span> repositories.rs
+                </a>
+                <a href="#section-experience" class="dev-tab" onclick="window.setActiveDevTab && window.setActiveDevTab(this, 'section-experience')">
+                  <span>🪵</span> git-log.sh
+                </a>
+                <a href="#section-contact" class="dev-tab" onclick="window.setActiveDevTab && window.setActiveDevTab(this, 'section-contact')">
+                  <span>⚡</span> ping.cli
+                </a>
+              </div>
+
+              <!-- Breadcrumb Navigation Bar -->
+              <div class="vscode-breadcrumb d-none d-sm-flex">
+                <span>portfolio</span>
+                <span class="bc-sep">&gt;</span>
+                <span>src</span>
+                <span class="bc-sep">&gt;</span>
+                <span class="bc-active">Profile.tsx</span>
+                <span class="bc-sep">&gt;</span>
+                <span class="text-warning">interface DeveloperProfile</span>
+              </div>
+
+              <!-- Code Hero Block -->
+              <div class="dev-code-editor" id="section-home">
+                <div class="row align-items-center g-4">
+                  <!-- Code Stage (Left Column) -->
+                  <div class="col-lg-7 col-xl-8">
+                    <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-25 flex-wrap gap-2">
+                      <span class="dev-comment small">// High-Performance Technical Profile &amp; Architecture Spec</span>
+                      <span class="badge border border-info border-opacity-30 text-info small" style="font-size: 0.72rem; background: rgba(56, 189, 248, 0.1);">TypeScript 5.5 • Strict Mode</span>
+                    </div>
+
+                    <div style="font-family: 'Fira Code', 'Courier New', monospace; font-size: 0.92rem; line-height: 1.85;">
+                      <div><span class="dev-line-num">1</span><span class="dev-keyword">import</span> { <span class="dev-type">VerifiedTalent</span> } <span class="dev-keyword">from</span> <span class="dev-str">"@recruiter/verified-2026"</span>;</div>
+                      <div class="mt-1"><span class="dev-line-num">2</span><span class="dev-keyword">export interface</span> <span class="dev-type">DeveloperProfile</span> {</div>
+                      <div><span class="dev-line-num">3</span>  <span class="dev-keyword">readonly</span> <span class="dev-prop">name</span>: <span class="dev-type">string</span>;</div>
+                      <div><span class="dev-line-num">4</span>  <span class="dev-keyword">readonly</span> <span class="dev-prop">role</span>: <span class="dev-type">string</span>;</div>
+                      <div><span class="dev-line-num">5</span>  <span class="dev-keyword">readonly</span> <span class="dev-prop">location</span>: <span class="dev-type">string</span>;</div>
+                      <div><span class="dev-line-num">6</span>  <span class="dev-keyword">readonly</span> <span class="dev-prop">availability</span>: <span class="dev-str">"Immediate"</span> | <span class="dev-str">"High-Impact Roles"</span>;</div>
+                      <div><span class="dev-line-num">7</span>  <span class="dev-keyword">readonly</span> <span class="dev-prop">coreStack</span>: <span class="dev-type">ReadonlyArray&lt;string&gt;</span>;</div>
+                      <div><span class="dev-line-num">8</span>}</div>
+                      <div class="mt-2"><span class="dev-line-num">9</span><span class="dev-keyword">export const</span> <span class="dev-prop">developer</span>: <span class="dev-type">DeveloperProfile</span> = {</div>
+                      <div><span class="dev-line-num">10</span>  <span class="dev-prop">name</span>: <span class="dev-str">"${name}"</span>,</div>
+                      <div><span class="dev-line-num">11</span>  <span class="dev-prop">role</span>: <span class="dev-str">"${headline}"</span>,</div>
+                      <div><span class="dev-line-num">12</span>  <span class="dev-prop">location</span>: <span class="dev-str">"${loc}"</span>,</div>
+                      <div><span class="dev-line-num">13</span>  <span class="dev-prop">availability</span>: <span class="dev-str">"Immediate"</span>,</div>
+                      <div><span class="dev-line-num">14</span>  <span class="dev-prop">coreStack</span>: [${topSkills.map(s => `<span class="dev-str">"${escapeHtml(s)}"</span>`).join(", ")}],</div>
+                      <div><span class="dev-line-num">15</span>};<span class="tk-cursor"></span></div>
+                    </div>
+
+                    <!-- Interactive Action Command Bar -->
+                    <div class="mt-4 pt-3 border-top border-secondary border-opacity-25 d-flex flex-wrap gap-2 align-items-center">
+                      <a href="#section-contact" class="dev-btn-cta">
+                        <span>⚡</span> $ ./contact.sh
+                      </a>
+                      <a href="#section-projects" class="dev-btn-ghost">
+                        <span>🚀</span> $ git checkout projects
+                      </a>
+                      <button type="button" class="dev-btn-ghost" onclick="window.runIdeSimulation && window.runIdeSimulation()">
+                        <span>▶</span> Run Simulation (F5)
+                      </button>
+                      <button type="button" class="dev-btn-ghost" onclick="window.copyNpxHireCmd && window.copyNpxHireCmd(this, '${safeSlug}')" title="Copy npx hire command">
+                        <span>📋</span> npx hire ${safeSlug}
+                      </button>
+                      ${soc.github ? `<a href="${escapeHtml(soc.github)}" target="_blank" rel="noopener noreferrer" class="dev-btn-ghost"><span>💻</span> GitHub ↗</a>` : ""}
+                    </div>
+
+                    <!-- Simulation Output Terminal Drawer -->
+                    <div id="dev-ide-console-output" class="mt-3 p-3 rounded-3" style="display: none; background: #080c14; border: 1px solid rgba(56, 189, 248, 0.35); font-family: 'Fira Code', monospace;">
+                      <div class="d-flex align-items-center justify-content-between mb-2 pb-1 border-bottom border-secondary border-opacity-25">
+                        <span class="small text-info fw-bold">🚀 runtime simulation output</span>
+                        <span class="badge bg-success text-white small">Build passed (0 errors)</span>
+                      </div>
+                      <div class="small font-monospace" style="color: #7ee787; line-height: 1.65;">
+                        [INFO]: Initializing candidate runtime workstation...<br/>
+                        [ENV]: Production Node.js 20.x • TypeScript 5.5.4 • Verified Candidate<br/>
+                        [SYSTEM]: High availability distributed architectures &amp; scalable web applications.<br/>
+                        [STATUS]: 100% Ready for Engineering Leadership &amp; High-Impact SDE Roles.<br/>
+                        [NEXT]: Click $ ./contact.sh to reach candidate directly.
+                      </div>
+                    </div>
                   </div>
-                  <div class="small font-monospace" style="color: #7ee787; line-height: 1.6;">
-                    [INFO]: Initializing candidate runtime workstation...<br/>
-                    [ENV]: Production Node.js 20.x • TypeScript 5.5.4 • Verified Candidate<br/>
-                    [STATUS]: 100% Ready for Engineering Leadership &amp; High-Impact SDE Roles.<br/>
-                    [NEXT]: Click $ ./contact.sh to reach candidate directly.
+
+                  <!-- Next-Gen Cyberpunk / Holographic Talent ID Card (Right Column) -->
+                  <div class="col-lg-5 col-xl-4">
+                    <div class="dev-avatar-holo-card spotlight-card">
+                      <div class="dev-avatar-ring">
+                        ${data.profile_image 
+                          ? `<img src="${avatar}" alt="${name}" />`
+                          : `<div class="dev-avatar-fallback">${initials}</div>`
+                        }
+                      </div>
+                      <h4 class="dev-card-name">${name}</h4>
+                      <p class="dev-card-role mb-2">${headline}</p>
+                      
+                      <div class="status-radar-beacon mb-3">
+                        <span class="radar-dot"></span>
+                        <span>Available for Hire</span>
+                      </div>
+
+                      <!-- Developer Telemetry Mini Matrix -->
+                      <div class="p-2.5 rounded-3 mb-3 text-start small font-monospace" style="background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(56, 189, 248, 0.25);">
+                        <div class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-25">
+                          <span class="text-muted">// Repositories:</span>
+                          <strong class="text-info">${projects.length} public</strong>
+                        </div>
+                        <div class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-25">
+                          <span class="text-muted">// Career Roles:</span>
+                          <strong style="color: #c084fc;">${experience.length} roles</strong>
+                        </div>
+                        <div class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-25">
+                          <span class="text-muted">// Reliability:</span>
+                          <strong class="text-success">99.98% Uptime</strong>
+                        </div>
+                        <div class="d-flex justify-content-between py-1">
+                          <span class="text-muted">// Architecture:</span>
+                          <strong style="color: #fbbf24;">Production A+</strong>
+                        </div>
+                      </div>
+
+                      ${topSkills.length ? `
+                        <div class="mb-3 d-flex flex-wrap justify-content-center gap-1">
+                          ${topSkills.map(s => `<span class="dev-tech-pill">${escapeHtml(s)}</span>`).join("")}
+                        </div>
+                      ` : ""}
+
+                      <div class="d-grid gap-2 mt-3">
+                        <a href="#section-contact" class="btn btn-sm btn-primary rounded-pill fw-bold py-2 shadow-sm" style="background: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%); border: none;">
+                          Hire ${firstName} &rarr;
+                        </a>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Holographic Developer ID Card -->
-              <div class="col-lg-4">
-                <div class="dev-avatar-holo-card">
-                  <div class="dev-avatar-ring">
-                    ${data.profile_image 
-                      ? `<img src="${avatar}" alt="${name}" />`
-                      : `<div class="dev-avatar-fallback">${initials}</div>`
-                    }
+              <!-- IDE Status Bar (Bottom of Window) -->
+              <div class="vscode-statusbar d-none d-sm-flex">
+                <div class="statusbar-left">
+                  <div class="statusbar-item sb-branch">
+                    <span>⌥</span> <span>main*</span>
                   </div>
-                  <h4 class="dev-card-name">${name}</h4>
-                  <p class="dev-card-role">${headline}</p>
-                  
-                  <div class="status-radar-beacon mb-3">
-                    <span class="radar-dot"></span>
-                    <span>Available for Hire</span>
+                  <div class="statusbar-item">
+                    <span>⊗ 0</span> <span>▲ 0</span>
                   </div>
-
-                  <!-- Developer Telemetry Mini Matrix -->
-                  <div class="p-2.5 rounded-3 mb-3 text-start small font-monospace" style="background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(56, 189, 248, 0.25);">
-                    <div class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-25">
-                      <span class="text-muted">// repositories:</span>
-                      <strong class="text-info">${projects.length} public</strong>
-                    </div>
-                    <div class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-25">
-                      <span class="text-muted">// experience:</span>
-                      <strong style="color: #c084fc;">${experience.length} roles</strong>
-                    </div>
-                    <div class="d-flex justify-content-between py-1">
-                      <span class="text-muted">// runtime:</span>
-                      <strong class="text-success">200 OK • Ready</strong>
-                    </div>
+                  <div class="statusbar-item d-none d-md-flex">
+                    <span>Prettier ✓</span>
                   </div>
-
-                  ${topSkills.length ? `
-                    <div class="mb-3 d-flex flex-wrap justify-content-center gap-1">
-                      ${topSkills.map(s => `<span class="dev-tech-pill">${escapeHtml(s)}</span>`).join("")}
-                    </div>
-                  ` : ""}
-
-                  <div class="d-grid gap-2 mt-3">
-                    <a href="#section-contact" class="btn btn-sm btn-primary rounded-pill fw-bold py-2 shadow-sm" style="background: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%); border: none;">
-                      Hire ${name.split(" ")[0]} &rarr;
-                    </a>
+                </div>
+                <div class="statusbar-right">
+                  <div class="statusbar-item">Ln 15, Col 2</div>
+                  <div class="statusbar-item d-none d-md-flex">Spaces: 2</div>
+                  <div class="statusbar-item">UTF-8</div>
+                  <div class="statusbar-item d-none d-md-flex">TypeScript 5.5.4</div>
+                  <div class="statusbar-item">
+                    <span class="statusbar-dot"></span>
+                    <span>Ready</span>
                   </div>
                 </div>
               </div>
@@ -3720,20 +3841,25 @@ const PortfolioThemesEngine = (() => {
         <!-- Terminal Interactive Prompt (cat about.md) -->
         ${activeSections.includes("about") ? `
           <div id="section-about" class="dev-terminal-box mb-5">
-            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-25 flex-wrap gap-2">
               <div class="d-flex align-items-center gap-2">
                 <span class="dev-dot dev-dot-red"></span>
                 <span class="dev-dot dev-dot-yellow"></span>
                 <span class="dev-dot dev-dot-green"></span>
                 <span class="ms-2 small text-muted font-monospace">zsh — ${(name.toLowerCase().replace(/[^a-z0-9]/g, '') || 'developer')}@workstation: ~/portfolio (main)</span>
               </div>
-              <span class="badge border border-info border-opacity-30 text-info font-monospace small px-2 py-0.5" style="background: rgba(56, 189, 248, 0.1);">Verified Narrative</span>
+              <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-sm btn-outline-info font-monospace py-0 px-2" style="font-size: 0.72rem;" onclick="window.runDevTerminalCmd && window.runDevTerminalCmd('cat about.md')">cat about.md</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary font-monospace py-0 px-2" style="font-size: 0.72rem;" onclick="window.runDevTerminalCmd && window.runDevTerminalCmd('git status')">git status</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary font-monospace py-0 px-2" style="font-size: 0.72rem;" onclick="window.runDevTerminalCmd && window.runDevTerminalCmd('npm test')">npm test</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary font-monospace py-0 px-2" style="font-size: 0.72rem;" onclick="window.runDevTerminalCmd && window.runDevTerminalCmd('whoami')">whoami</button>
+              </div>
             </div>
             <div>
               <div class="mb-2 font-monospace" style="font-size: 0.92rem;">
-                <span style="color: #38bdf8;">${(name.toLowerCase().replace(/[^a-z0-9]/g, '') || 'developer')}@workstation</span>:<span style="color: #c084fc;">~</span>$ <span style="color: #4ade80;">cat</span> about.md
+                <span style="color: #38bdf8;">${(name.toLowerCase().replace(/[^a-z0-9]/g, '') || 'developer')}@workstation</span>:<span style="color: #c084fc;">~</span>$ <span style="color: #4ade80;" id="dev-ide-terminal-cmd">cat about.md</span>
               </div>
-              <div class="p-3 rounded-3" style="background: rgba(22, 27, 34, 0.7); border: 1px solid rgba(255, 255, 255, 0.06); color: #cbd5e1; font-size: 0.95rem; line-height: 1.75;">
+              <div class="p-3 rounded-3" id="dev-ide-terminal-text" style="background: rgba(22, 27, 34, 0.7); border: 1px solid rgba(255, 255, 255, 0.06); color: #cbd5e1; font-size: 0.95rem; line-height: 1.75;">
                 ${about || `${name} is a software engineer and technical specialist with proven experience architecting, developing, and deploying robust applications with modern frameworks and resilient backend architectures.`}
               </div>
             </div>
@@ -3746,9 +3872,12 @@ const PortfolioThemesEngine = (() => {
         <!-- Skills (package.json Dependencies) -->
         ${activeSections.includes("skills") ? `
           <div id="section-skills" class="mb-5">
-            <h5 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color: var(--theme-text); font-family: 'Fira Code', monospace;">
-              <span>📦</span> package.json // dependencies &amp; tools
-            </h5>
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-25 flex-wrap gap-2">
+              <h5 class="fw-bold mb-0 d-flex align-items-center gap-2" style="color: var(--theme-text); font-family: 'Fira Code', monospace;">
+                <span>📦</span> package.json // dependencies &amp; tools
+              </h5>
+              <span class="badge border border-warning border-opacity-30 text-warning font-monospace small px-2 py-0.5" style="background: rgba(245, 158, 11, 0.1);">Node.js • Lockfile Verified</span>
+            </div>
             <div class="p-4 rounded-4" style="background: rgba(13, 17, 23, 0.9); border: 1px solid rgba(56, 189, 248, 0.2); box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
               ${renderSkillsBadges(skills, "dev")}
             </div>
@@ -3758,52 +3887,34 @@ const PortfolioThemesEngine = (() => {
         <!-- Value Pillars & Services -->
         ${activeSections.includes("services") ? renderServicesSection(data, "developer") : ""}
 
-        <!-- Repositories Grid -->
+        <!-- Featured Repositories Grid (Using Flagship Mac Device Frames) -->
         ${activeSections.includes("projects") && projects.length > 0 ? `
           <div id="section-projects" class="mb-5">
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-              <h5 class="fw-bold mb-0 d-flex align-items-center gap-2" style="color: var(--theme-text); font-family: monospace;">
-                <span>📁</span> Featured Repositories
-              </h5>
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+              <div class="d-flex align-items-center gap-2">
+                <span class="fs-4" style="color: #38bdf8;">📁</span>
+                <h4 class="fw-bold mb-0" style="color: var(--theme-text); font-family: 'Fira Code', monospace;">
+                  Featured Repositories &amp; Systems
+                </h4>
+              </div>
               ${renderProjectFilterToolbar(projects)}
             </div>
-            <div class="row g-3">
-              ${projects.map((p, idx) => `
-                <div class="col-md-6 col-lg-4 project-card-item" data-tech="${escapeHtml(((p.technologies || []).join(' ') + ' ' + (p.name || '')).toLowerCase())}">
-                  <div class="dev-repo-card">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                      <div class="d-flex align-items-center gap-2">
-                        <span class="fs-5" style="color: #38bdf8;">📁</span>
-                        <div class="fw-bold dev-repo-title">${escapeHtml(p.name || `repo-${idx + 1}`)}</div>
-                      </div>
-                      <span class="badge" style="background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.25); font-family: monospace; font-size: 0.72rem;">public</span>
-                    </div>
-                    <p class="small flex-grow-1 mb-3 dev-repo-desc">${escapeHtml(p.description || "High-performance production codebase engineered with modern standards.")}</p>
-                    ${p.technologies?.length ? `<div class="mb-3 d-flex flex-wrap gap-1">${p.technologies.map(t => `<span class="dev-repo-tech-pill">${escapeHtml(t)}</span>`).join("")}</div>` : ""}
-                    <div class="pt-2 mt-auto border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
-                      <div class="small font-monospace text-muted d-flex align-items-center gap-2" style="font-size: 0.75rem;">
-                        <span>★ ${(idx + 3) * 7}</span>
-                        <span>•</span>
-                        <span>v1.${idx + 1}.0</span>
-                      </div>
-                      <div>
-                        ${renderProjectActionLinks(p, "developer")}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              `).join("")}
+            <div class="row g-4">
+              ${projects.map((p, idx) => renderEnhancedProjectCard(p, idx, "developer", data)).join("")}
             </div>
           </div>
         ` : ""}
 
-        <!-- Experience (git log) -->
+        <!-- Experience (git log --graph) -->
         ${activeSections.includes("experience") && experience.length > 0 ? `
           <div id="section-experience" class="mb-5">
-            <h5 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color: var(--theme-text); font-family: monospace;">
-              <span>🪵</span> git log --graph --oneline // Experience
-            </h5>
-            <div class="p-4 rounded-3" style="background: #161b22; border: 1px solid #30363d;">
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-25 flex-wrap gap-2">
+              <h5 class="fw-bold mb-0 d-flex align-items-center gap-2" style="color: var(--theme-text); font-family: monospace;">
+                <span>🪵</span> git log --graph --oneline // Career Journey
+              </h5>
+              <span class="badge border border-success border-opacity-30 text-success font-monospace small px-2 py-0.5" style="background: rgba(34, 197, 94, 0.1);">Verified Employment Commits</span>
+            </div>
+            <div class="p-4 rounded-3" style="background: #161b22; border: 1px solid #30363d; box-shadow: 0 15px 40px rgba(0,0,0,0.5);">
               ${experience.map((exp, idx) => {
                 const fakeHash = `c${(idx + 1) * 3}f${idx * 7}e8a`.slice(0, 7);
                 const dates = [exp.start_date, exp.end_date || (exp.is_current ? "HEAD" : "")].filter(Boolean).join(" — ");
@@ -3812,12 +3923,13 @@ const PortfolioThemesEngine = (() => {
                     <div class="dev-git-commit-dot"></div>
                     <div class="d-flex align-items-baseline gap-2 flex-wrap mb-1">
                       <span class="dev-git-hash">${fakeHash}</span>
-                      <strong style="color: #f0f6fc;">${escapeHtml(exp.title || "")}</strong>
+                      <strong style="color: #f0f6fc; font-size: 1.05rem;">${escapeHtml(exp.title || "")}</strong>
                       <span class="badge" style="background: #238636; color: #fff;">@ ${escapeHtml(exp.company || "")}</span>
-                      <span class="small text-muted">${escapeHtml(dates)}</span>
+                      <span class="small text-muted ms-auto font-monospace">${escapeHtml(dates)}</span>
                     </div>
-                    ${exp.description ? `<p class="small mb-2" style="color: #8b949e;">${escapeHtml(exp.description)}</p>` : ""}
-                    ${exp.highlights?.length ? `<ul class="ps-3 mb-0 small" style="color: #c9d1d9;">${exp.highlights.map(h => `<li>${escapeHtml(h)}</li>`).join("")}</ul>` : ""}
+                    ${exp.description ? `<p class="small mb-2" style="color: #8b949e; line-height: 1.65;">${escapeHtml(exp.description)}</p>` : ""}
+                    ${exp.highlights?.length ? `<ul class="ps-3 mb-2 small" style="color: #c9d1d9; line-height: 1.6;">${exp.highlights.map(h => `<li class="mb-1"><span class="text-success fw-bold me-1">+</span>${escapeHtml(h)}</li>`).join("")}</ul>` : ""}
+                    ${exp.technologies?.length ? `<div class="d-flex flex-wrap gap-1 mt-2">${exp.technologies.map(t => `<span class="dev-tech-pill">${escapeHtml(t)}</span>`).join("")}</div>` : ""}
                   </div>
                 `;
               }).join("")}
@@ -3835,10 +3947,10 @@ const PortfolioThemesEngine = (() => {
               ${education.length > 0 ? education.map(e => `
                 <div class="mb-3 pb-2 border-bottom" style="border-color: #30363d !important;">
                   <div class="d-flex justify-content-between align-items-baseline flex-wrap">
-                    <strong style="color: #58a6ff; font-family: monospace;">${escapeHtml(e.degree || "")}</strong>
+                    <strong style="color: #58a6ff; font-family: monospace; font-size: 1rem;">${escapeHtml(e.degree || "")}</strong>
                     ${(e.end_year || e.start_year || e.year) ? `<span class="badge" style="background: #21262d; color: #8b949e; border: 1px solid #30363d;">${escapeHtml(e.end_year || e.start_year || e.year)}</span>` : ""}
                   </div>
-                  <div class="small fw-semibold" style="color: #f0f6fc;">${escapeHtml(e.institution || "")}</div>
+                  <div class="small fw-semibold mt-1" style="color: #f0f6fc;">${escapeHtml(e.institution || "")}</div>
                   ${e.field_of_study ? `<div class="small text-muted">${escapeHtml(e.field_of_study)}</div>` : ""}
                   ${(e.details || e.score || e.grade) ? `<div class="small mt-1" style="color: #7ee787; font-family: monospace;">${escapeHtml(e.details || e.score || e.grade)}</div>` : ""}
                 </div>
@@ -3857,10 +3969,10 @@ const PortfolioThemesEngine = (() => {
             </h5>
             <div class="p-4 rounded-3" style="background: #161b22; border: 1px solid #30363d;">
               ${certs.length > 0 ? certs.map(c => `
-                <div class="mb-2 pb-2 border-bottom d-flex align-items-center gap-2" style="border-color: #30363d !important;">
-                  <span style="color: #58a6ff;">📜</span>
+                <div class="mb-2 pb-2 border-bottom d-flex align-items-center gap-3" style="border-color: #30363d !important;">
+                  <span style="font-size: 1.4rem;">📜</span>
                   <div>
-                    <strong style="color: #f0f6fc; font-family: monospace;">${escapeHtml(c.name || c)}</strong>
+                    <strong style="color: #f0f6fc; font-family: monospace; font-size: 0.95rem;">${escapeHtml(c.name || c)}</strong>
                     ${c.organization ? `<div class="small text-muted">${escapeHtml(c.organization)} ${c.year ? '• ' + escapeHtml(c.year) : ''}</div>` : ""}
                   </div>
                 </div>
@@ -3874,7 +3986,7 @@ const PortfolioThemesEngine = (() => {
         <!-- Achievements & Recommendations -->
         ${activeSections.includes("achievements") ? renderAchievementsSection(data, "developer") : ""}
 
-        ${activeSections.includes("contact") ? renderUniversalContact(data) : ""}
+        ${activeSections.includes("contact") ? renderUniversalContact(data, "developer") : ""}
         ${renderUniversalFooter(data)}
       </div>
     `;
@@ -6249,7 +6361,7 @@ const PortfolioThemesEngine = (() => {
     });
 
     // 6. 2026 Magnetic Cursor Spotlight Tracking
-    container.querySelectorAll('.spotlight-card, .bento-card, .modern-project-card, .dev-repo-card, .bento-device-frame, .dev-avatar-holo-card, .ai-hologram-card, .dev-ide-window').forEach(card => {
+    container.querySelectorAll('.spotlight-card, .bento-card, .modern-project-card, .dev-repo-card, .bento-device-frame, .dev-avatar-holo-card, .ai-hologram-card, .dev-ide-window, .ide-repo-card, .ide-profile-card').forEach(card => {
       card.addEventListener('mousemove', (e) => {
         const rect = card.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -6260,11 +6372,17 @@ const PortfolioThemesEngine = (() => {
     });
 
     // 7. Developer IDE Interactive Workstation Runtime Helpers
-    window.setActiveDevTab = function(tabEl) {
+    window.setActiveDevTab = function(tabEl, targetId) {
       if (!tabEl) return;
-      const allTabs = document.querySelectorAll('.dev-tab');
+      const allTabs = document.querySelectorAll('.dev-tab, .vscode-filetree-item');
       allTabs.forEach(t => t.classList.remove('active'));
       tabEl.classList.add('active');
+      if (targetId) {
+        const target = document.getElementById(targetId);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
     };
 
     window.runIdeSimulation = function() {
@@ -6274,6 +6392,54 @@ const PortfolioThemesEngine = (() => {
       if (outputEl.style.display === 'block') {
         outputEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
+    };
+
+    window.runDevTerminalCmd = function(cmd) {
+      const cmdEl = document.getElementById('dev-ide-terminal-cmd');
+      const textEl = document.getElementById('dev-ide-terminal-text');
+      if (cmdEl) cmdEl.textContent = cmd;
+      if (!textEl) return;
+
+      const aboutFallback = data.about || (data.candidate_name ? `${data.candidate_name} is an engineering specialist building production software systems.` : "Engineering specialist building production software systems.");
+      const skillsCount = Array.isArray(data.skills) ? data.skills.length : Object.values(data.skills || {}).flat().length;
+
+      if (cmd === 'cat about.md') {
+        textEl.innerHTML = `<span style="color: #cbd5e1; line-height: 1.75;">${escapeHtml(aboutFallback)}</span>`;
+      } else if (cmd === 'git status') {
+        textEl.innerHTML = `
+          <span style="color: #38bdf8;">On branch main</span><br/>
+          <span style="color: #4ade80;">Your branch is up to date with 'origin/main'.</span><br/>
+          <span style="color: #94a3b8;">nothing to commit, working tree clean (100% production ready)</span>
+        `;
+      } else if (cmd === 'npm test') {
+        textEl.innerHTML = `
+          <span style="color: #38bdf8;">PASS</span> <span style="color: #94a3b8;">src/architecture.spec.ts</span><br/>
+          <span style="color: #38bdf8;">PASS</span> <span style="color: #94a3b8;">src/performance.bench.ts (99.8% score)</span><br/>
+          <span style="color: #4ade80; font-weight: bold;">Test Suites: 12 passed, 12 total</span><br/>
+          <span style="color: #4ade80; font-weight: bold;">Tests:       48 passed, 48 total • Verified 0 defects</span>
+        `;
+      } else if (cmd === 'whoami') {
+        textEl.innerHTML = `
+          <span style="color: #38bdf8;">${escapeHtml(data.candidate_name || "candidate")}@workstation</span><br/>
+          <span style="color: #475569;">---------------------------------------</span><br/>
+          <span style="color: #c084fc;">Role:</span> ${escapeHtml(data.professional_headline || "Systems Engineer")}<br/>
+          <span style="color: #c084fc;">Location:</span> ${escapeHtml(data.social_links?.location || "Remote / Global")}<br/>
+          <span style="color: #c084fc;">Stack:</span> ${skillsCount} verified competencies<br/>
+          <span style="color: #4ade80;">Status: Verified Candidate • Available for Hire</span>
+        `;
+      }
+    };
+
+    window.copyNpxHireCmd = function(btn, slug) {
+      if (!btn) return;
+      const cmd = `npx hire ${slug || 'candidate'}`;
+      navigator.clipboard.writeText(cmd).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = `<span style="color: #4ade80;">✓ Copied!</span>`;
+        setTimeout(() => { btn.innerHTML = orig; }, 2000);
+      }).catch(() => {
+        btn.innerHTML = `<span style="color: #38bdf8;">${cmd}</span>`;
+      });
     };
   }
 

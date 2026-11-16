@@ -4497,3 +4497,1328 @@ body[data-bs-theme="light"] .bento-tech-capsule {
 body[data-bs-theme="light"] .bento-timeline-beacon {
   border-color: #ffffff;
 }
+/* =============================================================
+   VS CODE IDE PORTFOLIO — NEXT-GEN 2026 DESIGN SYSTEM v5.0
+   Full immersive developer workstation experience
+   ============================================================= */
+
+/* ── IDE Wrapper & Aurora Background ─────────────────────── */
+.vscode-portfolio-root {
+  position: relative;
+  background: #0d1117;
+  min-height: 100vh;
+  color: #e2e8f0;
+  font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+  overflow-x: hidden;
+}
+
+.ide-aurora-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.ide-aurora-bg::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: -20%;
+  width: 70%;
+  height: 80%;
+  background: radial-gradient(ellipse, rgba(56, 189, 248, 0.08) 0%, transparent 65%);
+  animation: ideAuroraFloat1 18s ease-in-out infinite alternate;
+}
+.ide-aurora-bg::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  right: -15%;
+  width: 60%;
+  height: 70%;
+  background: radial-gradient(ellipse, rgba(99, 102, 241, 0.09) 0%, transparent 60%);
+  animation: ideAuroraFloat2 22s ease-in-out infinite alternate;
+}
+.ide-aurora-orb-3 {
+  position: absolute;
+  top: 30%;
+  right: 10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.06) 0%, transparent 65%);
+  animation: ideAuroraFloat3 15s ease-in-out infinite alternate;
+}
+@keyframes ideAuroraFloat1 {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(60px, 40px) scale(1.12); }
+}
+@keyframes ideAuroraFloat2 {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(-50px, -35px) scale(1.08); }
+}
+@keyframes ideAuroraFloat3 {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(30px, 50px) scale(1.15); }
+}
+
+/* Grid noise overlay */
+.ide-grid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(56, 189, 248, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 0%, transparent 100%);
+}
+
+/* ── Top Title Bar ─────────────────────────────────────────── */
+.vscode-titlebar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10, 14, 20, 0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 0;
+  user-select: none;
+}
+.vscode-titlebar-inner {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 16px;
+  gap: 12px;
+}
+.vscode-title-dots {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.vscode-title-dots span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: block;
+  transition: filter 0.2s;
+}
+.vscode-title-dots:hover span { filter: brightness(1.3); }
+.vt-dot-red    { background: #ff5f56; box-shadow: 0 0 6px rgba(255,95,86,.5); }
+.vt-dot-yellow { background: #ffbd2e; box-shadow: 0 0 6px rgba(255,189,46,.5); }
+.vt-dot-green  { background: #27c93f; box-shadow: 0 0 6px rgba(39,201,63,.5); }
+
+.vscode-title-path {
+  flex: 1;
+  text-align: center;
+  font-size: 0.78rem;
+  color: #64748b;
+  letter-spacing: 0.03em;
+}
+.vscode-title-path .vt-active-file {
+  color: #94a3b8;
+  font-weight: 600;
+}
+.vscode-title-branch {
+  font-size: 0.75rem;
+  color: #818cf8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+/* ── Menu Bar ──────────────────────────────────────────────── */
+.vscode-menubar {
+  background: rgba(14, 18, 26, 0.98);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding: 2px 16px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.vscode-menubar::-webkit-scrollbar { display: none; }
+.vscode-menu-item {
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  cursor: default;
+  border-radius: 5px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.vscode-menu-item:hover {
+  background: rgba(255,255,255,0.08);
+  color: #f1f5f9;
+}
+
+/* ── Tab Bar ───────────────────────────────────────────────── */
+.vscode-tabbar {
+  background: rgba(12, 16, 23, 0.98);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  align-items: flex-end;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-left: 2px;
+}
+.vscode-tabbar::-webkit-scrollbar { display: none; }
+.vscode-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px 8px;
+  font-size: 0.82rem;
+  color: #64748b;
+  border-right: 1px solid rgba(255,255,255,0.05);
+  border-top: 2px solid transparent;
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  background: rgba(13, 17, 23, 0.6);
+  position: relative;
+}
+.vscode-tab:hover {
+  background: rgba(255,255,255,0.04);
+  color: #cbd5e1;
+}
+.vscode-tab.active {
+  background: rgba(13, 17, 23, 0.98);
+  color: #f1f5f9;
+  border-top-color: #38bdf8;
+  font-weight: 500;
+}
+.vscode-tab .tab-icon { font-size: 0.9rem; }
+.vscode-tab .tab-close {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  opacity: 0;
+  transition: opacity 0.15s;
+  color: #94a3b8;
+}
+.vscode-tab:hover .tab-close,
+.vscode-tab.active .tab-close { opacity: 1; }
+
+/* ── Main IDE Layout ───────────────────────────────────────── */
+.vscode-workbench {
+  display: flex;
+  position: relative;
+  z-index: 1;
+}
+
+/* Activity Bar */
+.vscode-activity-bar {
+  width: 50px;
+  flex-shrink: 0;
+  background: rgba(10, 13, 20, 0.98);
+  border-right: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 0;
+  gap: 2px;
+}
+.vscode-activity-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.vscode-activity-icon:hover {
+  background: rgba(255,255,255,0.07);
+  color: #cbd5e1;
+}
+.vscode-activity-icon.active {
+  color: #f1f5f9;
+  background: rgba(56, 189, 248, 0.12);
+}
+.vscode-activity-icon.active::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 22px;
+  background: #38bdf8;
+  border-radius: 0 3px 3px 0;
+}
+
+/* Sidebar / File Explorer */
+.vscode-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: rgba(13, 17, 23, 0.97);
+  border-right: 1px solid rgba(255,255,255,0.07);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.08) transparent;
+  display: flex;
+  flex-direction: column;
+}
+@media (max-width: 991px) {
+  .vscode-activity-bar { display: none; }
+  .vscode-sidebar { display: none; }
+}
+
+.vscode-sidebar-header {
+  padding: 12px 16px 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  flex-shrink: 0;
+}
+.vscode-sidebar-section {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.vscode-sidebar-section-title {
+  padding: 4px 16px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.vscode-sidebar-section-title:hover { color: #64748b; }
+.vscode-filetree-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 16px 5px 24px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-left: 2px solid transparent;
+}
+.vscode-filetree-item:hover {
+  background: rgba(255,255,255,0.05);
+  color: #cbd5e1;
+}
+.vscode-filetree-item.active {
+  background: rgba(56, 189, 248, 0.1);
+  color: #38bdf8;
+  border-left-color: #38bdf8;
+}
+.vscode-filetree-item .ft-icon {
+  font-size: 0.85rem;
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.vscode-filetree-item .ft-modified {
+  margin-left: auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f59e0b;
+  flex-shrink: 0;
+}
+.vscode-filetree-item .ft-added {
+  margin-left: auto;
+  font-size: 0.65rem;
+  color: #22c55e;
+  font-weight: 700;
+}
+
+/* Skill Bars in Sidebar */
+.vscode-skill-bar-wrap {
+  padding: 4px 16px;
+}
+.vscode-skill-bar-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  font-size: 0.74rem;
+  color: #94a3b8;
+}
+.vscode-skill-bar-label span:last-child {
+  color: #38bdf8;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.vscode-skill-bar-track {
+  height: 4px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.vscode-skill-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #38bdf8, #818cf8);
+  transform-origin: left;
+  animation: skillBarGrow 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform: scaleX(0);
+}
+@keyframes skillBarGrow {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* Outline Panel */
+.vscode-outline-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 16px 4px 28px;
+  font-size: 0.74rem;
+  color: #64748b;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.vscode-outline-item:hover { color: #94a3b8; }
+.vscode-outline-item .outline-icon { color: #818cf8; font-size: 0.72rem; }
+
+/* Git Panel */
+.vscode-git-change {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 16px 5px 24px;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+.vscode-git-change .gc-status-m { color: #f59e0b; font-weight: 700; font-size: 0.72rem; }
+.vscode-git-change .gc-status-a { color: #22c55e; font-weight: 700; font-size: 0.72rem; }
+.vscode-git-change .gc-status-d { color: #ef4444; font-weight: 700; font-size: 0.72rem; }
+
+/* ── Editor Pane ───────────────────────────────────────────── */
+.vscode-editor-pane {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: rgba(13, 17, 23, 0.9);
+}
+
+/* Breadcrumb */
+.vscode-breadcrumb {
+  padding: 6px 20px;
+  font-size: 0.75rem;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: rgba(10, 14, 20, 0.6);
+}
+.vscode-breadcrumb span { transition: color 0.15s; }
+.vscode-breadcrumb span:hover { color: #94a3b8; cursor: pointer; }
+.vscode-breadcrumb .bc-active { color: #94a3b8; }
+.vscode-breadcrumb .bc-sep { color: #2d3748; }
+
+/* Code editor scroll area */
+.vscode-editor-scroll {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.1) transparent;
+  position: relative;
+}
+
+/* Line numbers gutter */
+.vscode-code-block {
+  display: flex;
+  font-family: 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 0.88rem;
+  line-height: 1.75;
+  padding: 24px 0;
+}
+.vscode-line-gutter {
+  width: 56px;
+  flex-shrink: 0;
+  padding: 0 12px 0 0;
+  text-align: right;
+  color: #2d3748;
+  user-select: none;
+  font-size: 0.8rem;
+  border-right: 1px solid rgba(255,255,255,0.04);
+}
+.vscode-line-gutter .ln {
+  display: block;
+  line-height: 1.75;
+  transition: color 0.15s;
+  cursor: default;
+}
+.vscode-line-gutter .ln.ln-active { color: #94a3b8; }
+.vscode-line-gutter .ln:hover { color: #64748b; }
+
+.vscode-code-content {
+  flex: 1;
+  padding: 0 20px 0 24px;
+  overflow-x: auto;
+}
+.vscode-code-content .code-line {
+  display: flex;
+  align-items: flex-start;
+  min-height: 1.75em;
+  transition: background 0.1s;
+}
+.vscode-code-content .code-line:hover {
+  background: rgba(255,255,255,0.025);
+}
+.vscode-code-content .code-line.hl {
+  background: rgba(56, 189, 248, 0.07);
+  border-left: 2px solid #38bdf8;
+  margin-left: -2px;
+}
+
+/* Token colors */
+.tk-comment  { color: #475569; font-style: italic; }
+.tk-keyword  { color: #f43f5e; font-weight: 700; }
+.tk-fn       { color: #60a5fa; }
+.tk-type     { color: #38bdf8; font-weight: 600; }
+.tk-prop     { color: #4ade80; }
+.tk-str      { color: #fbbf24; }
+.tk-num      { color: #fb923c; }
+.tk-punc     { color: #94a3b8; }
+.tk-class    { color: #c084fc; font-weight: 600; }
+.tk-op       { color: #818cf8; }
+.tk-plain    { color: #cbd5e1; }
+.tk-var      { color: #f9a8d4; }
+
+/* Cursor blink */
+.tk-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background: #38bdf8;
+  animation: ideCursorBlink 1.1s step-end infinite;
+  vertical-align: text-bottom;
+  margin-left: 1px;
+}
+@keyframes ideCursorBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Minimap */
+.vscode-minimap {
+  width: 80px;
+  flex-shrink: 0;
+  background: rgba(10, 13, 20, 0.7);
+  border-left: 1px solid rgba(255,255,255,0.04);
+  overflow: hidden;
+  position: relative;
+}
+@media (max-width: 1200px) { .vscode-minimap { display: none; } }
+.vscode-minimap-content {
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.minimap-line {
+  height: 2px;
+  border-radius: 1px;
+  opacity: 0.6;
+}
+.ml-comment { background: #334155; width: 60%; }
+.ml-keyword { background: #f43f5e; }
+.ml-prop    { background: #4ade80; width: 70%; }
+.ml-str     { background: #fbbf24; width: 85%; }
+.ml-blank   { width: 0; }
+.vscode-minimap-viewport {
+  position: absolute;
+  left: 0; right: 0;
+  top: 20px;
+  height: 60px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 2px;
+}
+
+/* ── Terminal Panel ────────────────────────────────────────── */
+.vscode-terminal-panel {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  background: rgba(10, 12, 18, 0.98);
+}
+.vscode-terminal-tabs {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding: 0 12px;
+}
+.vscode-terminal-tab {
+  padding: 7px 16px;
+  font-size: 0.78rem;
+  color: #475569;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.vscode-terminal-tab.active {
+  color: #cbd5e1;
+  border-bottom-color: #38bdf8;
+}
+.vscode-terminal-output {
+  padding: 12px 20px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.84rem;
+  color: #94a3b8;
+  line-height: 1.65;
+  min-height: 110px;
+}
+.term-prompt   { color: #38bdf8; font-weight: 700; }
+.term-cmd      { color: #4ade80; }
+.term-success  { color: #22c55e; }
+.term-info     { color: #60a5fa; }
+.term-warn     { color: #fbbf24; }
+.term-dim      { color: #475569; }
+.term-path     { color: #c084fc; }
+.term-output-line { margin: 0; padding: 1px 0; }
+
+/* Typewriter animation */
+@keyframes termType {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+.term-typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: termType 1.2s steps(40, end) forwards;
+}
+
+/* ── Status Bar ────────────────────────────────────────────── */
+.vscode-statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  height: 28px;
+  background: rgba(56, 189, 248, 0.15);
+  border-top: 1px solid rgba(56, 189, 248, 0.25);
+  font-size: 0.72rem;
+  color: #38bdf8;
+  font-family: 'Fira Code', monospace;
+  font-weight: 500;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  flex-shrink: 0;
+}
+.statusbar-left,
+.statusbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.statusbar-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s;
+  height: 20px;
+}
+.statusbar-item:hover { background: rgba(56, 189, 248, 0.2); }
+.statusbar-item.sb-branch { background: rgba(56, 189, 248, 0.15); }
+.statusbar-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+  animation: sbDotPulse 2s ease-in-out infinite;
+}
+@keyframes sbDotPulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(34, 197, 94, 0.6); }
+  50%       { box-shadow: 0 0 12px rgba(34, 197, 94, 0.9); }
+}
+
+/* ── Section Headers (outside IDE panels) ─────────────────── */
+.ide-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 0 12px;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.ide-section-heading .ish-icon {
+  font-size: 1.1rem;
+}
+.ide-section-heading h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0;
+  font-family: 'Fira Code', monospace;
+}
+.ide-section-heading .ish-badge {
+  margin-left: auto;
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  color: #38bdf8;
+  font-family: 'Fira Code', monospace;
+}
+
+/* ── Project Repo Cards (upgraded) ────────────────────────── */
+.ide-repo-card {
+  background: rgba(18, 22, 30, 0.95);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+.ide-repo-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #38bdf8, #818cf8, transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.ide-repo-card:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+  transform: translateY(-6px);
+  box-shadow: 0 24px 50px rgba(0,0,0,0.65), 0 0 35px rgba(56, 189, 248, 0.12);
+}
+.ide-repo-card:hover::before { opacity: 1; }
+
+.ide-repo-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.ide-repo-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.ide-repo-name {
+  font-weight: 700;
+  font-family: 'Fira Code', monospace;
+  color: #38bdf8;
+  font-size: 0.98rem;
+  transition: color 0.2s;
+  line-height: 1.3;
+}
+.ide-repo-card:hover .ide-repo-name { color: #7dd3fc; }
+.ide-repo-visibility {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: rgba(39, 201, 63, 0.1);
+  border: 1px solid rgba(39, 201, 63, 0.3);
+  color: #27c93f;
+  font-family: 'Fira Code', monospace;
+  margin-left: auto;
+}
+.ide-repo-desc {
+  font-size: 0.84rem;
+  color: #64748b;
+  line-height: 1.65;
+  flex: 1;
+  margin-bottom: 1rem;
+  font-family: 'Inter', sans-serif;
+}
+.ide-repo-stats {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.74rem;
+  color: #475569;
+  font-family: 'Fira Code', monospace;
+  margin-bottom: 10px;
+}
+.ide-repo-stats span { display: flex; align-items: center; gap: 4px; }
+.ide-repo-stats .rs-stars { color: #fbbf24; }
+.ide-repo-stats .rs-forks { color: #818cf8; }
+.ide-repo-stats .rs-lang  { color: #38bdf8; }
+.ide-repo-tech-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.ide-tech-pill {
+  padding: 3px 10px;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 6px;
+  font-size: 0.72rem;
+  color: #38bdf8;
+  font-family: 'Fira Code', monospace;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.ide-tech-pill:hover {
+  background: rgba(56, 189, 248, 0.18);
+  border-color: rgba(56, 189, 248, 0.45);
+}
+
+/* ── Experience Git Timeline ───────────────────────────────── */
+.ide-git-log-wrap {
+  font-family: 'Fira Code', monospace;
+}
+.ide-git-commit {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 2rem;
+  position: relative;
+}
+.ide-git-commit::after {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 28px;
+  bottom: -2rem;
+  width: 2px;
+  background: linear-gradient(to bottom, rgba(56, 189, 248, 0.4), rgba(56, 189, 248, 0.05));
+}
+.ide-git-commit:last-child::after { display: none; }
+.ide-git-commit-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+.ide-git-node {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, 0.15);
+  border: 2px solid #38bdf8;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  color: #38bdf8;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.ide-git-commit:hover .ide-git-node {
+  background: #38bdf8;
+  color: #0d1117;
+  box-shadow: 0 0 22px rgba(56, 189, 248, 0.8);
+}
+.ide-git-body {
+  flex: 1;
+  background: rgba(18, 22, 30, 0.9);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  transition: all 0.25s;
+}
+.ide-git-commit:hover .ide-git-body {
+  border-color: rgba(56, 189, 248, 0.3);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+}
+.ide-git-commit-hash {
+  font-size: 0.72rem;
+  color: #f59e0b;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.ide-git-commit-hash::before {
+  content: 'git commit';
+  color: #475569;
+  font-weight: 400;
+  font-size: 0.68rem;
+}
+.ide-git-commit-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 2px;
+  font-family: 'Inter', sans-serif;
+}
+.ide-git-commit-company {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: #38bdf8;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.ide-git-commit-date {
+  font-size: 0.72rem;
+  color: #475569;
+  font-family: 'Fira Code', monospace;
+  margin-left: auto;
+}
+.ide-git-commit-desc {
+  font-size: 0.88rem;
+  color: #64748b;
+  line-height: 1.65;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 10px;
+}
+.ide-git-highlights {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px;
+}
+.ide-git-highlights li {
+  font-size: 0.84rem;
+  color: #94a3b8;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  padding: 2px 0;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.ide-git-highlights li::before {
+  content: '+';
+  color: #22c55e;
+  font-weight: 700;
+  font-family: 'Fira Code', monospace;
+  flex-shrink: 0;
+}
+
+/* ── IDE Profile Card (right column) ──────────────────────── */
+.ide-profile-card {
+  background: linear-gradient(165deg, rgba(20, 25, 36, 0.98) 0%, rgba(13, 17, 23, 0.98) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 20px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 24px 60px rgba(0,0,0,0.75),
+    0 0 40px rgba(56, 189, 248, 0.12),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ide-profile-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 50% 15%, rgba(56, 189, 248, 0.12), transparent 50%);
+  pointer-events: none;
+}
+.ide-profile-card:hover {
+  border-color: rgba(56, 189, 248, 0.5);
+  transform: translateY(-6px);
+  box-shadow:
+    0 36px 80px rgba(0,0,0,0.85),
+    0 0 55px rgba(56, 189, 248, 0.22),
+    inset 0 1px 0 rgba(255,255,255,0.18);
+}
+
+.ide-avatar-wrap {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 1.25rem;
+}
+.ide-avatar-ring {
+  width: 120px;
+  height: 120px;
+  border-radius: 20px;
+  padding: 3px;
+  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #ec4899 100%);
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.45);
+  animation: avatarRingPulse 3.5s ease-in-out infinite;
+}
+@keyframes avatarRingPulse {
+  0%, 100% { box-shadow: 0 0 25px rgba(56, 189, 248, 0.4); }
+  50%       { box-shadow: 0 0 45px rgba(99, 102, 241, 0.6); }
+}
+.ide-avatar-ring img,
+.ide-avatar-ring .ide-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 17px;
+  background: #0d1117;
+}
+.ide-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #38bdf8;
+  background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+  letter-spacing: -0.04em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.ide-avatar-status {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(13, 17, 23, 0.9);
+  border: 2px solid rgba(13, 17, 23, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ide-avatar-status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
+  animation: sbDotPulse 2s ease-in-out infinite;
+}
+
+.ide-card-name {
+  font-weight: 800;
+  font-size: 1.3rem;
+  margin-bottom: 0.3rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #93c5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  letter-spacing: -0.02em;
+}
+.ide-card-role {
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+  font-family: 'Inter', sans-serif;
+}
+.ide-card-available {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #4ade80;
+  margin-bottom: 1.25rem;
+  font-family: 'Fira Code', monospace;
+}
+
+/* Telemetry mini-table */
+.ide-telemetry {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+.ide-telemetry-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  font-size: 0.75rem;
+  font-family: 'Fira Code', monospace;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.ide-telemetry-row:last-child { border-bottom: none; }
+.ide-telemetry-row .tr-key { color: #475569; }
+.ide-telemetry-row .tr-val { font-weight: 700; }
+.ide-telemetry-row .tr-blue   { color: #38bdf8; }
+.ide-telemetry-row .tr-purple { color: #c084fc; }
+.ide-telemetry-row .tr-green  { color: #4ade80; }
+.ide-telemetry-row .tr-orange { color: #fb923c; }
+
+/* CTA Buttons */
+.ide-cta-primary {
+  display: block;
+  width: 100%;
+  padding: 11px 20px;
+  background: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%);
+  border: none;
+  border-radius: 12px;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.35);
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.01em;
+  margin-bottom: 8px;
+}
+.ide-cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.55);
+  color: #ffffff;
+}
+.ide-cta-ghost {
+  display: block;
+  width: 100%;
+  padding: 9px 20px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+  font-size: 0.84rem;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s;
+  font-family: 'Fira Code', monospace;
+}
+.ide-cta-ghost:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  transform: translateY(-1px);
+}
+
+/* ── Skills Section ────────────────────────────────────────── */
+.ide-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+.ide-skill-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 10px;
+  background: rgba(18, 22, 30, 0.95);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: default;
+  text-align: center;
+}
+.ide-skill-chip:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 20px rgba(56, 189, 248, 0.1);
+  background: rgba(56, 189, 248, 0.07);
+}
+.ide-skill-chip .sc-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #94a3b8;
+  font-family: 'Fira Code', monospace;
+  transition: color 0.2s;
+}
+.ide-skill-chip:hover .sc-name { color: #38bdf8; }
+.ide-skill-chip .sc-bar-track {
+  width: 100%;
+  height: 3px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.ide-skill-chip .sc-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #38bdf8, #818cf8);
+  transform-origin: left;
+  animation: skillBarGrow 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform: scaleX(0);
+}
+.ide-skill-category-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #38bdf8;
+  font-family: 'Fira Code', monospace;
+  padding: 12px 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ide-skill-category-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(56, 189, 248, 0.2);
+}
+
+/* Education & Cert Cards */
+.ide-edu-card {
+  background: rgba(18, 22, 30, 0.95);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  transition: all 0.25s;
+  margin-bottom: 10px;
+}
+.ide-edu-card:hover {
+  border-color: rgba(56, 189, 248, 0.3);
+  transform: translateX(4px);
+}
+.ide-edu-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.ide-edu-degree {
+  font-weight: 700;
+  color: #f1f5f9;
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+  font-family: 'Inter', sans-serif;
+}
+.ide-edu-institution {
+  font-size: 0.82rem;
+  color: #38bdf8;
+  font-weight: 600;
+  margin-bottom: 2px;
+  font-family: 'Inter', sans-serif;
+}
+.ide-edu-meta {
+  font-size: 0.75rem;
+  color: #475569;
+  font-family: 'Fira Code', monospace;
+}
+
+/* Cert badge */
+.ide-cert-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(18, 22, 30, 0.95);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  transition: all 0.25s;
+  margin-bottom: 8px;
+}
+.ide-cert-badge:hover {
+  border-color: rgba(56, 189, 248, 0.3);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+.ide-cert-icon {
+  font-size: 1.5rem;
+}
+.ide-cert-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #f1f5f9;
+  font-family: 'Inter', sans-serif;
+}
+.ide-cert-org {
+  font-size: 0.75rem;
+  color: #475569;
+  font-family: 'Fira Code', monospace;
+}
+
+/* ── IDE Contact Form Area ─────────────────────────────────── */
+.ide-contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+@media (max-width: 768px) { .ide-contact-grid { grid-template-columns: 1fr; } }
+.ide-contact-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 1.25rem 1.5rem;
+  background: rgba(18, 22, 30, 0.95);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  text-decoration: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ide-contact-link:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.6), 0 0 25px rgba(56, 189, 248, 0.12);
+}
+.ide-contact-link-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.ide-contact-link-label {
+  font-size: 0.72rem;
+  color: #475569;
+  font-family: 'Fira Code', monospace;
+  margin-bottom: 2px;
+}
+.ide-contact-link-value {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #94a3b8;
+  font-family: 'Inter', sans-serif;
+  transition: color 0.2s;
+}
+.ide-contact-link:hover .ide-contact-link-value { color: #38bdf8; }
+
+/* Responsive breakpoints */
+@media (max-width: 991px) {
+  .vscode-workbench { flex-direction: column; }
+}
