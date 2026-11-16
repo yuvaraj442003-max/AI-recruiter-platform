@@ -693,6 +693,44 @@
         <!-- Alert Notification -->
         <div id="builder-alert" class="alert d-none py-2 px-3 mb-4 rounded-3" role="alert"></div>
 
+        <!-- Portfolio Live Analytics & Telemetry Strip -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4" style="background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(226,232,240,0.9) !important;">
+          <div class="card-body p-3 p-md-3">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+              <!-- Left: View count & Live status -->
+              <div class="d-flex align-items-center flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-2 px-3 py-1.5 rounded-pill shadow-xs" style="background: rgba(79, 70, 229, 0.08); border: 1px solid rgba(79, 70, 229, 0.2);">
+                  <span class="fs-6">👀</span>
+                  <span class="small fw-bold text-primary"><span id="telemetry-views-count">0</span> Recruiter Views</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <span id="telemetry-pub-beacon" class="badge rounded-pill px-3 py-1.5 fw-semibold small bg-success-subtle text-success border border-success-subtle d-inline-flex align-items-center gap-1.5">
+                    <span class="pulsing-dot" style="width: 7px; height: 7px; background: #10b981; border-radius: 50%;"></span>
+                    <span id="telemetry-pub-text">Live &amp; Discoverable</span>
+                  </span>
+                  <a id="telemetry-public-link" href="#" target="_blank" class="small fw-semibold text-decoration-none d-flex align-items-center gap-1 text-secondary" title="Open live public portfolio in new tab">
+                    <span id="telemetry-slug-url" class="font-monospace">/portfolio/candidate</span>
+                    <span>↗</span>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Right: Quick actions -->
+              <div class="d-flex align-items-center flex-wrap gap-2">
+                <button type="button" id="btn-telemetry-sync" class="btn btn-sm btn-outline-primary fw-semibold d-flex align-items-center gap-1.5 py-1.5 px-3 rounded-pill" title="Synchronize latest resume & profile facts from database">
+                  <span>⚡</span> Sync Profile
+                </button>
+                <button type="button" id="btn-telemetry-share" class="btn btn-sm btn-outline-secondary fw-semibold d-flex align-items-center gap-1.5 py-1.5 px-3 rounded-pill" title="Open Recruiter Sharing Suite & QR Code">
+                  <span>📱</span> Share &amp; QR
+                </button>
+                <button type="button" id="btn-telemetry-copy-url" class="btn btn-sm btn-outline-dark fw-semibold d-flex align-items-center gap-1.5 py-1.5 px-3 rounded-pill" title="Copy public portfolio link">
+                  <span>📋</span> Copy Link
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- 2-Column Split Workspace -->
         <div class="row g-4">
 
@@ -2199,7 +2237,26 @@
         </div>
         <div class="modal-body py-3">
           <div class="row g-3">
-            <div class="col-lg-8">
+            <div class="col-lg-7">
+              <!-- Direct 1-Click Social Sharing -->
+              <div class="mb-3 p-2.5 rounded-3 bg-light border d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <span class="small fw-bold text-secondary">🚀 Direct Share:</span>
+                <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                  <a id="btn-share-linkedin" href="#" target="_blank" class="btn btn-sm btn-outline-primary fw-semibold py-1 px-2.5 rounded-pill" style="font-size: 0.78rem;">
+                    <span>in</span> LinkedIn
+                  </a>
+                  <a id="btn-share-twitter" href="#" target="_blank" class="btn btn-sm btn-outline-dark fw-semibold py-1 px-2.5 rounded-pill" style="font-size: 0.78rem;">
+                    <span>𝕏</span> Post
+                  </a>
+                  <a id="btn-share-whatsapp" href="#" target="_blank" class="btn btn-sm btn-outline-success fw-semibold py-1 px-2.5 rounded-pill" style="font-size: 0.78rem;">
+                    <span>💬</span> WhatsApp
+                  </a>
+                  <button type="button" id="btn-modal-copy-url" class="btn btn-sm btn-dark fw-semibold py-1 px-2.5 rounded-pill" style="font-size: 0.78rem;">
+                    <span>📋</span> Copy URL
+                  </button>
+                </div>
+              </div>
+
               <!-- Pitch Tabs -->
               <ul class="nav nav-pills gap-2 mb-3" id="pitchTabs" role="tablist">
                 <li class="nav-item">
@@ -2233,12 +2290,31 @@
                 </div>
               </div>
             </div>
-            <div class="col-lg-4 text-center border-start ps-lg-4">
-              <div class="fw-bold small text-muted mb-2">📱 MOBILE SCAN &amp; PREVIEW</div>
-              <div class="p-2 bg-light rounded-3 d-inline-block border mb-2">
-                <img id="qr-code-img" src="" alt="Portfolio QR Code" style="width: 140px; height: 140px;" class="rounded" />
+            <div class="col-lg-5 text-center border-start ps-lg-4">
+              <!-- Visual Social Card Preview -->
+              <div class="fw-bold small text-muted mb-2 text-start">🎨 SOCIAL PREVIEW CARD</div>
+              <div class="card border rounded-3 text-start p-2.5 mb-3 shadow-xs bg-light" style="font-size: 0.8rem;">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <div id="social-card-avatar" class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold" style="width: 38px; height: 38px; font-size: 0.9rem;">CP</div>
+                  <div class="overflow-hidden">
+                    <div id="social-card-name" class="fw-bold text-dark text-truncate">Candidate Name</div>
+                    <div id="social-card-headline" class="text-muted small text-truncate" style="font-size: 0.72rem;">Full Stack Developer</div>
+                  </div>
+                </div>
+                <div class="small text-secondary mb-1">Interactive Verified Candidate Portfolio</div>
+                <div id="social-card-url" class="font-monospace text-primary fw-semibold" style="font-size: 0.7rem;">https://ai-recruiter.io/portfolio/candidate</div>
               </div>
-              <small class="text-muted d-block" style="font-size: 0.72rem;">Scan with your phone camera to inspect live responsive portfolio.</small>
+
+              <!-- QR Code & Download -->
+              <div class="fw-bold small text-muted mb-1 text-start">📱 SCANNABLE QR CODE</div>
+              <div class="p-2 bg-light rounded-3 d-inline-block border mb-2">
+                <img id="qr-code-img" src="" alt="Portfolio QR Code" style="width: 130px; height: 130px;" class="rounded" />
+              </div>
+              <div class="d-flex justify-content-center gap-2">
+                <button type="button" id="btn-download-qr" class="btn btn-sm btn-outline-primary fw-semibold py-1 px-2.5 rounded-pill" style="font-size: 0.75rem;">
+                  <span>📥</span> Download QR (PNG)
+                </button>
+              </div>
             </div>
           </div>
         </div>

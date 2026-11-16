@@ -445,6 +445,34 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     updatePublishStatusBadge();
 
+    // Update Live Visitor Analytics & Telemetry Bar
+    const telemetryViews = document.getElementById("telemetry-views-count");
+    const telemetryPubBeacon = document.getElementById("telemetry-pub-beacon");
+    const telemetryPubText = document.getElementById("telemetry-pub-text");
+    const telemetryPublicLink = document.getElementById("telemetry-public-link");
+    const telemetrySlugUrl = document.getElementById("telemetry-slug-url");
+    const isPub = Boolean(currentPortfolio.is_published);
+    const slugStr = currentPortfolio.slug || "candidate";
+
+    if (telemetryViews) {
+      telemetryViews.textContent = currentPortfolio.views_count != null ? currentPortfolio.views_count : 0;
+    }
+    if (telemetryPubBeacon && telemetryPubText) {
+      if (isPub) {
+        telemetryPubBeacon.className = "badge rounded-pill px-3 py-1.5 fw-semibold small bg-success-subtle text-success border border-success-subtle d-inline-flex align-items-center gap-1.5";
+        telemetryPubText.textContent = "Live & Discoverable";
+      } else {
+        telemetryPubBeacon.className = "badge rounded-pill px-3 py-1.5 fw-semibold small bg-warning-subtle text-warning border border-warning-subtle d-inline-flex align-items-center gap-1.5";
+        telemetryPubText.textContent = "Draft (Unpublished)";
+      }
+    }
+    if (telemetryPublicLink) {
+      telemetryPublicLink.href = `/portfolio/${slugStr}`;
+    }
+    if (telemetrySlugUrl) {
+      telemetrySlugUrl.textContent = `/portfolio/${slugStr}`;
+    }
+
     // Prompt Center Sync: Pre-fill existing prompt or smart candidate draft so it's always editable
     if (inputAiPrompt) {
       if (currentPortfolio.generation_prompt && currentPortfolio.generation_prompt.trim()) {
@@ -1861,8 +1889,70 @@ document.addEventListener("DOMContentLoaded", async () => {
           textPitchQuick.value = `Hey! Here is my updated interactive engineering portfolio with live case studies and verified impact metrics: ${publicUrl}`;
         }
 
+        // Populate Direct 1-Click Social Share Links
+        const shareTitle = encodeURIComponent(`Explore my interactive developer portfolio: ${name} — ${headline}`);
+        const btnShareLi = document.getElementById("btn-share-linkedin");
+        const btnShareTw = document.getElementById("btn-share-twitter");
+        const btnShareWa = document.getElementById("btn-share-whatsapp");
+        const btnModalCopyUrl = document.getElementById("btn-modal-copy-url");
+        const btnDownloadQr = document.getElementById("btn-download-qr");
+
+        if (btnShareLi) {
+          btnShareLi.href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(publicUrl)}`;
+        }
+        if (btnShareTw) {
+          btnShareTw.href = `https://twitter.com/intent/tweet?text=${shareTitle}&url=${encodeURIComponent(publicUrl)}`;
+        }
+        if (btnShareWa) {
+          btnShareWa.href = `https://api.whatsapp.com/send?text=${shareTitle}%20${encodeURIComponent(publicUrl)}`;
+        }
+        if (btnModalCopyUrl) {
+          btnModalCopyUrl.onclick = () => {
+            navigator.clipboard.writeText(publicUrl).then(() => {
+              const orig = btnModalCopyUrl.innerHTML;
+              btnModalCopyUrl.innerHTML = `<span>✓</span> Copied!`;
+              setTimeout(() => { btnModalCopyUrl.innerHTML = orig; }, 2000);
+            });
+          };
+        }
+
+        // Social Card Preview
+        const cardAvatar = document.getElementById("social-card-avatar");
+        const cardName = document.getElementById("social-card-name");
+        const cardHl = document.getElementById("social-card-headline");
+        const cardUrl = document.getElementById("social-card-url");
+        if (cardAvatar) {
+          if (currentPortfolio.profile_image && !currentPortfolio.profile_image.includes("ui-avatars.com")) {
+            cardAvatar.innerHTML = `<img src="${escapeHtml(currentPortfolio.profile_image)}" class="w-100 h-100 rounded-circle object-fit-cover" alt="" />`;
+          } else {
+            cardAvatar.textContent = name.split(/\s+/).map(p => p[0]).filter(Boolean).slice(0, 2).join("").toUpperCase() || "CP";
+          }
+        }
+        if (cardName) cardName.textContent = name;
+        if (cardHl) cardHl.textContent = headline || "Professional Portfolio";
+        if (cardUrl) cardUrl.textContent = publicUrl;
+
         if (qrCodeImg) {
-          qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(publicUrl)}`;
+          const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(publicUrl)}`;
+          qrCodeImg.src = qrSrc;
+          if (btnDownloadQr) {
+            btnDownloadQr.onclick = async () => {
+              try {
+                const response = await fetch(qrSrc);
+                const blob = await response.blob();
+                const dUrl = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = dUrl;
+                a.download = `portfolio-qr-${safeSlug}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(dUrl);
+              } catch (e) {
+                window.open(qrSrc, "_blank");
+              }
+            };
+          }
         }
 
         if (typeof bootstrap !== "undefined" && recruiterPitchModalEl) {
@@ -1888,6 +1978,58 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       });
     });
+
+    // Telemetry Sync & Share listeners
+    const btnTelemSync = document.getElementById("btn-telemetry-sync");
+    const btnTelemShare = document.getElementById("btn-telemetry-share");
+    const btnTelemCopy = document.getElementById("btn-telemetry-copy-url");
+
+    if (btnTelemSync) {
+      btnTelemSync.addEventListener("click", async () => {
+        btnTelemSync.disabled = true;
+        btnTelemSync.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Syncing...`;
+        try {
+          const res = await portfolioAPI.verifyCandidateDetails();
+          if (res && res.data) {
+            const d = res.data;
+            if (d.name && d.name.toLowerCase() !== "candidate") currentPortfolio.candidate_name = d.name;
+            if (d.headline) currentPortfolio.professional_headline = d.headline;
+            if (d.summary) currentPortfolio.about = d.summary;
+            if (d.skills && Array.isArray(d.skills) && d.skills.length > 0) currentPortfolio.skills = d.skills;
+            if (d.location) {
+              if (!currentPortfolio.social_links) currentPortfolio.social_links = {};
+              currentPortfolio.social_links.location = d.location;
+            }
+            syncDataToUI();
+            renderPreview();
+            showAlert("⚡ Profile details synced successfully from candidate record!", "success");
+          }
+        } catch (err) {
+          showAlert("Failed to sync profile: " + (err.message || "Unknown error"), "warning");
+        } finally {
+          btnTelemSync.disabled = false;
+          btnTelemSync.innerHTML = `<span>⚡</span> Sync Profile`;
+        }
+      });
+    }
+
+    if (btnTelemShare) {
+      btnTelemShare.addEventListener("click", () => {
+        if (btnRecruiterPitchModal) btnRecruiterPitchModal.click();
+      });
+    }
+
+    if (btnTelemCopy) {
+      btnTelemCopy.addEventListener("click", () => {
+        const slug = currentPortfolio?.slug || "candidate";
+        const pubUrl = `${window.location.origin}/portfolio/${slug}`;
+        navigator.clipboard.writeText(pubUrl).then(() => {
+          const orig = btnTelemCopy.innerHTML;
+          btnTelemCopy.innerHTML = `<span class="text-success">✓ Copied!</span>`;
+          setTimeout(() => { btnTelemCopy.innerHTML = orig; }, 2000);
+        });
+      });
+    }
   }
 
   /**
@@ -3206,6 +3348,8 @@ ${currentStageHtml}
     const renderedHtml = previewStage.innerHTML;
     const title = `${portfolio.candidate_name || 'Candidate'} — ${portfolio.professional_headline || 'Portfolio'}`;
     const font = portfolio.font || "Plus Jakarta Sans";
+    const primaryColor = portfolio.primary_color || "#4f46e5";
+    const secondaryColor = portfolio.secondary_color || "#06b6d4";
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -3216,14 +3360,24 @@ ${currentStageHtml}
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&family=Syne:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/portfolio-themes.css?v=5.0">
   <style>
+    :root {
+      --theme-primary: ${primaryColor};
+      --theme-secondary: ${secondaryColor};
+      --theme-font: '${font}', system-ui, -apple-system, sans-serif;
+    }
     body {
-      font-family: '${font}', system-ui, -apple-system, sans-serif;
+      font-family: var(--theme-font);
       margin: 0;
       padding: 0;
       background-color: ${portfolio.dark_mode ? '#090d16' : '#f8fafc'};
       color: ${portfolio.dark_mode ? '#f8fafc' : '#0f172a'};
+      min-height: 100vh;
+    }
+    .portfolio-shell {
+      min-height: 100vh;
     }
   </style>
 </head>
@@ -3231,6 +3385,7 @@ ${currentStageHtml}
   <div id="portfolio-root">
     ${renderedHtml}
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>`;
   }

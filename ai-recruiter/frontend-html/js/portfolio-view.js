@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnFloatingTop = document.getElementById("btn-floating-top");
   const btnFloatingHire = document.getElementById("btn-floating-hire");
   const btnNavHireMe = document.getElementById("btn-nav-hire-me");
+  const btnNavShareQr = document.getElementById("btn-nav-share-qr");
   const btnToggleTheme = document.getElementById("btn-toggle-portfolio-theme");
   const btnPrintPortfolio = document.getElementById("btn-print-portfolio");
   const progressBar = document.getElementById("portfolio-scroll-progress");
@@ -351,14 +352,75 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     setupProjectModalBinding();
 
-    // Floating Copy & Share Link
-    if (btnFloatingCopy) {
-      btnFloatingCopy.addEventListener("click", () => {
-        navigator.clipboard.writeText(window.location.href).then(() => {
-          showPortfolioToast("Portfolio Link Copied to Clipboard!");
-        });
-      });
+    // Recruiter & Visitor Share Modal with QR Code
+    function openPublicShareModal() {
+      const modalEl = document.getElementById("publicShareModal");
+      const urlInput = document.getElementById("pub-share-url-input");
+      const qrImg = document.getElementById("pub-share-qr-img");
+      const titleEl = document.getElementById("pub-share-modal-title");
+      const blurbText = document.getElementById("pub-share-blurb-text");
+      const btnCopyUrl = document.getElementById("pub-share-btn-copy");
+      const btnCopyBlurb = document.getElementById("pub-share-btn-copy-blurb");
+      const btnLi = document.getElementById("pub-share-btn-linkedin");
+      const btnTw = document.getElementById("pub-share-btn-twitter");
+      const btnWa = document.getElementById("pub-share-btn-whatsapp");
+      const btnEm = document.getElementById("pub-share-btn-email");
+
+      const pubUrl = window.location.href;
+      const cName = data.candidate_name || "Candidate";
+      const cHead = data.professional_headline || "Software Engineer";
+
+      if (urlInput) urlInput.value = pubUrl;
+      if (titleEl) titleEl.textContent = `Share ${cName}'s Portfolio`;
+      if (blurbText) blurbText.value = `${cName} — ${cHead}\nInteractive Portfolio: ${pubUrl}`;
+
+      if (qrImg) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(pubUrl)}`;
+      }
+
+      if (btnLi) {
+        btnLi.href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pubUrl)}`;
+      }
+      if (btnTw) {
+        btnTw.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${cName}'s portfolio (${cHead}): `)}&url=${encodeURIComponent(pubUrl)}`;
+      }
+      if (btnWa) {
+        btnWa.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out ${cName}'s portfolio: `)}${encodeURIComponent(pubUrl)}`;
+      }
+      if (btnEm) {
+        btnEm.href = `mailto:?subject=${encodeURIComponent(`${cName} — Professional Portfolio`)}&body=${encodeURIComponent(`Hi,\n\nI wanted to share ${cName}'s portfolio (${cHead}):\n${pubUrl}\n\nBest regards.`)}`;
+      }
+
+      if (btnCopyUrl) {
+        btnCopyUrl.onclick = () => {
+          navigator.clipboard.writeText(pubUrl).then(() => {
+            btnCopyUrl.textContent = "Copied!";
+            showPortfolioToast("Portfolio Link Copied to Clipboard!");
+            setTimeout(() => { btnCopyUrl.textContent = "Copy"; }, 2000);
+          });
+        };
+      }
+
+      if (btnCopyBlurb) {
+        btnCopyBlurb.onclick = () => {
+          if (blurbText) {
+            navigator.clipboard.writeText(blurbText.value).then(() => {
+              btnCopyBlurb.textContent = "Copied!";
+              showPortfolioToast("Forwarding Blurb Copied!");
+              setTimeout(() => { btnCopyBlurb.textContent = "Copy Text"; }, 2000);
+            });
+          }
+        };
+      }
+
+      if (window.bootstrap && modalEl) {
+        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modal.show();
+      }
     }
+
+    if (btnNavShareQr) btnNavShareQr.addEventListener("click", openPublicShareModal);
+    if (btnFloatingCopy) btnFloatingCopy.addEventListener("click", openPublicShareModal);
 
   } catch (err) {
     console.error("Failed loading public portfolio:", err);
