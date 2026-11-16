@@ -127,6 +127,7 @@ class CandidateTestAttempt(Base, TimestampMixin):
     percentage: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     passed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     time_taken_seconds: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    assigned_question_ids_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     test: Mapped["AptitudeTest"] = relationship("AptitudeTest", back_populates="candidate_attempts")
     answers: Mapped[list["CandidateAnswer"]] = relationship("CandidateAnswer", back_populates="attempt", cascade="all, delete-orphan")

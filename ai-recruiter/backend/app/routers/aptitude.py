@@ -61,7 +61,10 @@ from app.services.ai_aptitude_service import (
     regenerate_single_question_ai,
 )
 from app.services.sprint_question_service import (
+    generate_dynamic_sprint_question,
     get_non_repeating_daily_sprint_questions,
+    get_non_repeating_test_questions,
+    get_non_repeating_topic_questions,
     mark_questions_as_seen,
 )
 from app.services.qdrant_service import (
@@ -721,16 +724,11 @@ def get_aptitude_test_by_id_endpoint(
         return APIResponse(success=True, message="Test details loaded", data=serialized)
 
     # Candidate view: Do NOT leak correct answers or explanations!
+    # Guarantees non-repeating questions on subsequent attempts!
     if test.status != "published" or not test.is_active:
         raise PermissionDeniedError("This test is not currently published for candidates.")
 
-    questions = db.query(AptitudeQuestion).filter(AptitudeQuestion.test_id == test.id).all()
-    if not questions and test.question_ids_json:
-        try:
-            q_ids = [uuid.UUID(qid) for qid in json.loads(test.question_ids_json)]
-            questions = db.query(AptitudeQuestion).filter(AptitudeQuestion.id.in_(q_ids)).all()
-        except Exception:
-            questions = []
+    questions = get_non_repeating_test_questions(db=db, user_id=current_user.id, test=test)
 
     questions_taking = []
     for q in questions:
@@ -806,6 +804,7 @@ def start_candidate_test_attempt(
         .first()
     )
 
+    questions = []
     if existing_attempt:
         attempt = existing_attempt
         # Check if expired
@@ -816,22 +815,34 @@ def start_candidate_test_attempt(
             attempt.status = "Expired"
             db.commit()
             raise BadRequestError("Your test session has expired. Please request a re-attempt.")
+
+        if attempt.assigned_question_ids_json:
+            try:
+                assigned_qids = [uuid.UUID(qid) for qid in json.loads(attempt.assigned_question_ids_json)]
+                questions = db.query(AptitudeQuestion).filter(AptitudeQuestion.id.in_(assigned_qids)).all()
+            except Exception:
+                questions = []
+
+        if not questions:
+            questions = get_non_repeating_test_questions(db=db, user_id=current_user.id, test=test)
+            attempt.assigned_question_ids_json = json.dumps([str(q.id) for q in questions])
+            db.commit()
     else:
-        # Create new attempt
+        # Create new attempt with fresh, non-repeating questions
+        questions = get_non_repeating_test_questions(db=db, user_id=current_user.id, test=test)
+        q_ids = [str(q.id) for q in questions]
         attempt = CandidateTestAttempt(
             user_id=current_user.id,
             test_id=test.id,
             status="In Progress",
             started_at=now,
-            total_marks=test.total_marks,
+            total_marks=test.total_marks or float(len(questions)),
+            assigned_question_ids_json=json.dumps(q_ids),
         )
         db.add(attempt)
         db.commit()
         db.refresh(attempt)
         remaining_seconds = test.duration_minutes * 60
-
-    # Fetch questions
-    questions = db.query(AptitudeQuestion).filter(AptitudeQuestion.test_id == test.id).all()
     letters = ["A", "B", "C", "D"]
 
     taking_questions: List[CandidateTakingQuestion] = []
@@ -931,8 +942,16 @@ def submit_candidate_test_attempt(
             data=_build_test_result_response(attempt, res, test, db),
         )
 
-    # Load all questions for this test
-    questions = db.query(AptitudeQuestion).filter(AptitudeQuestion.test_id == test.id).all()
+    # Load all questions for this test attempt
+    if attempt.assigned_question_ids_json:
+        try:
+            q_ids = [uuid.UUID(qid) for qid in json.loads(attempt.assigned_question_ids_json)]
+            questions = db.query(AptitudeQuestion).filter(AptitudeQuestion.id.in_(q_ids)).all()
+        except Exception:
+            questions = db.query(AptitudeQuestion).filter(AptitudeQuestion.test_id == test.id).all()
+    else:
+        questions = db.query(AptitudeQuestion).filter(AptitudeQuestion.test_id == test.id).all()
+
     q_map = {q.id: q for q in questions}
 
     # Map candidate answers by question_id
@@ -1052,6 +1071,17 @@ def submit_candidate_test_attempt(
     db.refresh(result)
     db.refresh(attempt)
 
+    # Record submitted test questions as seen to prevent repeats
+    try:
+        mark_questions_as_seen(
+            db=db,
+            user_id=current_user.id,
+            question_ids=[q.id for q in questions],
+            sprint_type="test_mock",
+        )
+    except Exception as exc:
+        logger.warning(f"Failed to mark test questions as seen: {exc}")
+
     logger.info(
         f"Candidate {current_user.email} submitted test '{test.title}' (Attempt: {attempt.id}) - Score: {total_score}/{total_marks_possible} ({pct}%)"
     )
@@ -1071,7 +1101,14 @@ def _build_test_result_response(
 ) -> CandidateTestResultResponse:
     """Builds the comprehensive results response with full question-by-question review."""
     letters = ["A", "B", "C", "D"]
-    questions = db.query(AptitudeQuestion).filter(AptitudeQuestion.test_id == test.id).all()
+    if attempt.assigned_question_ids_json:
+        try:
+            q_ids = [uuid.UUID(qid) for qid in json.loads(attempt.assigned_question_ids_json)]
+            questions = db.query(AptitudeQuestion).filter(AptitudeQuestion.id.in_(q_ids)).all()
+        except Exception:
+            questions = db.query(AptitudeQuestion).filter(AptitudeQuestion.test_id == test.id).all()
+    else:
+        questions = db.query(AptitudeQuestion).filter(AptitudeQuestion.test_id == test.id).all()
     answers = db.query(CandidateAnswer).filter(CandidateAnswer.attempt_id == attempt.id).all()
     ans_by_qid = {a.question_id: a for a in answers}
 
@@ -1329,12 +1366,24 @@ def get_topic_practice_test_endpoint(
     if not topic:
         raise NotFoundError("Aptitude topic not found")
 
-    questions = db.query(AptitudeQuestion).filter(
-        (AptitudeQuestion.topic_id == topic.id) | (AptitudeQuestion.topic_name == topic.name)
-    ).order_by(AptitudeQuestion.created_at.asc()).all()
+    if current_user.role == UserRole.candidate:
+        questions = get_non_repeating_topic_questions(db=db, user_id=current_user.id, topic=topic, count=10)
+    else:
+        questions = db.query(AptitudeQuestion).filter(
+            (AptitudeQuestion.topic_id == topic.id) | (AptitudeQuestion.topic_name == topic.name)
+        ).order_by(AptitudeQuestion.created_at.asc()).all()
 
     if not questions:
-        raise NotFoundError(f"No practice questions available for topic '{topic.name}'.")
+        new_q = generate_dynamic_sprint_question(
+            db=db,
+            topic_name=topic.name,
+            difficulty="medium",
+            company_tag=f"{topic.name} Practice",
+        )
+        new_q.topic_id = topic.id
+        new_q.topic_name = topic.name
+        db.commit()
+        questions = [new_q]
 
     questions_out = []
     for q in questions:

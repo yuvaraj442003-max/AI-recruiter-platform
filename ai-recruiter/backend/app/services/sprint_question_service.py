@@ -18,6 +18,7 @@ from app.core.database import Base
 from app.models.student import (
     AptitudeAttempt,
     AptitudeQuestion,
+    AptitudeTest,
     AptitudeTopic,
     CandidateAnswer,
     CandidateSprintSeenQuestion,
@@ -136,6 +137,29 @@ def get_candidate_excluded_question_ids(
                     excluded.add(qid)
     except Exception as exc:
         logger.warning(f"Error querying CandidateAnswer history: {exc}")
+
+    # 5. CandidateTestAttempt assigned questions
+    try:
+        assigned_rows = (
+            db.query(CandidateTestAttempt.assigned_question_ids_json)
+            .filter(CandidateTestAttempt.user_id == user_id)
+            .all()
+        )
+        for (assigned_json,) in assigned_rows:
+            if not assigned_json:
+                continue
+            try:
+                data = json.loads(assigned_json)
+                if isinstance(data, list):
+                    for qid_str in data:
+                        try:
+                            excluded.add(uuid.UUID(str(qid_str)))
+                        except (ValueError, TypeError):
+                            pass
+            except Exception:
+                pass
+    except Exception as exc:
+        logger.warning(f"Error querying CandidateTestAttempt assigned questions: {exc}")
 
     return excluded
 
@@ -281,17 +305,36 @@ def _synthesize_parameterized_question(
     difficulty: str,
 ) -> AptitudeQuestion:
     """Generates mathematically verified placement aptitude questions with randomized variables."""
-    generator_types = [
-        "time_and_work",
-        "speed_distance_trains",
-        "profit_loss_markup",
-        "compound_interest",
-        "ratios_partnerships",
-        "pipes_and_cisterns",
-        "permutation_probability",
-        "logical_coding_series",
-        "data_interpretation_growth",
-    ]
+    # Match generator type intelligently based on requested topic keywords
+    tl = (topic_name or "").lower()
+    if any(k in tl for k in ["work", "pipe", "cistern"]):
+        generator_types = ["time_and_work", "pipes_and_cisterns"]
+    elif any(k in tl for k in ["train", "speed", "distance"]):
+        generator_types = ["speed_distance_trains"]
+    elif any(k in tl for k in ["profit", "loss", "discount", "percent"]):
+        generator_types = ["profit_loss_markup"]
+    elif any(k in tl for k in ["interest", "compound", "simple interest"]):
+        generator_types = ["compound_interest"]
+    elif any(k in tl for k in ["ratio", "proportion", "partner"]):
+        generator_types = ["ratios_partnerships"]
+    elif any(k in tl for k in ["probability", "permutation", "combination"]):
+        generator_types = ["permutation_probability"]
+    elif any(k in tl for k in ["series", "number", "logic", "reasoning", "coding"]):
+        generator_types = ["logical_coding_series"]
+    elif any(k in tl for k in ["data", "chart", "table", "graph", "interpret"]):
+        generator_types = ["data_interpretation_growth"]
+    else:
+        generator_types = [
+            "time_and_work",
+            "speed_distance_trains",
+            "profit_loss_markup",
+            "compound_interest",
+            "ratios_partnerships",
+            "pipes_and_cisterns",
+            "permutation_probability",
+            "logical_coding_series",
+            "data_interpretation_growth",
+        ]
     chosen_type = random.choice(generator_types)
 
     if chosen_type == "time_and_work":
@@ -418,7 +461,8 @@ def _synthesize_parameterized_question(
     correct_idx = options.index(ans_str)
 
     q = AptitudeQuestion(
-        topic_id=topic.id if topic else uuid.uuid4(),
+        topic_id=topic.id if topic else None,
+        topic_name=topic.name if topic else topic_name,
         subtopic=subtopic,
         question=question_text,
         options_json=json.dumps(options),
@@ -445,7 +489,7 @@ def get_non_repeating_daily_sprint_questions(
     If database pool runs low on unseen questions, dynamically synthesizes fresh ones.
     """
     ensure_sprint_tables(db)
-    excluded_ids = get_candidate_excluded_question_ids(db, user_id, sprint_type="daily_sprint")
+    excluded_ids = get_candidate_excluded_question_ids(db, user_id)
 
     # Fetch unseen approved questions
     query = db.query(AptitudeQuestion).filter(AptitudeQuestion.status != "archived")
@@ -501,7 +545,7 @@ def get_non_repeating_weekly_sprint_questions(
         .first()
     )
 
-    excluded_ids = get_candidate_excluded_question_ids(db, user_id, sprint_type="weekly_sprint")
+    excluded_ids = get_candidate_excluded_question_ids(db, user_id)
 
     # Parse official weekly question IDs
     default_qids = []
@@ -562,3 +606,149 @@ def get_non_repeating_weekly_sprint_questions(
     )
 
     return selected, True
+
+
+def get_non_repeating_topic_questions(
+    db: Session,
+    user_id: uuid.UUID,
+    topic: AptitudeTopic,
+    count: int = 10,
+) -> List[AptitudeQuestion]:
+    """
+    Returns fresh, non-repeating practice questions for a specific topic.
+    If the candidate has seen all or some existing questions for this topic,
+    dynamically synthesizes fresh questions to guarantee that questions do NOT repeat.
+    """
+    ensure_sprint_tables(db)
+    excluded_ids = get_candidate_excluded_question_ids(db, user_id)
+
+    # Query unseen questions for this topic
+    query = db.query(AptitudeQuestion).filter(
+        AptitudeQuestion.status != "archived",
+        (AptitudeQuestion.topic_id == topic.id) | (AptitudeQuestion.topic_name == topic.name),
+    )
+    if excluded_ids:
+        query = query.filter(~AptitudeQuestion.id.in_(excluded_ids))
+
+    unseen = query.order_by(func.random()).limit(count).all()
+    selected: List[AptitudeQuestion] = list(unseen)
+
+    if len(selected) < count:
+        needed = count - len(selected)
+        logger.info(
+            f"Topic '{topic.name}' practice for candidate {user_id}: "
+            f"dynamically generating {needed} fresh questions to ensure non-repetition."
+        )
+        for _ in range(needed):
+            new_q = generate_dynamic_sprint_question(
+                db=db,
+                topic_name=topic.name,
+                difficulty="medium",
+                company_tag=f"{topic.name} Placement Practice",
+            )
+            # Ensure topic relationship is preserved
+            new_q.topic_id = topic.id
+            new_q.topic_name = topic.name
+            db.commit()
+            selected.append(new_q)
+
+    # Record served questions as seen for this candidate
+    mark_questions_as_seen(
+        db=db,
+        user_id=user_id,
+        question_ids=[q.id for q in selected],
+        sprint_type="topic_practice",
+    )
+    return selected
+
+
+def get_non_repeating_test_questions(
+    db: Session,
+    user_id: uuid.UUID,
+    test: AptitudeTest,
+) -> List[AptitudeQuestion]:
+    """
+    Ensures that when a candidate attends an Aptitude Mock Test,
+    any question previously attempted or seen by the candidate is swapped
+    with a fresh, non-repeating question of matching difficulty and subtopic.
+    """
+    ensure_sprint_tables(db)
+    excluded_ids = get_candidate_excluded_question_ids(db, user_id)
+
+    # 1. Gather baseline questions configured for this test
+    base_questions = db.query(AptitudeQuestion).filter(AptitudeQuestion.test_id == test.id).all()
+    if not base_questions and test.question_ids_json:
+        try:
+            q_ids = [uuid.UUID(qid) for qid in json.loads(test.question_ids_json)]
+            base_questions = db.query(AptitudeQuestion).filter(AptitudeQuestion.id.in_(q_ids)).all()
+        except Exception:
+            base_questions = []
+
+    if not base_questions:
+        base_questions = (
+            db.query(AptitudeQuestion)
+            .filter(AptitudeQuestion.status != "archived")
+            .order_by(func.random())
+            .limit(10)
+            .all()
+        )
+
+    target_count = max(5, len(base_questions))
+    selected: List[AptitudeQuestion] = []
+    used_ids: Set[uuid.UUID] = set()
+
+    for q in base_questions:
+        if q.id not in excluded_ids and q.id not in used_ids:
+            selected.append(q)
+            used_ids.add(q.id)
+        else:
+            # Candidate has already attempted or seen this question.
+            # Replace with a fresh unseen question from DB or synthesize dynamically.
+            sub_q = None
+            candidate_pool = db.query(AptitudeQuestion).filter(
+                AptitudeQuestion.status != "archived",
+                ~AptitudeQuestion.id.in_(excluded_ids.union(used_ids)),
+            )
+            if q.subtopic:
+                sub_q = candidate_pool.filter(AptitudeQuestion.subtopic == q.subtopic).order_by(func.random()).first()
+            if not sub_q and q.topic_name:
+                sub_q = candidate_pool.filter(AptitudeQuestion.topic_name == q.topic_name).order_by(func.random()).first()
+            if not sub_q:
+                sub_q = candidate_pool.order_by(func.random()).first()
+
+            if sub_q:
+                selected.append(sub_q)
+                used_ids.add(sub_q.id)
+            else:
+                # Synthesize fresh question dynamically matching subtopic & difficulty
+                new_q = generate_dynamic_sprint_question(
+                    db=db,
+                    topic_name=q.topic_name or test.title,
+                    subtopic_hint=q.subtopic,
+                    difficulty=q.difficulty or "medium",
+                    company_tag=test.company_tag or test.title or "Placement Mock",
+                )
+                selected.append(new_q)
+                used_ids.add(new_q.id)
+
+    # If count is still less than expected, fill dynamically
+    while len(selected) < target_count:
+        new_q = generate_dynamic_sprint_question(
+            db=db,
+            topic_name=test.title,
+            difficulty="medium",
+            company_tag=test.company_tag or test.title or "Placement Mock",
+        )
+        selected.append(new_q)
+        used_ids.add(new_q.id)
+
+    # Record served questions as seen for this candidate
+    mark_questions_as_seen(
+        db=db,
+        user_id=user_id,
+        question_ids=[q.id for q in selected],
+        sprint_type="test_mock",
+    )
+    return selected
+
+

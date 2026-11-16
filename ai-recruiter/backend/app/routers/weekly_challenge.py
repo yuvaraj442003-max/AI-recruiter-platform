@@ -257,7 +257,8 @@ def get_aptitude_questions_by_topic(
     current_user: User = Depends(require_role(UserRole.candidate, UserRole.recruiter, UserRole.admin)),
 ):
     """Retrieves practice questions for a specific aptitude topic."""
-    questions = get_topic_aptitude_questions(db, topic_slug=topic_slug)
+    user_id = current_user.id if current_user.role == UserRole.candidate else None
+    questions = get_topic_aptitude_questions(db, topic_slug=topic_slug, user_id=user_id)
     return APIResponse(success=True, message=f"Aptitude questions for topic '{topic_slug}'", data=questions)
 
 

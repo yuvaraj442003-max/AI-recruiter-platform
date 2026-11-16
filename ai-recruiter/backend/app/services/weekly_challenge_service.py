@@ -2267,20 +2267,45 @@ def get_aptitude_topics_catalog(db: Session) -> List[Dict[str, Any]]:
     return result
 
 
-def get_topic_aptitude_questions(db: Session, topic_slug: str) -> List[Dict[str, Any]]:
-    """Retrieves practice questions for a specific aptitude topic."""
+def get_topic_aptitude_questions(
+    db: Session,
+    topic_slug: str,
+    user_id: Optional[uuid.UUID] = None,
+) -> List[Dict[str, Any]]:
+    """Retrieves non-repeating practice questions for a specific aptitude topic."""
     ensure_weekly_aptitude_set(db)
     clean_slug = topic_slug.strip().lower()
 
-    t_obj = db.query(AptitudeTopic).filter(AptitudeTopic.slug == clean_slug).first()
-    questions = []
-    if t_obj:
+    t_obj = db.query(AptitudeTopic).filter(
+        (AptitudeTopic.slug == clean_slug) | (AptitudeTopic.name.ilike(clean_slug))
+    ).first()
+
+    # If user_id is provided, utilize the non-repeating topic questions engine
+    if user_id and t_obj:
+        from app.services.sprint_question_service import get_non_repeating_topic_questions
+        questions = get_non_repeating_topic_questions(db=db, user_id=user_id, topic=t_obj, count=10)
+    elif t_obj:
         questions = db.query(AptitudeQuestion).filter(
             AptitudeQuestion.topic_id == t_obj.id,
             AptitudeQuestion.status == "approved"
         ).all()
+    else:
+        questions = []
 
-    if not questions:
+    if not questions and user_id:
+        from app.services.sprint_question_service import generate_dynamic_sprint_question, mark_questions_as_seen
+        generated = []
+        for _ in range(10):
+            q_dyn = generate_dynamic_sprint_question(
+                db=db,
+                topic_name=t_obj.name if t_obj else clean_slug.title(),
+                difficulty="medium",
+                company_tag=f"{clean_slug.title()} Placement Track",
+            )
+            generated.append(q_dyn)
+        mark_questions_as_seen(db, user_id, [q.id for q in generated], sprint_type="topic_practice")
+        questions = generated
+    elif not questions:
         # Fallback to curated aptitude matching topic_slug
         matched_curated = [q for q in CURATED_WEEKLY_APTITUDE if q.get("topic_slug") == clean_slug]
         return [
