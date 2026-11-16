@@ -79,6 +79,7 @@ from app.models.student import (
     LearningRoadmap,
     StudentRoadmapProgress,
     StudentLearningPreference,
+    CandidateSprintSeenQuestion,
 )
 from app.models.weekly_challenge import (
     WeeklyAptitudeSet,
@@ -159,6 +160,7 @@ __all__ = [
     "LearningRoadmap",
     "StudentRoadmapProgress",
     "StudentLearningPreference",
+    "CandidateSprintSeenQuestion",
     "WeeklyAptitudeSet",
     "WeeklyAptitudeAttempt",
     "WeeklyCodingChallenge",

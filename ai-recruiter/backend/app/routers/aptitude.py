@@ -60,6 +60,10 @@ from app.services.ai_aptitude_service import (
     generate_aptitude_questions_ai,
     regenerate_single_question_ai,
 )
+from app.services.sprint_question_service import (
+    get_non_repeating_daily_sprint_questions,
+    mark_questions_as_seen,
+)
 from app.services.qdrant_service import (
     COLLECTION_APTITUDE,
     check_aptitude_question_duplicate,
@@ -1651,8 +1655,12 @@ def get_daily_sprint(
     current_user: User = Depends(require_role(UserRole.candidate)),
     db: Session = Depends(get_db),
 ):
-    """Returns today's 5-question high-speed daily practice test."""
-    questions = db.query(AptitudeQuestion).order_by(AptitudeQuestion.created_at.desc()).limit(5).all()
+    """
+    Returns non-repeating high-speed Daily Analytical Placement Sprint questions.
+    Ensures that questions previously seen or attempted by the candidate do NOT appear again.
+    Dynamically fetches unseen questions or generates fresh questions on-the-fly.
+    """
+    questions = get_non_repeating_daily_sprint_questions(db, current_user.id, total_needed=10)
     questions_out = []
     for q in questions:
         options = json.loads(q.options_json) if q.options_json else []
@@ -1674,10 +1682,11 @@ def get_daily_sprint(
             "duration_minutes": max(1, math.ceil(len(questions_out) * 30 / 60)),
             "total_questions": len(questions_out),
             "passing_percentage": 60.0,
+            "non_repeating": True,
         },
         "questions": questions_out,
     }
-    return APIResponse(success=True, message="Daily sprint loaded", data=response_data)
+    return APIResponse(success=True, message="Daily sprint loaded with fresh non-repeating questions", data=response_data)
 
 
 @router.post("/submit", response_model=APIResponse[AptitudeAttemptResult])
@@ -1792,6 +1801,17 @@ def submit_aptitude_test(
     db.add(attempt)
     db.commit()
     db.refresh(attempt)
+
+    # Record submitted questions as seen for non-repeating sprints
+    try:
+        mark_questions_as_seen(
+            db=db,
+            user_id=current_user.id,
+            question_ids=[q.id for q in questions],
+            sprint_type="daily_sprint",
+        )
+    except Exception as exc:
+        logger.warning(f"Failed to mark questions as seen in submit_aptitude_test: {exc}")
 
     result = AptitudeAttemptResult(
         attempt_id=attempt.id,

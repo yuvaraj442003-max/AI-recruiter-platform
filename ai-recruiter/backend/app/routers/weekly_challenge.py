@@ -64,6 +64,10 @@ from app.services.weekly_challenge_service import (
     validate_aptitude_question_payload,
     validate_coding_question_payload,
 )
+from app.services.sprint_question_service import (
+    get_non_repeating_weekly_sprint_questions,
+    mark_questions_as_seen,
+)
 
 router = APIRouter(prefix="/weekly", tags=["Weekly Challenges & Question Engine"])
 
@@ -286,16 +290,14 @@ def get_current_weekly_aptitude_test(
     """
     Returns current week's Aptitude test questions for test runner.
     Hides correct answers and explanations during the exam session.
+    Guarantees non-repeating questions on subsequent attempts.
     """
     apt_set = ensure_weekly_aptitude_set(db)
-    q_ids = []
-    if apt_set.question_ids_json:
-        try:
-            q_ids = [uuid.UUID(qid) for qid in json.loads(apt_set.question_ids_json)]
-        except Exception:
-            q_ids = []
-
-    questions = db.query(AptitudeQuestion).filter(AptitudeQuestion.id.in_(q_ids)).all() if q_ids else []
+    questions, is_reattempt = get_non_repeating_weekly_sprint_questions(
+        db=db,
+        user_id=current_user.id,
+        apt_set=apt_set,
+    )
 
     questions_out = []
     for q in questions:
@@ -323,7 +325,7 @@ def get_current_weekly_aptitude_test(
 
     return APIResponse(
         success=True,
-        message="Weekly aptitude test loaded",
+        message="Weekly aptitude test loaded" if not is_reattempt else "Weekly aptitude re-attempt loaded with fresh non-repeating questions",
         data={
             "test": {
                 "id": str(apt_set.id),
@@ -335,6 +337,8 @@ def get_current_weekly_aptitude_test(
                 "passing_percentage": apt_set.passing_percentage,
                 "already_attempted": attempt is not None,
                 "previous_score": attempt.score_percentage if attempt else None,
+                "is_reattempt": is_reattempt,
+                "non_repeating": True,
             },
             "questions": questions_out,
         },
@@ -354,15 +358,23 @@ def submit_weekly_aptitude_test(
     """
     apt_set = ensure_weekly_aptitude_set(db)
 
-    # Gather question IDs
+    # Gather question IDs from submitted answers first, then fallback to apt_set
     question_ids = []
-    if apt_set.question_ids_json:
+    for qid_str in payload.answers.keys():
+        try:
+            uid = uuid.UUID(str(qid_str))
+            if uid not in question_ids:
+                question_ids.append(uid)
+        except (ValueError, TypeError):
+            continue
+
+    if not question_ids and apt_set.question_ids_json:
         try:
             question_ids = [uuid.UUID(qid) for qid in json.loads(apt_set.question_ids_json)]
         except Exception:
             question_ids = []
 
-    questions = db.query(AptitudeQuestion).filter(AptitudeQuestion.id.in_(question_ids)).all()
+    questions = db.query(AptitudeQuestion).filter(AptitudeQuestion.id.in_(question_ids)).all() if question_ids else []
     if not questions:
         raise NotFoundError("Weekly questions not found")
 
@@ -453,6 +465,17 @@ def submit_weekly_aptitude_test(
 
     db.commit()
     db.refresh(attempt_obj)
+
+    # Record submitted questions as seen to prevent future repetition
+    try:
+        mark_questions_as_seen(
+            db=db,
+            user_id=current_user.id,
+            question_ids=[q.id for q in questions],
+            sprint_type="weekly_sprint",
+        )
+    except Exception as exc:
+        logger.warning(f"Failed to mark questions as seen in submit_weekly_aptitude_test: {exc}")
 
     result = WeeklyAptitudeAttemptResult(
         attempt_id=attempt_obj.id,

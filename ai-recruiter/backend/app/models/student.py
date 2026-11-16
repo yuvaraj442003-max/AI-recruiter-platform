@@ -272,3 +272,19 @@ class StudentLearningPreference(Base, TimestampMixin):
 
     def __repr__(self) -> str:
         return f"<StudentLearningPreference user={self.user_id}>"
+
+
+class CandidateSprintSeenQuestion(Base, TimestampMixin):
+    """
+    Tracks questions displayed/served to candidates during Daily and Weekly Sprints
+    to guarantee that previous questions never repeat on subsequent attempts.
+    """
+    __tablename__ = "candidate_sprint_seen_questions"
+
+    id: Mapped[uuid.UUID] = mapped_column(GUID(), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(GUID(), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    question_id: Mapped[uuid.UUID] = mapped_column(GUID(), ForeignKey("aptitude_questions.id", ondelete="CASCADE"), nullable=False, index=True)
+    sprint_type: Mapped[str] = mapped_column(String(50), default="daily_sprint", nullable=False, index=True)
+
+    def __repr__(self) -> str:
+        return f"<CandidateSprintSeenQuestion user={self.user_id} q={self.question_id} type={self.sprint_type}>"

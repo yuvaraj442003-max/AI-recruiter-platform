@@ -470,7 +470,8 @@
     const titleEl = document.getElementById("runner-test-title");
     if (titleEl) titleEl.textContent = currentTest?.title || "Aptitude Assessment";
     const subTitleEl = document.getElementById("runner-test-subtitle");
-    if (subTitleEl) subTitleEl.textContent = `${questions.length} Questions • Pace: 30s per question • Passing Cutoff: ${currentTest?.passing_percentage || 60}%`;
+    const nonRepBadge = (currentTest?.non_repeating || currentTest?.is_reattempt) ? " • 🔄 Fresh Non-Repeating Set" : "";
+    if (subTitleEl) subTitleEl.textContent = `${questions.length} Questions • Pace: 30s per question • Passing Cutoff: ${currentTest?.passing_percentage || 60}%${nonRepBadge}`;
 
     renderPalette();
     renderQuestion(currentIndex);
