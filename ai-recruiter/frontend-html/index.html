@@ -217,6 +217,16 @@
       background: #f8fafc;
       color: #0f172a;
     }
+    .stage-handcrafted-studio {
+      background: radial-gradient(circle at 15% 25%, rgba(249, 115, 22, 0.18) 0%, transparent 45%),
+                  radial-gradient(circle at 85% 75%, rgba(139, 92, 246, 0.18) 0%, transparent 45%),
+                  #0c0f1d;
+      color: #f8fafc;
+    }
+    .stage-splitscreen-studio {
+      background: linear-gradient(135deg, #090d16 0%, #111827 50%, #1e1b4b 100%);
+      color: #f8fafc;
+    }
     .preview-card-bento {
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.09);
@@ -656,6 +666,8 @@
             </div>
             <div class="d-flex flex-wrap gap-1.5">
               <button type="button" class="home-prompt-chip" onclick="applyHomePromptIdea('bento')">🍱 Bento Grid</button>
+              <button type="button" class="home-prompt-chip" onclick="applyHomePromptIdea('handcrafted')">✨ Hand-Crafted Designer</button>
+              <button type="button" class="home-prompt-chip" onclick="applyHomePromptIdea('splitscreen')">🪞 Split-Screen 3D</button>
               <button type="button" class="home-prompt-chip" onclick="applyHomePromptIdea('terminal')">💻 Terminal IDE</button>
               <button type="button" class="home-prompt-chip" onclick="applyHomePromptIdea('cyber')">🤖 Cyberpunk HUD</button>
               <button type="button" class="home-prompt-chip" onclick="applyHomePromptIdea('swiss')">📐 Minimal Swiss</button>
@@ -691,7 +703,13 @@
         <!-- Interactive Theme Switcher Tabs -->
         <div class="d-flex flex-wrap justify-content-center gap-2 pt-2" id="portfolio-theme-selector">
           <button type="button" class="portfolio-theme-tab-btn active" onclick="switchShowcaseTheme('bento', this)">
-            <span>✨</span> Modern Bento Grid
+            <span>🍱</span> Modern Bento Grid
+          </button>
+          <button type="button" class="portfolio-theme-tab-btn" onclick="switchShowcaseTheme('handcrafted', this)">
+            <span>✨</span> Hand-Crafted Designer
+          </button>
+          <button type="button" class="portfolio-theme-tab-btn" onclick="switchShowcaseTheme('splitscreen', this)">
+            <span>🪞</span> Split-Screen 3D
           </button>
           <button type="button" class="portfolio-theme-tab-btn" onclick="switchShowcaseTheme('terminal', this)">
             <span>⚡</span> Developer IDE / Terminal
@@ -1456,6 +1474,48 @@
           { name: "Vector Embeddings / RAG", level: "Advanced", width: "92%", color: "bg-warning" }
         ]
       },
+      handcrafted: {
+        stageClass: "stage-handcrafted-studio",
+        avatar: "✨",
+        avatarBg: "linear-gradient(135deg, #f97316 0%, #8b5cf6 100%)",
+        name: "Yuvaraj Sharma, Staff Designer & Eng",
+        title: "Bespoke Design Technologist • Spatial Interfaces & Systems",
+        statusBadge: "✨ Hand-Crafted Bespoke Portfolio",
+        verifiedTag: "✦ Award-Winning Web Artisan",
+        atsScore: "99%",
+        codeScore: "100 / 100",
+        voiceRubric: "9.9 / 10 Design Mastery",
+        projectBadge: "✨ Bespoke Artisan Work",
+        projectTitle: "Fluid Specular Canvas & Dynamic Typography",
+        projectDesc: "Hand-crafted micro-interaction engine rendering 60FPS fluid physics, multi-layer specular glass cards, and kinetic typography.",
+        projectTags: ["Three.js", "Design Systems", "WebAudio", "Figma"],
+        skills: [
+          { name: "Creative Engineering & WebGL", level: "Principal", width: "99%", color: "bg-warning" },
+          { name: "Design Systems & Micro-Interactions", level: "Staff", width: "98%", color: "bg-info" },
+          { name: "Fluid Motion Physics", level: "Lead", width: "95%", color: "bg-success" }
+        ]
+      },
+      splitscreen: {
+        stageClass: "stage-splitscreen-studio",
+        avatar: "🪞",
+        avatarBg: "linear-gradient(135deg, #f43f5e 0%, #7c3aed 100%)",
+        name: "Yuvaraj Sharma",
+        title: "Full-Stack Product Builder • Dual-Column Parallax Experience",
+        statusBadge: "⚡ 50/50 Dual-Panel Showcase",
+        verifiedTag: "✦ Parallax Verified",
+        atsScore: "98%",
+        codeScore: "99 / 100",
+        voiceRubric: "9.7 / 10 Product Architecture",
+        projectBadge: "🌊 Parallax Architecture",
+        projectTitle: "Dual-Engine Distributed Workstation",
+        projectDesc: "Parallax multi-tenant architecture delivering high-throughput real-time telemetry with sticky brand identity and frosted glass refraction.",
+        projectTags: ["React", "FastAPI", "Postgres", "Tailwind"],
+        skills: [
+          { name: "Product Architecture", level: "Staff", width: "97%", color: "bg-danger" },
+          { name: "Full-Stack Web Engineering", level: "Lead", width: "96%", color: "bg-primary" },
+          { name: "High-Performance UI", level: "Expert", width: "94%", color: "bg-info" }
+        ]
+      },
       terminal: {
         stageClass: "stage-cyber-terminal",
         avatar: ">_",
@@ -1632,6 +1692,8 @@
 
     const homePromptIdeas = {
       bento: "Create an award-winning portfolio with a modern Bento modular grid layout for an innovative engineer. Use a deep midnight slate theme with electric indigo (#4f46e5) and vibrant emerald (#10b981) accents. Feature frosted glassmorphic cards, 3D perspective tilt physics on hover, interactive metric counters, and showcase high-impact projects with live demo links.",
+      handcrafted: "Create an award-winning, professionally hand-crafted portfolio website as if manually designed and developed by an experienced principal web designer. Use an expressive, modern layout with bespoke typography, glassmorphic cards, warm studio gradients, quantified engineering metrics, and showcase my authentic projects with live links.",
+      splitscreen: "Create a modern 50/50 Split-Screen portfolio for a Full-Stack Product Builder. Feature a sticky personal brand hero on the left with glowing social links and dynamic availability badge, and an immersive scrollable project showcase on the right with frosted glass refraction, live demo popovers, and smooth parallax depth scrolling.",
       terminal: "Create an authentic Developer Terminal IDE portfolio with a dark workstation code aesthetic. Use a Matrix carbon black background (#0a0e14) with phosphor emerald green (#22c55e) and sky blue (#38bdf8) syntax highlights. Include an interactive typewriter terminal headline, collapsible code file trees, git commit activity graph, and live system status pills.",
       cyber: "Design a futuristic Cyberpunk Neural HUD portfolio for an advanced AI & Systems Specialist. Use an ultra-dark OLED obsidian palette with glowing neon cyan (#00e5ff) and hyper-violet (#a855f7) accents. Incorporate telemetry radar stats, neural network architecture flowcharts, sub-100ms inference benchmarks, and animated terminal command line widgets.",
       swiss: "Build an ultra-clean, minimalist Swiss editorial monograph portfolio for a Principal Architect. Use an asymmetrical high-contrast grid with ivory light or obsidian charcoal tones, crisp hairline borders, and striking crimson carmine (#e11d48) accents. Focus on bold typography, executive impact summaries, and refined, distraction-free case studies.",
