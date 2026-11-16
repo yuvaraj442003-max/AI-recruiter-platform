@@ -2025,6 +2025,134 @@
     </main>
   </div>
 
+  <!-- Candidate Information Verification Modal -->
+  <div class="modal fade" id="verifyCandidateDetailsModal" tabindex="-1" aria-labelledby="verifyCandidateDetailsModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+        <div class="modal-header border-0 pb-0">
+          <div class="d-flex align-items-center gap-2">
+            <div class="p-2 rounded-circle bg-primary-subtle text-primary fs-4">🛡️</div>
+            <div>
+              <h5 class="modal-title fw-bold text-dark mb-0" id="verifyCandidateDetailsModalLabel">Verify Candidate Information</h5>
+              <small class="text-muted">Validate your authentic profile details before Gemini AI generates your portfolio</small>
+            </div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body py-3">
+          <!-- Verification Status Banner -->
+          <div id="verify-status-banner" class="alert alert-info py-2 px-3 rounded-3 mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+              <span id="verify-status-icon" class="fs-5">🔍</span>
+              <div>
+                <strong id="verify-status-title" class="small d-block">Pre-Generation Verification Check</strong>
+                <span id="verify-status-desc" class="small text-muted">Confirming candidate credentials for factual grounding...</span>
+              </div>
+            </div>
+            <span id="verify-score-badge" class="badge bg-success-subtle text-success border border-success border-opacity-25 px-2.5 py-1">Score: 100% Verified</span>
+          </div>
+
+          <div id="verify-issues-box" class="alert alert-warning py-2 px-3 rounded-3 mb-3 d-none">
+            <strong class="small d-block">⚠️ Please review the following details:</strong>
+            <ul id="verify-issues-list" class="mb-0 small ps-3"></ul>
+          </div>
+
+          <!-- Verification Form Grid -->
+          <form id="verify-candidate-form" onsubmit="return false;">
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary mb-1">
+                  Full Name <span class="text-danger">*</span>
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light">👤</span>
+                  <input type="text" id="verify-cand-name" class="form-control" placeholder="e.g. Kumaresan T" required />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary mb-1">
+                  Professional Headline / Role <span class="text-danger">*</span>
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light">💼</span>
+                  <input type="text" id="verify-cand-headline" class="form-control" placeholder="e.g. Full Stack Developer &amp; Systems Specialist" required />
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary mb-1">
+                  Contact Email <span class="text-danger">*</span>
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light">📧</span>
+                  <input type="email" id="verify-cand-email" class="form-control" placeholder="e.g. candidate@example.com" required />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary mb-1">
+                  Location / Region
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light">📍</span>
+                  <input type="text" id="verify-cand-location" class="form-control" placeholder="e.g. Salem, Tamil Nadu, India" />
+                </div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label small fw-bold text-secondary mb-1">
+                  Core Technical Skills <span class="text-danger">*</span> <small class="text-muted fw-normal">(Comma-separated)</small>
+                </label>
+                <div class="input-group mb-2">
+                  <span class="input-group-text bg-light">⚡</span>
+                  <input type="text" id="verify-cand-skills" class="form-control" placeholder="e.g. React.js, Node.js, Express.js, MongoDB, JavaScript, Python" required />
+                </div>
+                <div id="verify-skills-preview-chips" class="d-flex flex-wrap gap-1"></div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label small fw-bold text-secondary mb-1">
+                  Professional Summary / About Narrative
+                </label>
+                <textarea id="verify-cand-summary" class="form-control small" rows="3" placeholder="Brief summary of your background, technical achievements, and engineering focus..."></textarea>
+              </div>
+            </div>
+
+            <!-- Credentials Snapshot -->
+            <div class="p-3 rounded-3 mb-3" style="background: rgba(241, 245, 249, 0.7); border: 1px solid rgba(203, 213, 225, 0.8);">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="small fw-bold text-secondary text-uppercase" style="letter-spacing: 0.04em;">Verified Credentials Grounding</span>
+                <span class="badge bg-primary-subtle text-primary small">Strict Factual Preserved</span>
+              </div>
+              <div class="d-flex flex-wrap gap-2 small">
+                <span id="verify-count-exp" class="badge bg-white text-dark border px-2.5 py-1.5 shadow-sm">💼 0 Experience Positions</span>
+                <span id="verify-count-proj" class="badge bg-white text-dark border px-2.5 py-1.5 shadow-sm">🚀 0 Projects / Repos</span>
+                <span id="verify-count-edu" class="badge bg-white text-dark border px-2.5 py-1.5 shadow-sm">🎓 0 Academic Degrees</span>
+                <span id="verify-count-cert" class="badge bg-white text-dark border px-2.5 py-1.5 shadow-sm">📜 0 Certifications</span>
+              </div>
+            </div>
+
+            <!-- Confirmation Checkbox -->
+            <div class="form-check p-2.5 rounded-3 bg-light border">
+              <input class="form-check-input ms-0 me-2" type="checkbox" id="verify-cand-confirm-check" checked />
+              <label class="form-check-label small fw-semibold text-dark" for="verify-cand-confirm-check">
+                I verify that the candidate information above is accurate and authentic. Gemini AI should use these verified details to synthesize my portfolio.
+              </label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer border-0 pt-0 d-flex justify-content-between">
+          <button type="button" class="btn btn-outline-secondary fw-semibold px-3" data-bs-dismiss="modal">
+            Cancel
+          </button>
+          <button type="button" id="btn-confirm-and-generate" class="btn btn-primary fw-bold px-4 py-2 rounded-pill shadow-sm d-flex align-items-center gap-2">
+            <span id="verify-gen-icon">🚀</span>
+            <span id="verify-gen-text">Validate &amp; Generate Portfolio</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Delete Portfolio Confirmation Modal -->
   <div class="modal fade" id="deletePortfolioModal" tabindex="-1" aria-labelledby="deletePortfolioModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">

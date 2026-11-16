@@ -945,11 +945,13 @@ const feedbackAPI = {
 
 const portfolioAPI = {
   getMyPortfolio: () => api.get("/portfolio/me"),
+  verifyCandidateDetails: () => api.get("/portfolio/verify-candidate-details"),
   generateFromPrompt: (prompt, options = {}) =>
     api.post("/portfolio/generate-from-prompt", {
       prompt,
       include_resume: options.include_resume !== false,
       refinement: Boolean(options.refinement),
+      verified_candidate_data: options.verified_candidate_data || undefined,
     }),
   generateHtmlCode: (prompt, options = {}) =>
     api.post("/portfolio/generate-code", {

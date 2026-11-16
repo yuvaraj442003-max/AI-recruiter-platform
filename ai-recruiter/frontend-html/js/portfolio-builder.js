@@ -1046,20 +1046,182 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (btnSectionEditPrompt) btnSectionEditPrompt.addEventListener("click", () => openPromptEditMode());
     if (btnPromptEditToggle) btnPromptEditToggle.addEventListener("click", () => openPromptEditMode());
 
-    // 7. Generate button click
-    btnGenerateGemini.addEventListener("click", async () => {
-      const promptText = (inputAiPrompt.value || "").trim();
-      if (!promptText) {
-        showAlert("Please enter a prompt describing your desired portfolio or click one of the ideas above!", "warning");
-        inputAiPrompt.focus();
+    // Candidate Information Verification Modal Elements
+    const verifyModalEl = document.getElementById("verifyCandidateDetailsModal");
+    const verifyCandName = document.getElementById("verify-cand-name");
+    const verifyCandHeadline = document.getElementById("verify-cand-headline");
+    const verifyCandEmail = document.getElementById("verify-cand-email");
+    const verifyCandLocation = document.getElementById("verify-cand-location");
+    const verifyCandSkills = document.getElementById("verify-cand-skills");
+    const verifyCandSummary = document.getElementById("verify-cand-summary");
+    const verifyCandConfirmCheck = document.getElementById("verify-cand-confirm-check");
+    const btnConfirmAndGenerate = document.getElementById("btn-confirm-and-generate");
+    const verifyIssuesBox = document.getElementById("verify-issues-box");
+    const verifyIssuesList = document.getElementById("verify-issues-list");
+    const verifyScoreBadge = document.getElementById("verify-score-badge");
+    const verifyStatusTitle = document.getElementById("verify-status-title");
+    const verifyStatusDesc = document.getElementById("verify-status-desc");
+    const verifyCountExp = document.getElementById("verify-count-exp");
+    const verifyCountProj = document.getElementById("verify-count-proj");
+    const verifyCountEdu = document.getElementById("verify-count-edu");
+    const verifyCountCert = document.getElementById("verify-count-cert");
+    const verifySkillsChips = document.getElementById("verify-skills-preview-chips");
+
+    function renderVerifySkillsChips(skills) {
+      if (!verifySkillsChips) return;
+      verifySkillsChips.innerHTML = (skills || []).slice(0, 10).map(s => `
+        <span class="badge bg-light text-primary border" style="font-size: 0.76rem;">✦ ${escapeHtml(s)}</span>
+      `).join("");
+    }
+
+    if (verifyCandSkills) {
+      verifyCandSkills.addEventListener("input", () => {
+        const list = verifyCandSkills.value.split(",").map(s => s.trim()).filter(Boolean);
+        renderVerifySkillsChips(list);
+      });
+    }
+
+    // Opens verification dialog to validate candidate's details before generation
+    async function openCandidateVerificationModal(promptText) {
+      if (!verifyModalEl) {
+        executeValidatedPortfolioGeneration(promptText, null);
         return;
       }
 
-      setAiLoading(true, "✨ Gemini AI Analyzing Prompt & Synthesizing Portfolio...", "Analyzing your role, layout directives, colors, and authentic credentials...");
+      if (verifyIssuesBox) verifyIssuesBox.classList.add("d-none");
+      if (verifyIssuesList) verifyIssuesList.innerHTML = "";
 
-      // Step progression
+      // Initialize and show modal
+      const bsModal = (typeof bootstrap !== "undefined" && bootstrap.Modal)
+        ? (bootstrap.Modal.getInstance(verifyModalEl) || new bootstrap.Modal(verifyModalEl))
+        : null;
+      if (bsModal) bsModal.show();
+
+      try {
+        let candInfo = null;
+        if (typeof portfolioAPI !== "undefined" && typeof portfolioAPI.verifyCandidateDetails === "function") {
+          const res = await portfolioAPI.verifyCandidateDetails();
+          candInfo = res?.data;
+        }
+
+        const name = candInfo?.candidate_name || currentPortfolio?.candidate_name || inputCandidateName?.value || "";
+        const headline = candInfo?.professional_headline || currentPortfolio?.professional_headline || inputHeadline?.value || "";
+        const email = candInfo?.email || currentPortfolio?.social_links?.email || "";
+        const loc = candInfo?.location || currentPortfolio?.social_links?.location || "";
+        const summary = candInfo?.summary || currentPortfolio?.about || textareaAbout?.value || "";
+
+        let skillsList = candInfo?.skills || [];
+        if (!skillsList.length && currentPortfolio?.skills) {
+          skillsList = Array.isArray(currentPortfolio.skills) ? currentPortfolio.skills : Object.values(currentPortfolio.skills).flat();
+        }
+
+        if (verifyCandName) verifyCandName.value = (name && name.toLowerCase() !== "candidate") ? name : "";
+        if (verifyCandHeadline) verifyCandHeadline.value = headline;
+        if (verifyCandEmail) verifyCandEmail.value = email;
+        if (verifyCandLocation) verifyCandLocation.value = loc;
+        if (verifyCandSummary) verifyCandSummary.value = summary;
+        if (verifyCandSkills) {
+          verifyCandSkills.value = skillsList.join(", ");
+          renderVerifySkillsChips(skillsList);
+        }
+
+        const expCount = (candInfo?.experience?.length || currentPortfolio?.experience?.length || 0);
+        const projCount = (candInfo?.projects?.length || currentPortfolio?.projects?.length || 0);
+        const eduCount = (candInfo?.education?.length || currentPortfolio?.education?.length || 0);
+        const certCount = (candInfo?.certifications?.length || currentPortfolio?.certifications?.length || 0);
+
+        if (verifyCountExp) verifyCountExp.textContent = `💼 ${expCount} Experience Position(s)`;
+        if (verifyCountProj) verifyCountProj.textContent = `🚀 ${projCount} Project(s) / Repos`;
+        if (verifyCountEdu) verifyCountEdu.textContent = `🎓 ${eduCount} Academic Degree(s)`;
+        if (verifyCountCert) verifyCountCert.textContent = `📜 ${certCount} Certification(s)`;
+
+        const issues = candInfo?.validation_issues || [];
+        if (issues.length > 0 && verifyIssuesBox && verifyIssuesList) {
+          verifyIssuesBox.classList.remove("d-none");
+          verifyIssuesList.innerHTML = issues.map(iss => `<li>${escapeHtml(iss)}</li>`).join("");
+          if (verifyScoreBadge) {
+            verifyScoreBadge.textContent = `Readiness: ${candInfo.validation_score || 75}%`;
+            verifyScoreBadge.className = "badge bg-warning-subtle text-warning border border-warning border-opacity-25 px-2.5 py-1";
+          }
+          if (verifyStatusTitle) verifyStatusTitle.textContent = "Please Verify & Complete Candidate Details";
+          if (verifyStatusDesc) verifyStatusDesc.textContent = "Some authentic details require confirmation before Gemini AI generates your portfolio.";
+        } else {
+          if (verifyScoreBadge) {
+            verifyScoreBadge.textContent = "Score: 100% Verified";
+            verifyScoreBadge.className = "badge bg-success-subtle text-success border border-success border-opacity-25 px-2.5 py-1";
+          }
+          if (verifyStatusTitle) verifyStatusTitle.textContent = "All Candidate Details Verified";
+          if (verifyStatusDesc) verifyStatusDesc.textContent = "Authentic credentials validated. Ready for factual portfolio synthesis.";
+        }
+      } catch (err) {
+        console.warn("Could not pre-fetch verification details:", err);
+        if (verifyCandName && !verifyCandName.value) verifyCandName.value = inputCandidateName?.value || "";
+        if (verifyCandHeadline && !verifyCandHeadline.value) verifyCandHeadline.value = inputHeadline?.value || "";
+      }
+    }
+
+    // Confirm button in Verification Modal
+    if (btnConfirmAndGenerate) {
+      btnConfirmAndGenerate.addEventListener("click", async () => {
+        const name = (verifyCandName?.value || "").trim();
+        const headline = (verifyCandHeadline?.value || "").trim();
+        const email = (verifyCandEmail?.value || "").trim();
+        const location = (verifyCandLocation?.value || "").trim();
+        const skills = (verifyCandSkills?.value || "").split(",").map(s => s.trim()).filter(Boolean);
+        const summary = (verifyCandSummary?.value || "").trim();
+
+        const validationErrors = [];
+        if (!name || name.toLowerCase() === "candidate" || name.toLowerCase() === "user") {
+          validationErrors.push("Please enter your authentic Full Name.");
+        }
+        if (!headline) {
+          validationErrors.push("Please specify your Professional Headline / Current Role.");
+        }
+        if (!email || !email.includes("@")) {
+          validationErrors.push("Please enter a valid Contact Email address.");
+        }
+        if (!skills.length) {
+          validationErrors.push("Please provide at least 1-2 core technical skills.");
+        }
+        if (verifyCandConfirmCheck && !verifyCandConfirmCheck.checked) {
+          validationErrors.push("Please check the verification confirmation checkbox.");
+        }
+
+        if (validationErrors.length > 0) {
+          if (verifyIssuesBox && verifyIssuesList) {
+            verifyIssuesBox.classList.remove("d-none");
+            verifyIssuesList.innerHTML = validationErrors.map(e => `<li>${escapeHtml(e)}</li>`).join("");
+            verifyIssuesBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          }
+          return;
+        }
+
+        // Close verification modal
+        const bsModal = (typeof bootstrap !== "undefined" && bootstrap.Modal)
+          ? bootstrap.Modal.getInstance(verifyModalEl)
+          : null;
+        if (bsModal) bsModal.hide();
+
+        const verifiedData = {
+          name,
+          headline,
+          email,
+          location,
+          skills,
+          summary
+        };
+
+        const promptText = (inputAiPrompt?.value || "").trim();
+        executeValidatedPortfolioGeneration(promptText, verifiedData);
+      });
+    }
+
+    // Execution routine: triggers generation only after candidate validation
+    async function executeValidatedPortfolioGeneration(promptText, verifiedData) {
+      setAiLoading(true, "✨ Information Verified! Gemini AI Synthesizing Portfolio...", "Grounding portfolio strictly on your verified candidate credentials...");
+
       const t1 = setTimeout(() => {
-        aiLoadingStep.textContent = "Gemini AI: Architecting unique layout, bespoke copy, and design tokens...";
+        aiLoadingStep.textContent = "Gemini AI: Architecting unique layout, bespoke copy, and verified design tokens...";
       }, 1400);
       const t2 = setTimeout(() => {
         aiLoadingStep.textContent = "Gemini AI: Synthesizing live responsive components, impact metrics & services...";
@@ -1067,8 +1229,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       try {
         const res = await portfolioAPI.generateFromPrompt(promptText, {
-          include_resume: checkIncludeResume.checked,
+          include_resume: checkIncludeResume ? checkIncludeResume.checked : true,
           refinement: false,
+          verified_candidate_data: verifiedData,
         });
 
         clearTimeout(t1);
@@ -1083,7 +1246,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           if (btnGenerateText) btnGenerateText.textContent = "Regenerate Portfolio";
           if (displayActivePrompt) displayActivePrompt.textContent = promptText;
           openEditMode();
-          showAlert("✨ Portfolio generated successfully! You can now edit your details below, or click 'Edit Prompt & Regenerate' anytime to update your prompt.", "success");
+          showAlert("✨ Candidate information verified and portfolio generated successfully with Gemini AI!", "success");
         } else {
           throw new Error(res?.message || "Generation did not return portfolio data");
         }
@@ -1095,6 +1258,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       } finally {
         setAiLoading(false);
       }
+    }
+
+    // 7. Generate button click — First triggers candidate verification step
+    btnGenerateGemini.addEventListener("click", async () => {
+      const promptText = (inputAiPrompt.value || "").trim();
+      if (!promptText) {
+        showAlert("Please enter a prompt describing your desired portfolio or click one of the ideas above!", "warning");
+        inputAiPrompt.focus();
+        return;
+      }
+
+      // First verify candidate details before portfolio generation
+      openCandidateVerificationModal(promptText);
     });
 
     // Keyboard shortcut (Ctrl+Enter / Cmd+Enter to generate)

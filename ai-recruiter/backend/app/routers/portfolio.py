@@ -31,6 +31,7 @@ from app.models.portfolio import Portfolio
 from app.models.user import User, UserRole
 from app.schemas.common import APIResponse
 from app.schemas.portfolio import (
+    CandidateDetailsVerificationResponse,
     CheckSlugResponse,
     GeneratePortfolioCodeRequest,
     GeneratePortfolioCodeResponse,
@@ -132,6 +133,150 @@ async def generate_portfolio_endpoint(
     )
 
 
+@router.get("/verify-candidate-details", response_model=APIResponse[CandidateDetailsVerificationResponse])
+def verify_candidate_details_endpoint(
+    current_user: User = Depends(require_role(UserRole.candidate)),
+    db: Session = Depends(get_db),
+):
+    """
+    Validates and extracts candidate's authentic information prior to portfolio generation.
+    Checks name, headline, contact email, location, core skills, experience, and education.
+    """
+    import json
+    cand = _get_or_create_candidate_profile(db, current_user)
+    
+    # 1. Candidate Full Name
+    raw_name = (cand.full_name or current_user.name or "").strip()
+
+    # 2. Headline / Role
+    headline = (cand.headline or cand.current_role or "").strip()
+    
+    # 3. Email & Phone & Location
+    email = (cand.resume_email or current_user.email or "").strip()
+    phone = (cand.phone or "").strip()
+    location = (cand.location or "").strip()
+    summary = (cand.summary or cand.ai_summary or "").strip()
+
+    # 4. Skills
+    skills = [cs.skill.skill_name for cs in cand.candidate_skills if cs.skill] if cand.candidate_skills else []
+
+    # 5. Extract structured data from resume or portfolio if available
+    raw_text = cand.resume_text or ""
+    if not raw_text and cand.resume_path and os.path.exists(cand.resume_path):
+        try:
+            with open(cand.resume_path, "rb") as f:
+                raw_text = extract_resume_text(f.read(), os.path.basename(cand.resume_path))
+        except Exception:
+            pass
+
+    extracted = {}
+    if raw_text:
+        try:
+            parsed_fields = parse_resume_fields(raw_text)
+            extracted = extract_structured_portfolio_data(raw_text, parsed_fields)
+        except Exception:
+            pass
+
+    if (not raw_name or raw_name.lower() in ("candidate", "user")) and extracted.get("name"):
+        raw_name = extracted.get("name").strip()
+    if not headline and extracted.get("professional_headline"):
+        headline = extracted.get("professional_headline").strip()
+    if not skills and extracted.get("skills"):
+        s_val = extracted.get("skills")
+        if isinstance(s_val, dict):
+            skills = [item for sub in s_val.values() for item in (sub if isinstance(sub, list) else [sub])]
+        elif isinstance(s_val, list):
+            skills = s_val
+    if not summary and extracted.get("about"):
+        summary = extracted.get("about").strip()
+
+    experience = extracted.get("experience") or []
+    projects = extracted.get("projects") or []
+    education = extracted.get("education") or []
+    certifications = extracted.get("certifications") or []
+
+    # Also check if existing portfolio has details
+    portfolio = get_candidate_portfolio(db, cand.id)
+    if portfolio:
+        if (not raw_name or raw_name.lower() in ("candidate", "user")) and portfolio.candidate_name:
+            raw_name = portfolio.candidate_name.strip()
+        if not headline and portfolio.professional_headline:
+            headline = portfolio.professional_headline.strip()
+        if not summary and portfolio.about:
+            summary = portfolio.about.strip()
+        if not skills and portfolio.skills:
+            try:
+                ps = json.loads(portfolio.skills)
+                if isinstance(ps, dict):
+                    skills = [item for sub in ps.values() for item in (sub if isinstance(sub, list) else [sub])]
+                elif isinstance(ps, list):
+                    skills = ps
+            except Exception:
+                pass
+        if not experience and portfolio.experience:
+            try:
+                experience = json.loads(portfolio.experience)
+            except Exception:
+                pass
+        if not projects and portfolio.projects:
+            try:
+                projects = json.loads(portfolio.projects)
+            except Exception:
+                pass
+        if not education and portfolio.education:
+            try:
+                education = json.loads(portfolio.education)
+            except Exception:
+                pass
+        if not certifications and portfolio.certifications:
+            try:
+                certifications = json.loads(portfolio.certifications)
+            except Exception:
+                pass
+
+    # Issues checklist
+    issues = []
+    score = 100
+    if not raw_name or raw_name.lower() in ("candidate", "user", "anonymous"):
+        issues.append("Candidate full name is required.")
+        score -= 30
+    if not headline:
+        issues.append("Professional headline or target role is required.")
+        score -= 25
+    if not email or "@" not in email:
+        issues.append("Valid contact email address is required.")
+        score -= 20
+    if not skills:
+        issues.append("At least 1-2 core technical skills must be provided.")
+        score -= 15
+    if not experience and not projects:
+        score -= 10
+
+    is_valid = len(issues) == 0
+
+    return APIResponse(
+        success=True,
+        message="Candidate details verified" if is_valid else "Candidate details require verification before generation",
+        data=CandidateDetailsVerificationResponse(
+            is_valid=is_valid,
+            candidate_name=raw_name or (current_user.name if current_user.name and current_user.name.lower() not in ("candidate", "user") else "Candidate"),
+            professional_headline=headline or (cand.target_role or "Software Engineer & Technologist"),
+            email=email or current_user.email,
+            phone=phone or cand.phone,
+            location=location or cand.location or "Global / Remote",
+            summary=summary,
+            skills=skills,
+            experience=experience if isinstance(experience, list) else [],
+            projects=projects if isinstance(projects, list) else [],
+            education=education if isinstance(education, list) else [],
+            certifications=certifications if isinstance(certifications, list) else [],
+            has_resume=bool(cand.resume_path or cand.resume_text),
+            validation_score=max(0, score),
+            validation_issues=issues,
+        ),
+    )
+
+
 @router.post("/generate-from-prompt", response_model=APIResponse[PortfolioResponse])
 def generate_portfolio_from_prompt_endpoint(
     payload: PromptGenerateRequest,
@@ -140,7 +285,7 @@ def generate_portfolio_from_prompt_endpoint(
 ):
     """
     Creates or updates candidate portfolio based on natural language prompt instructions
-    powered by Gemini AI. Can optionally incorporate existing resume/profile data.
+    powered by Gemini AI. Enforces candidate details validation prior to generation.
     """
     import json
     cand = _get_or_create_candidate_profile(db, current_user)
@@ -172,6 +317,51 @@ def generate_portfolio_from_prompt_endpoint(
             "resume_text": raw_text[:2500] if raw_text else "",
         }
 
+    # Apply and persist verified candidate data if submitted
+    v_data = payload.verified_candidate_data or {}
+    if v_data and isinstance(v_data, dict):
+        v_name = (v_data.get("name") or v_data.get("candidate_name") or "").strip()
+        v_headline = (v_data.get("headline") or v_data.get("professional_headline") or "").strip()
+        v_email = (v_data.get("email") or "").strip()
+        v_location = (v_data.get("location") or "").strip()
+        v_skills = v_data.get("skills") or []
+        v_summary = (v_data.get("summary") or "").strip()
+
+        if v_name and v_name.lower() not in ("candidate", "user", "anonymous"):
+            cand._full_name = v_name
+            current_user.name = v_name
+        if v_headline:
+            cand.headline = v_headline
+            cand.current_role = v_headline
+        if v_email:
+            cand.resume_email = v_email
+        if v_location:
+            cand.location = v_location
+        if v_summary:
+            cand.summary = v_summary
+
+        if not candidate_context:
+            candidate_context = {}
+        if v_name: candidate_context["name"] = v_name
+        if v_headline: candidate_context["headline"] = v_headline
+        if v_location: candidate_context["location"] = v_location
+        if v_summary: candidate_context["summary"] = v_summary
+        if v_skills and isinstance(v_skills, list):
+            candidate_context["skills"] = v_skills
+
+        db.commit()
+
+    # Strict Validation Check: Ensure candidate name and headline are valid before generating
+    verified_name = (candidate_context.get("name") if candidate_context else (cand.full_name or current_user.name)) or ""
+    verified_headline = (candidate_context.get("headline") if candidate_context else (cand.headline or cand.current_role)) or ""
+    if not verified_name.strip() or verified_name.strip().lower() in ("candidate", "user", "anonymous"):
+        raise BadRequestError("Candidate details verification failed: Candidate full name is required before generating portfolio. Please verify candidate details.")
+    if not verified_headline.strip():
+        # Fallback to sensible professional default
+        if not candidate_context:
+            candidate_context = {}
+        candidate_context["headline"] = cand.target_role or "Software Engineer & Technologist"
+
     # Fetch previous portfolio if refinement mode
     portfolio = get_candidate_portfolio(db, cand.id)
     prev_dict = format_portfolio_dict(portfolio, public_only=False, db=db) if portfolio else None
@@ -179,7 +369,7 @@ def generate_portfolio_from_prompt_endpoint(
     # Generate with Gemini AI
     gen_data = generate_portfolio_from_prompt(
         prompt=payload.prompt,
-        candidate_name=(candidate_context.get("name") if candidate_context else (cand.full_name if cand else current_user.name)) or "Candidate",
+        candidate_name=verified_name,
         candidate_context=candidate_context,
         previous_portfolio=prev_dict,
         is_refinement=payload.refinement,

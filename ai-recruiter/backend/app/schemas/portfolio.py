@@ -82,6 +82,25 @@ class PromptGenerateRequest(BaseModel):
     prompt: str
     include_resume: bool = True
     refinement: bool = False
+    verified_candidate_data: Optional[Dict[str, Any]] = None
+
+
+class CandidateDetailsVerificationResponse(BaseModel):
+    is_valid: bool
+    candidate_name: str
+    professional_headline: str
+    email: str
+    phone: Optional[str] = None
+    location: Optional[str] = None
+    summary: Optional[str] = None
+    skills: List[str] = []
+    experience: List[Dict[str, Any]] = []
+    projects: List[Dict[str, Any]] = []
+    education: List[Dict[str, Any]] = []
+    certifications: List[Dict[str, Any]] = []
+    has_resume: bool = False
+    validation_score: int = 100
+    validation_issues: List[str] = []
 
 
 class RefineSectionRequest(BaseModel):
