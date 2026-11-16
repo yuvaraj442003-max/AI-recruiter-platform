@@ -4096,22 +4096,7 @@ const PortfolioThemesEngine = (() => {
               ${renderProjectFilterToolbar(projects)}
             </div>
             <div class="row g-4">
-              ${projects.map((p, idx) => `
-                <div class="col-md-6 project-card-item" data-tech="${escapeHtml(((p.technologies || []).join(' ') + ' ' + (p.name || '')).toLowerCase())}">
-                  <div class="creative-neo-card h-100 d-flex flex-column">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                      <h4 class="fw-bold mb-0">${escapeHtml(p.name || `Case Study #${idx + 1}`)}</h4>
-                    </div>
-                    <p class="flex-grow-1" style="color: var(--theme-text-muted); line-height: 1.6;">${escapeHtml(p.description || "")}</p>
-                    ${p.technologies?.length ? `<div class="mb-3 d-flex flex-wrap gap-1">${p.technologies.map(t => `<span class="badge bg-light text-dark border px-2 py-1">${escapeHtml(t)}</span>`).join("")}</div>` : ""}
-                    ${renderProjectActionLinks(p, "creative") ? `
-                      <div class="pt-3 border-top mt-auto">
-                        ${renderProjectActionLinks(p, "creative")}
-                      </div>
-                    ` : ""}
-                  </div>
-                </div>
-              `).join("")}
+              ${projects.map((p, idx) => renderEnhancedProjectCard(p, idx, "creative", data)).join("")}
             </div>
           </div>
         ` : ""}
@@ -4302,15 +4287,7 @@ const PortfolioThemesEngine = (() => {
                   ${renderProjectFilterToolbar(projects)}
                 </div>
                 <div class="row g-3">
-                  ${projects.map(p => `
-                    <div class="col-md-6 project-card-item" data-tech="${escapeHtml(((p.technologies || []).join(' ') + ' ' + (p.name || '')).toLowerCase())}">
-                      <div class="p-3 rounded border h-100 d-flex flex-column">
-                        <h6 class="fw-bold mb-1" style="color: var(--theme-text);">${escapeHtml(p.name || "")}</h6>
-                        <p class="small text-muted mb-2 flex-grow-1">${escapeHtml(p.description || "")}</p>
-                        ${renderProjectActionLinks(p, "corporate")}
-                      </div>
-                    </div>
-                  `).join("")}
+                  ${projects.map((p, idx) => renderEnhancedProjectCard(p, idx, "corporate", data)).join("")}
                 </div>
               </div>
             ` : ""}
@@ -4418,22 +4395,7 @@ const PortfolioThemesEngine = (() => {
                 ${renderProjectFilterToolbar(projects)}
               </div>
               <div class="row g-4">
-                ${projects.map((p, idx) => `
-                  <div class="col-md-6 col-lg-4 project-card-item" data-tech="${escapeHtml(((p.technologies || []).join(' ') + ' ' + (p.name || '')).toLowerCase())}">
-                    <div class="ai-hologram-card h-100 d-flex flex-column">
-                      <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h5 class="fw-bold mb-0" style="color: #f8fafc; font-family: monospace;">${escapeHtml(p.name || `MODULE_${idx + 1}`)}</h5>
-                      </div>
-                      <p class="small flex-grow-1 text-muted mb-3">${escapeHtml(p.description || "")}</p>
-                      ${p.technologies?.length ? `<div class="mb-3 d-flex flex-wrap gap-1">${p.technologies.map(t => `<span class="ai-telemetry-badge">${escapeHtml(t)}</span>`).join("")}</div>` : ""}
-                      ${renderProjectActionLinks(p, "ai_tech") ? `
-                        <div class="pt-2 border-top border-secondary mt-auto">
-                          ${renderProjectActionLinks(p, "ai_tech")}
-                        </div>
-                      ` : ""}
-                    </div>
-                  </div>
-                `).join("")}
+                ${projects.map((p, idx) => renderEnhancedProjectCard(p, idx, "ai_tech", data)).join("")}
               </div>
             </div>
           ` : ""}
@@ -4748,19 +4710,7 @@ const PortfolioThemesEngine = (() => {
               ${renderProjectFilterToolbar(projects)}
             </div>
             <div class="row g-4">
-              ${projects.map(p => `
-                <div class="col-md-6 col-lg-4 project-card-item" data-tech="${escapeHtml(((p.technologies || []).join(' ') + ' ' + (p.name || '')).toLowerCase())}">
-                  <div class="dark-titanium-card h-100 d-flex flex-column">
-                    <h5 class="fw-bold mb-2" style="color: #f8fafc;">${escapeHtml(p.name || "")}</h5>
-                    <p class="small flex-grow-1 text-muted mb-3">${escapeHtml(p.description || "")}</p>
-                    ${renderProjectActionLinks(p, "dark") ? `
-                      <div class="pt-2 border-top border-secondary mt-auto">
-                        ${renderProjectActionLinks(p, "dark")}
-                      </div>
-                    ` : ""}
-                  </div>
-                </div>
-              `).join("")}
+              ${projects.map((p, idx) => renderEnhancedProjectCard(p, idx, "dark", data)).join("")}
             </div>
           </div>
         ` : ""}
@@ -5201,18 +5151,7 @@ const PortfolioThemesEngine = (() => {
               ${renderProjectFilterToolbar(projects)}
             </div>
             <div class="row g-4">
-              ${projects.map(p => `
-                <div class="col-md-6 project-card-item" data-tech="${escapeHtml(((p.technologies || []).join(' ') + ' ' + (p.name || '')).toLowerCase())}">
-                  <div class="portfolio-card p-4 h-100 d-flex flex-column">
-                    <h5 class="fw-bold mb-1" style="color: var(--theme-text);">${escapeHtml(p.name || "")}</h5>
-                    <p class="small text-muted mb-3 flex-grow-1">${escapeHtml(p.description || "")}</p>
-                    <div class="d-flex flex-wrap gap-1 mb-3">
-                      ${(p.technologies || []).map(t => `<span class="theme-badge">${escapeHtml(t)}</span>`).join("")}
-                    </div>
-                    ${renderProjectActionLinks(p, "timeline")}
-                  </div>
-                </div>
-              `).join("")}
+              ${projects.map((p, idx) => renderEnhancedProjectCard(p, idx, "timeline", data)).join("")}
             </div>
           </section>
         ` : ""}
@@ -5372,18 +5311,7 @@ const PortfolioThemesEngine = (() => {
                   ${renderProjectFilterToolbar(projects)}
                 </div>
                 <div class="row g-3">
-                  ${projects.map(p => `
-                    <div class="col-md-6 project-card-item" data-tech="${escapeHtml(((p.technologies || []).join(' ') + ' ' + (p.name || '')).toLowerCase())}">
-                      <div class="p-3 border rounded-3 bg-light-subtle h-100 d-flex flex-column" style="border-color: var(--theme-card-border) !important;">
-                        <h6 class="fw-bold mb-1" style="color: var(--theme-text);">${escapeHtml(p.name || "")}</h6>
-                        <p class="small text-muted mb-2 flex-grow-1">${escapeHtml(p.description || "")}</p>
-                        <div class="d-flex flex-wrap gap-1 mb-2">
-                          ${(p.technologies || []).map(t => `<span class="theme-badge" style="font-size: 0.68rem;">${escapeHtml(t)}</span>`).join("")}
-                        </div>
-                        ${renderProjectActionLinks(p, "dashboard")}
-                      </div>
-                    </div>
-                  `).join("")}
+                  ${projects.map((p, idx) => renderEnhancedProjectCard(p, idx, "dashboard", data)).join("")}
                 </div>
               </div>
             ` : ""}
@@ -5512,16 +5440,9 @@ const PortfolioThemesEngine = (() => {
                   <h4 class="fw-bold mb-0 section-title" style="color: var(--theme-text);">Featured Case Studies</h4>
                   ${renderProjectFilterToolbar(projects)}
                 </div>
-                ${projects.map(p => `
-                  <div class="split-feed-card project-card-item d-flex flex-column" data-tech="${escapeHtml(((p.technologies || []).join(' ') + ' ' + (p.name || '')).toLowerCase())}">
-                    <h5 class="fw-bold mb-1" style="color: var(--theme-text);">${escapeHtml(p.name || "")}</h5>
-                    <p class="small text-muted mb-3 flex-grow-1">${escapeHtml(p.description || "")}</p>
-                    <div class="d-flex flex-wrap gap-1 mb-3">
-                      ${(p.technologies || []).map(t => `<span class="theme-badge">${escapeHtml(t)}</span>`).join("")}
-                    </div>
-                    ${renderProjectActionLinks(p, "split_screen")}
-                  </div>
-                `).join("")}
+                <div class="row g-4">
+                  ${projects.map((p, idx) => renderEnhancedProjectCard(p, idx, "split_screen", data)).join("")}
+                </div>
               </div>
             ` : ""}
 

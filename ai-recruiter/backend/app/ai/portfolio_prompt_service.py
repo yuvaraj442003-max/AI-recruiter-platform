@@ -22,7 +22,17 @@ logger = logging.getLogger("ai_recruiter.portfolio_prompt")
 
 # Curated Theme & Style mapping suggestions based on prompt keywords
 THEME_PRESETS_BY_KEYWORD = {
-    # High-Priority Intent Phrases (Modern, Professional, Unique, Impressive Websites)
+    # High-Priority Intent Phrases (Modern, Professional, Clean, Neat, Well-Organized Websites)
+    "clean": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "neat": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "well-organized": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "well organized": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "polished": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "polished layout": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "excellent presentation": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "visually appealing": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "clean, neat, professional": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "clean and neat": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
     "modern professional": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
     "modern, professional": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
     "modern website": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
@@ -574,6 +584,11 @@ def generate_single_prompt_portfolio_with_gemini(
         "2. NEVER invent fake companies or fictitious academic credentials.\n"
         "3. Preserve all real project URLs (live demos, GitHub links) without fabricating fictional links.\n"
         "4. Seamlessly blend the user's prompt desires with the candidate's authentic career history.\n\n"
+        "=== GOLD STANDARD PRESENTATION & CLEAN DESIGN RULES ===\n"
+        "1. Every portfolio generated MUST have a clean, neat, professional, well-organized, and visually appealing design.\n"
+        "2. Ensure polished layout architecture, harmonious color contrast, balanced whitespace, and excellent presentation.\n"
+        "3. Organize skills cleanly into 3-4 distinct technical competencies (e.g. Frontend Architecture, Backend & Distributed Systems, Cloud & DevOps, Core Engineering).\n"
+        "4. For featured projects, provide clear, concise, impactful descriptions highlighting business value and real technical outcomes.\n"
         "OUTPUT REQUIREMENT: Return ONLY a valid JSON object matching the exact schema below. No markdown backticks, no markdown code block, no preamble.\n\n"
         "JSON SCHEMA:\n"
         "{\n"
