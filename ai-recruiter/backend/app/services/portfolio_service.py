@@ -219,6 +219,16 @@ THEME_DEFAULTS: Dict[str, Dict[str, Any]] = {
         "button_style": "glow",
         "layout": "ai_hud",
     },
+    "handcrafted": {
+        "primary_color": "#f97316",
+        "secondary_color": "#8b5cf6",
+        "font": "Plus Jakarta Sans",
+        "background_style": "mesh",
+        "card_style": "glass",
+        "dark_mode": True,
+        "button_style": "rounded",
+        "layout": "handcrafted",
+    },
     "creative": {
         "primary_color": "#ec4899",
         "secondary_color": "#f59e0b",
@@ -336,6 +346,11 @@ THEME_PALETTES: Dict[str, List[Dict[str, Any]]] = {
         {"name": "Ocean Emerald", "primary_color": "#0284c7", "secondary_color": "#10b981", "font": "Plus Jakarta Sans", "background_style": "dots", "card_style": "glass", "dark_mode": False, "button_style": "rounded", "layout": "bento"},
         {"name": "Aurora Teal", "primary_color": "#0d9488", "secondary_color": "#6366f1", "font": "Plus Jakarta Sans", "background_style": "mesh", "card_style": "elevated", "dark_mode": False, "button_style": "pill", "layout": "bento"},
         {"name": "Midnight Rose", "primary_color": "#e11d48", "secondary_color": "#8b5cf6", "font": "Plus Jakarta Sans", "background_style": "mesh", "card_style": "glass", "dark_mode": False, "button_style": "rounded", "layout": "bento"},
+    ],
+    "handcrafted": [
+        {"name": "Sunset Terracotta", "primary_color": "#f97316", "secondary_color": "#8b5cf6", "font": "Plus Jakarta Sans", "background_style": "mesh", "card_style": "glass", "dark_mode": True, "button_style": "rounded", "layout": "handcrafted"},
+        {"name": "Electric Indigo", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "font": "Plus Jakarta Sans", "background_style": "mesh", "card_style": "glass", "dark_mode": True, "button_style": "rounded", "layout": "handcrafted"},
+        {"name": "Emerald Slate", "primary_color": "#10b981", "secondary_color": "#38bdf8", "font": "Plus Jakarta Sans", "background_style": "mesh", "card_style": "glass", "dark_mode": True, "button_style": "rounded", "layout": "handcrafted"},
     ],
     "creative": [
         {"name": "Neon Flamingo", "primary_color": "#ec4899", "secondary_color": "#f59e0b", "font": "Outfit", "background_style": "mesh", "card_style": "glass", "dark_mode": False, "button_style": "pill", "layout": "asymmetric_studio"},
@@ -535,6 +550,14 @@ DOMAIN_BACKGROUND_PRESETS: Dict[str, Dict[str, str]] = {
         "description": "Moody tech workspace with clean aesthetic hardware and ambient studio lighting",
         "overlay": "rgba(9, 9, 11, 0.92)",
         "accent": "#6366f1",
+    },
+    "handcrafted": {
+        "domain": "Artisanal & Hand-Crafted Web Architecture",
+        "url": "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=2000&q=80",
+        "title": "Bespoke Design & Engineering Studio",
+        "description": "High-aesthetic digital workshop blending artisanal design with production software architecture",
+        "overlay": "rgba(15, 23, 42, 0.88)",
+        "accent": "#f97316",
     },
     "saas": {
         "domain": "Modern SaaS & Product Engineering",

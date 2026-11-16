@@ -486,6 +486,31 @@ const PortfolioThemesEngine = (() => {
     // CATEGORY 3: CREATIVE & NEO-BRUTALISM (10 THEMES)
     // ----------------------------------------------------
     {
+      id: "handcrafted",
+      name: "Hand-Crafted Bespoke",
+      category: "creative",
+      categoryName: "Creative & Bespoke",
+      layout: "handcrafted",
+      layoutName: "Bespoke Hand-Crafted Studio",
+      layoutBadge: "Artisan Studio",
+      icon: "✨",
+      desc: "Manually designed and developed by experienced web designers with bespoke typography, fluid micro-interactions, and specular glass highlights",
+      tags: ["Bespoke", "Hand-Crafted", "Studio", "Modern"],
+      defaultPrimary: "#f97316",
+      defaultSecondary: "#8b5cf6",
+      font: "Plus Jakarta Sans",
+      defaultBg: "mesh",
+      defaultCard: "glass",
+      defaultBtn: "rounded",
+      defaultDark: true,
+      palettes: [
+        { name: "Sunset Terracotta", primary: "#f97316", secondary: "#8b5cf6" },
+        { name: "Electric Indigo", primary: "#4f46e5", secondary: "#06b6d4" },
+        { name: "Emerald Slate", primary: "#10b981", secondary: "#38bdf8" },
+        { name: "Rose Gold", primary: "#f43f5e", secondary: "#fbbf24" },
+      ]
+    },
+    {
       id: "creative",
       name: "Creative Studio",
       category: "creative",
@@ -3215,6 +3240,420 @@ const PortfolioThemesEngine = (() => {
           <span>📞</span>
         </a>
 
+      </div>
+    `;
+
+    return html;
+  }
+
+  /**
+   * BESPOKE HAND-CRAFTED STUDIO LAYOUT (Artisan Web Designer Caliber)
+   * Designed as if manually crafted by an experienced principal web designer:
+   * - Expressive typography with kinetic clamp headline
+   * - Interactive Holographic Talent & Monogram Card
+   * - Quantified Impact KPI Strip
+   * - High-Impact Flagship Case Study #1 + Secondary Projects Grid
+   * - Interactive System Architecture Modal triggers
+   * - Categorized Competency & Technical Skills Matrix
+   * - Handcrafted Engineering Philosophy & Values Cards
+   * - Seamless Vertical Work Experience Timeline
+   * - Education & Verified Certifications
+   * - High-Conversion Universal Contact & Artisan Footer
+   */
+  function renderHandcraftedStudioLayout(data, activeSections) {
+    const name = escapeHtml(data.candidate_name || "Professional");
+    const firstName = name.split(" ")[0] || "Candidate";
+    const headline = escapeHtml(data.professional_headline || "");
+    const soc = data.social_links || {};
+    const loc = escapeHtml(soc.location || "");
+    const email = escapeHtml(soc.email || "");
+    const phone = escapeHtml(soc.phone || "");
+    const linkedin = escapeHtml(soc.linkedin || "");
+    const github = escapeHtml(soc.github || "");
+    const about = escapeHtml(data.about || "");
+    const skills = data.skills || {};
+    const projects = data.projects || [];
+    const experience = data.experience || [];
+    const education = data.education || [];
+    const certs = data.certifications || [];
+    const domainConfig = getDomainConfig(data.theme_id || "handcrafted", data);
+
+    const navLinks = activeSections.filter(s => s !== "home").map(s => {
+      let label = s.charAt(0).toUpperCase() + s.slice(1);
+      if (s === "projects") label = "Flagship Works";
+      if (s === "skills") label = "Capabilities";
+      if (s === "experience") label = "Experience";
+      return `<a href="#section-${s}" class="text-decoration-none px-3 py-1 rounded-pill small fw-semibold" style="color: var(--theme-text); transition: all 0.2s;">${label}</a>`;
+    }).join("");
+
+    // Flagship Project extraction
+    const hasProjects = activeSections.includes("projects") && projects.length > 0;
+    const flagshipProject = hasProjects ? projects[0] : null;
+    const secondaryProjects = hasProjects ? projects.slice(1) : [];
+
+    const cleanUrl = (raw) => {
+      if (!raw || typeof raw !== "string") return "";
+      let trimmed = raw.trim();
+      if (!trimmed || trimmed === "#" || trimmed.toLowerCase() === "none") return "";
+      if (!trimmed.match(/^https?:\/\//i)) trimmed = "https://" + trimmed;
+      return trimmed;
+    };
+
+    let flagshipLiveUrl = "";
+    let flagshipCodeUrl = "";
+    let flagshipSlug = "";
+    if (flagshipProject) {
+      flagshipLiveUrl = cleanUrl(flagshipProject.live_demo_url || flagshipProject.demo_url || flagshipProject.url || flagshipProject.link);
+      flagshipCodeUrl = cleanUrl(flagshipProject.github_url || flagshipProject.repo_url || flagshipProject.code_url);
+      flagshipSlug = escapeHtml((flagshipProject.name || "flagship").toLowerCase().replace(/[^a-z0-9]/g, "-"));
+    }
+
+    let html = `
+      <div class="handcrafted-studio-wrap">
+        <!-- Artisanal Floating Glass Navigation -->
+        <header class="sticky-top py-3 mb-4" style="z-index: 1000;">
+          <div class="handcrafted-navbar d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <span class="fs-5">✨</span>
+              <span class="fw-bold" style="color: var(--theme-text); font-size: 1.05rem; letter-spacing: -0.01em;">${name}</span>
+            </div>
+            <nav class="d-none d-md-flex align-items-center gap-1">
+              ${navLinks}
+            </nav>
+            <div class="d-flex align-items-center gap-2">
+              <a href="#section-contact" class="theme-btn-primary py-1.5 px-3.5 small fw-bold shadow-sm">
+                <span>💼</span> Get in Touch
+              </a>
+            </div>
+          </div>
+        </header>
+
+        <!-- Bespoke Hero Stage -->
+        <section id="section-home" class="handcrafted-hero-stage mb-5">
+          <div class="row align-items-center g-4">
+            <div class="col-lg-8 animate-fade-in-up">
+              <!-- Eyebrow Status Pill -->
+              <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                <span class="handcrafted-designer-pill">
+                  <span class="handcrafted-pulsing-dot"></span>
+                  ✦ Hand-Crafted • Bespoke Studio Architecture
+                </span>
+                <div class="bento-radar-badge">
+                  <span class="radar-ping-wrap">
+                    <span class="radar-ping-wave"></span>
+                    <span class="radar-ping-dot"></span>
+                  </span>
+                  <span>Available for High-Impact Roles</span>
+                  ${loc ? `<span>•</span><span>📍 ${loc}</span>` : ""}
+                </div>
+              </div>
+
+              <!-- Kinetic Clamp Title -->
+              <h1 class="display-3 fw-extrabold mb-3 d-block w-100" style="letter-spacing: -0.035em; line-height: 1.15;">
+                Hello, I'm <span class="handcrafted-gradient-name">${name}</span>.
+              </h1>
+
+              <!-- Narrative Subtitle -->
+              <p class="lead fw-semibold mb-4" style="color: var(--theme-text-muted); max-width: 680px; font-size: 1.25rem; line-height: 1.65;">
+                ${headline || `${name} engineers scalable software platforms, microservices, and modern web applications with precision craft.`}
+              </p>
+
+              <!-- Interactive Core Stack Pills -->
+              ${Array.isArray(skills) || typeof skills === "object" ? `
+                <div class="d-flex flex-wrap gap-2 mb-4">
+                  ${(Array.isArray(skills) ? skills : Object.values(skills).flat()).slice(0, 6).map(s => `
+                    <span class="bento-tech-capsule"><span>✦</span> ${escapeHtml(s)}</span>
+                  `).join("")}
+                </div>
+              ` : ""}
+
+              <!-- High-Impact Action CTAs -->
+              <div class="d-flex flex-wrap align-items-center gap-3">
+                <a href="#section-projects" class="theme-btn-primary py-2.5 px-4 shadow-sm fs-6">
+                  <span>⚡</span> Explore Flagship Work &rarr;
+                </a>
+                <a href="#section-contact" class="theme-btn-outline py-2.5 px-4 fs-6">
+                  <span>💼</span> Connect with ${firstName}
+                </a>
+                ${github ? `<a href="${escapeHtml(github)}" target="_blank" rel="noopener noreferrer" class="theme-btn-outline py-2.5 px-3"><span>💻</span> GitHub ↗</a>` : ""}
+                ${linkedin ? `<a href="${escapeHtml(linkedin)}" target="_blank" rel="noopener noreferrer" class="theme-btn-outline py-2.5 px-3"><span>in</span> LinkedIn ↗</a>` : ""}
+              </div>
+            </div>
+
+            <!-- Interactive Holographic Talent & Monogram Card -->
+            <div class="col-lg-4 text-center">
+              <div class="handcrafted-talent-card animate-float">
+                <div class="mb-3 d-inline-block position-relative">
+                  ${renderCandidateAvatar(data, 130)}
+                </div>
+                <h4 class="fw-bold mb-1" style="color: var(--theme-text); letter-spacing: -0.01em;">${name}</h4>
+                ${headline ? `<div class="small fw-semibold mb-3" style="color: var(--theme-primary);">${headline}</div>` : ""}
+
+                <div class="d-flex justify-content-center gap-2 flex-wrap mb-3">
+                  <span class="badge border border-success border-opacity-40 text-success small px-2.5 py-1" style="background: rgba(16, 185, 129, 0.12); font-size: 0.76rem;">✓ Verified Engineering Spec</span>
+                  ${loc ? `<span class="badge" style="background: var(--theme-badge-bg); color: var(--theme-primary); font-size: 0.76rem;">📍 ${loc}</span>` : ""}
+                </div>
+
+                <!-- Telemetry Metrics -->
+                <div class="p-2.5 rounded-3 mb-3 text-start" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08);">
+                  <div class="d-flex justify-content-between align-items-center small py-1.5 border-bottom border-secondary border-opacity-25">
+                    <span class="text-muted">Repositories</span>
+                    <strong style="color: var(--theme-primary);">${projects.length} Showcased</strong>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center small py-1.5 border-bottom border-secondary border-opacity-25">
+                    <span class="text-muted">Career Positions</span>
+                    <strong style="color: var(--theme-primary);">${experience.length} Notable Milestones</strong>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center small py-1.5">
+                    <span class="text-muted">Availability</span>
+                    <strong class="text-success">Available for Opportunities</strong>
+                  </div>
+                </div>
+
+                <div class="d-grid">
+                  <a href="#section-contact" class="btn btn-sm btn-primary rounded-pill fw-bold py-2 shadow-sm" style="background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-secondary) 100%); border: none;">
+                    Connect with ${firstName} &rarr;
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Quantified Impact KPI Strip -->
+        ${renderMetricsStrip(data, "handcrafted")}
+
+        <!-- Narrative & Vision Statement Section -->
+        ${activeSections.includes("about") ? `
+          <section class="py-2 mb-5" id="section-about">
+            <div class="creative-neo-card p-4 p-md-5 rounded-4 shadow-sm" style="background: var(--theme-card-bg); border: 1px solid var(--theme-card-border);">
+              <div class="d-flex gap-3 mb-3">
+                <span class="display-3 fw-bold" style="color: var(--theme-primary); line-height: 0.8;">“</span>
+                <div>
+                  <h4 class="fw-bold mb-2" style="color: var(--theme-text);">Narrative &amp; Technical Vision</h4>
+                  <div class="lead" style="color: var(--theme-text); opacity: 0.95; font-size: 1.15rem; line-height: 1.85;">
+                    ${about || (headline ? `${name} is an accomplished technical specialist specializing in ${headline}. Focused on architecting high-value, impact-driven software systems with modern engineering rigor.` : `${name} brings technical excellence, strategic problem-solving, and dedication to delivering scalable results.`)}
+                  </div>
+                </div>
+              </div>
+              <div class="pt-3 border-top border-secondary border-opacity-25 d-flex flex-wrap gap-2">
+                <span class="badge" style="background: rgba(var(--theme-primary-rgb, 249, 115, 22), 0.15); color: var(--theme-primary);">Production Standards</span>
+                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">Architectural Rigor</span>
+                <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8;">High-Performance Systems</span>
+                <span class="badge" style="background: rgba(139, 92, 246, 0.15); color: #8b5cf6;">Human-Centered Engineering</span>
+              </div>
+            </div>
+          </section>
+        ` : ""}
+
+        <!-- Flagship Projects Showcase -->
+        ${hasProjects ? `
+          <section class="py-3 mb-5" id="section-projects">
+            <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-4">
+              <div>
+                <span class="text-uppercase small fw-bold" style="color: var(--theme-primary); letter-spacing: 0.1em;">01 // SELECTED WORKS</span>
+                <h2 class="display-6 fw-extrabold mb-1" style="color: var(--theme-text); letter-spacing: -0.02em;">Featured Engineering Projects</h2>
+                <p class="text-muted small mb-0">Production systems, microservices, and applications with live demos and architecture specs.</p>
+              </div>
+            </div>
+
+            <!-- Project Filter Toolbar -->
+            ${renderProjectFilterToolbar(projects)}
+
+            <!-- Featured Flagship #1 Project Card -->
+            ${flagshipProject ? `
+              <div class="handcrafted-flagship-card mb-4 project-card-item" data-tech="${escapeHtml(((flagshipProject.technologies || []).join(' ') + ' ' + (flagshipProject.name || '')).toLowerCase())}">
+                <div class="device-mac-bar">
+                  <div class="traffic-dots">
+                    <span class="dot-red"></span>
+                    <span class="dot-yellow"></span>
+                    <span class="dot-green"></span>
+                    <span class="project-ordinal-badge ms-1.5">01 // FLAGSHIP ARCHITECTURE</span>
+                  </div>
+                  <div class="device-url-capsule">
+                    <span>🔒</span>
+                    <span>${flagshipLiveUrl ? flagshipLiveUrl.replace(/^https?:\/\//i, "") : `apps.production/${flagshipSlug}`}</span>
+                  </div>
+                  <span class="project-category-tag">Featured Flagship</span>
+                </div>
+                <div class="p-4 p-md-5">
+                  <div class="row align-items-center g-4">
+                    <div class="col-lg-7">
+                      <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="project-status-chip text-success border border-success border-opacity-25" style="background: rgba(16, 185, 129, 0.08);">
+                          <span class="pulsing-dot" style="width: 5px; height: 5px;"></span> Production Ready • Zero-Downtime
+                        </span>
+                      </div>
+                      <h3 class="fw-bold mb-3" style="color: var(--theme-text);">
+                        ${flagshipLiveUrl ? `<a href="${escapeHtml(flagshipLiveUrl)}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">${escapeHtml(flagshipProject.name || 'Flagship Architecture')} ↗</a>` : escapeHtml(flagshipProject.name || 'Flagship Architecture')}
+                      </h3>
+                      <p class="mb-4" style="color: var(--theme-text-muted); font-size: 1.05rem; line-height: 1.75;">
+                        ${escapeHtml(flagshipProject.description || "Scalable production software system engineered for high concurrency, security, and performance.")}
+                      </p>
+
+                      ${Array.isArray(flagshipProject.key_features) && flagshipProject.key_features.length > 0 ? `
+                        <div class="mb-4">
+                          <h6 class="fw-bold small text-uppercase mb-2" style="color: var(--theme-primary); letter-spacing: 0.05em;">⚡ Architecture &amp; Engineering Highlights:</h6>
+                          <ul class="project-features-list mb-0">
+                            ${flagshipProject.key_features.slice(0, 4).map(f => `<li><span class="feat-check">✓</span> <span>${escapeHtml(f)}</span></li>`).join("")}
+                          </ul>
+                        </div>
+                      ` : ""}
+
+                      ${Array.isArray(flagshipProject.technologies) && flagshipProject.technologies.length > 0 ? `
+                        <div class="tech-pills-row mb-4">
+                          ${flagshipProject.technologies.slice(0, 8).map(t => `<span class="tech-pill-dot">${escapeHtml(t)}</span>`).join("")}
+                        </div>
+                      ` : ""}
+
+                      <div class="d-flex align-items-center gap-3 flex-wrap">
+                        ${flagshipLiveUrl ? `<a href="${escapeHtml(flagshipLiveUrl)}" target="_blank" rel="noopener noreferrer" class="theme-btn-primary py-2 px-3.5 fs-6">🌐 Launch Live Demo ↗</a>` : ""}
+                        ${flagshipCodeUrl ? `<a href="${escapeHtml(flagshipCodeUrl)}" target="_blank" rel="noopener noreferrer" class="theme-btn-outline py-2 px-3.5 fs-6">💻 Source Code ↗</a>` : ""}
+                        <button type="button" class="btn-arch-inspect btn-open-arch-modal" data-project-idx="0" title="Inspect System Architecture">
+                          <span>🔍 Inspect Architecture</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                      <div class="p-3 rounded-4" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+                          <span class="small fw-bold text-muted">Architecture Blueprint</span>
+                          <span class="badge bg-primary-subtle text-primary small">Modular</span>
+                        </div>
+                        <div class="p-3 rounded-3 mb-3" style="background: rgba(0, 0, 0, 0.2); font-family: 'Fira Code', monospace; font-size: 0.8rem; color: #a5b4fc; line-height: 1.6;">
+                          // System Execution Pipeline<br/>
+                          Client Layer &rarr; Gateway Router &rarr; API Worker &rarr; Cache (Redis) &rarr; Data Engine
+                        </div>
+                        <div class="small text-muted" style="line-height: 1.6;">
+                          ✦ Optimized for high throughput, sub-50ms API latency, automated CI/CD testing, and resilient data parity.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ` : ""}
+
+            <!-- Secondary Projects Grid -->
+            ${secondaryProjects.length > 0 ? `
+              <div class="row g-4" id="portfolio-projects-container">
+                ${secondaryProjects.map((p, sIdx) => renderEnhancedProjectCard(p, sIdx + 1, "handcrafted", data)).join("")}
+              </div>
+            ` : ""}
+          </section>
+        ` : ""}
+
+        <!-- Core Technical Competencies & Categorized Skills Matrix -->
+        ${activeSections.includes("skills") ? `
+          <section class="py-3 mb-5" id="section-skills">
+            <div class="mb-4">
+              <span class="text-uppercase small fw-bold" style="color: var(--theme-primary); letter-spacing: 0.1em;">02 // CAPABILITIES</span>
+              <h2 class="display-6 fw-extrabold mb-1" style="color: var(--theme-text); letter-spacing: -0.02em;">Technical Stack &amp; Core Competencies</h2>
+              <p class="text-muted small mb-0">Structured breakdown of verified programming languages, cloud systems, and frameworks.</p>
+            </div>
+            ${renderSkillsBadges(skills, "handcrafted")}
+          </section>
+        ` : ""}
+
+        <!-- Handcrafted Engineering Philosophy & Tenets -->
+        ${renderPhilosophySection(data, "handcrafted")}
+
+        <!-- Value Pillars / Services -->
+        ${activeSections.includes("services") ? renderServicesSection(data, "handcrafted") : ""}
+
+        <!-- Work Experience & Career Journey Timeline -->
+        ${activeSections.includes("experience") && experience.length > 0 ? `
+          <section class="py-3 mb-5" id="section-experience">
+            <div class="mb-4">
+              <span class="text-uppercase small fw-bold" style="color: var(--theme-primary); letter-spacing: 0.1em;">03 // CAREER JOURNEY</span>
+              <h2 class="display-6 fw-extrabold mb-1" style="color: var(--theme-text); letter-spacing: -0.02em;">Professional Experience</h2>
+              <p class="text-muted small mb-0">Demonstrated history of technical impact, leadership, and system engineering.</p>
+            </div>
+            <div class="p-4 p-md-5 rounded-4 shadow-sm" style="background: var(--theme-card-bg); border: 1px solid var(--theme-card-border);">
+              ${experience.map((exp, eIdx) => {
+                const title = escapeHtml(exp.title || "Software Specialist");
+                const company = escapeHtml(exp.company || "Enterprise");
+                const expLoc = escapeHtml(exp.location || "");
+                const startDate = escapeHtml(exp.start_date || "");
+                const endDate = escapeHtml(exp.end_date || (exp.is_current ? "Present" : ""));
+                const desc = escapeHtml(exp.description || "");
+                const highlights = Array.isArray(exp.highlights) ? exp.highlights : [];
+                const expTechs = Array.isArray(exp.technologies) ? exp.technologies : [];
+
+                return `
+                  <div class="handcrafted-timeline-item">
+                    <span class="handcrafted-timeline-node"></span>
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-1">
+                      <div>
+                        <h4 class="fw-bold mb-0" style="color: var(--theme-text); font-size: 1.25rem;">${title}</h4>
+                        <div class="fw-semibold small" style="color: var(--theme-primary);">${company} ${expLoc ? `• 📍 ${expLoc}` : ""}</div>
+                      </div>
+                      <span class="badge rounded-pill px-3 py-1.5 small fw-semibold" style="background: rgba(var(--theme-primary-rgb, 249, 115, 22), 0.12); color: var(--theme-primary); border: 1px solid rgba(var(--theme-primary-rgb, 249, 115, 22), 0.25);">
+                        ${startDate}${startDate && endDate ? " — " : ""}${endDate}
+                      </span>
+                    </div>
+                    ${desc ? `<p class="mt-2 mb-2" style="color: var(--theme-text-muted); line-height: 1.65;">${desc}</p>` : ""}
+                    ${highlights.length > 0 ? `
+                      <ul class="mb-3 ps-3 small" style="color: var(--theme-text-muted); line-height: 1.65;">
+                        ${highlights.map(h => `<li>${escapeHtml(h)}</li>`).join("")}
+                      </ul>
+                    ` : ""}
+                    ${expTechs.length > 0 ? `
+                      <div class="d-flex flex-wrap gap-1.5 mt-2">
+                        ${expTechs.map(t => `<span class="badge bg-secondary-subtle text-secondary border small">${escapeHtml(t)}</span>`).join("")}
+                      </div>
+                    ` : ""}
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </section>
+        ` : ""}
+
+        <!-- Education & Credentials -->
+        ${(activeSections.includes("education") && education.length > 0) || (activeSections.includes("certifications") && certs.length > 0) ? `
+          <section class="py-3 mb-5" id="section-education">
+            <div class="mb-4">
+              <span class="text-uppercase small fw-bold" style="color: var(--theme-primary); letter-spacing: 0.1em;">04 // CREDENTIALS</span>
+              <h2 class="display-6 fw-extrabold mb-1" style="color: var(--theme-text); letter-spacing: -0.02em;">Education &amp; Certifications</h2>
+            </div>
+            <div class="row g-4">
+              ${education.map(edu => {
+                const deg = escapeHtml(edu.degree || "Academic Degree");
+                const inst = escapeHtml(edu.institution || "University");
+                const field = edu.field_of_study ? escapeHtml(edu.field_of_study) : "";
+                const endY = edu.end_year ? escapeHtml(String(edu.end_year)) : "";
+                const grade = edu.score || edu.grade || edu.details ? escapeHtml(String(edu.score || edu.grade || edu.details)) : "";
+
+                return `
+                  <div class="col-md-6">
+                    <div class="p-4 rounded-4 h-100 shadow-sm" style="background: var(--theme-card-bg); border: 1px solid var(--theme-card-border);">
+                      <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="fs-4">🎓</span>
+                        <div>
+                          <h5 class="fw-bold mb-0" style="color: var(--theme-text);">${deg}</h5>
+                          <small class="text-muted">${inst}</small>
+                        </div>
+                      </div>
+                      ${field ? `<div class="small fw-semibold mt-2" style="color: var(--theme-primary);">${field}</div>` : ""}
+                      <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-secondary border-opacity-25 small text-muted">
+                        <span>${endY ? `Graduated ${endY}` : "Completed"}</span>
+                        ${grade ? `<span class="badge bg-success-subtle text-success border">${grade}</span>` : ""}
+                      </div>
+                    </div>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </section>
+        ` : ""}
+
+        <!-- Universal Contact & Closing CTA Banner -->
+        ${activeSections.includes("contact") ? renderUniversalContact(data, "handcrafted") : ""}
+
+        <!-- Universal Footer -->
+        ${renderUniversalFooter(data)}
       </div>
     `;
 
@@ -6816,6 +7255,13 @@ const PortfolioThemesEngine = (() => {
       "custom_html": "custom_html",
       "custom": "custom_html",
       "html": "custom_html",
+      "handcrafted": "handcrafted",
+      "hand-crafted": "handcrafted",
+      "hand crafted": "handcrafted",
+      "bespoke": "handcrafted",
+      "artisan": "handcrafted",
+      "designer": "handcrafted",
+      "web_designer": "handcrafted",
       "modern": "modern",
       "bento": "modern",
       "developer": "developer",
@@ -6858,6 +7304,8 @@ const PortfolioThemesEngine = (() => {
     let layoutHtml = "";
     if (resolvedLayout === "custom_html" || portfolioData.layout === "custom_html" || portfolioData.use_custom_html) {
       layoutHtml = renderCustomHtmlLayout(portfolioData, activeSections);
+    } else if (resolvedLayout === "handcrafted") {
+      layoutHtml = renderHandcraftedStudioLayout(portfolioData, activeSections);
     } else if (resolvedLayout === "developer") {
       layoutHtml = renderDeveloperIdeLayout(portfolioData, activeSections);
     } else if (resolvedLayout === "modern") {

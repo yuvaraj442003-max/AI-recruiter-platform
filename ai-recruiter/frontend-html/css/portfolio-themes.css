@@ -5999,3 +5999,146 @@ body[data-bs-theme="light"] .bento-timeline-beacon {
   align-items: center;
   gap: 5px;
 }
+
+/* ==============================================================
+   BESPOKE HAND-CRAFTED STUDIO LAYOUT (Artisan Web Designer Caliber)
+   ============================================================== */
+.handcrafted-studio-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 5rem;
+  z-index: 2;
+}
+
+.handcrafted-navbar {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(15, 23, 42, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  padding: 0.65rem 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
+}
+body[data-bs-theme="light"] .handcrafted-navbar {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(226, 232, 240, 0.9);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+}
+
+.handcrafted-hero-stage {
+  padding: 2.5rem 0 2rem;
+}
+
+.handcrafted-gradient-name {
+  background: linear-gradient(135deg, var(--theme-primary, #f97316) 0%, var(--theme-secondary, #8b5cf6) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline;
+}
+
+.handcrafted-talent-card {
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
+  padding: 2rem 1.6rem;
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5), 0 0 35px rgba(var(--theme-primary-rgb, 249, 115, 22), 0.15);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+}
+body[data-bs-theme="light"] .handcrafted-talent-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(226, 232, 240, 0.95);
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.08), 0 0 30px rgba(var(--theme-primary-rgb, 249, 115, 22), 0.1);
+}
+.handcrafted-talent-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 28px 60px -10px rgba(0, 0, 0, 0.6), 0 0 45px rgba(var(--theme-primary-rgb, 249, 115, 22), 0.25);
+}
+.handcrafted-talent-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--theme-primary, #f97316), var(--theme-secondary, #8b5cf6));
+}
+
+.handcrafted-flagship-card {
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.45);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+}
+body[data-bs-theme="light"] .handcrafted-flagship-card {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(226, 232, 240, 0.95);
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.08);
+}
+.handcrafted-flagship-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(var(--theme-primary-rgb, 249, 115, 22), 0.45);
+  box-shadow: 0 26px 60px -10px rgba(0, 0, 0, 0.55), 0 0 35px rgba(var(--theme-primary-rgb, 249, 115, 22), 0.2);
+}
+
+.handcrafted-timeline-item {
+  position: relative;
+  padding-left: 2.2rem;
+  margin-bottom: 2.2rem;
+}
+.handcrafted-timeline-item::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 10px;
+  bottom: -2.2rem;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--theme-primary, #f97316), rgba(var(--theme-primary-rgb, 249, 115, 22), 0.15));
+}
+.handcrafted-timeline-item:last-child::before {
+  display: none;
+}
+.handcrafted-timeline-node {
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--theme-primary, #f97316);
+  box-shadow: 0 0 10px var(--theme-primary, #f97316);
+  border: 2px solid #ffffff;
+}
+
+.handcrafted-cta-banner {
+  background: linear-gradient(135deg, rgba(var(--theme-primary-rgb, 249, 115, 22), 0.12) 0%, rgba(var(--theme-secondary-rgb, 139, 92, 246), 0.12) 100%);
+  border: 1px solid rgba(var(--theme-primary-rgb, 249, 115, 22), 0.32);
+  border-radius: 26px;
+  padding: 3rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.handcrafted-cta-banner::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(var(--theme-primary-rgb, 249, 115, 22), 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+

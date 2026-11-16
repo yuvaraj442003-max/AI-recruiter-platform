@@ -23,17 +23,19 @@ logger = logging.getLogger("ai_recruiter.portfolio_prompt")
 # Curated Theme & Style mapping suggestions based on prompt keywords
 THEME_PRESETS_BY_KEYWORD = {
     # Hand-Crafted & Bespoke Designer Layout Archetypes (Artisanal, High-Aesthetic Studio Quality)
-    "handcrafted": {"theme_id": "saas_craft", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
-    "hand-crafted": {"theme_id": "saas_craft", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
-    "hand crafted": {"theme_id": "saas_craft", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
-    "experienced web designer": {"theme_id": "saas_craft", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
-    "experienced designer": {"theme_id": "saas_craft", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
-    "web designer": {"theme_id": "saas_craft", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
-    "manually designed": {"theme_id": "saas_craft", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
-    "not a template": {"theme_id": "saas_prism", "layout": "split_screen", "font": "Plus Jakarta Sans", "primary_color": "#6366f1", "secondary_color": "#ec4899", "dark_mode": True, "bg": "mesh", "mask": "mask-studio-bento"},
-    "not like a template": {"theme_id": "saas_prism", "layout": "split_screen", "font": "Plus Jakarta Sans", "primary_color": "#6366f1", "secondary_color": "#ec4899", "dark_mode": True, "bg": "mesh", "mask": "mask-studio-bento"},
-    "unique layout": {"theme_id": "saas_prism", "layout": "split_screen", "font": "Plus Jakarta Sans", "primary_color": "#6366f1", "secondary_color": "#ec4899", "dark_mode": True, "bg": "mesh", "mask": "mask-studio-bento"},
-    "unique design": {"theme_id": "saas_prism", "layout": "split_screen", "font": "Plus Jakarta Sans", "primary_color": "#6366f1", "secondary_color": "#ec4899", "dark_mode": True, "bg": "mesh", "mask": "mask-studio-bento"},
+    "handcrafted": {"theme_id": "handcrafted", "layout": "handcrafted", "font": "Plus Jakarta Sans", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "hand-crafted": {"theme_id": "handcrafted", "layout": "handcrafted", "font": "Plus Jakarta Sans", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "hand crafted": {"theme_id": "handcrafted", "layout": "handcrafted", "font": "Plus Jakarta Sans", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "experienced web designer": {"theme_id": "handcrafted", "layout": "handcrafted", "font": "Plus Jakarta Sans", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "experienced designer": {"theme_id": "handcrafted", "layout": "handcrafted", "font": "Plus Jakarta Sans", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "web designer": {"theme_id": "handcrafted", "layout": "handcrafted", "font": "Plus Jakarta Sans", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "manually designed": {"theme_id": "handcrafted", "layout": "handcrafted", "font": "Plus Jakarta Sans", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "not a template": {"theme_id": "handcrafted", "layout": "handcrafted", "font": "Plus Jakarta Sans", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "not like a template": {"theme_id": "handcrafted", "layout": "handcrafted", "font": "Plus Jakarta Sans", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "unique layout": {"theme_id": "handcrafted", "layout": "handcrafted", "font": "Plus Jakarta Sans", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "unique design": {"theme_id": "handcrafted", "layout": "handcrafted", "font": "Plus Jakarta Sans", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "unique modern creative": {"theme_id": "handcrafted", "layout": "handcrafted", "font": "Plus Jakarta Sans", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
+    "visually appealing": {"theme_id": "handcrafted", "layout": "handcrafted", "font": "Plus Jakarta Sans", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
     "creative studio": {"theme_id": "creative_editorial_art", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
     "creative neo-studio": {"theme_id": "creative_editorial_art", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
     "neo-studio": {"theme_id": "creative_editorial_art", "layout": "creative", "font": "Outfit", "primary_color": "#F97316", "secondary_color": "#8b5cf6", "dark_mode": True, "bg": "mesh", "mask": "mask-asymmetric-pill"},
@@ -288,7 +290,8 @@ def analyze_prompt_with_gemini(
         "Your objective is to analyze the user's natural language creation prompt and extract their exact visual, architectural, and styling design preferences.\n"
         "STYLING EXTRACTION RULES:\n"
         "1. Layout Architecture: Choose the exact matching archetype:\n"
-        "   - 'modern': if modern website, professional, unique design, unique layout, bento, clean, impressive, attractive, responsive, modular, high-impact, SaaS cards\n"
+        "   - 'handcrafted': if hand-crafted, handcrafted, experienced web designer, bespoke, manually designed, not a typical template, unique modern creative layout, award-winning artisan studio\n"
+        "   - 'modern': if modern website, professional, bento, clean, responsive, modular, high-impact, SaaS cards\n"
         "   - 'developer': if terminal, IDE, code, matrix, hacker, CLI, engineer\n"
         "   - 'ai_tech': if AI, machine learning, neural, HUD, cyberpunk, futuristic, cyber\n"
         "   - 'minimal': if minimal, swiss, monochrome, simple, clean, hairline\n"
@@ -308,7 +311,7 @@ def analyze_prompt_with_gemini(
         "10. Output ONLY a valid JSON object matching the schema below. No markdown fencings, no other text.\n\n"
         "JSON SCHEMA:\n"
         "{\n"
-        '  "layout": "developer" | "modern" | "ai_tech" | "minimal" | "corporate" | "creative" | "dark" | "split_screen" | "nova",\n'
+        '  "layout": "handcrafted" | "developer" | "modern" | "ai_tech" | "minimal" | "corporate" | "creative" | "dark" | "split_screen" | "nova",\n'
         '  "theme_id": "string",\n'
         '  "primary_color": "#hex",\n'
         '  "secondary_color": "#hex",\n'

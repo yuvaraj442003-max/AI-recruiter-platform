@@ -700,15 +700,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     const topSkills = skillList.filter(s => typeof s === "string" && s.trim()).slice(0, 6).join(", ");
 
-    let p = `Create a high-impact, modern portfolio website for ${name}, ${headline}`;
+    let p = `Create an award-winning, professionally hand-crafted portfolio website as if manually designed and developed by an experienced principal web designer for ${name}, ${headline}`;
     if (topSkills) {
       p += ` with verified expertise in ${topSkills}`;
     }
-    p += `. Highlight scalable architecture, clean responsive design, and quantified achievements using a ${layout} layout in ${theme} theme.`;
+    p += `. Feature an expressive, modern layout with bespoke typography, glassmorphic cards, warm studio gradients, quantified engineering metrics, and showcase my authentic projects with live links.`;
     return p;
   }
 
   const PORTFOLIO_PROMPT_TEMPLATES = [
+    {
+      id: "handcrafted-designer",
+      category: "creative",
+      name: "Hand-Crafted Web Designer",
+      badge: "Bespoke Studio • Fluid Aesthetics",
+      icon: "✨",
+      layout: "handcrafted",
+      theme_id: "handcrafted",
+      primary_color: "#f97316",
+      secondary_color: "#8b5cf6",
+      ambient_color: "#0f172a",
+      dark_mode: true,
+      animation: "💫 Fluid Micro-Interactions & Specular Glass",
+      prompt: "Create an award-winning, professionally hand-crafted portfolio website as if manually designed and developed by an experienced principal web designer. Use an expressive, modern layout with bespoke typography, glassmorphic cards, warm studio gradients, quantified engineering metrics, and showcase my authentic projects with live links."
+    },
     {
       id: "bento-modular",
       category: "bento",
@@ -828,25 +843,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       dark_mode: true,
       animation: "🌊 Parallax Dual-Scroll & Frosted Glass",
       prompt: "Create a modern 50/50 Split-Screen portfolio for a Full-Stack Product Builder. Feature a sticky personal brand hero on the left with glowing social links and dynamic availability badge, and an immersive scrollable project showcase on the right with frosted glass refraction, live demo popovers, and smooth parallax depth scrolling."
-    },
-    {
-      id: "handcrafted-designer",
-      category: "creative",
-      name: "Hand-Crafted Web Designer",
-      badge: "Bespoke Studio • Fluid Aesthetics",
-      icon: "✨",
-      layout: "creative",
-      theme_id: "saas_craft",
-      primary_color: "#f97316",
-      secondary_color: "#8b5cf6",
-      ambient_color: "#0f172a",
-      dark_mode: true,
-      animation: "💫 Fluid Micro-Interactions & Specular Glass",
-      prompt: "Create an award-winning, professionally hand-crafted portfolio website as if manually designed and developed by an experienced principal web designer. Use an expressive, modern layout with bespoke typography, glassmorphic cards, warm studio gradients, quantified engineering metrics, and showcase my authentic projects with live links."
     }
   ];
 
-  let activePromptTemplateId = "bento-modular";
+  let activePromptTemplateId = "handcrafted-designer";
 
   /**
    * Binds Prompt Starters, Creative Templates, Dimension Modifiers, Live Editing, and Gemini Generation
