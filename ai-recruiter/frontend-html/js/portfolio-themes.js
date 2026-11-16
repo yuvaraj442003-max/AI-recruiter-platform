@@ -2438,6 +2438,7 @@ const PortfolioThemesEngine = (() => {
               <span class="dot-red"></span>
               <span class="dot-yellow"></span>
               <span class="dot-green"></span>
+              <span class="project-ordinal-badge ms-1.5">${String(idx + 1).padStart(2, '0')}</span>
             </div>
             <div class="device-url-capsule">
               <span>🔒</span>
@@ -2446,9 +2447,15 @@ const PortfolioThemesEngine = (() => {
             <span class="project-category-tag">${escapeHtml(category)}</span>
           </div>
           <div class="device-preview-stage">
-            <div class="project-title-enhanced mb-2">
+            <div class="project-title-enhanced mb-1.5">
               ${liveUrl ? `<a href="${escapeHtml(liveUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(name)}</a>` : `<span>${escapeHtml(name)}</span>`}
               ${liveUrl ? `<a href="${escapeHtml(liveUrl)}" target="_blank" rel="noopener noreferrer" class="project-arrow-icon" title="Open Live Site">↗</a>` : `<span class="project-arrow-icon">✦</span>`}
+            </div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span class="project-status-chip text-success border border-success border-opacity-25" style="background: rgba(16, 185, 129, 0.08); font-size: 0.72rem;">
+                <span class="pulsing-dot" style="width: 5px; height: 5px;"></span> Production Ready
+              </span>
+              <span class="text-muted small" style="font-size: 0.73rem;">• Verified Build</span>
             </div>
             <p class="project-description-enhanced mb-3">${escapeHtml(desc)}</p>
             ${features.length > 0 ? `
@@ -3414,6 +3421,9 @@ const PortfolioThemesEngine = (() => {
 
       <!-- Services & Value Offerings -->
       ${activeSections.includes("services") ? renderServicesSection(data, "modern") : ""}
+
+      <!-- Handcrafted Engineering Philosophy & Values -->
+      ${renderPhilosophySection(data, "modern")}
     `;
 
     // Projects with interactive filter toolbar
@@ -3850,6 +3860,7 @@ const PortfolioThemesEngine = (() => {
               </div>
               <div class="d-flex align-items-center gap-2">
                 <button type="button" class="btn btn-sm btn-outline-info font-monospace py-0 px-2" style="font-size: 0.72rem;" onclick="window.runDevTerminalCmd && window.runDevTerminalCmd('cat about.md')">cat about.md</button>
+                <button type="button" class="btn btn-sm btn-outline-info font-monospace py-0 px-2" style="font-size: 0.72rem;" onclick="window.runDevTerminalCmd && window.runDevTerminalCmd('cat philosophy.md')">cat philosophy.md</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary font-monospace py-0 px-2" style="font-size: 0.72rem;" onclick="window.runDevTerminalCmd && window.runDevTerminalCmd('git status')">git status</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary font-monospace py-0 px-2" style="font-size: 0.72rem;" onclick="window.runDevTerminalCmd && window.runDevTerminalCmd('npm test')">npm test</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary font-monospace py-0 px-2" style="font-size: 0.72rem;" onclick="window.runDevTerminalCmd && window.runDevTerminalCmd('whoami')">whoami</button>
@@ -3886,6 +3897,9 @@ const PortfolioThemesEngine = (() => {
 
         <!-- Value Pillars & Services -->
         ${activeSections.includes("services") ? renderServicesSection(data, "developer") : ""}
+
+        <!-- Handcrafted Engineering Philosophy & Tenets -->
+        ${renderPhilosophySection(data, "developer")}
 
         <!-- Featured Repositories Grid (Using Flagship Mac Device Frames) -->
         ${activeSections.includes("projects") && projects.length > 0 ? `
@@ -4088,6 +4102,9 @@ const PortfolioThemesEngine = (() => {
           </div>
         ` : ""}
 
+        <!-- Handcrafted Engineering Philosophy & Values -->
+        ${renderPhilosophySection(data, "creative")}
+
         <!-- Neo-Brutalist Projects -->
         ${activeSections.includes("projects") && projects.length > 0 ? `
           <div id="section-projects" class="mb-5">
@@ -4263,6 +4280,9 @@ const PortfolioThemesEngine = (() => {
             <!-- Strategic Pillars & Services -->
             ${activeSections.includes("services") ? renderServicesSection(data, "corporate") : ""}
 
+            <!-- Handcrafted Engineering Philosophy & Values -->
+            ${renderPhilosophySection(data, "corporate")}
+
             ${activeSections.includes("experience") && experience.length > 0 ? `
               <div class="corp-sidebar-card mb-4" id="section-experience">
                 <h5 class="fw-bold mb-4" style="color: var(--theme-text);">Executive Career Trajectory</h5>
@@ -4386,6 +4406,9 @@ const PortfolioThemesEngine = (() => {
               </div>
             </div>
           ` : ""}
+
+          <!-- Handcrafted Engineering Philosophy & Cyber Tenets -->
+          ${renderPhilosophySection(data, "ai")}
 
           <!-- Holographic Projects -->
           ${activeSections.includes("projects") && projects.length > 0 ? `
@@ -4575,6 +4598,10 @@ const PortfolioThemesEngine = (() => {
           <div class="minimal-hairline-rule"></div>
         ` : ""}
 
+        <!-- Handcrafted Principles -->
+        ${renderPhilosophySection(data, "minimal")}
+        <div class="minimal-hairline-rule"></div>
+
         ${(activeSections.includes("education") || education.length > 0) ? `
           <section class="mb-5" id="section-education">
             <span class="minimal-index-num">05 / EDUCATION</span>
@@ -4703,6 +4730,9 @@ const PortfolioThemesEngine = (() => {
           </div>
         ` : ""}
 
+        <!-- Handcrafted Engineering Philosophy & Values -->
+        ${renderPhilosophySection(data, "dark")}
+
         ${activeSections.includes("projects") && projects.length > 0 ? `
           <div class="mb-5" id="section-projects">
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
@@ -4828,6 +4858,9 @@ const PortfolioThemesEngine = (() => {
               <div>${renderSkillsBadges(skills, "elegant")}</div>
             </section>
           ` : ""}
+
+          <!-- Handcrafted Philosophy & Guiding Principles -->
+          ${renderPhilosophySection(data, "elegant")}
 
           ${activeSections.includes("experience") && experience.length > 0 ? `
             <section class="mb-5 pb-3" id="section-experience">
@@ -4984,6 +5017,9 @@ const PortfolioThemesEngine = (() => {
             <div>${renderSkillsBadges(skills, "notion")}</div>
           </div>
         ` : ""}
+
+        <!-- Handcrafted Philosophy & Guiding Principles -->
+        ${renderPhilosophySection(data, "notion")}
 
         <!-- Experience Toggle Section -->
         ${activeSections.includes("experience") && experience.length > 0 ? `
@@ -5165,6 +5201,9 @@ const PortfolioThemesEngine = (() => {
             </div>
           </section>
         ` : ""}
+
+        <!-- Handcrafted Philosophy & Guiding Principles -->
+        ${renderPhilosophySection(data, "timeline")}
 
         <!-- Education & Certifications Milestones -->
         ${(activeSections.includes("education") || activeSections.includes("certifications")) ? `
@@ -5374,6 +5413,9 @@ const PortfolioThemesEngine = (() => {
           </div>
         ` : ""}
 
+        <!-- Handcrafted Philosophy & Core Principles -->
+        ${renderPhilosophySection(data, "dashboard")}
+
         <!-- Social Proof & Peer Endorsements -->
         ${activeSections.includes("achievements") ? renderAchievementsSection(data, "dashboard") : ""}
 
@@ -5471,6 +5513,9 @@ const PortfolioThemesEngine = (() => {
               </div>
             ` : ""}
 
+            <!-- Handcrafted Philosophy & Core Principles -->
+            ${renderPhilosophySection(data, "split")}
+
             <!-- Education -->
             ${activeSections.includes("education") ? `
               <div class="split-feed-card mb-5" id="section-education">
@@ -5520,27 +5565,177 @@ const PortfolioThemesEngine = (() => {
      HELPER RENDERERS
      ============================================================== */
 
+  /**
+   * Handcrafted Categorized Skills & Technical Arsenal Renderer.
+   * Organizes candidate competencies into 4 polished architectural columns with
+   * distinct icons, skill counts, and handcrafted micro-pill badges.
+   */
   function renderSkillsBadges(rawSkills, styleVariant = "modern") {
     if (!rawSkills) return "";
-    let html = "";
+
+    let categories = [];
 
     if (typeof rawSkills === "object" && !Array.isArray(rawSkills)) {
       for (const [catName, skillList] of Object.entries(rawSkills)) {
         if (!Array.isArray(skillList) || skillList.length === 0) continue;
-        const badges = skillList.map(s => `<span class="theme-badge">${escapeHtml(s)}</span>`).join("");
-        html += `
-          <div class="mb-3">
-            <h6 class="fw-bold small mb-2 text-uppercase" style="color: var(--theme-primary); letter-spacing: 0.05em;">${escapeHtml(catName)}</h6>
-            <div class="d-flex flex-wrap gap-1">${badges}</div>
-          </div>
-        `;
+        const icon = /lang|core/i.test(catName) ? "⚡" :
+                     /front|ui|ux|web/i.test(catName) ? "⚛️" :
+                     /back|api|server/i.test(catName) ? "⚙️" :
+                     /data|db|sql/i.test(catName) ? "🗄️" :
+                     /cloud|devops|infra/i.test(catName) ? "☁️" : "🛠️";
+        categories.push({ title: catName, icon, skills: skillList });
       }
     } else if (Array.isArray(rawSkills)) {
-      const badges = rawSkills.map(s => `<span class="theme-badge">${escapeHtml(s)}</span>`).join("");
-      html = `<div class="d-flex flex-wrap gap-1">${badges}</div>`;
+      const langRegex = /^(javascript|typescript|python|java|c\+\+|c#|golang|go|rust|php|ruby|swift|kotlin|html|html5|css|css3|sass|scss|sql|bash|shell)$/i;
+      const fwRegex = /^(react|react\.js|reactjs|vue|vue\.js|angular|next\.js|nextjs|nuxt|node|node\.js|nodejs|express|express\.js|fastapi|django|flask|spring|bootstrap|tailwind|tailwindcss|redux|svelte)$/i;
+      const dbCloudRegex = /^(postgresql|postgres|mysql|sqlite|mongodb|mongo|redis|supabase|firebase|prisma|aws|gcp|azure|docker|kubernetes|k8s|graphql)$/i;
+
+      const langList = [];
+      const fwList = [];
+      const dbCloudList = [];
+      const toolList = [];
+
+      rawSkills.forEach(raw => {
+        const s = typeof raw === "string" ? raw.trim() : "";
+        if (!s) return;
+        if (langRegex.test(s) || /script|python|java|c\+\+|html|css|sql/i.test(s)) {
+          langList.push(s);
+        } else if (fwRegex.test(s) || /react|node|express|vue|angular|tailwind|next|api|redux/i.test(s)) {
+          fwList.push(s);
+        } else if (dbCloudRegex.test(s) || /database|sql|mongo|redis|cloud|aws|docker/i.test(s)) {
+          dbCloudList.push(s);
+        } else {
+          toolList.push(s);
+        }
+      });
+
+      if (langList.length) categories.push({ title: "Languages & Core", icon: "⚡", skills: langList });
+      if (fwList.length) categories.push({ title: "Frameworks & UI / Runtime", icon: "⚛️", skills: fwList });
+      if (dbCloudList.length) categories.push({ title: "Databases & Cloud Infra", icon: "🗄️", skills: dbCloudList });
+      if (toolList.length) categories.push({ title: "Architecture & Tooling", icon: "🛠️", skills: toolList });
+
+      // Fallback if none categorized
+      if (categories.length === 0 && rawSkills.length > 0) {
+        categories.push({ title: "Core Technical Stack", icon: "⚡", skills: rawSkills });
+      }
     }
 
-    return html;
+    if (categories.length === 0) return "";
+
+    return `
+      <div class="row g-3 skills-categorized-grid">
+        ${categories.map(cat => `
+          <div class="col-md-6 col-lg-3">
+            <div class="p-3.5 rounded-4 h-100 skill-category-card" style="background: var(--theme-subcard-bg, rgba(255,255,255,0.03)); border: 1px solid var(--theme-card-border); transition: all 0.25s ease;">
+              <div class="d-flex align-items-center justify-content-between mb-2.5 pb-2 border-bottom border-secondary border-opacity-15">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="fs-5">${cat.icon}</span>
+                  <span class="fw-bold small text-uppercase" style="color: var(--theme-primary); letter-spacing: 0.04em; font-size: 0.8rem;">${escapeHtml(cat.title)}</span>
+                </div>
+                <span class="badge font-monospace px-2 py-0.5 rounded-pill text-muted" style="background: rgba(0,0,0,0.1); font-size: 0.7rem;">${cat.skills.length}</span>
+              </div>
+              <div class="d-flex flex-wrap gap-1.5 pt-1">
+                ${cat.skills.map(s => `
+                  <span class="theme-badge skill-pill-handcrafted">
+                    <span class="skill-dot"></span>${escapeHtml(s)}
+                  </span>
+                `).join("")}
+              </div>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  /**
+   * Handcrafted Engineering Philosophy & Core Architectural Principles.
+   * Differentiates the portfolio from automated AI templates by showcasing deliberate craft.
+   */
+  function renderPhilosophySection(data, layoutStyle = "modern") {
+    const name = escapeHtml(data.candidate_name || "Engineer");
+    const firstName = name.split(" ")[0] || "Candidate";
+    const headline = (data.professional_headline || "").toLowerCase();
+    const isFrontend = /front|react|vue|ui|ux|web/i.test(headline);
+
+    const principles = [
+      {
+        num: "01",
+        icon: isFrontend ? "🎨" : "📐",
+        title: isFrontend ? "Design Systems & Pixel Precision" : "Clean Architecture & Modularity",
+        desc: isFrontend
+          ? "Translating complex workflows into intuitive, accessible, and delightful design systems with reusable component hierarchies."
+          : "Building decoupled, self-documenting code with clear separation of concerns, strict type safety, and test-driven validation."
+      },
+      {
+        num: "02",
+        icon: "⚡",
+        title: "Performance & Sub-Second Latency",
+        desc: "Obsessed with algorithmic efficiency, lean bundle footprints, optimized database indexing, and low-latency API throughput."
+      },
+      {
+        num: "03",
+        icon: "🔒",
+        title: "Security & Production Reliability",
+        desc: "Designing for zero-trust environments with defensive programming, resilient error handling, and robust automated CI/CD pipelines."
+      },
+      {
+        num: "04",
+        icon: "🎯",
+        title: "User Empathy & Measurable Impact",
+        desc: "Engineering with the end-user in mind—turning business objectives into reliable, maintainable software that delivers tangible value."
+      }
+    ];
+
+    let cardClass = "spotlight-card philosophy-card";
+    let containerStyle = "background: var(--theme-card-bg); border: 1px solid var(--theme-card-border);";
+    let badgeStyle = "background: rgba(var(--theme-primary-rgb, 79, 70, 229), 0.12); color: var(--theme-primary); border: 1px solid rgba(var(--theme-primary-rgb, 79, 70, 229), 0.25);";
+
+    if (layoutStyle === "developer" || layoutStyle === "dev") {
+      containerStyle = "background: rgba(13, 17, 23, 0.95); border: 1px solid rgba(56, 189, 248, 0.25); box-shadow: 0 10px 30px rgba(0,0,0,0.4);";
+      badgeStyle = "background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); font-family: monospace;";
+    } else if (layoutStyle === "ai") {
+      containerStyle = "background: rgba(8, 14, 26, 0.9); border: 1px solid rgba(6, 182, 212, 0.3);";
+      badgeStyle = "background: rgba(6, 182, 212, 0.15); color: #06b6d4; border: 1px solid rgba(6, 182, 212, 0.4); font-family: monospace;";
+    } else if (layoutStyle === "dark") {
+      containerStyle = "background: #11141c; border: 1px solid rgba(255, 255, 255, 0.08);";
+      badgeStyle = "background: rgba(255, 255, 255, 0.06); color: #e2e8f0; border: 1px solid rgba(255, 255, 255, 0.12);";
+    }
+
+    return `
+      <section class="py-4 mb-5" id="section-philosophy">
+        <div class="container">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1.5">
+                <span class="badge rounded-pill px-2.5 py-1 small fw-bold" style="${badgeStyle}">
+                  ✦ Craftsmanship &amp; Engineering Values
+                </span>
+              </div>
+              <h3 class="fw-bold mb-0" style="color: var(--theme-text);">
+                ${layoutStyle === 'developer' || layoutStyle === 'dev' ? '<span class="font-monospace text-info">//</span> Engineering Philosophy &amp; Tenets' : 'Engineering Philosophy &amp; Core Principles'}
+              </h3>
+            </div>
+            <span class="text-secondary small d-none d-md-inline font-monospace" style="opacity: 0.85;">${firstName}.principles.spec.ts</span>
+          </div>
+
+          <div class="row g-3">
+            ${principles.map(p => `
+              <div class="col-md-6 col-lg-3">
+                <div class="p-4 rounded-4 h-100 ${cardClass} position-relative overflow-hidden" style="${containerStyle} transition: all 0.25s ease;">
+                  <div class="d-flex justify-content-between align-items-start mb-3">
+                    <span class="fs-3">${p.icon}</span>
+                    <span class="font-monospace fw-bold small" style="opacity: 0.55; color: var(--theme-primary);">${p.num}</span>
+                  </div>
+                  <h5 class="fw-bold mb-2" style="color: var(--theme-text); font-size: 1.02rem;">${p.title}</h5>
+                  <p class="small mb-0" style="color: var(--theme-text-muted); line-height: 1.65; opacity: 0.9;">${p.desc}</p>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      </section>
+    `;
   }
 
   /**
@@ -6326,6 +6521,14 @@ const PortfolioThemesEngine = (() => {
 
       if (cmd === 'cat about.md') {
         textEl.innerHTML = `<span style="color: #cbd5e1; line-height: 1.75;">${escapeHtml(aboutFallback)}</span>`;
+      } else if (cmd === 'cat philosophy.md') {
+        textEl.innerHTML = `
+          <span style="color: #38bdf8;">// Engineering Philosophy &amp; Core Architectural Tenets:</span><br/>
+          <span style="color: #c084fc;">01. Architectural Rigor:</span> <span style="color: #cbd5e1;">Modular, decoupled systems with strict type safety &amp; comprehensive test coverage.</span><br/>
+          <span style="color: #c084fc;">02. Sub-Second Latency:</span> <span style="color: #cbd5e1;">Relentless optimization of queries, caching, and network footprints.</span><br/>
+          <span style="color: #c084fc;">03. Bulletproof Security:</span> <span style="color: #cbd5e1;">Zero-trust patterns, defensive input validation, and reliable CI/CD delivery.</span><br/>
+          <span style="color: #c084fc;">04. User &amp; Product Value:</span> <span style="color: #4ade80;">Translating complex engineering into intuitive, human-centered digital experiences.</span>
+        `;
       } else if (cmd === 'git status') {
         textEl.innerHTML = `
           <span style="color: #38bdf8;">On branch main</span><br/>

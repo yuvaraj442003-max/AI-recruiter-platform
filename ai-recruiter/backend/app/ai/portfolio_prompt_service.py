@@ -23,6 +23,15 @@ logger = logging.getLogger("ai_recruiter.portfolio_prompt")
 # Curated Theme & Style mapping suggestions based on prompt keywords
 THEME_PRESETS_BY_KEYWORD = {
     # High-Priority Intent Phrases (Modern, Professional, Clean, Neat, Well-Organized Websites)
+    "handcrafted": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "hand-crafted": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "hand crafted": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "experienced web designer": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "experienced designer": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "web designer": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "manually designed": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "not a template": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
+    "not like a template": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
     "clean": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
     "neat": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
     "well-organized": {"theme_id": "modern", "layout": "modern", "font": "Plus Jakarta Sans", "primary_color": "#4f46e5", "secondary_color": "#06b6d4", "dark_mode": False, "bg": "mesh", "mask": "mask-studio-bento"},
@@ -404,7 +413,8 @@ def synthesize_portfolio_with_gemini(
         "2. Strictly preserve 100% of authentic companies, roles, genuine projects, real degrees, and facts from the RESUME INTELLIGENCE. NEVER fabricate fake employers.\n"
         "3. Strictly preserve all verified project URLs ('live_demo_url' and 'github_url') from the resume intelligence so visitors can launch live project websites in a new tab.\n"
         "4. Craft compelling executive headline options and an engaging 2-3 paragraph About narrative that embodies the tone from the DESIGN DIRECTIVE.\n"
-        "5. Output ONLY a valid JSON object matching the full portfolio schema. No markdown fencings, no other text.\n\n"
+        "5. BESPOKE HAND-CRAFTED QUALITY: The generated content must feel and read like a custom website manually designed by an experienced principal web designer and software engineer (Awwwards / Linear / Stripe caliber), never like a generic template. Descriptions must emphasize real engineering decisions, system performance, and measurable user impact.\n"
+        "6. Output ONLY a valid JSON object matching the full portfolio schema. No markdown fencings, no other text.\n\n"
         "JSON SCHEMA:\n"
         "{\n"
         '  "full_name": "string",\n'
