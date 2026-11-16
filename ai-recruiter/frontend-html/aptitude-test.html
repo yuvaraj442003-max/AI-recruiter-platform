@@ -253,14 +253,19 @@
 
         <!-- VIEW 2: ACTIVE TEST RUNNER -->
         <div id="runner-view" class="d-none">
-          <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+          <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom flex-wrap gap-2">
             <div>
               <h4 id="runner-test-title" class="fw-bold text-dark mb-1">Topic Practice Exam</h4>
               <p id="runner-test-subtitle" class="text-muted small mb-0">Answer all questions before the timer expires.</p>
             </div>
-            <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="confirmQuit()">
-              &larr; Exit to Practice Lab
-            </button>
+            <div class="d-flex align-items-center gap-2">
+              <button class="btn btn-sm btn-outline-primary rounded-pill px-3 d-flex align-items-center gap-1 hover-lift" id="runner-generate-fresh-btn" onclick="generateFreshQuestionsForRunner()" title="Generate a fresh set of unseen questions right now">
+                <span>🔄</span> Generate Fresh Questions
+              </button>
+              <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="confirmQuit()">
+                &larr; Exit to Practice Lab
+              </button>
+            </div>
           </div>
           <div class="row g-4">
             <!-- Left: Question Card -->
@@ -377,9 +382,12 @@
                   <!-- Reviews rendered dynamically -->
                 </div>
               </div>
-              <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-primary fw-semibold px-4" data-bs-dismiss="modal" onclick="returnToLobby()">
+              <div class="modal-footer border-0 pt-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary fw-semibold px-4" data-bs-dismiss="modal" onclick="returnToLobby()">
                   Back to Practice Lobby
+                </button>
+                <button type="button" class="btn btn-success fw-bold px-4 shadow-sm hover-lift d-flex align-items-center gap-1.5" id="btn-result-retake" onclick="retakeCurrentTest()">
+                  <span>🔄</span> Practice Next Sprint (Fresh Questions) &rarr;
                 </button>
               </div>
             </div>

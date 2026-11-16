@@ -10,7 +10,7 @@ import math
 import uuid
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
@@ -699,6 +699,7 @@ def get_aptitude_tests_endpoint(
 @router.get("/tests/{test_id}", response_model=APIResponse[Any])
 def get_aptitude_test_by_id_endpoint(
     test_id: str,
+    response: Response,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -707,6 +708,9 @@ def get_aptitude_test_by_id_endpoint(
     - If recruiter/admin: Returns complete test details including all questions, correct answers, and explanations.
     - If candidate: Returns test taking view without exposing correct answers or explanations.
     """
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
     try:
         tid = uuid.UUID(test_id)
     except ValueError:
@@ -1344,6 +1348,7 @@ def get_aptitude_topic_detail_endpoint(
 @router.get("/topics/{topic_id}/practice", response_model=APIResponse[dict])
 def get_topic_practice_test_endpoint(
     topic_id: str,
+    response: Response,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -1351,6 +1356,9 @@ def get_topic_practice_test_endpoint(
     Returns a practice exam containing all questions for the specified topic.
     Accepts topic UUID or topic slug/name.
     """
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
     topic = None
     try:
         tid = uuid.UUID(topic_id)
@@ -1701,6 +1709,7 @@ def sync_aptitude_vectors(
 
 @router.get("/daily-sprint", response_model=APIResponse[dict])
 def get_daily_sprint(
+    response: Response,
     current_user: User = Depends(require_role(UserRole.candidate)),
     db: Session = Depends(get_db),
 ):
@@ -1709,6 +1718,9 @@ def get_daily_sprint(
     Ensures that questions previously seen or attempted by the candidate do NOT appear again.
     Dynamically fetches unseen questions or generates fresh questions on-the-fly.
     """
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
     questions = get_non_repeating_daily_sprint_questions(db, current_user.id, total_needed=10)
     questions_out = []
     for q in questions:

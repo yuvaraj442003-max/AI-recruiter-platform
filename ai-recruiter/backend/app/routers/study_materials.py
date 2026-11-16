@@ -10,7 +10,7 @@ import uuid
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
-from fastapi import APIRouter, Depends, Query, File, Form, UploadFile, HTTPException
+from fastapi import APIRouter, Depends, Query, File, Form, UploadFile, HTTPException, Response
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -1209,6 +1209,7 @@ def get_curated_learning_feed(
 
 @router.post("/topics/daily-assessment/start", response_model=APIResponse[DailyAssessmentStartResponse])
 def start_daily_assessment(
+    response: Response,
     topic: Optional[str] = Query(None, description="Optional single topic focus (e.g., 'Java', 'Python')"),
     current_user: User = Depends(require_role(UserRole.candidate)),
     db: Session = Depends(get_db),
@@ -1218,6 +1219,9 @@ def start_daily_assessment(
     Strictly 30 seconds per question (10 questions = 5 minutes).
     Can also be focused specifically on a single subject like Java or Python.
     """
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
     if topic:
         all_topics = [topic.strip()]
     else:

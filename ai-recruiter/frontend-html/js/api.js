@@ -105,7 +105,11 @@ class ApiError extends Error {
 }
 
 async function request(path, { method = "GET", body, auth = true, _isRetry = false } = {}) {
-  const headers = { "Content-Type": "application/json" };
+  const headers = {
+    "Content-Type": "application/json",
+    "Cache-Control": "no-cache, no-store, must-revalidate",
+    "Pragma": "no-cache",
+  };
 
   if (auth) {
     const token = Session.getAccessToken();
@@ -117,6 +121,7 @@ async function request(path, { method = "GET", body, auth = true, _isRetry = fal
     response = await fetch(`${API_BASE_URL}${path}`, {
       method,
       headers,
+      cache: "no-store",
       body: body ? JSON.stringify(body) : undefined,
     });
   } catch (networkErr) {
@@ -589,7 +594,8 @@ const aptitudeAPI = {
   startTest: (testId) => api.post(`/aptitude/tests/${testId}/start`),
   submitCandidateTest: (testId, payload) => api.post(`/aptitude/tests/${testId}/submit`, payload),
   getTestResults: (testId) => api.get(`/aptitude/tests/${testId}/results`),
-  getDailySprint: () => api.get("/aptitude/daily-sprint"),
+  getDailySprint: () => api.get(`/aptitude/daily-sprint?_t=${Date.now()}`),
+  getTopicPractice: (topicId) => api.get(`/aptitude/topics/${encodeURIComponent(topicId)}/practice?_t=${Date.now()}`),
   submit: (payload) => api.post("/aptitude/submit", payload),
   getHistory: () => api.get("/aptitude/history"),
   vectorSearchQuestions: (payload) => api.post("/aptitude/questions/search", payload),
@@ -652,9 +658,9 @@ const weeklyAPI = {
   getTopicCodingProblems: (topicSlug) => api.get(`/weekly/topics/coding/${encodeURIComponent(topicSlug)}/problems`),
   getCodingProblemDetail: (problemId) => api.get(`/weekly/topics/coding/problem/${encodeURIComponent(problemId)}`),
   getAptitudeTopics: () => api.get("/weekly/topics/aptitude"),
-  getTopicAptitudeQuestions: (topicSlug) => api.get(`/weekly/topics/aptitude/${encodeURIComponent(topicSlug)}/questions`),
+  getTopicAptitudeQuestions: (topicSlug) => api.get(`/weekly/topics/aptitude/${encodeURIComponent(topicSlug)}/questions?_t=${Date.now()}`),
   getCurriculum: (weekCode) => api.get(`/weekly/curriculum${weekCode ? `?week_code=${encodeURIComponent(weekCode)}` : ""}`),
-  getAptitudeCurrent: () => api.get("/weekly/aptitude/current"),
+  getAptitudeCurrent: () => api.get(`/weekly/aptitude/current?_t=${Date.now()}`),
   submitAptitude: (payload) => api.post("/weekly/aptitude/submit", payload),
   getAptitudeHistory: () => api.get("/weekly/aptitude/history"),
   getAptitudeLeaderboard: (weekCode) => api.get(`/weekly/aptitude/leaderboard${weekCode ? `?week_code=${encodeURIComponent(weekCode)}` : ""}`),

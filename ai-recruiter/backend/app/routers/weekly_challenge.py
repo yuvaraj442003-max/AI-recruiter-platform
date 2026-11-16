@@ -7,7 +7,7 @@ import os
 import uuid
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -253,10 +253,14 @@ def list_aptitude_topics_catalog(
 @router.get("/topics/aptitude/{topic_slug}/questions", response_model=APIResponse[List[Dict[str, Any]]])
 def get_aptitude_questions_by_topic(
     topic_slug: str,
+    response: Response,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.candidate, UserRole.recruiter, UserRole.admin)),
 ):
-    """Retrieves practice questions for a specific aptitude topic."""
+    """Retrieves non-repeating practice questions for a specific aptitude topic."""
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
     user_id = current_user.id if current_user.role == UserRole.candidate else None
     questions = get_topic_aptitude_questions(db, topic_slug=topic_slug, user_id=user_id)
     return APIResponse(success=True, message=f"Aptitude questions for topic '{topic_slug}'", data=questions)
@@ -285,6 +289,7 @@ def get_aptitude_curriculum_rotation(
 
 @router.get("/aptitude/current", response_model=APIResponse[Dict[str, Any]])
 def get_current_weekly_aptitude_test(
+    response: Response,
     current_user: User = Depends(require_role(UserRole.candidate)),
     db: Session = Depends(get_db),
 ):
@@ -293,6 +298,9 @@ def get_current_weekly_aptitude_test(
     Hides correct answers and explanations during the exam session.
     Guarantees non-repeating questions on subsequent attempts.
     """
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
     apt_set = ensure_weekly_aptitude_set(db)
     questions, is_reattempt = get_non_repeating_weekly_sprint_questions(
         db=db,
@@ -359,8 +367,17 @@ def submit_weekly_aptitude_test(
     """
     apt_set = ensure_weekly_aptitude_set(db)
 
-    # Gather question IDs from submitted answers first, then fallback to apt_set
+    # Gather question IDs from all session questions first, then submitted answers, then fallback to apt_set
     question_ids = []
+    if payload.question_ids:
+        for qid_str in payload.question_ids:
+            try:
+                uid = uuid.UUID(str(qid_str))
+                if uid not in question_ids:
+                    question_ids.append(uid)
+            except (ValueError, TypeError):
+                continue
+
     for qid_str in payload.answers.keys():
         try:
             uid = uuid.UUID(str(qid_str))

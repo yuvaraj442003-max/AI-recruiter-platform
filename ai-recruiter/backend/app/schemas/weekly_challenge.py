@@ -53,6 +53,7 @@ class WeeklyAptitudeSubmissionRequest(BaseModel):
     answers: Dict[str, Optional[int]] = Field(default_factory=dict, description="Mapping of question UUID strings to selected option index (0-3)")
     time_taken_seconds: int = 0
     is_anonymous: bool = False
+    question_ids: Optional[List[str]] = Field(default=None, description="All question UUIDs presented in this sprint session")
 
 
 class WeeklyAptitudeAttemptResult(BaseModel):

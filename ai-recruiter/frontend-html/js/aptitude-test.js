@@ -620,6 +620,7 @@
         res = await api.weekly.submitAptitude({
           answers: answers,
           time_taken_seconds: timeTaken,
+          question_ids: (questions || []).map(q => q.id).filter(Boolean),
         });
       } else {
         const payload = {
@@ -638,6 +639,71 @@
       submitBtn.textContent = "✓ Finish & Submit Test";
     }
   }
+
+  window.retakeCurrentTest = async function () {
+    if (resultModal) {
+      resultModal.hide();
+    }
+    clearError();
+
+    if (currentTest?.isWeekly) {
+      await startWeeklySprint();
+    } else if (currentTest?.id === "daily-sprint") {
+      await startDailySprint();
+    } else if (currentTest?.isTopic || (currentTest?.id && String(currentTest.id).includes("-"))) {
+      await startTopicPractice(currentTest.id, currentTest.title);
+    } else if (currentTest?.id) {
+      await startTestById(currentTest.id);
+    } else {
+      await startDailySprint();
+    }
+  };
+
+  window.generateFreshQuestionsForRunner = async function () {
+    if (!confirm("Generate a fresh set of non-repeating questions for this sprint session? Current answers will be cleared.")) {
+      return;
+    }
+    const freshBtn = document.getElementById("runner-generate-fresh-btn");
+    if (freshBtn) {
+      freshBtn.disabled = true;
+      freshBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Generating...`;
+    }
+
+    try {
+      if (currentTest?.isWeekly) {
+        const res = await api.weekly.getAptitudeCurrent();
+        currentTest = res.data?.test;
+        if (currentTest) currentTest.isWeekly = true;
+        questions = res.data?.questions || [];
+      } else if (currentTest?.id === "daily-sprint") {
+        const res = await api.aptitude.getDailySprint();
+        currentTest = res.data?.test;
+        questions = res.data?.questions || [];
+      } else if (currentTest?.topic_id || (currentTest?.id && String(currentTest.id).startsWith("topic-"))) {
+        const topId = currentTest.topic_id || String(currentTest.id).replace("topic-", "");
+        const res = await api.aptitude.getTopicPractice(topId);
+        currentTest = res.data?.test;
+        questions = res.data?.questions || [];
+      } else if (currentTest?.id) {
+        const res = await api.aptitude.getTest(currentTest.id);
+        currentTest = res.data?.test;
+        questions = res.data?.questions || [];
+      } else {
+        const res = await api.aptitude.getDailySprint();
+        currentTest = res.data?.test;
+        questions = res.data?.questions || [];
+      }
+
+      launchRunner();
+    } catch (err) {
+      alert("Failed to refresh sprint questions: " + (err.message || "Network error"));
+    } finally {
+      if (freshBtn) {
+        freshBtn.disabled = false;
+        freshBtn.innerHTML = `<span>🔄</span> Generate Fresh Questions`;
+      }
+    }
+  };
 
   function showResultModal(data) {
     submitBtn.disabled = false;
