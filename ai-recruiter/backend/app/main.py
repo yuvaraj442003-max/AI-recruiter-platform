@@ -57,6 +57,7 @@ from app.routers import (
     study_materials as study_materials_router,
     weekly_challenge as weekly_challenge_router,
     vector as vector_router,
+    placement_compass as placement_compass_router,
 )
 from app.services.resume_service import seed_skills
 from app.services.student_seed_service import seed_student_ecosystem
@@ -419,6 +420,8 @@ app.include_router(study_materials_router.router, prefix="/api/v1")
 app.include_router(study_materials_router.router, prefix="/api")
 app.include_router(weekly_challenge_router.router, prefix="/api/v1")
 app.include_router(vector_router.router, prefix="/api/v1")
+app.include_router(placement_compass_router.router, prefix="/api/v1")
+app.include_router(placement_compass_router.router, prefix="/api")
 
 # Serve frontend HTML pages statically for direct verification / reset links
 _frontend_dir = Path(__file__).parent.parent.parent / "frontend-html"

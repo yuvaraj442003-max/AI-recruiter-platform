@@ -1,0 +1,1424 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Placement Compass — Tamil Nadu School &amp; College Career Guidance Platform | AI Recruiter</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    :root {
+      --compass-primary: #4f46e5;
+      --compass-primary-dark: #3730a3;
+      --compass-border: #e2e8f0;
+      --compass-school-accent: #0284c7;
+    }
+
+    body {
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    /* Top Hub Mode Toggle */
+    .hub-switcher-bar {
+      background: #ffffff;
+      border: 1px solid var(--compass-border);
+      border-radius: 9999px;
+      padding: 6px;
+      display: inline-flex;
+      gap: 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .hub-switch-btn {
+      border: none;
+      background: transparent;
+      padding: 8px 20px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: #64748b;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .hub-switch-btn:hover {
+      color: #0f172a;
+      background: #f1f5f9;
+    }
+
+    .hub-switch-btn.active {
+      background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+    }
+
+    .hero-banner-school {
+      background: linear-gradient(135deg, #0c4a6e 0%, #0369a1 40%, #0284c7 100%);
+      color: #ffffff;
+      border-radius: 20px;
+      padding: 32px 36px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px -10px rgba(2, 132, 199, 0.4);
+    }
+
+    .hero-banner-school::after {
+      content: "🎓";
+      position: absolute;
+      right: 25px;
+      bottom: -20px;
+      font-size: 130px;
+      opacity: 0.15;
+      pointer-events: none;
+      transform: rotate(12deg);
+    }
+
+    .hero-banner-college {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4338ca 100%);
+      color: #ffffff;
+      border-radius: 20px;
+      padding: 32px 36px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px -10px rgba(67, 56, 202, 0.4);
+    }
+
+    .hero-banner-college::after {
+      content: "💼";
+      position: absolute;
+      right: 25px;
+      bottom: -20px;
+      font-size: 130px;
+      opacity: 0.12;
+      pointer-events: none;
+      transform: rotate(15deg);
+    }
+
+    .subnav-pill {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 9px 18px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #475569;
+      background: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+
+    .subnav-pill:hover {
+      background: #f1f5f9;
+      color: #1e293b;
+      transform: translateY(-1px);
+    }
+
+    .subnav-pill.active {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #0284c7;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
+    }
+
+    .category-filter-chip {
+      border: 1px solid #e2e8f0;
+      border-radius: 9999px;
+      padding: 6px 14px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      background: #ffffff;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .category-filter-chip:hover {
+      border-color: #0284c7;
+      color: #0284c7;
+      background: #f0f9ff;
+    }
+
+    .category-filter-chip.active {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #0284c7;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+    }
+
+    .path-card {
+      border: 1px solid var(--compass-border);
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 22px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+    }
+
+    .path-card:hover {
+      border-color: #38bdf8;
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px -6px rgba(2, 132, 199, 0.16);
+    }
+
+    .path-card.border-vocational_iti { border-top: 4px solid #06b6d4; }
+    .path-card.border-defence_govt { border-top: 4px solid #ef4444; }
+
+    .quick-advisor-card {
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .stage-select-btn {
+      border: 2px solid #e2e8f0;
+      border-radius: 9999px;
+      padding: 9px 20px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      background: #ffffff;
+      color: #334155;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .stage-select-btn:hover {
+      border-color: #0284c7;
+      color: #0284c7;
+      background: #f0f9ff;
+      transform: translateY(-1px);
+    }
+
+    .stage-select-btn.active {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      border-color: #0284c7;
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+    }
+    .path-card.border-medical { border-top: 4px solid #10b981; }
+    .path-card.border-arts_science { border-top: 4px solid #8b5cf6; }
+    .path-card.border-diploma_polytechnic { border-top: 4px solid #f59e0b; }
+    .path-card.border-law { border-top: 4px solid #6366f1; }
+    .path-card.border-agriculture { border-top: 4px solid #84cc16; }
+    .path-card.border-architecture { border-top: 4px solid #06b6d4; }
+    .path-card.border-design { border-top: 4px solid #ec4899; }
+    .path-card.border-management { border-top: 4px solid #f97316; }
+    .path-card.border-defence { border-top: 4px solid #15803d; }
+    .path-card.border-govt_jobs { border-top: 4px solid #b91c1c; }
+
+    .interest-tag-btn {
+      border: 1.5px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+      border-radius: 9999px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .interest-tag-btn:hover {
+      border-color: #0284c7;
+      background: #f0f9ff;
+    }
+
+    .interest-tag-btn.selected {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #0284c7;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+    }
+
+    .roadmap-step-box {
+      background: #ffffff;
+      border: 1px solid var(--compass-border);
+      border-radius: 16px;
+      padding: 20px;
+      position: relative;
+    }
+
+    .roadmap-badge-number {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #0284c7;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+      flex-shrink: 0;
+    }
+
+    /* Comparison Table */
+    .career-compare-table {
+      background: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--compass-border);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    }
+
+    .career-compare-table th {
+      background: #f8fafc;
+      font-weight: 700;
+      padding: 16px;
+      vertical-align: middle;
+      border-bottom: 2px solid var(--compass-border);
+    }
+
+    .career-compare-table td {
+      padding: 16px;
+      vertical-align: top;
+      border-bottom: 1px solid #f1f5f9;
+    }
+  </style>
+</head>
+<body data-required-role="candidate">
+
+  <div class="d-flex">
+    <!-- Candidate Navigation Sidebar -->
+    <nav class="d-none d-md-flex flex-column bg-white border-end vh-100 sticky-top p-3 candidate-sidebar" style="width: 270px; min-width: 270px;">
+      <a href="candidate-portal.html" class="navbar-brand text-decoration-none d-flex align-items-center gap-2 mb-4 px-2">
+        <span class="fs-4">👨‍💻</span>
+        <span class="fw-bold text-dark fs-5">Candidate Portal</span>
+      </a>
+      <ul class="nav nav-pills flex-column gap-2">
+        <li class="nav-item">
+          <a href="candidate-portal.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🏠</span> Portal Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="course-learning.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📚</span> Course Learning Studio
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="candidate-dashboard.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📊</span> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="placement-compass.html" class="nav-link active text-nowrap d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #fff;">
+            <span>🧭</span> Placement Compass <span class="badge bg-warning text-dark rounded-pill ms-auto" style="font-size: 0.65rem;">NEW</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="aptitude-test.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🧠</span> Aptitude &amp; Tests
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="study-materials.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🎓</span> Campus Hub &amp; Textbooks
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="coding-assessment.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>💻</span> Coding Lab (DSA)
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="interview.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🎙️</span> AI Mock Interviews
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="upload-resume.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📄</span> Resume &amp; ATS Score
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="portfolio-builder.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>✨</span> Portfolio
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="jobs.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🔍</span> Find Jobs &amp; Drives
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="my-applications.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>📑</span> My Applications
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="messages.html" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>💬</span> Messages &amp; Chat
+          </a>
+        </li>
+      </ul>
+      <div class="mt-auto pt-3 border-top">
+        <button id="logout-btn" class="btn btn-outline-secondary w-100 fw-semibold">Log out</button>
+      </div>
+    </nav>
+
+    <!-- Main View Content -->
+    <main class="flex-grow-1" style="min-width: 0;">
+      <!-- Sticky Header -->
+      <header class="bg-white border-bottom p-3 d-flex justify-content-between align-items-center sticky-top" style="z-index: 10;">
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-flex align-items-center gap-2">
+            <span class="fs-4">🧭</span>
+            <div>
+              <h6 class="fw-bold mb-0 text-dark">Placement Compass — Tamil Nadu School Career Guide</h6>
+              <span class="text-muted small">Higher Education &amp; Admission Compass (After 10th &amp; 12th)</span>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <span id="user-greeting" class="text-muted small"></span>
+          <a href="candidate-dashboard.html" class="btn btn-sm btn-outline-secondary">Back to Dashboard</a>
+        </div>
+      </header>
+
+      <div class="container-fluid p-4" style="max-width: 1400px;">
+
+        <!-- ========================================================================= -->
+        <!-- MODE 1: SCHOOL CAREER GUIDANCE (AFTER 10TH & 12TH)                        -->
+        <!-- ========================================================================= -->
+        <div id="compass-hub-school">
+          
+          <!-- Hero Banner -->
+          <div class="hero-banner-school mb-4">
+            <div class="row align-items-center">
+              <div class="col-lg-8">
+                <div class="d-inline-flex align-items-center gap-2 bg-white bg-opacity-20 px-3 py-1 rounded-pill small fw-semibold text-warning mb-2">
+                  <span>⚡ Tamil Nadu School to College Career Navigation (10th &amp; 12th)</span>
+                </div>
+                <h2 class="fw-bold mb-2">Discover What to Study After 10th &amp; 12th in Tamil Nadu</h2>
+                <p class="mb-0 text-white-75" style="font-size: 1.05rem; max-width: 780px;">
+                  Explore your exact next educational step across <strong>Higher Secondary Streams (11th Groups), Polytechnic Diplomas (DOTE TN), ITI Trades (DET), Engineering (TNEA), Medical (NEET-UG), Allied Health Sciences, Law (TNDALU), Agriculture (TNAU &amp; TANUVAS), Arts &amp; Science (TNGASA), Architecture &amp; Direct Govt Services</strong>.
+                </p>
+              </div>
+              <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <div class="quick-advisor-card d-inline-flex flex-column gap-2 p-3 rounded-4 text-start">
+                  <div class="text-warning small fw-bold text-uppercase tracking-wider">⚡ Quick Actions</div>
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-warning btn-sm fw-bold px-3 rounded-pill shadow-sm" onclick="switchSchoolTab('matcher')">
+                      🤖 AI Course Matcher
+                    </button>
+                    <button class="btn btn-light text-primary btn-sm fw-bold px-3 rounded-pill shadow-sm" onclick="switchSchoolTab('exams')">
+                      🎯 Positions &amp; Entrance Exams
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Master Stage Selector (10th vs 12th) -->
+          <div class="card border-0 shadow-sm p-3 mb-4 rounded-4 bg-white border-start border-4 border-primary">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+              <div>
+                <span class="badge bg-primary bg-opacity-10 text-primary fw-bold px-3 py-1 rounded-pill small mb-1">STEP 1: SELECT YOUR CURRENT QUALIFICATION</span>
+                <h5 class="fw-bold mb-0 text-dark">What Did You Complete? (10th or 12th)</h5>
+                <small class="text-muted">Showing only courses, colleges and exams relevant to your immediate next educational step.</small>
+              </div>
+              <div class="d-flex gap-2 flex-wrap" id="school-stage-selector">
+                <button class="stage-select-btn active" data-stage="all" onclick="filterByStage('all', this)">
+                  <span>🌐</span> All School Pathways
+                </button>
+                <button class="stage-select-btn" data-stage="after_10th" onclick="filterByStage('after_10th', this)">
+                  <span>📘</span> Completed 10th Standard (SSLC)
+                </button>
+                <button class="stage-select-btn" data-stage="after_12th" onclick="filterByStage('after_12th', this)">
+                  <span>🎓</span> Completed 12th Standard (HSC)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Metrics Bar -->
+          <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+              <div class="bg-white p-3 rounded-4 border d-flex align-items-center gap-3">
+                <div class="fs-2 text-primary">🏛️</div>
+                <div>
+                  <div class="text-muted small fw-bold">29+ TN COLLEGES</div>
+                  <div class="fw-bold text-dark fs-5">All 10 Streams in TN</div>
+                  <div class="text-muted small">Anna Univ, MMC, Loyola, CPT</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="bg-white p-3 rounded-4 border d-flex align-items-center gap-3">
+                <div class="fs-2 text-success">📝</div>
+                <div>
+                  <div class="text-muted small fw-bold">TN ADMISSION PORTALS</div>
+                  <div class="fw-bold text-dark fs-5">TNEA, DME, DOTE, TNGASA</div>
+                  <div class="text-muted small">1-Click Google Calendar</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="bg-white p-3 rounded-4 border d-flex align-items-center gap-3">
+                <div class="fs-2 text-warning">🎓</div>
+                <div>
+                  <div class="text-muted small fw-bold">GOVT OF TN SCHEMES</div>
+                  <div class="fw-bold text-dark fs-5">100% Free Schemes</div>
+                  <div class="text-muted small">7.5% Govt School, Pudhumai Penn</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="bg-white p-3 rounded-4 border d-flex align-items-center gap-3">
+                <div class="fs-2 text-info">💼</div>
+                <div>
+                  <div class="text-muted small fw-bold">CAREER SALARIES</div>
+                  <div class="fw-bold text-dark fs-5">₹3.2 LPA - ₹42+ LPA</div>
+                  <div class="text-muted small">TN Corridors &amp; Global Paths</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- School Subnav Navigation Tabs -->
+          <div class="d-flex gap-2 flex-wrap mb-4" id="school-subnav-container">
+            <button class="subnav-pill active" data-school-tab="explorer" onclick="switchSchoolTab('explorer')">
+              <span>🧭</span> Career Streams Explorer (All 5 Pillars)
+            </button>
+            <button class="subnav-pill" data-school-tab="colleges" onclick="switchSchoolTab('colleges')">
+              <span>🏛️</span> Top College Comparator (10 Streams)
+            </button>
+            <button class="subnav-pill" data-school-tab="courses" onclick="switchSchoolTab('courses')">
+              <span>🎓</span> Course vs Course Comparison
+            </button>
+            <button class="subnav-pill" data-school-tab="matcher" onclick="switchSchoolTab('matcher')">
+              <span>🤖</span> AI Career Matcher &amp; Course Finder
+            </button>
+            <button class="subnav-pill" data-school-tab="exams" onclick="switchSchoolTab('exams')">
+              <span>🎯</span> Positions &amp; Entrance Exams Navigator
+            </button>
+            <button class="subnav-pill" data-school-tab="roadmap" onclick="switchSchoolTab('roadmap')">
+              <span>🗺️</span> Admission &amp; Counselling Roadmap
+            </button>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- SUB-TAB 1: CAREER STREAMS EXPLORER (ALL 5 PILLARS) -->
+          <!-- ============================================== -->
+          <div id="school-tab-explorer" class="school-tab-content">
+            <!-- Filter Pills Bar -->
+            <div class="card border-0 shadow-sm p-3 mb-4 rounded-4 bg-white">
+              <div class="d-flex flex-column gap-3">
+                <!-- Grade Filter -->
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                  <span class="small fw-bold text-secondary text-uppercase me-1">Grade Filter:</span>
+                  <button class="category-filter-chip active" data-filter-type="grade" data-val="all" onclick="filterPathsByGrade('all', this)">All Opportunities</button>
+                  <button class="category-filter-chip" data-filter-type="grade" data-val="after_10th" onclick="filterPathsByGrade('after_10th', this)">After 10th Standard</button>
+                  <button class="category-filter-chip" data-filter-type="grade" data-val="after_12th_pcm" onclick="filterPathsByGrade('after_12th_pcm', this)">12th Science (PCM / Maths)</button>
+                  <button class="category-filter-chip" data-filter-type="grade" data-val="after_12th_pcb" onclick="filterPathsByGrade('after_12th_pcb', this)">12th Science (PCB / Biology)</button>
+                  <button class="category-filter-chip" data-filter-type="grade" data-val="after_12th_commerce" onclick="filterPathsByGrade('after_12th_commerce', this)">12th Commerce</button>
+                  <button class="category-filter-chip" data-filter-type="grade" data-val="after_12th_arts" onclick="filterPathsByGrade('after_12th_arts', this)">12th Arts / Humanities</button>
+                </div>
+
+                <!-- Category Filter -->
+                <div class="d-flex align-items-center gap-2 flex-wrap pt-2 border-top">
+                  <span class="small fw-bold text-secondary text-uppercase me-1">Stream Category:</span>
+                  <button class="category-filter-chip active" data-filter-type="cat" data-val="all" onclick="filterPathsByCategory('all', this)">All Categories</button>
+                  <button class="category-filter-chip" data-filter-type="cat" data-val="engineering" onclick="filterPathsByCategory('engineering', this)">⚙️ Engineering</button>
+                  <button class="category-filter-chip" data-filter-type="cat" data-val="medical" onclick="filterPathsByCategory('medical', this)">🩺 Medical &amp; Paramedical</button>
+                  <button class="category-filter-chip" data-filter-type="cat" data-val="arts_science" onclick="filterPathsByCategory('arts_science', this)">📚 Arts, Science &amp; 11th Groups</button>
+                  <button class="category-filter-chip" data-filter-type="cat" data-val="diploma_polytechnic" onclick="filterPathsByCategory('diploma_polytechnic', this)">🔧 Polytechnic / Diploma (DOTE)</button>
+                  <button class="category-filter-chip" data-filter-type="cat" data-val="vocational_iti" onclick="filterPathsByCategory('vocational_iti', this)">🛠️ ITI Technical Trades</button>
+                  <button class="category-filter-chip" data-filter-type="cat" data-val="law" onclick="filterPathsByCategory('law', this)">⚖️ Law (5-Year)</button>
+                  <button class="category-filter-chip" data-filter-type="cat" data-val="agriculture" onclick="filterPathsByCategory('agriculture', this)">🌾 Agriculture &amp; Veterinary</button>
+                  <button class="category-filter-chip" data-filter-type="cat" data-val="architecture" onclick="filterPathsByCategory('architecture', this)">📐 Architecture</button>
+                  <button class="category-filter-chip" data-filter-type="cat" data-val="design" onclick="filterPathsByCategory('design', this)">🎨 Design</button>
+                  <button class="category-filter-chip" data-filter-type="cat" data-val="defence_govt" onclick="filterPathsByCategory('defence_govt', this)">🎖️ Defence (NDA) &amp; Direct Govt Jobs</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Path Cards Grid -->
+            <div class="row g-4" id="school-paths-grid">
+              <!-- Rendered dynamically via js -->
+            </div>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- SUB-TAB 2: AI CAREER MATCHER & COURSE FINDER  -->
+          <!-- ============================================== -->
+          <div id="school-tab-matcher" class="school-tab-content d-none">
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+              <h5 class="fw-bold mb-2">🤖 AI Course Recommender: Find Your Best-Fit Pathway</h5>
+              <p class="text-muted small mb-4">
+                Tell us your current school grade, marks, and interests. Our AI will analyze admission cutoffs, skill alignments, and career payoffs to suggest the top courses for you.
+              </p>
+
+              <form id="careerMatcherForm" onsubmit="handleCareerMatcherSubmit(event)">
+                <div class="row g-3 mb-4">
+                  <!-- Grade Level -->
+                  <div class="col-md-4">
+                    <label class="form-label small fw-bold text-secondary">Your Current School Grade</label>
+                    <select id="matcher-grade" class="form-select fw-semibold" required>
+                      <option value="10th">Currently in 10th Standard (SSLC / CBSE)</option>
+                      <option value="12th_pcm" selected>12th Science — PCM (Physics, Chem, Maths)</option>
+                      <option value="12th_pcb">12th Science — PCB (Physics, Chem, Biology)</option>
+                      <option value="12th_commerce">12th Commerce (Accountancy, Economics)</option>
+                      <option value="12th_arts">12th Arts / Humanities</option>
+                      <option value="12th_vocational">12th Vocational / Technical Stream</option>
+                    </select>
+                  </div>
+
+                  <!-- Percentage -->
+                  <div class="col-md-4">
+                    <label class="form-label small fw-bold text-secondary">Board Marks / Expected Percentage (%)</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light fw-bold">🎯</span>
+                      <input type="number" id="matcher-percentage" class="form-control fw-bold" min="35" max="100" step="1" value="85" required>
+                    </div>
+                  </div>
+
+                  <!-- Budget Preference -->
+                  <div class="col-md-4">
+                    <label class="form-label small fw-bold text-secondary">College Fee &amp; Budget Preference</label>
+                    <select id="matcher-budget" class="form-select fw-semibold">
+                      <option value="any">Open to All (Govt, Aided, Private)</option>
+                      <option value="govt_merit">Govt / Highly Subsidized Merit Seats</option>
+                      <option value="budget_friendly">Budget-Friendly (&lt; ₹1 Lakh/year)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Interests Selection -->
+                <div class="mb-4">
+                  <label class="form-label small fw-bold text-secondary d-block mb-2">
+                    Select Your Passions &amp; Interests (Choose 2 or more):
+                  </label>
+                  <div class="d-flex flex-wrap gap-2" id="matcher-interests-container">
+                    <span class="interest-tag-btn selected" data-interest="coding" onclick="toggleInterest(this)">💻 Computers &amp; Coding</span>
+                    <span class="interest-tag-btn selected" data-interest="healthcare" onclick="toggleInterest(this)">🩺 Doctors &amp; Patient Care</span>
+                    <span class="interest-tag-btn" data-interest="robotics" onclick="toggleInterest(this)">🤖 Robots &amp; Gadgets</span>
+                    <span class="interest-tag-btn" data-interest="finance" onclick="toggleInterest(this)">📈 Stock Market &amp; Accounting</span>
+                    <span class="interest-tag-btn" data-interest="law" onclick="toggleInterest(this)">⚖️ Debating &amp; Legal Justice</span>
+                    <span class="interest-tag-btn" data-interest="design" onclick="toggleInterest(this)">🎨 Drawing, UI &amp; Fashion</span>
+                    <span class="interest-tag-btn" data-interest="defence" onclick="toggleInterest(this)">🎖️ Uniform &amp; Armed Forces</span>
+                    <span class="interest-tag-btn" data-interest="agriculture" onclick="toggleInterest(this)">🌾 Farming &amp; Environment</span>
+                    <span class="interest-tag-btn" data-interest="machines" onclick="toggleInterest(this)">🔧 Hands-on Machines &amp; Engines</span>
+                    <span class="interest-tag-btn" data-interest="management" onclick="toggleInterest(this)">👔 Business Leadership &amp; Startups</span>
+                    <span class="interest-tag-btn" data-interest="public service" onclick="toggleInterest(this)">🏛️ Civil Services (IAS/IPS)</span>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary px-4 py-2.5 rounded-pill fw-bold shadow-sm">
+                  ⚡ Evaluate &amp; Recommend Ideal Courses
+                </button>
+              </form>
+            </div>
+
+            <!-- Recommendation Results Container -->
+            <div id="matcher-results-section" class="d-none">
+              <div class="alert alert-info py-3 px-4 rounded-4 mb-4 d-flex align-items-center gap-3">
+                <div class="fs-2">💡</div>
+                <div>
+                  <h6 class="fw-bold mb-1">AI Recommendation Synthesis</h6>
+                  <p class="mb-0 small text-secondary" id="matcher-guidance-text"></p>
+                </div>
+              </div>
+
+              <div class="row g-4" id="matcher-results-cards">
+                <!-- Injected via js -->
+              </div>
+            </div>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- SUB-TAB 2: TOP COLLEGE COMPARATOR (10 STREAMS)  -->
+          <!-- ============================================== -->
+          <div id="school-tab-colleges" class="school-tab-content d-none">
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+                <div>
+                  <h5 class="fw-bold mb-1">🏛️ Top College Comparator Across 10 Career Streams (Tamil Nadu)</h5>
+                  <p class="text-muted small mb-0">
+                    Compare top Tamil Nadu colleges on NIRF rankings, courses, annual fees, highest &amp; average placements, facilities, entrance exam schedules, and single-window admission counseling (TNEA, TN Medical, DOTE, TNDALU, TNAU).
+                  </p>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                  <button class="btn btn-outline-primary btn-sm rounded-pill fw-semibold" onclick="presetCollegeCompare('engineering')">
+                    ⚙️ Engg (IITM vs Anna Univ CEG vs NITT)
+                  </button>
+                  <button class="btn btn-outline-success btn-sm rounded-pill fw-semibold" onclick="presetCollegeCompare('medical')">
+                    🩺 Medical (MMC vs Stanley vs CMC)
+                  </button>
+                  <button class="btn btn-outline-secondary btn-sm rounded-pill fw-semibold" onclick="presetCollegeCompare('polytechnic')">
+                    🔧 Polytechnic (CPT vs PSG Poly vs Murugappa)
+                  </button>
+                  <button class="btn btn-outline-info btn-sm rounded-pill fw-semibold" onclick="presetCollegeCompare('law')">
+                    ⚖️ Law (SOEL TNDALU vs TNNLU Trichy)
+                  </button>
+                  <button class="btn btn-outline-warning btn-sm rounded-pill fw-semibold" onclick="presetCollegeCompare('iti')">
+                    🛠️ ITI Trades (Guindy vs Coimbatore)
+                  </button>
+                </div>
+              </div>
+
+              <!-- Stream Filter Chips for Colleges -->
+              <div class="d-flex align-items-center gap-2 flex-wrap py-2 mb-3 border-top border-bottom">
+                <span class="small fw-bold text-secondary text-uppercase me-1">College Stream:</span>
+                <button class="category-filter-chip active" data-college-filter="all" onclick="filterCollegesByCategory('all', this)">All Categories</button>
+                <button class="category-filter-chip" data-college-filter="engineering" onclick="filterCollegesByCategory('engineering', this)">⚙️ Engineering</button>
+                <button class="category-filter-chip" data-college-filter="medical" onclick="filterCollegesByCategory('medical', this)">🩺 Medical &amp; Paramedical</button>
+                <button class="category-filter-chip" data-college-filter="arts_science" onclick="filterCollegesByCategory('arts_science', this)">📚 Arts &amp; Science</button>
+                <button class="category-filter-chip" data-college-filter="polytechnic_diploma" onclick="filterCollegesByCategory('polytechnic_diploma', this)">🔧 Polytechnic &amp; Diploma</button>
+                <button class="category-filter-chip" data-college-filter="vocational_iti" onclick="filterCollegesByCategory('vocational_iti', this)">🛠️ ITI Technical Trades</button>
+                <button class="category-filter-chip" data-college-filter="law" onclick="filterCollegesByCategory('law', this)">⚖️ Law (5-Year)</button>
+                <button class="category-filter-chip" data-college-filter="agriculture" onclick="filterCollegesByCategory('agriculture', this)">🌾 Agriculture &amp; Veterinary</button>
+                <button class="category-filter-chip" data-college-filter="architecture" onclick="filterCollegesByCategory('architecture', this)">📐 Architecture</button>
+                <button class="category-filter-chip" data-college-filter="design" onclick="filterCollegesByCategory('design', this)">🎨 Design</button>
+                <button class="category-filter-chip" data-college-filter="defence_govt" onclick="filterCollegesByCategory('defence_govt', this)">🎖️ Defence &amp; Direct Govt Recruitment</button>
+              </div>
+
+              <!-- College Selectors -->
+              <div class="row g-3 align-items-end mb-2">
+                <div class="col-md-3">
+                  <label class="form-label small fw-bold text-secondary mb-1">College #1</label>
+                  <select id="college-select-1" class="form-select fw-semibold" onchange="runCollegeComparison()">
+                    <!-- populated in js -->
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small fw-bold text-secondary mb-1">College #2</label>
+                  <select id="college-select-2" class="form-select fw-semibold" onchange="runCollegeComparison()">
+                    <!-- populated in js -->
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small fw-bold text-secondary mb-1">College #3 (Optional)</label>
+                  <select id="college-select-3" class="form-select fw-semibold" onchange="runCollegeComparison()">
+                    <option value="">None (Compare 2)</option>
+                    <!-- populated in js -->
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <button class="btn btn-primary w-100 py-2 fw-bold rounded-pill shadow-sm" onclick="runCollegeComparison()">
+                    🔄 Update College Comparison
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- College Comparison Matrix Container -->
+            <div class="career-compare-table table-responsive mb-4" id="college-compare-matrix-container">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <!-- College Directory Cards Grid in active stream -->
+            <div class="card border-0 shadow-sm p-4 rounded-4 bg-white mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0 text-dark">🏛️ Premier Colleges Directory in Selected Stream</h6>
+                <small class="text-muted" id="colleges-count-indicator">Showing 10+ colleges</small>
+              </div>
+              <div class="row g-3" id="colleges-category-grid">
+                <!-- Injected via js -->
+              </div>
+            </div>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- SUB-TAB 3: COURSE VS COURSE COMPARISON         -->
+          <!-- ============================================== -->
+          <div id="school-tab-courses" class="school-tab-content d-none">
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+                <div>
+                  <h5 class="fw-bold mb-1">🎓 Course vs Course Comparison Matrix (Tamil Nadu Career Paths)</h5>
+                  <p class="text-muted small mb-0">Compare degrees and diplomas side-by-side to understand curriculum differences, entrance exams, starting salaries, and long-term career growth in Tamil Nadu.</p>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                  <button class="btn btn-outline-primary btn-sm rounded-pill fw-semibold" onclick="presetCourseCompare('cse_vs_ece_vs_poly')">
+                    12th: B.Tech CSE vs ECE vs Polytechnic Lateral
+                  </button>
+                  <button class="btn btn-outline-success btn-sm rounded-pill fw-semibold" onclick="presetCourseCompare('mbbs_vs_pharm_vs_nurse')">
+                    12th: MBBS vs B.Pharm vs Nursing (TN DME)
+                  </button>
+                  <button class="btn btn-outline-warning btn-sm rounded-pill fw-semibold" onclick="presetCourseCompare('10th_stream_vs_poly_vs_iti')">
+                    10th: 11th Bio-Maths vs Polytechnic vs ITI Trade
+                  </button>
+                  <button class="btn btn-outline-secondary btn-sm rounded-pill fw-semibold" onclick="presetCourseCompare('law_vs_govt')">
+                    Govt: 5-Yr Law vs NDA Cadet vs TNPSC VAO
+                  </button>
+                </div>
+              </div>
+
+              <div class="row g-3 align-items-end mb-2">
+                <div class="col-md-3">
+                  <label class="form-label small fw-bold text-secondary mb-1">Course #1</label>
+                  <select id="course-select-1" class="form-select fw-semibold" onchange="runCourseComparison()">
+                    <!-- populated in js -->
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small fw-bold text-secondary mb-1">Course #2</label>
+                  <select id="course-select-2" class="form-select fw-semibold" onchange="runCourseComparison()">
+                    <!-- populated in js -->
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small fw-bold text-secondary mb-1">Course #3 (Optional)</label>
+                  <select id="course-select-3" class="form-select fw-semibold" onchange="runCourseComparison()">
+                    <option value="">None (Compare 2)</option>
+                    <!-- populated in js -->
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <button class="btn btn-primary w-100 py-2 fw-bold rounded-pill shadow-sm" onclick="runCourseComparison()">
+                    🔄 Update Course Comparison
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Course Comparison Matrix Container -->
+            <div class="career-compare-table table-responsive mb-4" id="course-compare-matrix-container">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- SUB-TAB 4: POSITIONS & ENTRANCE EXAMS NAVIGATOR -->
+          <!-- ============================================== -->
+          <div id="school-tab-exams" class="school-tab-content d-none">
+            <!-- Header Card -->
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+              <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                  <div class="d-inline-flex align-items-center gap-2 bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill small fw-bold mb-2">
+                    <span>🎯 Comprehensive Career Positions &amp; Entrance Exam Directory</span>
+                  </div>
+                  <h4 class="fw-bold mb-1 text-dark">🎯 Positions &amp; Relevant Entrance Exams Navigator</h4>
+                  <p class="text-secondary small mb-0">
+                    Find the exact entrance examinations, selection processes, eligibility criteria, and preparation pathways required for <strong>28+ career positions</strong> across Government, Engineering, Healthcare, Defence, Law, Agriculture &amp; Finance.
+                  </p>
+                </div>
+                
+                <!-- View Mode Switcher -->
+                <div class="d-flex gap-2 p-1 bg-light rounded-pill border">
+                  <button id="view-mode-positions-btn" class="btn btn-sm btn-primary rounded-pill px-3.5 py-1.5 fw-bold shadow-sm" onclick="switchExamSectionView('positions')">
+                    💼 Career Positions (28)
+                  </button>
+                  <button id="view-mode-calendars-btn" class="btn btn-sm btn-light rounded-pill px-3.5 py-1.5 fw-semibold text-secondary" onclick="switchExamSectionView('calendars')">
+                    📅 State Portals (11)
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- VIEW 1: CAREER POSITIONS & RELEVANT EXAMS VIEW -->
+            <div id="positions-view-container">
+              <!-- Search and Filter Bar -->
+              <div class="card border-0 shadow-sm p-3 mb-4 rounded-4 bg-white">
+                <div class="row g-3 align-items-center">
+                  <!-- Search Bar -->
+                  <div class="col-lg-5">
+                    <div class="input-group">
+                      <span class="input-group-text bg-white border-end-0 rounded-start-pill text-muted">🔍</span>
+                      <input type="text" id="position-search-input" class="form-control border-start-0 rounded-end-pill py-2" placeholder="Search role (e.g. Doctor, VAO, Software, Constable, Pilot, Judge) or exam..." oninput="handlePositionSearch(this.value)">
+                    </div>
+                  </div>
+
+                  <!-- Qualification Stage Pills -->
+                  <div class="col-lg-4">
+                    <div class="d-flex gap-1.5 flex-wrap" id="position-stage-pills">
+                      <button class="btn btn-sm btn-primary rounded-pill px-2.5 fw-bold" data-pos-stage="all" onclick="filterPositionsByStage('all', this)">
+                        All Stages
+                      </button>
+                      <button class="btn btn-sm btn-outline-primary rounded-pill px-2.5 fw-bold" data-pos-stage="after_10th" onclick="filterPositionsByStage('after_10th', this)">
+                        📘 After 10th
+                      </button>
+                      <button class="btn btn-sm btn-outline-primary rounded-pill px-2.5 fw-bold" data-pos-stage="after_12th" onclick="filterPositionsByStage('after_12th', this)">
+                        🎓 After 12th
+                      </button>
+                      <button class="btn btn-sm btn-outline-primary rounded-pill px-2.5 fw-bold" data-pos-stage="diploma_graduate" onclick="filterPositionsByStage('diploma_graduate', this)">
+                        🏛️ Degree / Grad
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Sector Dropdown -->
+                  <div class="col-lg-3">
+                    <select id="position-sector-select" class="form-select rounded-pill py-2 border small fw-semibold" onchange="filterPositionsBySector(this.value)">
+                      <option value="all">🌐 All Career Sectors (8)</option>
+                      <option value="Engineering & Technology">💻 Engineering &amp; Technology</option>
+                      <option value="Medical & Healthcare">🏥 Medical &amp; Healthcare</option>
+                      <option value="Tamil Nadu Government & Administration">🏛️ TN Govt &amp; Administration</option>
+                      <option value="Police & Defence Services">👮 Police &amp; Defence</option>
+                      <option value="Law & Judiciary">⚖️ Law &amp; Judiciary</option>
+                      <option value="Agriculture & Veterinary">🌾 Agriculture &amp; Veterinary</option>
+                      <option value="Banking, Finance & Commerce">📊 Banking &amp; Finance</option>
+                      <option value="Design & Architecture">🎨 Design &amp; Architecture</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Metrics Summary -->
+              <div class="d-flex justify-content-between align-items-center mb-3 px-1">
+                <span id="positions-count-badge" class="small fw-bold text-secondary">
+                  Showing 28 Career Positions &amp; Their Relevant Entrance Exams
+                </span>
+                <span class="small text-muted">
+                  💡 Click <strong>"Full Exam Guide"</strong> on any position for syllabus breakdown &amp; cutoff formulas
+                </span>
+              </div>
+
+              <!-- Positions Grid -->
+              <div class="row g-4" id="career-positions-list">
+                <!-- Dynamically loaded via js -->
+              </div>
+            </div>
+
+            <!-- VIEW 2: STATE ADMISSION & EXAM PORTALS CALENDAR VIEW -->
+            <div id="calendars-view-container" class="d-none">
+              <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                  <div>
+                    <h5 class="fw-bold mb-1 text-dark">📅 Tamil Nadu Higher Education Admissions &amp; Exam Portals</h5>
+                    <p class="text-secondary small mb-0">Official registration deadlines, counselling portals, and 1-click Google Calendar sync.</p>
+                  </div>
+                  <div class="d-flex gap-2 flex-wrap" id="exam-stage-filter-btns">
+                    <button class="btn btn-sm btn-primary rounded-pill px-3 fw-bold shadow-sm" data-exam-stage="all" onclick="filterExamsByStage('all', this)">
+                      🌐 All Schedules (11)
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" data-exam-stage="after_10th" onclick="filterExamsByStage('after_10th', this)">
+                      📘 After 10th (SSLC)
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" data-exam-stage="after_12th" onclick="filterExamsByStage('after_12th', this)">
+                      🎓 After 12th (HSC)
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row g-3" id="school-exams-list">
+                <!-- Loaded dynamically in js -->
+              </div>
+            </div>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- SUB-TAB 5: ROADMAP (SCHOOL TO COLLEGE TO JOB)  -->
+          <!-- ============================================== -->
+          <div id="school-tab-roadmap" class="school-tab-content d-none">
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+              <h5 class="fw-bold mb-1">🗺️ The 5-Phase Roadmap: From School to College to Career</h5>
+              <p class="text-muted small mb-0">Follow this clear roadmap to avoid common traps and secure admissions with zero stress.</p>
+            </div>
+
+            <div class="d-flex flex-column gap-3">
+              <div class="roadmap-step-box">
+                <div class="d-flex align-items-start gap-3">
+                  <div class="roadmap-badge-number">1</div>
+                  <div>
+                    <h6 class="fw-bold text-dark mb-1">Phase 1: Stream Alignment &amp; Board Mastery (Class 10 &amp; 12)</h6>
+                    <p class="text-secondary small mb-2">
+                      Master foundational NCERT concepts. Maintain consistent mock scores in Physics, Chemistry, Maths/Biology or Accountancy. For 10th students, choose Science, Commerce, or Polytechnic based on whether you prefer theory or hands-on technical skills.
+                    </p>
+                    <span class="badge bg-primary-subtle text-primary border rounded-pill">Target: &gt;80% in Boards</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="roadmap-step-box">
+                <div class="d-flex align-items-start gap-3">
+                  <div class="roadmap-badge-number">2</div>
+                  <div>
+                    <h6 class="fw-bold text-dark mb-1">Phase 2: Entrance Exam Registration &amp; Mock Tests (Oct – March)</h6>
+                    <p class="text-secondary small mb-2">
+                      Apply for JEE Main (Nov), NEET-UG (Feb), CUET-UG (Feb), CLAT (July), and NATA. Keep your 10th marksheet, Aadhaar, and Community Certificate scanned and ready. Solve at least 15 timed previous-year question papers (PYQs).
+                    </p>
+                    <span class="badge bg-warning-subtle text-dark border rounded-pill">Action: Track Deadlines in Calendar</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="roadmap-step-box">
+                <div class="d-flex align-items-start gap-3">
+                  <div class="roadmap-badge-number">3</div>
+                  <div>
+                    <h6 class="fw-bold text-dark mb-1">Phase 3: Results &amp; Cutoff Calculation (April – May)</h6>
+                    <p class="text-secondary small mb-2">
+                      Calculate your state cutoff marks (e.g., TNEA Cutoff out of 200 = Maths + Physics/2 + Chemistry/2). Check rank lists and benchmark your percentile against previous years' opening and closing ranks.
+                    </p>
+                    <span class="badge bg-info-subtle text-dark border rounded-pill">Benchmarking: Safe, Target &amp; Dream Colleges</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="roadmap-step-box">
+                <div class="d-flex align-items-start gap-3">
+                  <div class="roadmap-badge-number">4</div>
+                  <div>
+                    <h6 class="fw-bold text-dark mb-1">Phase 4: Centralized Online Counseling &amp; Choice Filling (May – July)</h6>
+                    <p class="text-secondary small mb-2">
+                      Participate in JoSAA (IITs/NITs), TNEA (Anna University), MCC (Medical AIQ), or DOTE (Polytechnic). Fill choices smartly in priority order: start with Dream colleges, then Target, and keep 10+ Safe options to guarantee a seat.
+                    </p>
+                    <span class="badge bg-success-subtle text-success border rounded-pill">Key Step: Smart Choice Locking</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="roadmap-step-box">
+                <div class="d-flex align-items-start gap-3">
+                  <div class="roadmap-badge-number">5</div>
+                  <div>
+                    <h6 class="fw-bold text-dark mb-1">Phase 5: College Reporting, Scholarship Claim &amp; Career Launch (Aug)</h6>
+                    <p class="text-secondary small mb-2">
+                      Report to your allotted college with original certificates. Immediately apply for National Scholarship Portal (NSP), First Generation Graduate Concession, or 7.5% Govt School Free Quota to avoid financial burden.
+                    </p>
+                    <span class="badge bg-secondary-subtle text-dark border rounded-pill">Final Goal: Graduation &amp; High-Paying Placement</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- MODE 2: CAMPUS PLACEMENT & COMPANY PREDICTOR (COLLEGE TO JOB)             -->
+        <!-- ========================================================================= -->
+        <div id="compass-hub-college" class="d-none">
+          <!-- College Hero -->
+          <div class="hero-banner-college mb-4">
+            <div class="row align-items-center">
+              <div class="col-lg-8">
+                <div class="d-inline-flex align-items-center gap-2 bg-white bg-opacity-10 px-3 py-1 rounded-pill small fw-semibold text-warning mb-2">
+                  <span>💼 Campus Placement &amp; Offer Predictor</span>
+                </div>
+                <h2 class="fw-bold mb-2">Know Which Companies Will Hire You Before You Apply</h2>
+                <p class="mb-0 text-white-50" style="font-size: 1.05rem; max-width: 720px;">
+                  Evaluate your CGPA &amp; aptitude benchmarks against real employer cutoffs. Compare 3 companies side-by-side (Base vs ESOPs vs Culture), sync drive dates with 1-click Google Calendar reminders, and verify your onboarding BGV documents.
+                </p>
+              </div>
+              <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <div class="d-inline-flex flex-column gap-2 bg-white bg-opacity-10 p-3 rounded-4 border border-white border-opacity-15 text-start">
+                  <div class="text-white-50 small fw-semibold">QUICK ACTIONS</div>
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-warning btn-sm fw-bold px-3 rounded-pill" onclick="switchCollegeTab('predictor')">
+                      🎯 Predict Matches
+                    </button>
+                    <button class="btn btn-outline-light btn-sm fw-semibold px-3 rounded-pill" onclick="switchCollegeTab('comparator')">
+                      ⚖️ 3-Way Compare
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- College Nav Tabs -->
+          <div class="d-flex gap-2 flex-wrap mb-4" id="college-tabs-container">
+            <button class="subnav-pill active" data-college-tab="predictor" onclick="switchCollegeTab('predictor')">
+              <span>🎯</span> Company Predictor
+            </button>
+            <button class="subnav-pill" data-college-tab="comparator" onclick="switchCollegeTab('comparator')">
+              <span>⚖️</span> 3-Company Comparison
+            </button>
+            <button class="subnav-pill" data-college-tab="drives" onclick="switchCollegeTab('drives')">
+              <span>📅</span> Placement Drives &amp; Calendar Sync
+            </button>
+            <button class="subnav-pill" data-college-tab="trajectory" onclick="switchCollegeTab('trajectory')">
+              <span>📈</span> Mock Score Trajectory
+            </button>
+            <button class="subnav-pill" data-college-tab="vault" onclick="switchCollegeTab('vault')">
+              <span>📁</span> Pre-Placement Document Vault
+            </button>
+            <button class="subnav-pill" data-college-tab="reviews" onclick="switchCollegeTab('reviews')">
+              <span>💬</span> Dual-Source Reviews (Reddit &amp; Blind vs Glassdoor)
+            </button>
+          </div>
+
+          <!-- College Tab 1: Predictor -->
+          <div id="college-tab-predictor" class="college-tab-pane">
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+              <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                <span>🎯</span> Customize Your Profile Evaluation
+              </h5>
+              <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                  <label class="form-label small fw-bold text-secondary mb-1">Your CGPA (out of 10.0)</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light fw-bold">🎓</span>
+                    <input type="number" id="pred-cgpa" class="form-control fw-bold" min="5.0" max="10.0" step="0.1" value="8.4">
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small fw-bold text-secondary mb-1">Current Aptitude Benchmark (%)</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light fw-bold">🧠</span>
+                    <input type="number" id="pred-aptitude" class="form-control fw-bold" min="0" max="100" step="1" value="82">
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small fw-bold text-secondary mb-1">Coding Lab Proficiency</label>
+                  <select id="pred-coding" class="form-select fw-semibold">
+                    <option value="beginner">Beginner (Basic Syntax &amp; Arrays)</option>
+                    <option value="intermediate" selected>Intermediate (Trees, Recursion, OOP)</option>
+                    <option value="advanced">Advanced (DP, Graphs, System Design)</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <button class="btn btn-primary w-100 py-2.5 fw-bold rounded-pill shadow-sm" onclick="runPredictionEvaluation()">
+                    ⚡ Re-Evaluate Matches
+                  </button>
+                </div>
+              </div>
+              
+              <div class="alert alert-info mt-3 mb-0 py-2 px-3 small rounded-3 d-flex align-items-center gap-2" id="prediction-guidance-box">
+                <i class="bi bi-info-circle-fill"></i>
+                <span id="prediction-guidance-text">
+                  Analyzing company cutoffs, historical shortlisting ratios, and technical requirements...
+                </span>
+              </div>
+            </div>
+
+            <!-- 3-Tier Results Display -->
+            <div class="row g-4">
+              <!-- Safe Matches -->
+              <div class="col-lg-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-success-subtle text-success border rounded-pill px-3 py-1 fw-bold fs-6">🟢 SAFE MATCHES</span>
+                    <span class="text-muted small fw-semibold" id="safe-tier-count">(0)</span>
+                  </div>
+                  <small class="text-muted">Probability: &gt; 90%</small>
+                </div>
+                <p class="text-muted small mb-3">Guaranteed interview call or low cutoff requirements. Essential baseline offers for peace of mind.</p>
+                <div id="safe-matches-list" class="d-flex flex-column gap-3"></div>
+              </div>
+
+              <!-- Target Matches -->
+              <div class="col-lg-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-info-subtle text-info border rounded-pill px-3 py-1 fw-bold fs-6">🔵 TARGET INNOVATORS</span>
+                    <span class="text-muted small fw-semibold" id="target-tier-count">(0)</span>
+                  </div>
+                  <small class="text-muted">Probability: 70 - 89%</small>
+                </div>
+                <p class="text-muted small mb-3">Strong product and tech firms with high learning curves and competitive packages.</p>
+                <div id="target-matches-list" class="d-flex flex-column gap-3"></div>
+              </div>
+
+              <!-- Dream Matches -->
+              <div class="col-lg-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-purple-subtle text-purple border rounded-pill px-3 py-1 fw-bold fs-6" style="background: rgba(139, 92, 246, 0.12); color: #7c3aed;">🟣 DREAM PRODUCT GIANTS</span>
+                    <span class="text-muted small fw-semibold" id="dream-tier-count">(0)</span>
+                  </div>
+                  <small class="text-muted">Probability: 40 - 69%</small>
+                </div>
+                <p class="text-muted small mb-3">Tier-1 FAANG &amp; High-Frequency tech giants with rigorous DSA problem-solving standards.</p>
+                <div id="dream-matches-list" class="d-flex flex-column gap-3"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- College Tab 2: Comparator -->
+          <div id="college-tab-comparator" class="college-tab-pane d-none">
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+                <div>
+                  <h5 class="fw-bold mb-1">⚖️ 3-Way Company Comparative Decision Matrix</h5>
+                  <p class="text-muted small mb-0">Select 2 or 3 companies to view direct side-by-side compensation, culture, and interview breakdowns.</p>
+                </div>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-outline-primary btn-sm rounded-pill fw-semibold" onclick="presetComparison('dream')">
+                    Compare Top Dream (Google vs Amazon)
+                  </button>
+                  <button class="btn btn-outline-secondary btn-sm rounded-pill fw-semibold" onclick="presetComparison('target')">
+                    Target vs Safe (Zoho vs TCS)
+                  </button>
+                </div>
+              </div>
+
+              <div class="row g-3 align-items-end mb-3">
+                <div class="col-md-3">
+                  <label class="form-label small fw-bold text-secondary mb-1">Company #1</label>
+                  <select id="compare-select-1" class="form-select fw-semibold" onchange="runComparison()"></select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small fw-bold text-secondary mb-1">Company #2</label>
+                  <select id="compare-select-2" class="form-select fw-semibold" onchange="runComparison()"></select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small fw-bold text-secondary mb-1">Company #3 (Optional)</label>
+                  <select id="compare-select-3" class="form-select fw-semibold" onchange="runComparison()">
+                    <option value="">None (Compare 2)</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <button class="btn btn-primary w-100 py-2 fw-bold rounded-pill shadow-sm" onclick="runComparison()">
+                    🔄 Refresh Comparison
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="comparison-table table-responsive mb-4" id="comparison-matrix-container"></div>
+          </div>
+
+          <!-- College Tab 3: Drives -->
+          <div id="college-tab-drives" class="college-tab-pane d-none">
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div>
+                  <h5 class="fw-bold mb-1">📅 Upcoming Placement Drives &amp; OA Deadlines</h5>
+                  <p class="text-muted small mb-0">Never miss an assessment window. Sync drives directly to your Google Calendar with 1 click.</p>
+                </div>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-sm btn-outline-secondary rounded-pill active" onclick="filterDrives('all', this)">All Drives</button>
+                  <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="filterDrives('Campus Drive', this)">Campus Only</button>
+                  <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="filterDrives('National OA', this)">National OAs</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-3" id="placement-drives-list"></div>
+          </div>
+
+          <!-- College Tab 4: Trajectory -->
+          <div id="college-tab-trajectory" class="college-tab-pane d-none">
+            <div class="row g-4 mb-4">
+              <div class="col-lg-8">
+                <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                      <h5 class="fw-bold mb-1">📈 Mock Test Progression &amp; Cleared Benchmarks</h5>
+                      <p class="text-muted small mb-0">Track how your mock aptitude and coding scores correlate with actual company thresholds.</p>
+                    </div>
+                    <button class="btn btn-primary btn-sm rounded-pill fw-bold px-3" data-bs-toggle="modal" data-bs-target="#logMockModal">
+                      ➕ Log Mock Score
+                    </button>
+                  </div>
+
+                  <div class="mb-4 p-3 bg-light rounded-3">
+                    <div class="small fw-bold text-secondary mb-2">COMPANY BENCHMARKS CLEARED SO FAR:</div>
+                    <div class="d-flex flex-wrap gap-2" id="cleared-benchmarks-list"></div>
+                  </div>
+
+                  <h6 class="fw-bold mb-2">Attempt Log</h6>
+                  <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Date</th>
+                          <th>Test Title</th>
+                          <th>Quant</th>
+                          <th>Logical</th>
+                          <th>Verbal</th>
+                          <th>Total %</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody id="mock-attempts-tbody"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100">
+                  <h5 class="fw-bold mb-3">🎯 Readiness Verdict</h5>
+                  <div class="text-center p-3 mb-3 bg-light rounded-4">
+                    <div class="display-5 fw-bold text-primary mb-1" id="trajectory-highest-score">--%</div>
+                    <div class="fw-bold text-dark" id="trajectory-readiness-label">Evaluating...</div>
+                    <small class="text-muted">Highest benchmark score</small>
+                  </div>
+
+                  <div class="d-flex flex-column gap-2 mb-4">
+                    <div class="d-flex justify-content-between text-secondary small">
+                      <span>Average Mock Score</span>
+                      <strong class="text-dark" id="trajectory-avg-score">--%</strong>
+                    </div>
+                    <div class="d-flex justify-content-between text-secondary small">
+                      <span>Latest Mock Attempt</span>
+                      <strong class="text-dark" id="trajectory-latest-score">--%</strong>
+                    </div>
+                    <div class="d-flex justify-content-between text-secondary small">
+                      <span>Total Mocks Logged</span>
+                      <strong class="text-dark" id="trajectory-total-count">--</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- College Tab 5: Vault -->
+          <div id="college-tab-vault" class="college-tab-pane d-none">
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+              <div class="row align-items-center">
+                <div class="col-md-8">
+                  <h5 class="fw-bold mb-1">📁 Pre-Placement Document &amp; BGV Readiness Vault</h5>
+                  <p class="text-muted small mb-0">Ensure all academic marksheets, ID proofs, and placement NOCs are in order before company on-campus verification.</p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                  <div class="d-inline-block text-start bg-light p-3 rounded-3 border">
+                    <div class="d-flex justify-content-between small fw-bold mb-1">
+                      <span>Readiness Score</span>
+                      <span id="vault-readiness-pct">0%</span>
+                    </div>
+                    <div class="progress" style="height: 8px; width: 180px;">
+                      <div class="progress-bar bg-success" id="vault-progress-bar" style="width: 0%;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card border-0 shadow-sm p-4 rounded-4 bg-white">
+              <h6 class="fw-bold text-secondary text-uppercase small mb-3">Verified Document Checklist</h6>
+              <div id="document-checklist-items" class="d-flex flex-column gap-2"></div>
+            </div>
+          </div>
+
+          <!-- College Tab 6: Reviews -->
+          <div id="college-tab-reviews" class="college-tab-pane d-none">
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+              <div class="row g-3 align-items-center">
+                <div class="col-md-8">
+                  <h5 class="fw-bold mb-1">💬 Dual-Source Candidate &amp; Employee Reviews</h5>
+                  <p class="text-muted small mb-0">Compare unfiltered anonymous student feedback from Reddit / Blind alongside verified employee metrics from Glassdoor.</p>
+                </div>
+                <div class="col-md-4">
+                  <select id="review-company-select" class="form-select fw-semibold" onchange="loadCompanyReviews(this.value)"></select>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-4" id="dual-review-display"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal: Career Pathway Detail Explorer -->
+  <div class="modal fade" id="pathwayDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+        <div class="modal-header border-bottom p-4" style="background: linear-gradient(135deg, #0c4a6e 0%, #0369a1 100%); color: #fff;">
+          <div class="d-flex align-items-center gap-3">
+            <span class="fs-1 p-2 bg-white bg-opacity-15 rounded-3" id="modal-path-icon">🎓</span>
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-warning text-dark px-2.5 py-0.5 rounded-pill small fw-bold" id="modal-path-category">Category</span>
+                <span class="badge bg-white bg-opacity-20 text-white rounded-pill small" id="modal-path-duration">Duration</span>
+              </div>
+              <h4 class="modal-title fw-bold mb-0 text-white" id="modal-path-title">Course Title</h4>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4 p-md-5" id="modal-path-body">
+          <!-- Loaded dynamically -->
+        </div>
+        <div class="modal-footer border-top p-3 px-4 d-flex justify-content-between bg-light">
+          <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-semibold" data-bs-dismiss="modal">Close Guide</button>
+          <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" id="modal-btn-compare-add" onclick="addCurrentModalPathToCompare()">
+            ⚖️ Add to Career Comparison &rarr;
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Log Mock Test Attempt (College Mode) -->
+  <div class="modal fade" id="logMockModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow">
+        <div class="modal-header border-bottom">
+          <h5 class="modal-title fw-bold">➕ Log New Mock Test Score</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form id="logMockForm" onsubmit="handleMockSubmit(event)">
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Test Title / Source</label>
+              <input type="text" id="mock-form-title" class="form-control" placeholder="e.g. TCS NQT Mock #4 or LeetCode Biweekly" required>
+            </div>
+            <div class="row g-3 mb-3">
+              <div class="col-4">
+                <label class="form-label small fw-bold">Quant Score (%)</label>
+                <input type="number" id="mock-form-quant" class="form-control" min="0" max="100" value="80" required>
+              </div>
+              <div class="col-4">
+                <label class="form-label small fw-bold">Logical (%)</label>
+                <input type="number" id="mock-form-logical" class="form-control" min="0" max="100" value="85" required>
+              </div>
+              <div class="col-4">
+                <label class="form-label small fw-bold">Verbal (%)</label>
+                <input type="number" id="mock-form-verbal" class="form-control" min="0" max="100" value="75" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Notes / Difficult Topics</label>
+              <input type="text" id="mock-form-notes" class="form-control" placeholder="e.g. Permutations &amp; Probability needed more time">
+            </div>
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold rounded-pill">
+              Save Score to Trajectory
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Career Position & Relevant Entrance Exams Detail -->
+  <div class="modal fade" id="positionDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+        <div class="modal-header border-bottom p-4 bg-light">
+          <div>
+            <div id="pos-modal-sector-badge" class="mb-1"></div>
+            <h4 class="modal-title fw-bold text-dark" id="pos-modal-title">Position Title</h4>
+            <div class="small text-muted" id="pos-modal-subtitle"></div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4 p-md-5" id="pos-modal-body">
+          <!-- Loaded dynamically -->
+        </div>
+        <div class="modal-footer border-top p-3 px-4 d-flex justify-content-between bg-light">
+          <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-semibold" data-bs-dismiss="modal">Close Guide</button>
+          <div id="pos-modal-portal-links" class="d-flex gap-2"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/placement-compass.js"></script>
+</body>
+</html>
