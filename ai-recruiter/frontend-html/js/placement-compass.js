@@ -32,6 +32,74 @@ let currentModalPositionId = null;
 let allCompaniesList = [];
 let cachedDrives = [];
 
+// Immediate Static Data Ingestion (ensures zero empty states)
+if (typeof window !== "undefined" && window.COMPASS_STATIC_DATA) {
+  const d = window.COMPASS_STATIC_DATA;
+  if (d.paths) allSchoolPaths = [...d.paths];
+  if (d.exams) allSchoolExams = [...d.exams];
+  if (d.colleges) allCollegesList = [...d.colleges];
+  if (d.courses) allComparableCourses = [...d.courses];
+  if (d.positions) allCareerPositions = [...d.positions];
+}
+
+function hydrateFromStaticData() {
+  if (typeof window !== "undefined" && window.COMPASS_STATIC_DATA) {
+    const d = window.COMPASS_STATIC_DATA;
+    if ((!allSchoolPaths || allSchoolPaths.length === 0) && d.paths) allSchoolPaths = [...d.paths];
+    if ((!allSchoolExams || allSchoolExams.length === 0) && d.exams) allSchoolExams = [...d.exams];
+    if ((!allCollegesList || allCollegesList.length === 0) && d.colleges) allCollegesList = [...d.colleges];
+    if ((!allComparableCourses || allComparableCourses.length === 0) && d.courses) allComparableCourses = [...d.courses];
+    if ((!allCareerPositions || allCareerPositions.length === 0) && d.positions) allCareerPositions = [...d.positions];
+
+    try { renderSchoolPaths(); } catch (e) { console.warn(e); }
+    try { populateCollegeDropdowns(); } catch (e) { console.warn(e); }
+    try { renderCollegesCategoryGrid(); } catch (e) { console.warn(e); }
+    try { presetCollegeCompare("engineering"); } catch (e) { console.warn(e); }
+    try { populateCourseDropdowns(); } catch (e) { console.warn(e); }
+    try { presetCourseCompare("cse_vs_ece_vs_poly"); } catch (e) { console.warn(e); }
+    try { renderSchoolExams(); } catch (e) { console.warn(e); }
+    try { renderCareerPositions(); } catch (e) { console.warn(e); }
+    try { renderTwelfthGroupGuidance("computer_science"); } catch (e) { console.warn(e); }
+    try { renderTenthGuidanceRoutes(); } catch (e) { console.warn(e); }
+    try { updateCutoffCalculatorInputs(); } catch (e) { console.warn(e); }
+  }
+}
+
+function showCompassToast(message, type = "info") {
+  let toastEl = document.getElementById("compass-live-toast");
+  if (!toastEl) {
+    toastEl = document.createElement("div");
+    toastEl.id = "compass-live-toast";
+    toastEl.style.position = "fixed";
+    toastEl.style.top = "80px";
+    toastEl.style.right = "24px";
+    toastEl.style.zIndex = "10050";
+    toastEl.style.maxWidth = "480px";
+    toastEl.style.transition = "all 0.3s ease-in-out";
+    document.body.appendChild(toastEl);
+  }
+
+  const bgClass = type === "warning" ? "bg-warning text-dark" : type === "success" ? "bg-success text-white" : "bg-primary text-white";
+  toastEl.innerHTML = `
+    <div class="card border-0 shadow-lg ${bgClass} rounded-4 p-3 d-flex flex-row align-items-center gap-3 animate__animated animate__fadeInDown">
+      <span class="fs-4">🧭</span>
+      <div class="small fw-semibold flex-grow-1">${message}</div>
+      <button type="button" class="btn-close ${type === 'warning' ? '' : 'btn-close-white'} ms-2" onclick="this.closest('#compass-live-toast').style.display='none'"></button>
+    </div>
+  `;
+  toastEl.style.display = "block";
+  toastEl.style.opacity = "1";
+
+  if (window._toastTimeout) clearTimeout(window._toastTimeout);
+  window._toastTimeout = setTimeout(() => {
+    if (toastEl) {
+      toastEl.style.opacity = "0";
+      setTimeout(() => { toastEl.style.display = "none"; }, 300);
+    }
+  }, 4500);
+}
+window.showCompassToast = showCompassToast;
+
 document.addEventListener("DOMContentLoaded", async () => {
   setupUserGreeting();
 
@@ -39,7 +107,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   const savedMode = localStorage.getItem("compass_active_hub") || "school";
   setCompassMode(savedMode);
 
-  // Initialize both engines
+  // Synchronously hydrate from static pre-bundled data first
+  hydrateFromStaticData();
+
+  // Initialize both engines asynchronously
   await initSchoolCareerHub();
   await initCollegePlacementHub();
 });
@@ -86,51 +157,65 @@ function setCompassMode(mode) {
 // =========================================================================
 
 async function initSchoolCareerHub() {
+  // Always guarantee 12th-Grade Group Guidance and 10th-Standard Compass render
+  try { renderTwelfthGroupGuidance("computer_science"); } catch (e) {}
+  try { renderTenthGuidanceRoutes(); } catch (e) {}
+  try { updateCutoffCalculatorInputs(); } catch (e) {}
+
+  // 1. Fetch all school career paths
   try {
-    // 1. Fetch all school career paths
     const pathsRes = await api.get("/placement-compass/school/paths");
-    if (pathsRes && pathsRes.data) {
+    if (pathsRes && pathsRes.data && pathsRes.data.length > 0) {
       allSchoolPaths = pathsRes.data;
       renderSchoolPaths();
     }
+  } catch (err) {
+    console.warn("Using bundled school paths data:", err);
+  }
 
-    // 2. Fetch Top Colleges directory
+  // 2. Fetch Top Colleges directory
+  try {
     const collegesRes = await api.get("/placement-compass/colleges");
-    if (collegesRes && collegesRes.data) {
+    if (collegesRes && collegesRes.data && collegesRes.data.length > 0) {
       allCollegesList = collegesRes.data;
       populateCollegeDropdowns();
       renderCollegesCategoryGrid();
-      presetCollegeCompare("engineering");
     }
+  } catch (err) {
+    console.warn("Using bundled colleges data:", err);
+  }
 
-    // 3. Fetch Comparable Courses
+  // 3. Fetch Comparable Courses
+  try {
     const coursesRes = await api.get("/placement-compass/courses");
-    if (coursesRes && coursesRes.data) {
+    if (coursesRes && coursesRes.data && coursesRes.data.length > 0) {
       allComparableCourses = coursesRes.data;
       populateCourseDropdowns();
-      presetCourseCompare("cse_vs_ece_vs_poly");
     }
+  } catch (err) {
+    console.warn("Using bundled courses data:", err);
+  }
 
-    // 4. Fetch school entrance exams calendar
+  // 4. Fetch school entrance exams calendar
+  try {
     const examsRes = await api.get("/placement-compass/school/exams");
-    if (examsRes && examsRes.data) {
+    if (examsRes && examsRes.data && examsRes.data.length > 0) {
       allSchoolExams = examsRes.data;
       renderSchoolExams();
     }
+  } catch (err) {
+    console.warn("Using bundled school exams data:", err);
+  }
 
-    // 5. Fetch career positions and their relevant entrance examinations
+  // 5. Fetch career positions and their relevant entrance examinations
+  try {
     const posRes = await api.get("/placement-compass/positions");
-    if (posRes && posRes.data) {
+    if (posRes && posRes.data && posRes.data.length > 0) {
       allCareerPositions = posRes.data;
       renderCareerPositions();
     }
-
-    // 6. Initialize 12th-Grade Group Guidance and 10th-Standard Future Compass
-    renderTwelfthGroupGuidance("computer_science");
-    renderTenthGuidanceRoutes();
-    updateCutoffCalculatorInputs();
   } catch (err) {
-    console.error("Failed to initialize School Career Hub:", err);
+    console.warn("Using bundled career positions data:", err);
   }
 }
 
@@ -1180,15 +1265,60 @@ function updateCategoryChipsAvailability(grade) {
 
     if (count === 0 && grade !== "all") {
       btn.style.opacity = "0.45";
-      btn.title = `No courses available under this stream for ${grade.replace('_', ' ')}`;
+      btn.title = `Requires switching stream. Click to auto-switch to eligible group.`;
     } else {
       btn.style.opacity = "1";
-      btn.title = "";
+      btn.title = `${count} opportunities available for your selected grade`;
     }
   });
 }
 
 function filterPathsByCategory(cat, btn) {
+  // Check if this category has paths in the current activeGradeFilter
+  let matchingPaths = allSchoolPaths.filter((p) => {
+    const matchCat = (cat === "all" || p.category === cat);
+    let matchGrade = false;
+    if (activeGradeFilter === "all") matchGrade = true;
+    else if (activeGradeFilter === "after_10th") matchGrade = (p.grade_level === "after_10th" || p.grade_level === "after_10th_or_12th" || (p.eligible_grades && p.eligible_grades.includes("after_10th")));
+    else if (activeGradeFilter === "after_12th") matchGrade = (p.grade_level.startsWith("after_12th") || p.grade_level === "after_10th_or_12th" || (p.eligible_grades && p.eligible_grades.some((g) => g.startsWith("after_12th"))));
+    else matchGrade = (p.grade_level === activeGradeFilter || p.grade_level === "after_10th_or_12th" || (p.eligible_grades && p.eligible_grades.includes(activeGradeFilter)));
+    return matchCat && matchGrade;
+  });
+
+  // If user selected a category that has 0 paths for their current grade filter:
+  // Auto-switch to the appropriate grade filter with a smooth, helpful transition!
+  if (matchingPaths.length === 0 && cat !== "all") {
+    if (cat === "engineering") {
+      if (activeGradeFilter === "after_10th") {
+        cat = "diploma_polytechnic";
+        showCompassToast("Selected Polytechnic / Diploma — the direct technical engineering pathway after 10th Standard.", "info");
+      } else {
+        activeGradeFilter = "after_12th_pcm";
+        showCompassToast("Switched to 12th Science (PCM / Maths) — Engineering (B.E/B.Tech) admissions in Tamil Nadu require Higher Secondary Mathematics.", "info");
+      }
+    } else if (cat === "medical") {
+      activeGradeFilter = "after_12th_pcb";
+      showCompassToast("Switched to 12th Science (PCB / Biology) — MBBS/BDS Medical admissions require Higher Secondary Biology.", "info");
+    } else if (cat === "diploma_polytechnic" || cat === "vocational_iti") {
+      activeGradeFilter = "after_10th";
+      showCompassToast("Switched to After 10th Standard — Polytechnic Diplomas & ITI Trades are direct admissions after 10th SSLC.", "info");
+    } else if (cat === "agriculture") {
+      activeGradeFilter = "after_12th_pcb";
+      showCompassToast("Switched to 12th Science (PCB / Biology) — TNAU Agriculture & TANUVAS Veterinary require Biology.", "info");
+    }
+
+    // Update grade filter UI buttons
+    document.querySelectorAll("[data-filter-type='grade']").forEach((b) => {
+      if (b.getAttribute("data-val") === activeGradeFilter) {
+        b.classList.add("active");
+      } else {
+        b.classList.remove("active");
+      }
+    });
+
+    updateCategoryChipsAvailability(activeGradeFilter);
+  }
+
   activeCatFilter = cat;
   document.querySelectorAll("[data-filter-type='cat']").forEach((b) => {
     if (b.getAttribute("data-val") === cat) {
@@ -1197,6 +1327,7 @@ function filterPathsByCategory(cat, btn) {
       b.classList.remove("active");
     }
   });
+
   renderSchoolPaths();
 }
 
@@ -1204,7 +1335,13 @@ function renderSchoolPaths() {
   const grid = document.getElementById("school-paths-grid");
   if (!grid) return;
 
-  let filtered = allSchoolPaths;
+  if (!allSchoolPaths || allSchoolPaths.length === 0) {
+    if (typeof window !== "undefined" && window.COMPASS_STATIC_DATA && window.COMPASS_STATIC_DATA.paths) {
+      allSchoolPaths = window.COMPASS_STATIC_DATA.paths;
+    }
+  }
+
+  let filtered = allSchoolPaths || [];
 
   if (activeGradeFilter !== "all") {
     if (activeGradeFilter === "after_10th") {
@@ -1226,7 +1363,7 @@ function renderSchoolPaths() {
     filtered = filtered.filter((p) => p.category === activeCatFilter);
   }
 
-  if (filtered.length === 0) {
+  if (!filtered || filtered.length === 0) {
     let explanationHtml = "";
     if (activeGradeFilter === "after_12th_pcb" && activeCatFilter === "engineering") {
       explanationHtml = `
@@ -1243,6 +1380,9 @@ function renderSchoolPaths() {
             </button>
             <button class="btn btn-success btn-sm rounded-pill px-4 fw-bold shadow-sm" onclick="filterPathsByCategory('agriculture', null)">
               🌾 View Agriculture &amp; Veterinary Paths
+            </button>
+            <button class="btn btn-info btn-sm text-white rounded-pill px-4 fw-bold shadow-sm" onclick="filterPathsByGrade('after_12th_pcm', null)">
+              ⚙️ Switch to 12th PCM for Engineering
             </button>
             <button class="btn btn-outline-secondary btn-sm rounded-pill px-3" onclick="resetSchoolFilters()">
               🌐 Show All PCB Opportunities
@@ -1266,6 +1406,9 @@ function renderSchoolPaths() {
             <button class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-bold shadow-sm" onclick="filterPathsByCategory('law', null)">
               ⚖️ View 5-Year Integrated B.Com. LL.B Law
             </button>
+            <button class="btn btn-info btn-sm text-white rounded-pill px-4 fw-bold shadow-sm" onclick="filterPathsByGrade('after_12th_pcm', null)">
+              ⚙️ Switch to 12th PCM for Engineering
+            </button>
             <button class="btn btn-outline-secondary btn-sm rounded-pill px-3" onclick="resetSchoolFilters()">
               🌐 Show All Commerce Opportunities
             </button>
@@ -1274,11 +1417,21 @@ function renderSchoolPaths() {
       `;
     } else {
       explanationHtml = `
-        <div class="col-12 text-center py-5 bg-white rounded-4 border">
+        <div class="col-12 text-center py-5 bg-white rounded-4 border shadow-sm">
           <div class="fs-1 mb-2">🔍</div>
-          <h5 class="fw-bold">No career paths match the selected filters.</h5>
-          <p class="text-muted small">Try selecting "All Categories" or choose a different stream.</p>
-          <button class="btn btn-primary btn-sm rounded-pill px-4 fw-bold" onclick="resetSchoolFilters()">Reset Filters</button>
+          <h5 class="fw-bold text-dark">No career paths match the selected filters</h5>
+          <p class="text-secondary small mb-3">Try viewing all streams for this grade, or reset filters.</p>
+          <div class="d-flex justify-content-center gap-2 flex-wrap">
+            <button class="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm" onclick="filterPathsByCategory('all', null)">
+              Show All Courses for My Grade
+            </button>
+            <button class="btn btn-outline-secondary btn-sm rounded-pill px-4 fw-bold" onclick="resetSchoolFilters()">
+              Reset All Filters
+            </button>
+            <button class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-bold" onclick="switchSchoolTab('twelfth_groups')">
+              🎓 View 12th Group Guidance
+            </button>
+          </div>
         </div>
       `;
     }
@@ -1515,16 +1668,30 @@ async function runCollegeComparison() {
     return;
   }
 
+  let collegesToRender = null;
   try {
     const res = await api.post("/placement-compass/colleges/compare", {
       college_ids: uniqueIds,
     });
 
     if (res && res.data && res.data.colleges) {
-      renderCollegeComparisonMatrix(res.data.colleges);
+      collegesToRender = res.data.colleges;
     }
   } catch (err) {
-    console.error("College comparison failed:", err);
+    console.warn("Using local college comparison fallback:", err);
+  }
+
+  if (!collegesToRender || collegesToRender.length === 0) {
+    if (!allCollegesList || allCollegesList.length === 0) {
+      if (typeof window !== "undefined" && window.COMPASS_STATIC_DATA && window.COMPASS_STATIC_DATA.colleges) {
+        allCollegesList = window.COMPASS_STATIC_DATA.colleges;
+      }
+    }
+    collegesToRender = (allCollegesList || []).filter((c) => uniqueIds.includes(c.id));
+  }
+
+  if (collegesToRender && collegesToRender.length >= 2) {
+    renderCollegeComparisonMatrix(collegesToRender);
   }
 }
 
@@ -1532,13 +1699,13 @@ function renderCollegeComparisonMatrix(colleges) {
   const container = document.getElementById("college-compare-matrix-container");
   if (!container) return;
 
-  const minTableWidth = Math.max(920, 240 + colleges.length * 300);
+  const minTableWidth = Math.max(780, 200 + colleges.length * 260);
 
   container.innerHTML = `
     <table class="table career-compare-table align-middle mb-0" style="min-width: ${minTableWidth}px; width: 100%;">
       <thead>
         <tr>
-          <th class="benchmark-col" style="width: 240px; min-width: 240px;">
+          <th class="benchmark-col" style="width: 200px; min-width: 180px; position: sticky; left: 0; z-index: 2; background: #f8fafc;">
             <div class="fw-bold text-secondary text-uppercase small">College Benchmark</div>
             <div class="text-muted" style="font-size: 0.72rem;">Comparing ${colleges.length} TN Institutions</div>
           </th>
@@ -1832,16 +1999,30 @@ async function runCourseComparison() {
     return;
   }
 
+  let coursesToRender = null;
   try {
     const res = await api.post("/placement-compass/courses/compare", {
       course_ids: uniqueIds,
     });
 
     if (res && res.data && res.data.courses) {
-      renderCourseComparisonMatrix(res.data.courses);
+      coursesToRender = res.data.courses;
     }
   } catch (err) {
-    console.error("Course comparison error:", err);
+    console.warn("Using local course comparison fallback:", err);
+  }
+
+  if (!coursesToRender || coursesToRender.length === 0) {
+    if (!allComparableCourses || allComparableCourses.length === 0) {
+      if (typeof window !== "undefined" && window.COMPASS_STATIC_DATA && window.COMPASS_STATIC_DATA.courses) {
+        allComparableCourses = window.COMPASS_STATIC_DATA.courses;
+      }
+    }
+    coursesToRender = (allComparableCourses || []).filter((c) => uniqueIds.includes(c.id));
+  }
+
+  if (coursesToRender && coursesToRender.length >= 2) {
+    renderCourseComparisonMatrix(coursesToRender);
   }
 }
 
@@ -1849,13 +2030,13 @@ function renderCourseComparisonMatrix(courses) {
   const container = document.getElementById("course-compare-matrix-container");
   if (!container) return;
 
-  const minTableWidth = Math.max(900, 240 + courses.length * 280);
+  const minTableWidth = Math.max(780, 200 + courses.length * 260);
 
   container.innerHTML = `
     <table class="table career-compare-table align-middle mb-0" style="min-width: ${minTableWidth}px; width: 100%;">
       <thead>
         <tr>
-          <th class="benchmark-col" style="width: 240px; min-width: 240px;">
+          <th class="benchmark-col" style="width: 200px; min-width: 180px; position: sticky; left: 0; z-index: 2; background: #f8fafc;">
             <div class="fw-bold text-secondary text-uppercase small">Course Benchmark</div>
             <div class="text-muted" style="font-size: 0.72rem;">Comparing ${courses.length} Academic Pathways</div>
           </th>
@@ -2226,7 +2407,31 @@ function renderSchoolExams() {
   const container = document.getElementById("school-exams-list");
   if (!container) return;
 
-  let filtered = allSchoolExams;
+  if (!allSchoolExams || allSchoolExams.length === 0) {
+    if (typeof window !== "undefined" && window.COMPASS_STATIC_DATA && window.COMPASS_STATIC_DATA.exams) {
+      allSchoolExams = window.COMPASS_STATIC_DATA.exams;
+    }
+  }
+
+  // Sanity check: Ensure activeExamStageFilter matches activeAcademicGroup
+  if (activeAcademicGroup === "sslc_10th") {
+    activeExamStageFilter = "after_10th";
+  } else if (activeAcademicGroup && activeAcademicGroup !== "all" && activeExamStageFilter === "after_10th") {
+    activeExamStageFilter = "after_12th";
+  }
+
+  // Update #exam-stage-filter-btns button visual states
+  document.querySelectorAll("#exam-stage-filter-btns button").forEach((b) => {
+    if (b.getAttribute("data-exam-stage") === activeExamStageFilter) {
+      b.classList.remove("btn-outline-primary");
+      b.classList.add("btn-primary", "shadow-sm");
+    } else {
+      b.classList.remove("btn-primary", "shadow-sm");
+      b.classList.add("btn-outline-primary");
+    }
+  });
+
+  let filtered = allSchoolExams || [];
 
   // 1. Group Filtering (Computer Science vs Biology vs Commerce vs Arts vs Vocational vs 10th)
   if (activeAcademicGroup && activeAcademicGroup !== "all") {
@@ -2245,7 +2450,7 @@ function renderSchoolExams() {
 
   // 3. Fallback Auto-Heal: If zero exams resulted from a stage filter mismatch with the selected group
   if ((!filtered || filtered.length === 0) && activeAcademicGroup && activeAcademicGroup !== "all") {
-    const groupMatches = allSchoolExams.filter((e) => {
+    const groupMatches = (allSchoolExams || []).filter((e) => {
       const groups = (e.target_groups || []).map((g) => g.toLowerCase());
       return groups.includes(activeAcademicGroup.toLowerCase());
     });
