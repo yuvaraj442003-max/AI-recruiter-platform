@@ -271,13 +271,42 @@
       flex-shrink: 0;
     }
 
-    /* Comparison Table */
-    .career-compare-table {
+    /* Comparison Table & Scroll Wrapper */
+    .career-compare-table-wrapper {
       background: #ffffff;
       border-radius: 16px;
-      overflow: hidden;
       border: 1px solid var(--compass-border);
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      overflow-x: auto !important;
+      overflow-y: hidden;
+      position: relative;
+      scrollbar-width: thin;
+      scrollbar-color: #0284c7 #f1f5f9;
+      -webkit-overflow-scrolling: touch;
+      margin-bottom: 1.5rem;
+    }
+
+    .career-compare-table-wrapper::-webkit-scrollbar {
+      height: 9px;
+    }
+    .career-compare-table-wrapper::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 8px;
+    }
+    .career-compare-table-wrapper::-webkit-scrollbar-thumb {
+      background: #0284c7;
+      border-radius: 8px;
+    }
+    .career-compare-table-wrapper::-webkit-scrollbar-thumb:hover {
+      background: #0369a1;
+    }
+
+    .career-compare-table {
+      background: #ffffff;
+      width: 100%;
+      margin-bottom: 0 !important;
+      border-collapse: separate !important;
+      border-spacing: 0;
     }
 
     .career-compare-table th {
@@ -292,6 +321,79 @@
       padding: 16px;
       vertical-align: top;
       border-bottom: 1px solid #f1f5f9;
+    }
+
+    /* Sticky benchmark header column for smooth horizontal comparison */
+    .career-compare-table th.benchmark-col,
+    .career-compare-table td.benchmark-col {
+      position: sticky;
+      left: 0;
+      z-index: 5;
+      background: #f8fafc !important;
+      border-right: 2px solid #e2e8f0;
+      box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
+    }
+    .career-compare-table thead th.benchmark-col {
+      z-index: 6;
+      background: #f1f5f9 !important;
+    }
+
+    /* Section category divider row */
+    .career-compare-table tr.compare-section-header td {
+      background: linear-gradient(90deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+      border-top: 1px solid #bae6fd;
+      border-bottom: 1px solid #bae6fd;
+    }
+
+    /* Full Page Modal / Expanded View */
+    .compare-fullpage-modal {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 10500 !important;
+      background: #f8fafc !important;
+      overflow-y: auto !important;
+      padding: 24px !important;
+      margin: 0 !important;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .compare-fullpage-modal .career-compare-table-wrapper {
+      max-height: calc(100vh - 160px);
+      overflow-y: auto !important;
+    }
+    .academic-group-btn {
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 10px 18px;
+      background: #ffffff;
+      color: #1e293b;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: left;
+    }
+
+    .academic-group-btn:hover {
+      border-color: #0284c7;
+      background: #f0f9ff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.1);
+    }
+
+    .academic-group-btn.active {
+      border-color: #0284c7;
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      box-shadow: 0 6px 18px rgba(2, 132, 199, 0.25);
+    }
+
+    .academic-group-btn.active .text-muted {
+      color: rgba(255, 255, 255, 0.85) !important;
     }
   </style>
 </head>
@@ -415,14 +517,14 @@
                 </p>
               </div>
               <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                <div class="quick-advisor-card d-inline-flex flex-column gap-2 p-3 rounded-4 text-start">
+                <div class="quick-advisor-card d-inline-flex flex-column gap-2 p-3 rounded-4 text-start w-100" style="max-width: 360px;">
                   <div class="text-warning small fw-bold text-uppercase tracking-wider">⚡ Quick Actions</div>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-warning btn-sm fw-bold px-3 rounded-pill shadow-sm" onclick="switchSchoolTab('matcher')">
+                  <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-warning btn-sm fw-bold px-3 py-1.5 rounded-pill shadow-sm text-nowrap flex-grow-1" onclick="switchSchoolTab('matcher')">
                       🤖 AI Course Matcher
                     </button>
-                    <button class="btn btn-light text-primary btn-sm fw-bold px-3 rounded-pill shadow-sm" onclick="switchSchoolTab('exams')">
-                      🎯 Positions &amp; Entrance Exams
+                    <button class="btn btn-light text-primary btn-sm fw-bold px-3 py-1.5 rounded-pill shadow-sm text-nowrap flex-grow-1" onclick="switchSchoolTab('exams')">
+                      🎯 Entrance Exams &amp; Positions
                     </button>
                   </div>
                 </div>
@@ -501,6 +603,12 @@
             <button class="subnav-pill active" data-school-tab="explorer" onclick="switchSchoolTab('explorer')">
               <span>🧭</span> Career Streams Explorer (All 5 Pillars)
             </button>
+            <button class="subnav-pill" data-school-tab="twelfth_groups" onclick="switchSchoolTab('twelfth_groups')">
+              <span>🎓</span> 12th-Grade Group Guidance (Course &amp; Careers)
+            </button>
+            <button class="subnav-pill" data-school-tab="tenth_compass" onclick="switchSchoolTab('tenth_compass')">
+              <span>📘</span> 10th Standard Future Compass (All 5 Routes)
+            </button>
             <button class="subnav-pill" data-school-tab="colleges" onclick="switchSchoolTab('colleges')">
               <span>🏛️</span> Top College Comparator (10 Streams)
             </button>
@@ -522,6 +630,55 @@
           <!-- SUB-TAB 1: CAREER STREAMS EXPLORER (ALL 5 PILLARS) -->
           <!-- ============================================== -->
           <div id="school-tab-explorer" class="school-tab-content">
+            <!-- Dual-Track Direct Quick Jump Cards -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100 border-start border-4 border-info">
+                  <div class="d-flex align-items-center gap-3 mb-2">
+                    <span class="fs-2">📘</span>
+                    <div>
+                      <span class="badge bg-info bg-opacity-10 text-info fw-bold rounded-pill px-2.5 py-1 small">AFTER 10th STANDARD</span>
+                      <h6 class="fw-bold mb-0 text-dark">Completed 10th Standard (SSLC)?</h6>
+                    </div>
+                  </div>
+                  <p class="text-secondary small mb-3">
+                    Confused between choosing 11th Higher Secondary groups, 3-Year Polytechnic Diplomas, 2-Year ITI Trades, Paramedical Diplomas, or Direct Govt Jobs?
+                  </p>
+                  <div class="mt-auto d-flex gap-2 flex-wrap">
+                    <button class="btn btn-outline-info btn-sm rounded-pill fw-bold" onclick="switchSchoolTab('tenth_compass')">
+                      📘 Explore All 5 Routes After 10th &rarr;
+                    </button>
+                    <button class="btn btn-light text-secondary btn-sm rounded-pill fw-semibold" onclick="filterPathsByGrade('after_10th', null)">
+                      Filter 10th Courses
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100 border-start border-4 border-primary">
+                  <div class="d-flex align-items-center gap-3 mb-2">
+                    <span class="fs-2">🎓</span>
+                    <div>
+                      <span class="badge bg-primary bg-opacity-10 text-primary fw-bold rounded-pill px-2.5 py-1 small">AFTER 12th STANDARD</span>
+                      <h6 class="fw-bold mb-0 text-dark">Studied 12th Standard (HSC)?</h6>
+                    </div>
+                  </div>
+                  <p class="text-secondary small mb-3">
+                    Get tailored course recommendations, salary packages, cutoffs, and admissions based specifically on your group (Computer Science, Biology, Commerce, Arts, or Vocational).
+                  </p>
+                  <div class="mt-auto d-flex gap-2 flex-wrap">
+                    <button class="btn btn-primary btn-sm rounded-pill fw-bold shadow-sm" onclick="switchSchoolTab('twelfth_groups')">
+                      🎯 View 12th Group-Wise Guidance &rarr;
+                    </button>
+                    <button class="btn btn-light text-secondary btn-sm rounded-pill fw-semibold" onclick="scrollToCutoffCalculator()">
+                      🧮 Calculate TN Cutoff
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Filter Pills Bar -->
             <div class="card border-0 shadow-sm p-3 mb-4 rounded-4 bg-white">
               <div class="d-flex flex-column gap-3">
@@ -557,6 +714,228 @@
             <!-- Path Cards Grid -->
             <div class="row g-4" id="school-paths-grid">
               <!-- Rendered dynamically via js -->
+            </div>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- SUB-TAB 2: 12th-GRADE GROUP-WISE GUIDANCE      -->
+          <!-- ============================================== -->
+          <div id="school-tab-twelfth_groups" class="school-tab-content d-none">
+            <!-- Header Card -->
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white border-top border-4 border-primary">
+              <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                  <div class="d-inline-flex align-items-center gap-2 bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill small fw-bold mb-2">
+                    <span>🎯 Tamil Nadu 12th-Grade Group Decision Engine</span>
+                  </div>
+                  <h4 class="fw-bold mb-1 text-dark">🎓 12th-Grade Group-Wise Course &amp; Career Guidance</h4>
+                  <p class="text-secondary small mb-0" style="max-width: 820px;">
+                    Select the exact academic group you have studied in 12th standard (HSC). Discover your eligible undergraduate degrees, admission cutoffs, expected career positions, salary packages, premier Tamil Nadu colleges, and strategic next steps.
+                  </p>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                  <button class="btn btn-outline-success btn-sm rounded-pill fw-bold shadow-sm" onclick="scrollToCutoffCalculator()">
+                    🧮 TN Cutoff Calculator
+                  </button>
+                  <button class="btn btn-outline-secondary btn-sm rounded-pill fw-bold" onclick="switchSchoolTab('courses')">
+                    ⚖️ Compare Courses Side-by-Side
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Group Selection Buttons -->
+            <div class="card border-0 shadow-sm p-3 mb-4 rounded-4 bg-white">
+              <label class="form-label small fw-bold text-secondary text-uppercase mb-2">Select Your 12th-Grade Studied Group:</label>
+              <div class="d-flex gap-2 flex-wrap" id="twelfth-group-buttons-container">
+                <button class="academic-group-btn active" data-twelfth-group="computer_science" onclick="selectTwelfthGuidanceGroup('computer_science', this)">
+                  <span class="fs-4">💻</span>
+                  <div>
+                    <div class="fw-bold">Computer Science &amp; Maths Group</div>
+                    <div class="small text-muted">Physics, Chemistry, Maths &amp; CS (Engineering, AI, Tech, Arch)</div>
+                  </div>
+                </button>
+
+                <button class="academic-group-btn" data-twelfth-group="biology" onclick="selectTwelfthGuidanceGroup('biology', this)">
+                  <span class="fs-4">🧬</span>
+                  <div>
+                    <div class="fw-bold">Biology / Pure Science Group</div>
+                    <div class="small text-muted">Physics, Chemistry, Biology &amp; Maths (MBBS, Agri, Vet, Nursing)</div>
+                  </div>
+                </button>
+
+                <button class="academic-group-btn" data-twelfth-group="commerce" onclick="selectTwelfthGuidanceGroup('commerce', this)">
+                  <span class="fs-4">📊</span>
+                  <div>
+                    <div class="fw-bold">Commerce &amp; Accountancy Group</div>
+                    <div class="small text-muted">Commerce, Accountancy, Economics &amp; Business Maths (CA, CMA, B.Com)</div>
+                  </div>
+                </button>
+
+                <button class="academic-group-btn" data-twelfth-group="arts" onclick="selectTwelfthGuidanceGroup('arts', this)">
+                  <span class="fs-4">📚</span>
+                  <div>
+                    <div class="fw-bold">Arts &amp; Humanities Group</div>
+                    <div class="small text-muted">History, Political Science, Economics, Geography (Law, IAS/IPS, Design)</div>
+                  </div>
+                </button>
+
+                <button class="academic-group-btn" data-twelfth-group="vocational" onclick="selectTwelfthGuidanceGroup('vocational', this)">
+                  <span class="fs-4">⚙️</span>
+                  <div>
+                    <div class="fw-bold">Vocational Higher Secondary Stream</div>
+                    <div class="small text-muted">Practical Technical Trades (TNEA 2% Engg Quota &amp; DOTE Lateral)</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Dynamic Group Guidance Dossier -->
+            <div id="twelfth-group-guidance-dossier" class="mb-4">
+              <!-- Injected dynamically via JS based on selected group -->
+            </div>
+
+            <!-- Interactive TN Cutoff Calculator Card -->
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white border-start border-4 border-success" id="tn-cutoff-calculator-card">
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3 pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="fs-3">🧮</span>
+                  <div>
+                    <h5 class="fw-bold mb-0 text-dark">Tamil Nadu 12th Cutoff Calculator &amp; Course Eligibility Checker</h5>
+                    <small class="text-muted">Calculate your exact TNEA, TNAU, or TNGASA cutoff out of 200 / 400 and see matching colleges in Tamil Nadu.</small>
+                  </div>
+                </div>
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1.5 rounded-pill fw-bold">
+                  Official TN Formula
+                </span>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-md-3">
+                  <label class="form-label small fw-bold text-secondary">Target Stream</label>
+                  <select id="cutoff-stream-select" class="form-select fw-semibold" onchange="updateCutoffCalculatorInputs()">
+                    <option value="engineering" selected>⚙️ Engineering (TNEA out of 200)</option>
+                    <option value="agriculture_veterinary">🌾 Agri &amp; Vet (TNAU/TANUVAS out of 200)</option>
+                    <option value="commerce_arts">📊 Commerce &amp; Arts (TNGASA out of 400)</option>
+                  </select>
+                </div>
+
+                <div class="col-md-9" id="cutoff-marks-inputs-row">
+                  <!-- Injected dynamically based on stream -->
+                </div>
+              </div>
+
+              <!-- Cutoff Result Box -->
+              <div id="cutoff-result-container" class="mt-3 p-3 rounded-4 bg-light border d-none">
+                <!-- Injected dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- SUB-TAB 3: 10th STANDARD FUTURE COMPASS       -->
+          <!-- ============================================== -->
+          <div id="school-tab-tenth_compass" class="school-tab-content d-none">
+            <!-- Header Card -->
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white border-top border-4 border-info">
+              <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                  <div class="d-inline-flex align-items-center gap-2 bg-info bg-opacity-10 text-info px-3 py-1 rounded-pill small fw-bold mb-2">
+                    <span>📘 Tamil Nadu 10th-Pass Career Guidance Compass</span>
+                  </div>
+                  <h4 class="fw-bold mb-1 text-dark">📘 What Can You Study After 10th Standard in Tamil Nadu?</h4>
+                  <p class="text-secondary small mb-0" style="max-width: 840px;">
+                    Completed your 10th Standard (SSLC)? Discover all 5 distinct higher education and career paths available for you in Tamil Nadu: compare Higher Secondary (11th &amp; 12th Groups), 3-Year Polytechnic Diplomas, 2-Year ITI Trades, Paramedical Certificates, and Direct Government Jobs.
+                  </p>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                  <button class="btn btn-outline-primary btn-sm rounded-pill fw-bold shadow-sm" onclick="quickFilterExplorerTo10th()">
+                    🔍 View 10th Course Cards
+                  </button>
+                  <button class="btn btn-outline-info btn-sm rounded-pill fw-bold" onclick="switchSchoolTab('matcher')">
+                    🤖 AI Course Matcher for 10th
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- The 5 Routes Grid -->
+            <div class="row g-3 mb-4" id="tenth-routes-cards-grid">
+              <!-- Injected dynamically via JS from TENTH_GUIDANCE_DATA -->
+            </div>
+
+            <!-- Side-by-Side Comparison: Which Path After 10th is Best For You? -->
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+              <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                <div>
+                  <h5 class="fw-bold mb-0 text-dark">⚖️ Side-by-Side Comparison: Which Path Should You Pick After 10th?</h5>
+                  <small class="text-muted">Compare duration, financial commitment, job readiness, and university progression scopes.</small>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-bordered align-middle mb-0" style="min-width: 850px;">
+                  <thead class="table-light">
+                    <tr>
+                      <th style="width: 20%;">Evaluation Parameter</th>
+                      <th style="width: 16%;" class="text-primary text-center">11th &amp; 12th (HSC)</th>
+                      <th style="width: 16%;" class="text-success text-center">Polytechnic Diploma (DOTE)</th>
+                      <th style="width: 16%;" class="text-warning text-center">ITI Technical Trade (DET)</th>
+                      <th style="width: 16%;" class="text-danger text-center">Direct Govt Recruitment</th>
+                      <th style="width: 16%;" class="text-info text-center">Paramedical Diploma</th>
+                    </tr>
+                  </thead>
+                  <tbody class="small">
+                    <tr>
+                      <td class="fw-bold bg-light">Duration</td>
+                      <td class="text-center">2 Years</td>
+                      <td class="text-center">3 Years</td>
+                      <td class="text-center">1 to 2 Years</td>
+                      <td class="text-center">Immediate Recruitment</td>
+                      <td class="text-center">2 Years</td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold bg-light">Primary Focus</td>
+                      <td>Theoretical academic foundation for university degrees</td>
+                      <td>Practical engineering labs &amp; applied technician skills</td>
+                      <td>Vocational hands-on trade skills (Fitter, Electrician, Welder)</td>
+                      <td>Written exam &amp; physical test for permanent state service</td>
+                      <td>Diagnostic lab technology &amp; hospital healthcare support</td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold bg-light">Direct Job Readiness</td>
+                      <td><span class="badge bg-secondary-subtle text-secondary">Low (Degree required)</span></td>
+                      <td><span class="badge bg-success-subtle text-success">High (Junior Engineer at age 19)</span></td>
+                      <td><span class="badge bg-success-subtle text-success">Very High (Industry Apprentice)</span></td>
+                      <td><span class="badge bg-primary text-white">Permanent Govt Job</span></td>
+                      <td><span class="badge bg-success-subtle text-success">High (Hospital/Lab Technician)</span></td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold bg-light">Starting Salary in TN</td>
+                      <td>Not job-ready (Pre-degree)</td>
+                      <td class="fw-bold text-success">₹2.8L - ₹5.2 LPA</td>
+                      <td class="fw-bold text-success">₹2.2L - ₹4.0 LPA</td>
+                      <td class="fw-bold text-primary">₹3.0L - ₹4.5 LPA + Govt Perks</td>
+                      <td class="fw-bold text-success">₹2.5L - ₹4.8 LPA</td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold bg-light">Higher Degree Route</td>
+                      <td>B.E / MBBS / B.Com / Law / B.Sc (4-5 Yrs)</td>
+                      <td class="text-success fw-bold">Direct 2nd-Year Lateral Entry into B.E/B.Tech (TNEA)!</td>
+                      <td>Can do Lateral Polytechnic Diploma or CITS Instructor</td>
+                      <td>Eligible for departmental exams &amp; promotions</td>
+                      <td>Can pursue B.Sc MLT or Healthcare Management</td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold bg-light">Best Mindset For</td>
+                      <td>Students who want to become Doctors, Engineers, CAs, Lawyers</td>
+                      <td>Students who prefer machines, coding &amp; practical labs over heavy book theory</td>
+                      <td>Students needing fast employment within 12-24 months</td>
+                      <td>Students aspiring for state government public service &amp; police uniform</td>
+                      <td>Students passionate about healthcare and hospital diagnosis</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 
@@ -723,9 +1102,28 @@
               </div>
             </div>
 
-            <!-- College Comparison Matrix Container -->
-            <div class="career-compare-table table-responsive mb-4" id="college-compare-matrix-container">
-              <!-- Rendered dynamically -->
+            <!-- College Comparison Box (Supports Normal View and Full Page View) -->
+            <div id="college-compare-view-box" class="card border-0 shadow-sm p-4 rounded-4 bg-white mb-4">
+              <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="fs-4">🏛️</span>
+                  <div>
+                    <h5 class="fw-bold mb-0 text-dark">Side-by-Side College Benchmark Comparison</h5>
+                    <small class="text-muted">Direct comparison of courses, fees, placements, admission procedures, and cutoffs.</small>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <span class="badge bg-light text-secondary border small px-2.5 py-1.5 d-none d-md-inline">
+                    ⇄ Scroll horizontally or expand to Full Page
+                  </span>
+                  <button id="colleges-fs-btn" class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-sm d-flex align-items-center gap-1" onclick="toggleFullPageCompare('college')">
+                    <span id="colleges-fs-icon">⛶</span> <span id="colleges-fs-label">Full Page View</span>
+                  </button>
+                </div>
+              </div>
+              <div class="career-compare-table-wrapper" id="college-compare-matrix-container">
+                <!-- Rendered dynamically -->
+              </div>
             </div>
 
             <!-- College Directory Cards Grid in active stream -->
@@ -794,9 +1192,28 @@
               </div>
             </div>
 
-            <!-- Course Comparison Matrix Container -->
-            <div class="career-compare-table table-responsive mb-4" id="course-compare-matrix-container">
-              <!-- Rendered dynamically -->
+            <!-- Course Comparison Box (Supports Normal View and Full Page View) -->
+            <div id="course-compare-view-box" class="card border-0 shadow-sm p-4 rounded-4 bg-white mb-4">
+              <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="fs-4">🎓</span>
+                  <div>
+                    <h5 class="fw-bold mb-0 text-dark">Side-by-Side Course Pathways Comparison</h5>
+                    <small class="text-muted">Compare degrees, duration, entrance exams, starting packages, and future scopes.</small>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <span class="badge bg-light text-secondary border small px-2.5 py-1.5 d-none d-md-inline">
+                    ⇄ Scroll horizontally or expand to Full Page
+                  </span>
+                  <button id="courses-fs-btn" class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-sm d-flex align-items-center gap-1" onclick="toggleFullPageCompare('course')">
+                    <span id="courses-fs-icon">⛶</span> <span id="courses-fs-label">Full Page View</span>
+                  </button>
+                </div>
+              </div>
+              <div class="career-compare-table-wrapper" id="course-compare-matrix-container">
+                <!-- Rendered dynamically -->
+              </div>
             </div>
           </div>
 
@@ -809,28 +1226,151 @@
               <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
                 <div>
                   <div class="d-inline-flex align-items-center gap-2 bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill small fw-bold mb-2">
-                    <span>🎯 Comprehensive Career Positions &amp; Entrance Exam Directory</span>
+                    <span>🎯 Group-Wise Entrance Exam &amp; Career Positions Navigator</span>
                   </div>
-                  <h4 class="fw-bold mb-1 text-dark">🎯 Positions &amp; Relevant Entrance Exams Navigator</h4>
+                  <h4 class="fw-bold mb-1 text-dark">🎯 Entrance Exams &amp; Positions by Student Group</h4>
                   <p class="text-secondary small mb-0">
-                    Find the exact entrance examinations, selection processes, eligibility criteria, and preparation pathways required for <strong>28+ career positions</strong> across Government, Engineering, Healthcare, Defence, Law, Agriculture &amp; Finance.
+                    Displaying only the entrance examinations strictly relevant to your selected academic group (e.g. <strong>Computer Science &rarr; JEE / TNEA / BITSAT</strong>; <strong>Biology &rarr; NEET-UG / Nursing / TANUVAS / TNAU</strong>; <strong>Commerce &rarr; CA / CMA</strong>; <strong>Arts &rarr; Law / CLAT</strong>).
                   </p>
                 </div>
                 
                 <!-- View Mode Switcher -->
                 <div class="d-flex gap-2 p-1 bg-light rounded-pill border">
-                  <button id="view-mode-positions-btn" class="btn btn-sm btn-primary rounded-pill px-3.5 py-1.5 fw-bold shadow-sm" onclick="switchExamSectionView('positions')">
-                    💼 Career Positions (28)
+                  <button id="view-mode-calendars-btn" class="btn btn-sm btn-primary rounded-pill px-3.5 py-1.5 fw-bold shadow-sm" onclick="switchExamSectionView('calendars')">
+                    📅 Group Entrance Exams
                   </button>
-                  <button id="view-mode-calendars-btn" class="btn btn-sm btn-light rounded-pill px-3.5 py-1.5 fw-semibold text-secondary" onclick="switchExamSectionView('calendars')">
-                    📅 State Portals (11)
+                  <button id="view-mode-positions-btn" class="btn btn-sm btn-light rounded-pill px-3.5 py-1.5 fw-semibold text-secondary" onclick="switchExamSectionView('positions')">
+                    💼 Career Positions (28)
                   </button>
                 </div>
               </div>
             </div>
 
-            <!-- VIEW 1: CAREER POSITIONS & RELEVANT EXAMS VIEW -->
-            <div id="positions-view-container">
+            <!-- ACADEMIC GROUP SELECTOR CARD (COMPUTER SCIENCE vs BIOLOGY vs COMMERCE vs ARTS) -->
+            <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white border-start border-4 border-primary">
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+                <div>
+                  <span class="badge bg-primary bg-opacity-10 text-primary fw-bold px-3 py-1 rounded-pill small mb-1">
+                    🎯 12th-GRADE ACADEMIC GROUP NAVIGATOR
+                  </span>
+                  <h5 class="fw-bold mb-0 text-dark">Select Your 12th-Grade Academic Group</h5>
+                  <p class="text-secondary small mb-0">
+                    Displaying all entrance examinations, important exam dates, and target career positions organized strictly for your 12th-grade group.
+                  </p>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                  <button class="btn btn-sm btn-primary rounded-pill px-3 fw-bold text-nowrap shadow-sm" id="btn-12th-only-toggle" onclick="filterExamsByGradeStage('after_12th', this)">
+                    🎓 12th Grade Exams (21)
+                  </button>
+                  <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold text-nowrap" onclick="filterExamsByAcademicGroup('all', this)">
+                    🌐 All Groups
+                  </button>
+                </div>
+              </div>
+
+              <!-- Group Selection Pills / Cards -->
+              <div class="d-flex gap-2 flex-wrap" id="exam-academic-group-selector">
+                <button class="academic-group-btn" data-group="computer_science" onclick="filterExamsByAcademicGroup('computer_science', this)">
+                  <span class="fs-4">💻</span>
+                  <div>
+                    <div class="fw-bold">Computer Science &amp; Maths Group</div>
+                    <div class="small text-muted">JEE Main, JEE Adv, TNEA, BITSAT, NATA, Navy Cadet, NDA</div>
+                  </div>
+                </button>
+
+                <button class="academic-group-btn" data-group="biology" onclick="filterExamsByAcademicGroup('biology', this)">
+                  <span class="fs-4">🧬</span>
+                  <div>
+                    <div class="fw-bold">Biology / Pure Science Group</div>
+                    <div class="small text-muted">NEET-UG, Paramedical, TANUVAS, TNAU Agri, Pharmacy</div>
+                  </div>
+                </button>
+
+                <button class="academic-group-btn" data-group="commerce" onclick="filterExamsByAcademicGroup('commerce', this)">
+                  <span class="fs-4">📊</span>
+                  <div>
+                    <div class="fw-bold">Commerce &amp; Accountancy Group</div>
+                    <div class="small text-muted">CA Foundation, CMA Foundation, CS CSEET, TNGASA Commerce</div>
+                  </div>
+                </button>
+
+                <button class="academic-group-btn" data-group="arts" onclick="filterExamsByAcademicGroup('arts', this)">
+                  <span class="fs-4">📚</span>
+                  <div>
+                    <div class="fw-bold">Arts &amp; Humanities Group</div>
+                    <div class="small text-muted">TNDALU 5-Yr Law, CLAT (TNNLU), TNGASA Arts, NIFT Design, NDA Army</div>
+                  </div>
+                </button>
+
+                <button class="academic-group-btn" data-group="vocational" onclick="filterExamsByAcademicGroup('vocational', this)">
+                  <span class="fs-4">⚙️</span>
+                  <div>
+                    <div class="fw-bold">Vocational / Technical HSC Stream</div>
+                    <div class="small text-muted">DOTE Lateral Entry Polytechnic, TNEA Vocational Quota</div>
+                  </div>
+                </button>
+
+                <button class="academic-group-btn active" data-group="all" onclick="filterExamsByAcademicGroup('all', this)">
+                  <span class="fs-4">🌐</span>
+                  <div>
+                    <div class="fw-bold">All 12th Groups (21 Exams)</div>
+                    <div class="small text-muted">Browse all 21 Tamil Nadu &amp; National Entrance Exams</div>
+                  </div>
+                </button>
+
+                <button class="academic-group-btn" data-group="sslc_10th" onclick="filterExamsByAcademicGroup('sslc_10th', this)">
+                  <span class="fs-4">📘</span>
+                  <div>
+                    <div class="fw-bold">10th Standard (General SSLC)</div>
+                    <div class="small text-muted">DOTE 3-Yr Polytechnic, DET ITI, TNPSC Group 4, Police Constable</div>
+                  </div>
+                </button>
+              </div>
+
+              <!-- Active Group Alert Banner -->
+              <div id="active-group-alert-banner" class="alert alert-primary bg-primary bg-opacity-10 border-0 rounded-4 mt-3 mb-0 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 p-3">
+                <div class="d-flex align-items-center gap-3">
+                  <span class="fs-3" id="active-group-icon">🌐</span>
+                  <div>
+                    <div class="fw-bold text-dark fs-6" id="active-group-title">Showing All Higher Education Entrance Exams</div>
+                    <div class="small text-secondary" id="active-group-desc">Select an academic group above (e.g. Computer Science or Biology) to display only your relevant entrance exams.</div>
+                  </div>
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                  <span class="badge bg-primary rounded-pill px-3 py-2 small fw-bold" id="active-group-count-badge">25 Exams Available</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- VIEW 1: ENTRANCE EXAMS & ADMISSION PORTALS VIEW (DEFAULT & PROMINENT) -->
+            <div id="calendars-view-container">
+              <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                  <div>
+                    <h5 class="fw-bold mb-1 text-dark" id="exams-section-heading">📅 Relevant Entrance Exams &amp; Single-Window Admission Portals</h5>
+                    <p class="text-secondary small mb-0" id="exams-section-subheading">Official registration windows, syllabus blueprints, and 1-click Google Calendar sync.</p>
+                  </div>
+                  <div class="d-flex gap-2 flex-wrap" id="exam-stage-filter-btns">
+                    <button class="btn btn-sm btn-primary rounded-pill px-3 fw-bold shadow-sm" data-exam-stage="all" onclick="filterExamsByStage('all', this)">
+                      All Levels
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" data-exam-stage="after_12th" onclick="filterExamsByStage('after_12th', this)">
+                      🎓 After 12th (HSC)
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" data-exam-stage="after_10th" onclick="filterExamsByStage('after_10th', this)">
+                      📘 After 10th (SSLC)
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row g-3" id="school-exams-list">
+                <!-- Loaded dynamically in js -->
+              </div>
+            </div>
+
+            <!-- VIEW 2: CAREER POSITIONS & RELEVANT EXAMS VIEW -->
+            <div id="positions-view-container" class="d-none">
               <!-- Search and Filter Bar -->
               <div class="card border-0 shadow-sm p-3 mb-4 rounded-4 bg-white">
                 <div class="row g-3 align-items-center">
@@ -880,7 +1420,7 @@
               <!-- Quick Metrics Summary -->
               <div class="d-flex justify-content-between align-items-center mb-3 px-1">
                 <span id="positions-count-badge" class="small fw-bold text-secondary">
-                  Showing 28 Career Positions &amp; Their Relevant Entrance Exams
+                  Showing Career Positions &amp; Their Relevant Entrance Exams
                 </span>
                 <span class="small text-muted">
                   💡 Click <strong>"Full Exam Guide"</strong> on any position for syllabus breakdown &amp; cutoff formulas
@@ -890,33 +1430,6 @@
               <!-- Positions Grid -->
               <div class="row g-4" id="career-positions-list">
                 <!-- Dynamically loaded via js -->
-              </div>
-            </div>
-
-            <!-- VIEW 2: STATE ADMISSION & EXAM PORTALS CALENDAR VIEW -->
-            <div id="calendars-view-container" class="d-none">
-              <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
-                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
-                  <div>
-                    <h5 class="fw-bold mb-1 text-dark">📅 Tamil Nadu Higher Education Admissions &amp; Exam Portals</h5>
-                    <p class="text-secondary small mb-0">Official registration deadlines, counselling portals, and 1-click Google Calendar sync.</p>
-                  </div>
-                  <div class="d-flex gap-2 flex-wrap" id="exam-stage-filter-btns">
-                    <button class="btn btn-sm btn-primary rounded-pill px-3 fw-bold shadow-sm" data-exam-stage="all" onclick="filterExamsByStage('all', this)">
-                      🌐 All Schedules (11)
-                    </button>
-                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" data-exam-stage="after_10th" onclick="filterExamsByStage('after_10th', this)">
-                      📘 After 10th (SSLC)
-                    </button>
-                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" data-exam-stage="after_12th" onclick="filterExamsByStage('after_12th', this)">
-                      🎓 After 12th (HSC)
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="row g-3" id="school-exams-list">
-                <!-- Loaded dynamically in js -->
               </div>
             </div>
           </div>

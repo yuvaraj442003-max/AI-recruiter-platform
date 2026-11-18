@@ -265,9 +265,12 @@ def recommend_school_career_paths(req: CareerRecommendationRequest):
 
 
 @router.get("/school/exams", response_model=APIResponse[List[SchoolEntranceExamEvent]])
-def get_school_entrance_exams():
-    """Returns calendar of major school entrance exams with 1-click Google Calendar sync."""
-    exams = placement_compass_service.get_school_entrance_exams_list()
+def get_school_entrance_exams(
+    group: Optional[str] = Query(None, description="Filter by student academic group (e.g. computer_science, biology, commerce, arts, vocational, sslc_10th)"),
+    stage: Optional[str] = Query(None, description="Filter by qualification stage (after_10th, after_12th)"),
+):
+    """Returns calendar of major school entrance exams with 1-click Google Calendar sync, filtered by academic group or stage."""
+    exams = placement_compass_service.get_school_entrance_exams_list(group=group, stage=stage)
     return APIResponse(
         success=True,
         message="School entrance exams calendar retrieved",
@@ -279,10 +282,11 @@ def get_school_entrance_exams():
 def get_career_positions_directory(
     sector: Optional[str] = Query(None, description="Filter by career sector"),
     stage: Optional[str] = Query(None, description="Filter by qualification stage"),
+    group: Optional[str] = Query(None, description="Filter by academic group (e.g. computer_science, biology, commerce, arts, sslc_10th)"),
     search: Optional[str] = Query(None, description="Search term across title, sector, or exams"),
 ):
-    """Returns directory of career positions with all corresponding entrance examinations."""
-    positions = placement_compass_service.get_all_career_positions(sector=sector, stage=stage, search=search)
+    """Returns directory of career positions with all corresponding entrance examinations, optionally filtered by academic group."""
+    positions = placement_compass_service.get_all_career_positions(sector=sector, stage=stage, search=search, group=group)
     return APIResponse(
         success=True,
         message="Career positions and entrance examinations retrieved",

@@ -20,10 +20,11 @@ let activeGradeFilter = "all";
 let activeCatFilter = "all";
 let activeCollegeStreamFilter = "all";
 let activeExamStageFilter = "all";
+let activeAcademicGroup = "all";
 let activePosStageFilter = "all";
 let activePosSectorFilter = "all";
 let activePosSearchQuery = "";
-let currentExamSectionView = "positions";
+let currentExamSectionView = "calendars";
 let currentModalPathId = null;
 let currentModalPositionId = null;
 
@@ -123,6 +124,11 @@ async function initSchoolCareerHub() {
       allCareerPositions = posRes.data;
       renderCareerPositions();
     }
+
+    // 6. Initialize 12th-Grade Group Guidance and 10th-Standard Future Compass
+    renderTwelfthGroupGuidance("computer_science");
+    renderTenthGuidanceRoutes();
+    updateCutoffCalculatorInputs();
   } catch (err) {
     console.error("Failed to initialize School Career Hub:", err);
   }
@@ -130,7 +136,7 @@ async function initSchoolCareerHub() {
 
 // Subnav Tabs in School Mode
 function switchSchoolTab(tabId) {
-  const tabs = ["explorer", "colleges", "courses", "matcher", "exams", "roadmap"];
+  const tabs = ["explorer", "twelfth_groups", "tenth_compass", "colleges", "courses", "matcher", "exams", "roadmap"];
   const buttons = document.querySelectorAll("[data-school-tab]");
 
   buttons.forEach((btn) => {
@@ -200,9 +206,878 @@ function filterByStage(stage, btn) {
   renderSchoolPaths();
   renderCollegesCategoryGrid();
   populateCollegeDropdowns();
-  renderSchoolExams();
-  renderCareerPositions();
+
+  if (stage === "after_10th") {
+    filterExamsByAcademicGroup("sslc_10th");
+    switchSchoolTab("tenth_compass");
+  } else if (stage === "after_12th") {
+    if (activeAcademicGroup === "sslc_10th") {
+      filterExamsByAcademicGroup("computer_science");
+    }
+    switchSchoolTab("twelfth_groups");
+  } else if (stage === "all") {
+    filterExamsByAcademicGroup("all");
+    switchSchoolTab("explorer");
+  } else {
+    renderSchoolExams();
+    renderCareerPositions();
+  }
 }
+
+// =========================================================================
+// 12th-GRADE GROUP-WISE COURSE & CAREER GUIDANCE KNOWLEDGE BASE
+// =========================================================================
+const TWELFTH_GROUP_GUIDANCE = {
+  computer_science: {
+    group_name: "Group 1: Computer Science & Mathematics Stream",
+    subjects: "Physics, Chemistry, Mathematics & Computer Science",
+    badge: "💻 Engineering, AI, Technology & Mathematics",
+    description: "Designed for analytical and problem-solving students aiming for premier engineering degrees, software architecture, artificial intelligence, robotics, semiconductor VLSI, architecture, and armed forces technical cadet schemes in Tamil Nadu.",
+    cutoff_formula: "TNEA Engineering Cutoff = Maths (100) + [Physics (100) / 2] + [Chemistry (100) / 2] = Total out of 200",
+    top_degree_courses: [
+      {
+        course: "B.E / B.Tech Computer Science & Engineering (CSE / AI & Data Science)",
+        duration: "4 Years",
+        cutoff: "190 - 199.5 for Premier Colleges (CEG, MIT, PSG Tech, GCT)",
+        portal: "TNEA (Anna University) — tneaonline.org",
+        overview: "The #1 high-demand engineering branch in Tamil Nadu. Focuses on algorithms, scalable cloud architecture, deep learning models, generative AI, and high-performance software development."
+      },
+      {
+        course: "B.E Electronics & Communication Engineering (ECE / VLSI Design)",
+        duration: "4 Years",
+        cutoff: "185 - 197.5 (Anna Univ CEG, SSN, CIT, Thiagarajar Madurai)",
+        portal: "TNEA (Anna University) — tneaonline.org",
+        overview: "Covers semiconductor microchips, FPGA architecture, 5G wireless networks, embedded systems, and automotive electronics in Tamil Nadu's hardware hubs."
+      },
+      {
+        course: "B.Sc Computer Science / Artificial Intelligence / Data Science",
+        duration: "3 Years",
+        cutoff: "85%+ aggregate in 12th PCM",
+        portal: "TNGASA (tngasa.in) & Autonomous Portals (Loyola, MCC, PSG CAS)",
+        overview: "Fast-track 3-year pure tech program leading into software development, data analytics, and cloud engineering with very low government-subsidized tuition."
+      },
+      {
+        course: "B.Arch — Bachelor of Architecture",
+        duration: "5 Years",
+        cutoff: "12th PCM 50% + NATA Qualifying Score",
+        portal: "Anna University SAP Single Window Counseling",
+        overview: "Council of Architecture (CoA) approved professional degree for urban infrastructure, green building designs, and smart city architecture."
+      },
+      {
+        course: "Indian Navy 10+2 B.Tech Cadet Scheme (Executive & Technical)",
+        duration: "4 Years (100% Free Scholarship)",
+        cutoff: "70% in PCM + JEE Main Rank",
+        portal: "joinindiannavy.gov.in",
+        overview: "100% free B.Tech at Indian Naval Academy (INA) Ezhimala + permanent commission as Sub Lieutenant in the Indian Navy."
+      }
+    ],
+    career_opportunities: [
+      {
+        role: "Software Development Engineer (SDE) / Cloud Architect",
+        starting_salary: "₹6.0 LPA - ₹24.0 LPA",
+        top_hiring_zones: "Chennai OMR IT Corridor, Guindy Tech Parks, Coimbatore IT SEZ",
+        progression: "Junior SDE → Senior Tech Lead → Principal Software Architect"
+      },
+      {
+        role: "AI / Machine Learning Engineer & Data Scientist",
+        starting_salary: "₹7.5 LPA - ₹28.0 LPA",
+        top_hiring_zones: "Fintech, Global In-house Centers (GICs), AI Labs in Chennai",
+        progression: "Data Analyst → AI Model Engineer → Head of AI Research"
+      },
+      {
+        role: "Semiconductor VLSI Design & Embedded Systems Engineer",
+        starting_salary: "₹5.5 LPA - ₹18.0 LPA",
+        top_hiring_zones: "Sriperumbudur Electronics SEZ, Hosur Tech Corridor",
+        progression: "FPGA Designer → Senior VLSI Architect → Chip Design Lead"
+      },
+      {
+        role: "Commissioned Technical Officer (Defence / Armed Forces)",
+        starting_salary: "₹14.0 LPA (Level 10 Pay Matrix + Military Service Pay)",
+        top_hiring_zones: "Indian Army, Indian Navy, Indian Air Force, DRDO Labs",
+        progression: "Sub Lieutenant / Lieutenant → Commander / Colonel → Flag Officer"
+      }
+    ],
+    tn_colleges: [
+      "IIT Madras (NIRF #1 Engineering in India)",
+      "CEG Campus, Anna University, Guindy (NIRF #13)",
+      "NIT Tiruchirappalli (NIRF #9)",
+      "MIT Campus, Anna University, Chromepet",
+      "PSG College of Technology, Coimbatore",
+      "Thiagarajar College of Engineering (TCE), Madurai",
+      "Government College of Technology (GCT), Coimbatore",
+      "SSN College of Engineering, Chennai"
+    ],
+    next_steps: [
+      "Step 1: Calculate your TNEA Cutoff (out of 200) as soon as 12th Board marks are declared.",
+      "Step 2: Register on tneaonline.org for Tamil Nadu Engineering Single Window Counseling.",
+      "Step 3: Keep 7.5% Government School Study Certificate ready if studied in TN Govt schools from 6th to 12th (100% free tuition, hostel, and books).",
+      "Step 4: Prepare choice list with top Anna University departments and autonomous colleges for Round 1/2 counseling."
+    ]
+  },
+
+  biology: {
+    group_name: "Group 2: Biology / Pure Science Stream",
+    subjects: "Physics, Chemistry, Biology / Botany & Zoology (with or without Maths)",
+    badge: "🧬 Medical, Healthcare, Veterinary & Agricultural Sciences",
+    description: "Tailored for compassionate, research-minded students aiming to heal human lives, advance biomedical sciences, care for animals, or lead sustainable agricultural development in Tamil Nadu.",
+    cutoff_formula: "MBBS/BDS: NEET-UG Score out of 720; Agri/Vet: Cutoff out of 200 = Biology (100) + [Physics (100)/2] + [Chemistry (100)/2]",
+    top_degree_courses: [
+      {
+        course: "MBBS — Bachelor of Medicine & Bachelor of Surgery",
+        duration: "5.5 Years (incl. 1 Yr Internship)",
+        cutoff: "NEET-UG Score (Govt Medical Colleges: 580 - 660+ / 720; 7.5% Quota: 350 - 480+)",
+        portal: "TN Medical Selection (tnmedicalselection.net) — 85% State Quota",
+        overview: "The primary clinical medical degree for doctors, surgeons, and healthcare directors across 38+ Tamil Nadu Government Medical Colleges."
+      },
+      {
+        course: "BDS — Bachelor of Dental Surgery",
+        duration: "5 Years",
+        cutoff: "NEET-UG Score (Govt Dental College Chennai: 540 - 610 / 720)",
+        portal: "TN Medical Selection (tnmedicalselection.net)",
+        overview: "Specialized dental, maxillofacial and oral surgery healthcare degree with high private clinic practice and overseas licensing opportunities."
+      },
+      {
+        course: "B.V.Sc & A.H — Bachelor of Veterinary Science & Animal Husbandry",
+        duration: "5.5 Years",
+        cutoff: "Cutoff out of 200: Typically 192 - 198 (TANUVAS Single Window)",
+        portal: "TANUVAS Chennai — tanuvas.ac.in",
+        overview: "Premier veterinary medicine degree in Madras Veterinary College and TANUVAS regional campuses. Direct recruitment for Veterinary Assistant Surgeon (VAS) via TNPSC."
+      },
+      {
+        course: "B.Sc (Hons) Agriculture / Horticulture",
+        duration: "4 Years",
+        cutoff: "Cutoff out of 200: 188 - 198 (TNAU Coimbatore)",
+        portal: "Tamil Nadu Agricultural University (TNAU) — tnau.ac.in",
+        overview: "Agronomy, seed technology, horticulture, and sustainable soil science. Direct recruitment for Agricultural Officer (AO) via TNPSC."
+      },
+      {
+        course: "B.Sc Nursing & Allied Health Sciences (BPT, BOT, B.Sc Radiology, B.Pharm)",
+        duration: "4 Years",
+        cutoff: "Direct 12th Biology + Physics + Chemistry Merit (No NEET required)",
+        portal: "TN DME Selection Paramedical Counselling",
+        overview: "High-growth clinical professions with immense global demand across UK, Middle East, USA, and top multi-specialty hospital chains in Tamil Nadu."
+      }
+    ],
+    career_opportunities: [
+      {
+        role: "Medical Doctor / Surgeon / Specialist Physician",
+        starting_salary: "₹8.0 LPA - ₹30.0 LPA",
+        top_hiring_zones: "Government Hospitals, Apollo, MIOT, Fortis Malar, Private Clinics across TN",
+        progression: "Junior Resident (CRRI) → Medical Officer → MD/MS Specialist Consultant"
+      },
+      {
+        role: "Veterinary Assistant Surgeon (VAS) / Animal Healthcare Specialist",
+        starting_salary: "₹6.5 LPA - ₹14.0 LPA",
+        top_hiring_zones: "TN Animal Husbandry Department, Aavin Dairy, Veterinary Polyclinics",
+        progression: "Veterinary Assistant Surgeon → Assistant Director → Joint Director of Animal Husbandry"
+      },
+      {
+        role: "Agricultural Officer (AO) / Agronomist / Plant Breeder",
+        starting_salary: "₹5.0 LPA - ₹12.5 LPA",
+        top_hiring_zones: "TN Agriculture Dept, ICAR, Seed & Agri-biotech MNCs",
+        progression: "Agricultural Officer → Assistant Director of Agriculture → District Joint Director"
+      },
+      {
+        role: "Clinical Specialist / Head Nurse / Biomedical Scientist",
+        starting_salary: "₹4.5 LPA - ₹16.0 LPA (Domestic) / ₹24 LPA+ (UK/Gulf/US)",
+        top_hiring_zones: "Tertiary Hospitals in Chennai/Coimbatore & Global Healthcare Corridors",
+        progression: "Staff Nurse/Technologist → Clinical Supervisor → Hospital Operations Director"
+      }
+    ],
+    tn_colleges: [
+      "Madras Medical College (MMC), Chennai (NIRF #11 in India)",
+      "Stanley Medical College, Chennai",
+      "Christian Medical College (CMC), Vellore (NIRF #3)",
+      "Madras Veterinary College (TANUVAS), Vepery, Chennai",
+      "Tamil Nadu Agricultural University (TNAU), Coimbatore",
+      "Government Mohan Kumaramangalam Medical College, Salem",
+      "PSG College of Nursing & Allied Health, Coimbatore"
+    ],
+    next_steps: [
+      "Step 1: Appear for NEET-UG for MBBS/BDS, or calculate your 12th PCB Cutoff for Paramedical/TNAU/TANUVAS.",
+      "Step 2: Register on tnmedicalselection.net immediately after NEET results for Tamil Nadu 85% State Quota.",
+      "Step 3: Register on tnau.ac.in and tanuvas.ac.in for Agriculture & Veterinary single-window counseling.",
+      "Step 4: Check eligibility for TN 7.5% Government School Reservation (100% free tuition, hostel, and food)."
+    ]
+  },
+
+  commerce: {
+    group_name: "Group 3: Commerce & Accountancy Stream",
+    subjects: "Commerce, Accountancy, Economics & Business Mathematics / Computer Applications",
+    badge: "📊 Banking, Chartered Accountancy, Corporate Law & Fintech",
+    description: "Engineered for students with a keen sense for numbers, trade, investments, economic policies, and business management aiming for financial leadership in India and globally.",
+    cutoff_formula: "TNGASA Commerce Cutoff = Aggregate of Commerce (100) + Accountancy (100) + Economics (100) + Business Maths/Computer Applications (100) = Total out of 400",
+    top_degree_courses: [
+      {
+        course: "Chartered Accountancy (CA) — Foundation, Intermediate & Final",
+        duration: "4 - 5 Years (Parallel with B.Com)",
+        cutoff: "12th Standard Pass + Register with ICAI",
+        portal: "Institute of Chartered Accountants of India (ICAI) — icai.org",
+        overview: "The most prestigious financial qualification in India. Statutorily authorized to audit company balance sheets and advise on direct & indirect corporate taxation."
+      },
+      {
+        course: "B.Com (General / Professional Accounting / Corporate Secretaryship / Honours)",
+        duration: "3 Years",
+        cutoff: "370 - 398 / 400 for Loyola, MCC, Ethiraj, Stella Maris, PSG CAS",
+        portal: "TNGASA (tngasa.in) & Autonomous College Portals",
+        overview: "Foundational business degree covering financial accounting, corporate law, income tax laws, and business analytics."
+      },
+      {
+        course: "Cost & Management Accountancy (CMA) / Company Secretary (CS)",
+        duration: "3 - 4 Years",
+        cutoff: "12th Standard Pass + ICMAI / ICSI Registration",
+        portal: "ICMAI (icmai.in) & ICSI (icsi.edu)",
+        overview: "High-paying corporate finance roles focusing on manufacturing cost control, budgeting, corporate governance, and SEBI compliance."
+      },
+      {
+        course: "5-Year Integrated B.Com. LL.B (Honours) — Corporate Law",
+        duration: "5 Years",
+        cutoff: "12th Marks (80%+) / CLAT Score",
+        portal: "School of Excellence in Law (SOEL) TNDALU & TNNLU Trichy",
+        overview: "Blends business acumen with corporate law, mergers & acquisitions, intellectual property, and National Company Law Tribunal (NCLT) litigation."
+      },
+      {
+        course: "BBA (Bachelor of Business Administration) & Fintech Analytics",
+        duration: "3 Years",
+        cutoff: "12th Merit in Commerce / Maths",
+        portal: "TNGASA & Autonomous Campuses",
+        overview: "Focuses on operational management, marketing strategies, venture capital, and fintech operations."
+      }
+    ],
+    career_opportunities: [
+      {
+        role: "Chartered Accountant (CA) / Chief Financial Officer (CFO)",
+        starting_salary: "₹9.5 LPA - ₹30.0 LPA",
+        top_hiring_zones: "Big 4 Accounting Firms (Deloitte, EY, PwC, KPMG), Banks, MNCs in Chennai",
+        progression: "Audit Associate → Manager Financial Planning → Partner / CFO"
+      },
+      {
+        role: "Investment Banker / Equity Research Analyst",
+        starting_salary: "₹8.0 LPA - ₹25.0 LPA",
+        top_hiring_zones: "Global Investment Banks (Standard Chartered, Citi, Barclays, World Bank Chennai)",
+        progression: "Financial Analyst → Portfolio Manager → Director of Investment"
+      },
+      {
+        role: "Corporate Lawyer / Company Secretary (CS)",
+        starting_salary: "₹6.5 LPA - ₹18.0 LPA",
+        top_hiring_zones: "Corporate Law Firms, Stock Exchanges, Conglomerates in TN",
+        progression: "Legal Compliance Associate → Head of Legal & Secretarial → Corporate Legal General Counsel"
+      },
+      {
+        role: "Commercial Tax Officer / Bank Probationary Officer (SBI/IBPS)",
+        starting_salary: "₹6.0 LPA - ₹11.5 LPA",
+        top_hiring_zones: "Public Sector Banks, RBI Chennai, TN Commercial Taxes Dept",
+        progression: "Probationary Officer → Branch Chief Manager → General Manager"
+      }
+    ],
+    tn_colleges: [
+      "Loyola College, Chennai (NIRF #7 Overall / Arts & Commerce)",
+      "Madras Christian College (MCC), Tambaram, Chennai",
+      "PSG College of Arts and Science (PSG CAS), Coimbatore",
+      "Ethiraj College for Women, Chennai",
+      "Stella Maris College, Chennai",
+      "Presidency College, Chennai (NIRF #3)",
+      "School of Excellence in Law (SOEL), TNDALU, Chennai"
+    ],
+    next_steps: [
+      "Step 1: Calculate your 12th 4-subject Commerce aggregate (out of 400).",
+      "Step 2: Register on tngasa.in for Government Arts & Science single-window admission.",
+      "Step 3: Register for ICAI CA Foundation exam before registration window closes.",
+      "Step 4: Apply to autonomous premier colleges (Loyola, MCC, PSG CAS) within 5 days of 12th result publication."
+    ]
+  },
+
+  arts: {
+    group_name: "Group 4: Arts & Humanities Stream",
+    subjects: "History, Political Science, Economics, Geography / English Literature / Advanced Tamil",
+    badge: "📚 Law, Civil Services (IAS/IPS), Public Policy & Media",
+    description: "Crafted for students passionate about societal governance, legal advocacy, journalism, international relations, design, and public administration.",
+    cutoff_formula: "TNGASA Arts Cutoff = Aggregate of 4 core subjects out of 400; Law: 12th Percentage (TNDALU Merit)",
+    top_degree_courses: [
+      {
+        course: "5-Year Integrated B.A. LL.B (Honours) — Constitutional & Criminal Law",
+        duration: "5 Years",
+        cutoff: "85%+ in 12th (TNDALU Single Window) / CLAT Rank for TNNLU",
+        portal: "Tamil Nadu Dr. Ambedkar Law University (TNDALU) — tndalu.ac.in",
+        overview: "The premier professional legal education pathway in Tamil Nadu leading to High Court and Supreme Court practice, judicial services, and public prosecutor roles."
+      },
+      {
+        course: "B.A Public Administration / Political Science / Economics",
+        duration: "3 Years",
+        cutoff: "Direct 12th Merit (TNGASA)",
+        portal: "TNGASA (tngasa.in) & University of Madras / Presidency College",
+        overview: "The most strategically aligned undergraduate foundation for cracking the UPSC Civil Services (IAS / IPS / IFS) and TNPSC Group 1 (Deputy Collector / DSP)."
+      },
+      {
+        course: "B.Des — Bachelor of Design (Fashion / Textile / Accessory Design)",
+        duration: "4 Years",
+        cutoff: "NIFT Entrance Exam Score",
+        portal: "National Institute of Fashion Technology (NIFT Chennai) — nift.ac.in",
+        overview: "Premier creative design degree with strong industrial placement in Chennai and Tirupur apparel & fashion manufacturing hubs."
+      },
+      {
+        course: "B.Sc Visual Communication / Electronic Media & Journalism",
+        duration: "3 Years",
+        cutoff: "12th Merit + Creative Aptitude Test",
+        portal: "Loyola College Chennai, Anna University Media Sciences, Madras Christian College",
+        overview: "Digital cinema, film making, broadcast journalism, advertisement agency directing, and UX design."
+      }
+    ],
+    career_opportunities: [
+      {
+        role: "Civil Servant (IAS / IPS / IFS / IRS) & State Deputy Collector",
+        starting_salary: "₹12.0 LPA (Starting Basic Pay + DA + Govt House & Car)",
+        top_hiring_zones: "Government of India, Government of Tamil Nadu Secretariat & District Collectorates",
+        progression: "Assistant Collector (Training) → District Collector → Chief Secretary to Government"
+      },
+      {
+        role: "Advocate / Civil & Criminal Lawyer / Corporate Legal Counsel",
+        starting_salary: "₹5.5 LPA - ₹25.0 LPA",
+        top_hiring_zones: "Madras High Court, Madurai Bench, District Courts, Corporate Law Chambers",
+        progression: "Junior Advocate → Senior Counsel → High Court Judge / District Judge"
+      },
+      {
+        role: "Creative Director / Fashion Stylist / Media Producer",
+        starting_salary: "₹5.0 LPA - ₹18.0 LPA",
+        top_hiring_zones: "South Indian Cinema Industry, Ad Agencies, Digital Streaming Platforms (OTT)",
+        progression: "Assistant Director/Designer → Lead Creative Producer → Executive Media Director"
+      },
+      {
+        role: "Economist / Policy Researcher / Think Tank Analyst",
+        starting_salary: "₹6.0 LPA - ₹16.0 LPA",
+        top_hiring_zones: "Madras School of Economics (MSE), World Bank, UN Agencies, State Planning Commission",
+        progression: "Research Associate → Senior Policy Economist → Government Advisor"
+      }
+    ],
+    tn_colleges: [
+      "School of Excellence in Law (SOEL), TNDALU, Chennai",
+      "Tamil Nadu National Law University (TNNLU), Tiruchirappalli",
+      "Presidency College, Chennai (NIRF #3)",
+      "Loyola College, Chennai (Visual Comm & Economics)",
+      "Madras School of Economics (MSE), Chennai",
+      "NIFT, Taramani, Chennai",
+      "Government Law College (Madurai, Coimbatore, Tiruchirappalli, Tirunelveli)"
+    ],
+    next_steps: [
+      "Step 1: Check your 12th Arts marks and register on tndalu.ac.in for Law admissions.",
+      "Step 2: Register on tngasa.in for Government Arts & Science colleges single-window portal.",
+      "Step 3: Begin foundational NCERT & TN State Board reading if targeting UPSC Civil Services / TNPSC Group 1.",
+      "Step 4: Check 7.5% Tamil Nadu Government school quota eligibility for Law and Arts degrees."
+    ]
+  },
+
+  vocational: {
+    group_name: "Group 5: Vocational Higher Secondary Stream",
+    subjects: "General Machinist, Electrical Machines, Automotive Technology, Agricultural Practices, Textile Technology",
+    badge: "⚙️ Direct Technical Engineering & Lateral Admissions",
+    description: "Specially structured for students who have studied vocational practical trades in 11th and 12th standard, providing special quota seats in engineering and direct lateral entry.",
+    cutoff_formula: "TNEA Vocational Cutoff = Vocational Theory & Practicals scaled to 200",
+    top_degree_courses: [
+      {
+        course: "B.E / B.Tech via TNEA Vocational Quota (Special 2% Reserved Seats)",
+        duration: "4 Years",
+        cutoff: "Vocational Cutoff out of 200 (170 - 195+ for Top Colleges)",
+        portal: "TNEA (Anna University) — tneaonline.org",
+        overview: "Exclusive 2% quota across all engineering colleges in Tamil Nadu reserved specifically for 12th Vocational HSC students."
+      },
+      {
+        course: "Direct 2nd-Year Lateral Entry Polytechnic Diploma (DOTE TN)",
+        duration: "2 Years (Direct into 3rd Semester)",
+        cutoff: "12th Standard Vocational Pass",
+        portal: "DOTE Tamil Nadu Centralized Admissions",
+        overview: "Save 1 full year and earn a Government Polytechnic Diploma in just 2 years with hands-on shop-floor skills."
+      },
+      {
+        course: "B.Voc — Bachelor of Vocation (Robotics, Mechatronics, Automotive)",
+        duration: "3 Years",
+        cutoff: "12th Vocational Pass",
+        portal: "UGC approved autonomous colleges (PSG Tech B.Voc, Loyola B.Voc)",
+        overview: "Dual-track work-integrated degree combining classroom theory with industrial apprenticeship in manufacturing hubs."
+      }
+    ],
+    career_opportunities: [
+      {
+        role: "Production Engineer / Shop Floor QA Supervisor",
+        starting_salary: "₹4.0 LPA - ₹9.0 LPA",
+        top_hiring_zones: "Automotive Corridors in Sriperumbudur, Oragadam, Hosur, Coimbatore",
+        progression: "Junior Trainee → Line Supervisor → Plant Operations Manager"
+      },
+      {
+        role: "Automotive Automation & CNC Programmer",
+        starting_salary: "₹4.2 LPA - ₹10.5 LPA",
+        top_hiring_zones: "Hyundai, Renault-Nissan, Royal Enfield, TVS Motors, Ashok Leyland",
+        progression: "CNC Specialist → Automation Lead → Tooling Design Engineer"
+      }
+    ],
+    tn_colleges: [
+      "PSG College of Technology (Vocational Quota & B.Voc), Coimbatore",
+      "Government College of Technology (GCT), Coimbatore",
+      "Alagappa Chettiar Government College of Engineering and Technology (ACCET), Karaikudi",
+      "Central Polytechnic College (CPT), Chennai"
+    ],
+    next_steps: [
+      "Step 1: Apply under the 'Vocational Stream' category in TNEA engineering registration.",
+      "Step 2: Alternatively, apply for Direct 2nd-Year Polytechnic Lateral Entry on DOTE portal.",
+      "Step 3: Collect your vocational practical mark certificates from your school."
+    ]
+  }
+};
+
+// =========================================================================
+// 10th-STANDARD FUTURE PATH FINDER KNOWLEDGE BASE
+// =========================================================================
+const TENTH_GUIDANCE_DATA = {
+  routes: [
+    {
+      id: "hsc_11th_12th",
+      icon: "🎓",
+      title: "Route 1: Higher Secondary (11th & 12th Standards)",
+      duration: "2 Years",
+      best_for: "Students aiming for University Degrees (B.Tech, MBBS, CA, Law, B.Com, B.Sc) after 2 years.",
+      tamil_nadu_streams: [
+        "Group 1 (Bio-Maths): Opens Engineering (TNEA), Medical (NEET), Agriculture (TNAU), Veterinary (TANUVAS).",
+        "Group 2 (Computer Science-Maths): Opens Software, AI, Robotics, Architecture, Navy B.Tech Cadet.",
+        "Group 3 (Commerce & Accountancy): Opens Chartered Accountancy (CA), B.Com, Corporate Finance, Banking.",
+        "Group 4 (Arts & Humanities): Opens 5-Year Law (TNDALU), UPSC Civil Services (IAS/IPS), Journalism.",
+        "Group 5 (Vocational HSC): Practical trade with 2% reserved engineering quota."
+      ],
+      admission_portal: "Direct admission in TN Government, Government-Aided, and Matriculation Higher Secondary Schools.",
+      salary_potential: "Leads to Graduate Salaries: ₹4.5 LPA - ₹25+ LPA after degree completion."
+    },
+    {
+      id: "polytechnic_diploma",
+      icon: "🔧",
+      title: "Route 2: 3-Year Polytechnic Engineering Diploma",
+      duration: "3 Years",
+      best_for: "Students who love practical, hands-on engineering and want job readiness at age 18-19 OR want to join 2nd-Year B.E/B.Tech via Lateral Entry without 11th/12th.",
+      tamil_nadu_streams: [
+        "Diploma in Computer Engineering & Artificial Intelligence",
+        "Diploma in Mechanical & Automation Engineering",
+        "Diploma in Electrical & Electronics Engineering (EEE)",
+        "Diploma in Electronics & Communication Engineering (ECE)",
+        "Diploma in Civil Engineering"
+      ],
+      admission_portal: "Centralized DOTE Tamil Nadu Polytechnic Admission Portal.",
+      salary_potential: "Junior Engineer: ₹2.8 LPA - ₹5.2 LPA. Plus 10% reserved seats for Direct 2nd-Year B.E/B.Tech Lateral Entry (TNEA Anna Univ)!"
+    },
+    {
+      id: "iti_trades",
+      icon: "🛠️",
+      title: "Route 3: 1 to 2-Year ITI Technical Trades",
+      duration: "1 to 2 Years",
+      best_for: "Students wanting the fastest, lowest-cost route to certified technical employment with central/state public sector corporations.",
+      tamil_nadu_streams: [
+        "Electrician (2 Years) — High demand in TANGEDCO/TNEB & building infrastructure",
+        "Fitter & Turner (2 Years) — Precision mechanical manufacturing in Chennai/Coimbatore",
+        "Welder & Machinist (1 Year) — Automotive and fabrication industries",
+        "Wireman & Electronics Mechanic"
+      ],
+      admission_portal: "Directorate of Employment & Training (DET TN) Online ITI Admission.",
+      salary_potential: "Certified Technician: ₹2.2 LPA - ₹4.0 LPA + NCVT National Trade Certificate + Railway Apprentice eligibility."
+    },
+    {
+      id: "direct_govt_jobs",
+      icon: "🎖️",
+      title: "Route 4: Direct Tamil Nadu Government Jobs (10th Pass)",
+      duration: "Immediate Recruitment",
+      best_for: "Students seeking permanent Tamil Nadu state government employment with job security, pension benefits, and promotional avenues.",
+      tamil_nadu_streams: [
+        "TNPSC Group 4 & VAO: Village Administrative Officer, Junior Assistant, Typist, Steno-Typist, Bill Collector",
+        "TNUSRB Grade II Police Constable, Jail Warden & Fireman",
+        "Indian Army Soldier General Duty & Tradesman",
+        "Indian Navy Matric Recruit (MR)"
+      ],
+      admission_portal: "TNPSC (tnpsc.gov.in) & TNUSRB (tnusrb.tn.gov.in) Official Notification Portals.",
+      salary_potential: "Level 8 / Level 3 State Pay Scale: ₹22,000 - ₹35,000/month (₹3.0 LPA - ₹4.5 LPA) with lifelong government job security."
+    },
+    {
+      id: "paramedical_diploma",
+      icon: "🩺",
+      title: "Route 5: Paramedical & Healthcare Diplomas",
+      duration: "2 Years",
+      best_for: "Students passionate about healthcare and medical diagnostics without waiting for a 5-year MBBS degree.",
+      tamil_nadu_streams: [
+        "Diploma in Medical Laboratory Technology (DMLT)",
+        "Diploma in Health Inspector / Sanitary Inspector",
+        "Diploma in Dental Mechanic / Dental Hygienist",
+        "Diploma in Radio Diagnosis (X-Ray & Imaging)"
+      ],
+      admission_portal: "TN Directorate of Medical Education (TN DME) Selection Committee.",
+      salary_potential: "Healthcare Specialist: ₹2.5 LPA - ₹4.8 LPA in diagnostic labs, private hospitals, and Corporation health departments."
+    }
+  ]
+};
+
+// -------------------------------------------------------------
+// DYNAMIC RENDERERS FOR 12th GROUPS AND 10th ROUTES
+// -------------------------------------------------------------
+function renderTwelfthGroupGuidance(groupKey) {
+  const container = document.getElementById("twelfth-group-guidance-dossier");
+  if (!container) return;
+
+  const g = TWELFTH_GROUP_GUIDANCE[groupKey] || TWELFTH_GROUP_GUIDANCE["computer_science"];
+
+  const coursesHtml = g.top_degree_courses.map((c) => `
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm p-3.5 rounded-4 bg-white h-100 border-start border-3 border-primary">
+        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+          <h6 class="fw-bold text-dark mb-0">${c.course}</h6>
+          <span class="badge bg-primary-subtle text-primary border rounded-pill px-2.5 py-1 small fw-bold text-nowrap">${c.duration}</span>
+        </div>
+        <div class="mb-2">
+          <span class="badge bg-danger-subtle text-danger border small me-1">Cutoff: ${c.cutoff}</span>
+          <span class="badge bg-light text-secondary border small">Portal: ${c.portal}</span>
+        </div>
+        <p class="small text-secondary mb-0">${c.overview}</p>
+      </div>
+    </div>
+  `).join("");
+
+  const careersHtml = g.career_opportunities.map((car) => `
+    <div class="col-md-6">
+      <div class="p-3 bg-light rounded-3 border h-100">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <strong class="text-dark">${car.role}</strong>
+          <span class="badge bg-success text-white fw-bold">${car.starting_salary}</span>
+        </div>
+        <div class="small text-muted mb-1">📍 <strong>Top Hiring Hubs:</strong> ${car.top_hiring_zones}</div>
+        <div class="small text-primary">📈 <strong>Career Ladder:</strong> ${car.progression}</div>
+      </div>
+    </div>
+  `).join("");
+
+  const collegesBadges = g.tn_colleges.map((col) => `
+    <span class="badge bg-white text-dark border p-2 rounded-3 shadow-xs small fw-semibold">🏛️ ${col}</span>
+  `).join("");
+
+  const nextStepsHtml = g.next_steps.map((st) => `
+    <li class="mb-2 text-dark small fw-medium">${st}</li>
+  `).join("");
+
+  container.innerHTML = `
+    <!-- Group Overview Banner -->
+    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-2">
+        <h5 class="fw-bold text-dark mb-0">${g.group_name}</h5>
+        <span class="badge bg-primary text-white rounded-pill px-3 py-1.5 fw-bold">${g.badge}</span>
+      </div>
+      <div class="text-muted small fw-semibold mb-2">Core 12th Subjects: ${g.subjects}</div>
+      <p class="text-secondary small mb-3">${g.description}</p>
+      <div class="alert alert-info py-2.5 px-3 rounded-3 mb-0 small border-0 bg-info bg-opacity-10 text-dark">
+        <strong>🧮 Official Tamil Nadu Cutoff Formula:</strong> ${g.cutoff_formula}
+      </div>
+    </div>
+
+    <!-- Section 1: Suitable Degree Courses -->
+    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h5 class="fw-bold mb-0 text-dark">🎓 Top Suitable Undergraduate Degrees &amp; Courses in Tamil Nadu</h5>
+          <small class="text-muted">Courses designed specifically for your 12th-grade academic background.</small>
+        </div>
+      </div>
+      <div class="row g-3">
+        ${coursesHtml}
+      </div>
+    </div>
+
+    <!-- Section 2: Future Career Opportunities & Salaries -->
+    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h5 class="fw-bold mb-0 text-dark">💼 Target Career Roles, Progression &amp; Salary Packages</h5>
+          <small class="text-muted">Expected starting salaries and career growth corridors across Tamil Nadu and globally.</small>
+        </div>
+      </div>
+      <div class="row g-3">
+        ${careersHtml}
+      </div>
+    </div>
+
+    <!-- Section 3: Premier Tamil Nadu Colleges -->
+    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+        <div>
+          <h5 class="fw-bold mb-0 text-dark">🏛️ Premier Tamil Nadu Colleges &amp; Universities for this Group</h5>
+          <small class="text-muted">Government, Government-Aided, and NIRF-ranked institutions.</small>
+        </div>
+        <button class="btn btn-outline-primary btn-sm rounded-pill fw-bold" onclick="switchSchoolTab('colleges')">
+          🏛️ Launch College Comparator
+        </button>
+      </div>
+      <div class="d-flex flex-wrap gap-2">
+        ${collegesBadges}
+      </div>
+    </div>
+
+    <!-- Section 4: Next Steps & Action Plan -->
+    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white border-start border-4 border-warning">
+      <h5 class="fw-bold mb-2 text-dark">🚀 Step-by-Step Next Steps &amp; Action Plan for Students</h5>
+      <p class="text-secondary small mb-3">Follow this checklist to ensure smooth admission into Tamil Nadu's top institutions without missing deadlines:</p>
+      <ul class="ps-3 mb-3">
+        ${nextStepsHtml}
+      </ul>
+      <div class="d-flex gap-2 flex-wrap">
+        <button class="btn btn-primary btn-sm rounded-pill fw-bold px-3.5 shadow-sm" onclick="scrollToCutoffCalculator()">
+          🧮 Check My Cutoff &amp; Eligibility
+        </button>
+        <button class="btn btn-outline-success btn-sm rounded-pill fw-bold px-3.5" onclick="switchSchoolTab('exams')">
+          🎯 View Official Exam Dates &amp; Portals
+        </button>
+        <button class="btn btn-outline-secondary btn-sm rounded-pill fw-bold px-3.5" onclick="switchSchoolTab('roadmap')">
+          🗺️ View Admission &amp; Counseling Roadmap
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function selectTwelfthGuidanceGroup(groupKey, btn) {
+  document.querySelectorAll("#twelfth-group-buttons-container .academic-group-btn").forEach((b) => {
+    if (b.getAttribute("data-twelfth-group") === groupKey) {
+      b.classList.add("active");
+    } else {
+      b.classList.remove("active");
+    }
+  });
+  renderTwelfthGroupGuidance(groupKey);
+}
+window.selectTwelfthGuidanceGroup = selectTwelfthGuidanceGroup;
+
+function renderTenthGuidanceRoutes() {
+  const container = document.getElementById("tenth-routes-cards-grid");
+  if (!container) return;
+
+  container.innerHTML = TENTH_GUIDANCE_DATA.routes.map((r) => `
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100 border-start border-4 border-primary">
+        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="fs-2">${r.icon}</span>
+            <div>
+              <h6 class="fw-bold text-dark mb-0">${r.title}</h6>
+              <small class="badge bg-light text-primary border rounded-pill px-2.5 py-0.5">${r.duration}</small>
+            </div>
+          </div>
+        </div>
+        <p class="text-secondary small mb-2"><strong>🎯 Best For:</strong> ${r.best_for}</p>
+        
+        <div class="bg-light p-2.5 rounded-3 mb-2 small">
+          <div class="fw-bold text-dark mb-1">Key Branches &amp; Streams in Tamil Nadu:</div>
+          <ul class="ps-3 mb-0 text-secondary" style="font-size: 0.82rem;">
+            ${r.tamil_nadu_streams.map((s) => `<li>${s}</li>`).join("")}
+          </ul>
+        </div>
+
+        <div class="mb-2 small text-muted">
+          <strong>🏛️ Official Admission:</strong> <span class="text-secondary">${r.admission_portal}</span>
+        </div>
+
+        <div class="p-2 bg-success-subtle rounded-3 border border-success-subtle small mb-3">
+          <strong class="text-success">💰 Salary &amp; Future Scope:</strong> <span class="text-dark">${r.salary_potential}</span>
+        </div>
+
+        <div class="mt-auto pt-2 border-top d-flex gap-2">
+          <button class="btn btn-outline-primary btn-sm rounded-pill fw-semibold w-100" onclick="quickFilterExplorerTo10th()">
+            View 10th Pathway Details &rarr;
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function scrollToCutoffCalculator() {
+  switchSchoolTab("twelfth_groups");
+  setTimeout(() => {
+    document.getElementById("tn-cutoff-calculator-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, 100);
+}
+window.scrollToCutoffCalculator = scrollToCutoffCalculator;
+
+function quickFilterExplorerTo10th() {
+  switchSchoolTab("explorer");
+  filterPathsByGrade("after_10th", null);
+  document.getElementById("school-tab-explorer")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+window.quickFilterExplorerTo10th = quickFilterExplorerTo10th;
+
+// -------------------------------------------------------------
+// TAMIL NADU 12th CUTOFF CALCULATOR
+// -------------------------------------------------------------
+function updateCutoffCalculatorInputs() {
+  const stream = document.getElementById("cutoff-stream-select")?.value || "engineering";
+  const inputsRow = document.getElementById("cutoff-marks-inputs-row");
+  if (!inputsRow) return;
+
+  if (stream === "engineering") {
+    inputsRow.innerHTML = `
+      <div class="row g-2 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label small fw-bold text-secondary mb-1">Maths (/100)</label>
+          <input type="number" id="cutoff-maths" class="form-control form-control-sm fw-bold" min="0" max="100" value="95">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small fw-bold text-secondary mb-1">Physics (/100)</label>
+          <input type="number" id="cutoff-physics" class="form-control form-control-sm fw-bold" min="0" max="100" value="90">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small fw-bold text-secondary mb-1">Chemistry (/100)</label>
+          <input type="number" id="cutoff-chemistry" class="form-control form-control-sm fw-bold" min="0" max="100" value="92">
+        </div>
+        <div class="col-md-3">
+          <button class="btn btn-success btn-sm w-100 fw-bold rounded-pill shadow-sm" onclick="calculateTamilNaduCutoff()">
+            🧮 Calculate Cutoff
+          </button>
+        </div>
+      </div>
+    `;
+  } else if (stream === "agriculture_veterinary") {
+    inputsRow.innerHTML = `
+      <div class="row g-2 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label small fw-bold text-secondary mb-1">Biology (/100)</label>
+          <input type="number" id="cutoff-biology" class="form-control form-control-sm fw-bold" min="0" max="100" value="96">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small fw-bold text-secondary mb-1">Physics (/100)</label>
+          <input type="number" id="cutoff-physics" class="form-control form-control-sm fw-bold" min="0" max="100" value="88">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small fw-bold text-secondary mb-1">Chemistry (/100)</label>
+          <input type="number" id="cutoff-chemistry" class="form-control form-control-sm fw-bold" min="0" max="100" value="90">
+        </div>
+        <div class="col-md-3">
+          <button class="btn btn-success btn-sm w-100 fw-bold rounded-pill shadow-sm" onclick="calculateTamilNaduCutoff()">
+            🧮 Calculate Cutoff
+          </button>
+        </div>
+      </div>
+    `;
+  } else if (stream === "commerce_arts") {
+    inputsRow.innerHTML = `
+      <div class="row g-2 align-items-end">
+        <div class="col-md-2">
+          <label class="form-label small fw-bold text-secondary mb-1">Commerce (/100)</label>
+          <input type="number" id="cutoff-sub1" class="form-control form-control-sm fw-bold" min="0" max="100" value="95">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label small fw-bold text-secondary mb-1">Accountancy (/100)</label>
+          <input type="number" id="cutoff-sub2" class="form-control form-control-sm fw-bold" min="0" max="100" value="94">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label small fw-bold text-secondary mb-1">Economics (/100)</label>
+          <input type="number" id="cutoff-sub3" class="form-control form-control-sm fw-bold" min="0" max="100" value="90">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small fw-bold text-secondary mb-1">Maths / Comp (/100)</label>
+          <input type="number" id="cutoff-sub4" class="form-control form-control-sm fw-bold" min="0" max="100" value="92">
+        </div>
+        <div class="col-md-3">
+          <button class="btn btn-success btn-sm w-100 fw-bold rounded-pill shadow-sm" onclick="calculateTamilNaduCutoff()">
+            🧮 Calculate Cutoff
+          </button>
+        </div>
+      </div>
+    `;
+  }
+}
+window.updateCutoffCalculatorInputs = updateCutoffCalculatorInputs;
+
+function calculateTamilNaduCutoff() {
+  const stream = document.getElementById("cutoff-stream-select")?.value || "engineering";
+  const resultBox = document.getElementById("cutoff-result-container");
+  if (!resultBox) return;
+
+  resultBox.classList.remove("d-none");
+
+  if (stream === "engineering") {
+    const m = parseFloat(document.getElementById("cutoff-maths")?.value || 0);
+    const p = parseFloat(document.getElementById("cutoff-physics")?.value || 0);
+    const c = parseFloat(document.getElementById("cutoff-chemistry")?.value || 0);
+    const cutoff = (m + (p / 2) + (c / 2)).toFixed(2);
+
+    let tierMsg = "";
+    if (cutoff >= 195) {
+      tierMsg = "🌟 Top 1% in Tamil Nadu! High probability for Anna University CEG Campus, MIT Chromepet, and PSG Tech CSE/ECE.";
+    } else if (cutoff >= 185) {
+      tierMsg = "🚀 Tier-1 Engineering Admission! Eligible for GCT Coimbatore, CIT, SSN, Thiagarajar Madurai, and Core Tech branches.";
+    } else if (cutoff >= 165) {
+      tierMsg = "✅ Excellent Regional Autonomous Colleges! Eligible for top engineering colleges across Chennai, Coimbatore & Madurai zones.";
+    } else {
+      tierMsg = "📘 Qualified for TNEA Single Window Counseling across 440+ affiliated engineering colleges in Tamil Nadu.";
+    }
+
+    resultBox.innerHTML = `
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-2">
+        <div>
+          <span class="badge bg-primary text-white px-3 py-1.5 rounded-pill fw-bold">TNEA Engineering Cutoff</span>
+          <h4 class="fw-bold text-dark mb-0 mt-1">${cutoff} / 200</h4>
+        </div>
+        <div class="text-md-end">
+          <div class="small text-muted">Formula: Maths (${m}) + Physics/2 (${(p/2).toFixed(1)}) + Chem/2 (${(c/2).toFixed(1)})</div>
+        </div>
+      </div>
+      <p class="small text-dark mb-2 fw-medium">${tierMsg}</p>
+      <div class="d-flex gap-2 flex-wrap">
+        <button class="btn btn-outline-primary btn-sm rounded-pill fw-bold" onclick="switchSchoolTab('colleges')">Compare CEG vs MIT vs PSG</button>
+        <button class="btn btn-outline-success btn-sm rounded-pill fw-bold" onclick="switchSchoolTab('roadmap')">Check TNEA Counseling Schedule</button>
+      </div>
+    `;
+  } else if (stream === "agriculture_veterinary") {
+    const b = parseFloat(document.getElementById("cutoff-biology")?.value || 0);
+    const p = parseFloat(document.getElementById("cutoff-physics")?.value || 0);
+    const c = parseFloat(document.getElementById("cutoff-chemistry")?.value || 0);
+    const cutoff = (b + (p / 2) + (c / 2)).toFixed(2);
+
+    let msg = "";
+    if (cutoff >= 193) {
+      msg = "🌟 Top TNAU & TANUVAS Category! Eligible for B.Sc (Hons) Agriculture Coimbatore and B.V.Sc & A.H Madras Veterinary College.";
+    } else if (cutoff >= 180) {
+      msg = "🌾 Strong admission chances across TNAU constituent colleges (Madurai, Killikulam, Eachangkottai) and TANUVAS regional campuses.";
+    } else {
+      msg = "📘 Eligible for Private Affiliated Agriculture Colleges and Allied Health Diplomas.";
+    }
+
+    resultBox.innerHTML = `
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-2">
+        <div>
+          <span class="badge bg-success text-white px-3 py-1.5 rounded-pill fw-bold">TNAU / TANUVAS Cutoff</span>
+          <h4 class="fw-bold text-dark mb-0 mt-1">${cutoff} / 200</h4>
+        </div>
+        <div class="text-md-end">
+          <div class="small text-muted">Formula: Biology (${b}) + Physics/2 (${(p/2).toFixed(1)}) + Chem/2 (${(c/2).toFixed(1)})</div>
+        </div>
+      </div>
+      <p class="small text-dark mb-2 fw-medium">${msg}</p>
+      <button class="btn btn-outline-success btn-sm rounded-pill fw-bold" onclick="switchSchoolTab('exams')">View TNAU / TANUVAS Admission Portals</button>
+    `;
+  } else if (stream === "commerce_arts") {
+    const s1 = parseFloat(document.getElementById("cutoff-sub1")?.value || 0);
+    const s2 = parseFloat(document.getElementById("cutoff-sub2")?.value || 0);
+    const s3 = parseFloat(document.getElementById("cutoff-sub3")?.value || 0);
+    const s4 = parseFloat(document.getElementById("cutoff-sub4")?.value || 0);
+    const total = (s1 + s2 + s3 + s4).toFixed(0);
+    const pct = ((total / 400) * 100).toFixed(1);
+
+    resultBox.innerHTML = `
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-2">
+        <div>
+          <span class="badge bg-info text-dark px-3 py-1.5 rounded-pill fw-bold">TNGASA Arts &amp; Commerce Aggregate</span>
+          <h4 class="fw-bold text-dark mb-0 mt-1">${total} / 400 (${pct}%)</h4>
+        </div>
+        <div class="text-md-end">
+          <div class="small text-muted">Direct sum of 4 core subjects</div>
+        </div>
+      </div>
+      <p class="small text-dark mb-2 fw-medium">
+        ${total >= 380 ? '🌟 Outstanding Score! Eligible for Day 1 Merit B.Com / B.A admissions at Loyola College, Madras Christian College, Presidency, and PSG CAS.' : '✅ Eligible for Government and Aided Arts & Science Colleges across Tamil Nadu via tngasa.in.'}
+      </p>
+      <button class="btn btn-outline-primary btn-sm rounded-pill fw-bold" onclick="switchSchoolTab('colleges')">Compare Premier Arts &amp; Commerce Colleges</button>
+    `;
+  }
+}
+window.calculateTamilNaduCutoff = calculateTamilNaduCutoff;
 
 function filterExamsByStage(stage, btn) {
   activeExamStageFilter = stage;
@@ -213,14 +1088,67 @@ function filterExamsByStage(stage, btn) {
   if (btn) {
     btn.classList.remove("btn-outline-primary");
     btn.classList.add("btn-primary", "shadow-sm");
+  } else {
+    document.querySelectorAll("#exam-stage-filter-btns button").forEach((b) => {
+      if (b.getAttribute("data-exam-stage") === stage) {
+        b.classList.remove("btn-outline-primary");
+        b.classList.add("btn-primary", "shadow-sm");
+      }
+    });
   }
+
+  // Smart Sync with Academic Group:
+  if (stage === "after_10th" && activeAcademicGroup !== "sslc_10th") {
+    activeAcademicGroup = "sslc_10th";
+  } else if (stage === "after_12th" && activeAcademicGroup === "sslc_10th") {
+    activeAcademicGroup = "all";
+  }
+
+  // Update group selector buttons
+  document.querySelectorAll("#exam-academic-group-selector .academic-group-btn").forEach((b) => {
+    if (b.getAttribute("data-group") === activeAcademicGroup) {
+      b.classList.add("active");
+    } else {
+      b.classList.remove("active");
+    }
+  });
+
   renderSchoolExams();
+  renderCareerPositions();
 }
 
 function filterPathsByGrade(grade, btn) {
   activeGradeFilter = grade;
   document.querySelectorAll("[data-filter-type='grade']").forEach((b) => b.classList.remove("active"));
-  btn.classList.add("active");
+  if (btn) btn.classList.add("active");
+
+  // Check if current activeCatFilter has any paths under this newly selected grade
+  if (activeCatFilter !== "all") {
+    const hasCatMatch = allSchoolPaths.some((p) => {
+      const matchCat = (p.category === activeCatFilter);
+      let matchGrade = false;
+      if (grade === "all") matchGrade = true;
+      else if (grade === "after_10th") matchGrade = (p.grade_level === "after_10th" || p.grade_level === "after_10th_or_12th" || (p.eligible_grades && p.eligible_grades.includes("after_10th")));
+      else if (grade === "after_12th") matchGrade = (p.grade_level.startsWith("after_12th") || p.grade_level === "after_10th_or_12th" || (p.eligible_grades && p.eligible_grades.some((g) => g.startsWith("after_12th"))));
+      else matchGrade = (p.grade_level === grade || p.grade_level === "after_10th_or_12th" || (p.eligible_grades && p.eligible_grades.includes(grade)));
+      return matchCat && matchGrade;
+    });
+
+    // If active category has 0 courses in this new grade, auto-reset category to "all"!
+    if (!hasCatMatch) {
+      activeCatFilter = "all";
+      document.querySelectorAll("[data-filter-type='cat']").forEach((b) => {
+        if (b.getAttribute("data-val") === "all") {
+          b.classList.add("active");
+        } else {
+          b.classList.remove("active");
+        }
+      });
+    }
+  }
+
+  // Update Category buttons visual state
+  updateCategoryChipsAvailability(grade);
 
   // Sync with master stage switcher
   document.querySelectorAll("#school-stage-selector .stage-select-btn").forEach((b) => {
@@ -235,10 +1163,40 @@ function filterPathsByGrade(grade, btn) {
   renderSchoolPaths();
 }
 
+function updateCategoryChipsAvailability(grade) {
+  document.querySelectorAll("[data-filter-type='cat']").forEach((btn) => {
+    const cat = btn.getAttribute("data-val");
+    if (cat === "all") return;
+
+    const count = allSchoolPaths.filter((p) => {
+      const matchCat = (p.category === cat);
+      let matchGrade = false;
+      if (grade === "all") matchGrade = true;
+      else if (grade === "after_10th") matchGrade = (p.grade_level === "after_10th" || p.grade_level === "after_10th_or_12th" || (p.eligible_grades && p.eligible_grades.includes("after_10th")));
+      else if (grade === "after_12th") matchGrade = (p.grade_level.startsWith("after_12th") || p.grade_level === "after_10th_or_12th" || (p.eligible_grades && p.eligible_grades.some((g) => g.startsWith("after_12th"))));
+      else matchGrade = (p.grade_level === grade || p.grade_level === "after_10th_or_12th" || (p.eligible_grades && p.eligible_grades.includes(grade)));
+      return matchCat && matchGrade;
+    }).length;
+
+    if (count === 0 && grade !== "all") {
+      btn.style.opacity = "0.45";
+      btn.title = `No courses available under this stream for ${grade.replace('_', ' ')}`;
+    } else {
+      btn.style.opacity = "1";
+      btn.title = "";
+    }
+  });
+}
+
 function filterPathsByCategory(cat, btn) {
   activeCatFilter = cat;
-  document.querySelectorAll("[data-filter-type='cat']").forEach((b) => b.classList.remove("active"));
-  btn.classList.add("active");
+  document.querySelectorAll("[data-filter-type='cat']").forEach((b) => {
+    if (b.getAttribute("data-val") === cat) {
+      b.classList.add("active");
+    } else {
+      b.classList.remove("active");
+    }
+  });
   renderSchoolPaths();
 }
 
@@ -251,15 +1209,15 @@ function renderSchoolPaths() {
   if (activeGradeFilter !== "all") {
     if (activeGradeFilter === "after_10th") {
       filtered = filtered.filter(
-        (p) => p.grade_level === "after_10th" || p.grade_level === "after_10th_or_12th"
+        (p) => p.grade_level === "after_10th" || p.grade_level === "after_10th_or_12th" || (p.eligible_grades && p.eligible_grades.includes("after_10th"))
       );
     } else if (activeGradeFilter === "after_12th") {
       filtered = filtered.filter(
-        (p) => p.grade_level.startsWith("after_12th") || p.grade_level === "after_10th_or_12th"
+        (p) => p.grade_level.startsWith("after_12th") || p.grade_level === "after_10th_or_12th" || (p.eligible_grades && p.eligible_grades.some((g) => g.startsWith("after_12th")))
       );
     } else {
       filtered = filtered.filter(
-        (p) => p.grade_level === activeGradeFilter || p.grade_level === "after_10th_or_12th"
+        (p) => p.grade_level === activeGradeFilter || p.grade_level === "after_10th_or_12th" || (p.eligible_grades && p.eligible_grades.includes(activeGradeFilter))
       );
     }
   }
@@ -269,14 +1227,62 @@ function renderSchoolPaths() {
   }
 
   if (filtered.length === 0) {
-    grid.innerHTML = `
-      <div class="col-12 text-center py-5 bg-white rounded-4 border">
-        <div class="fs-1 mb-2">🔍</div>
-        <h6 class="fw-bold">No career paths match the selected filters.</h6>
-        <p class="text-muted small">Try selecting "All Opportunities" or choose a different stream.</p>
-        <button class="btn btn-outline-primary btn-sm rounded-pill" onclick="resetSchoolFilters()">Reset Filters</button>
-      </div>
-    `;
+    let explanationHtml = "";
+    if (activeGradeFilter === "after_12th_pcb" && activeCatFilter === "engineering") {
+      explanationHtml = `
+        <div class="col-12 py-5 bg-white rounded-4 border shadow-sm text-center">
+          <div class="fs-1 mb-2">⚙️🩺</div>
+          <h5 class="fw-bold text-dark">Engineering (B.E / B.Tech) Requires Mathematics (PCM) in 12th Standard</h5>
+          <p class="text-secondary small mb-3" style="max-width: 620px; margin: 0 auto;">
+            In Tamil Nadu, single-window engineering admissions (TNEA / Anna University) require Higher Secondary Mathematics.
+            As a <strong>12th Science (PCB / Biology)</strong> student, you are directly eligible for premier professional paths in <strong>Medicine (MBBS/BDS), Paramedical Sciences, Veterinary (BVSc at TANUVAS), Agriculture (TNAU), and Pharmacy</strong>.
+          </p>
+          <div class="d-flex justify-content-center gap-2 flex-wrap">
+            <button class="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm" onclick="filterPathsByCategory('medical', null)">
+              🩺 View Medical &amp; Paramedical Paths
+            </button>
+            <button class="btn btn-success btn-sm rounded-pill px-4 fw-bold shadow-sm" onclick="filterPathsByCategory('agriculture', null)">
+              🌾 View Agriculture &amp; Veterinary Paths
+            </button>
+            <button class="btn btn-outline-secondary btn-sm rounded-pill px-3" onclick="resetSchoolFilters()">
+              🌐 Show All PCB Opportunities
+            </button>
+          </div>
+        </div>
+      `;
+    } else if (activeGradeFilter === "after_12th_commerce" && activeCatFilter === "engineering") {
+      explanationHtml = `
+        <div class="col-12 py-5 bg-white rounded-4 border shadow-sm text-center">
+          <div class="fs-1 mb-2">📊⚙️</div>
+          <h5 class="fw-bold text-dark">Engineering is Not Open to Commerce Stream Students</h5>
+          <p class="text-secondary small mb-3" style="max-width: 620px; margin: 0 auto;">
+            Engineering requires Physics, Chemistry &amp; Mathematics in Higher Secondary.
+            As a <strong>12th Commerce</strong> student, you qualify for high-impact careers in <strong>Chartered Accountancy (CA), Cost &amp; Management Accountancy (CMA), Corporate Law (B.Com LL.B at SOEL), and Professional Finance</strong>.
+          </p>
+          <div class="d-flex justify-content-center gap-2 flex-wrap">
+            <button class="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm" onclick="filterPathsByCategory('arts_science', null)">
+              📊 View Commerce &amp; CA/CMA Opportunities
+            </button>
+            <button class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-bold shadow-sm" onclick="filterPathsByCategory('law', null)">
+              ⚖️ View 5-Year Integrated B.Com. LL.B Law
+            </button>
+            <button class="btn btn-outline-secondary btn-sm rounded-pill px-3" onclick="resetSchoolFilters()">
+              🌐 Show All Commerce Opportunities
+            </button>
+          </div>
+        </div>
+      `;
+    } else {
+      explanationHtml = `
+        <div class="col-12 text-center py-5 bg-white rounded-4 border">
+          <div class="fs-1 mb-2">🔍</div>
+          <h5 class="fw-bold">No career paths match the selected filters.</h5>
+          <p class="text-muted small">Try selecting "All Categories" or choose a different stream.</p>
+          <button class="btn btn-primary btn-sm rounded-pill px-4 fw-bold" onclick="resetSchoolFilters()">Reset Filters</button>
+        </div>
+      `;
+    }
+    grid.innerHTML = explanationHtml;
     return;
   }
 
@@ -350,6 +1356,7 @@ function resetSchoolFilters() {
     if (b.getAttribute("data-val") === "all") b.classList.add("active");
     else b.classList.remove("active");
   });
+  updateCategoryChipsAvailability("all");
   renderSchoolPaths();
 }
 
@@ -525,17 +1532,20 @@ function renderCollegeComparisonMatrix(colleges) {
   const container = document.getElementById("college-compare-matrix-container");
   if (!container) return;
 
-  const colWidth = Math.floor(75 / colleges.length);
+  const minTableWidth = Math.max(920, 240 + colleges.length * 300);
 
   container.innerHTML = `
-    <table class="table career-compare-table align-middle mb-0">
+    <table class="table career-compare-table align-middle mb-0" style="min-width: ${minTableWidth}px; width: 100%;">
       <thead>
         <tr>
-          <th style="width: 25%;" class="bg-light text-secondary">COLLEGE BENCHMARK</th>
+          <th class="benchmark-col" style="width: 240px; min-width: 240px;">
+            <div class="fw-bold text-secondary text-uppercase small">College Benchmark</div>
+            <div class="text-muted" style="font-size: 0.72rem;">Comparing ${colleges.length} TN Institutions</div>
+          </th>
           ${colleges
             .map(
               (c) => `
-            <th style="width: ${colWidth}%;" class="text-center">
+            <th style="min-width: 300px;" class="text-center">
               <div class="fs-1 mb-1">${c.logo_emoji}</div>
               <h5 class="fw-bold mb-0 text-dark">${c.name}</h5>
               <div class="small text-muted mb-1">📍 ${c.location}</div>
@@ -550,21 +1560,21 @@ function renderCollegeComparisonMatrix(colleges) {
       </thead>
       <tbody>
         <!-- Flagship Courses -->
-        <tr class="table-light">
+        <tr class="compare-section-header">
           <td colspan="${colleges.length + 1}" class="fw-bold text-primary small text-uppercase py-2 px-3">
             🎓 Academic Programs &amp; Accreditations
           </td>
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Accreditation &amp; Status</td>
-          ${colleges.map((c) => `<td class="text-center small fw-semibold text-dark">${c.accreditation}</td>`).join("")}
+          <td class="benchmark-col fw-bold text-secondary">Accreditation &amp; Status</td>
+          ${colleges.map((c) => `<td style="min-width: 300px;" class="text-center small fw-semibold text-dark">${c.accreditation}</td>`).join("")}
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Flagship Degrees / Courses</td>
+          <td class="benchmark-col fw-bold text-secondary">Flagship Degrees / Courses</td>
           ${colleges
             .map(
               (c) => `
-            <td class="small">
+            <td style="min-width: 300px;" class="small">
               <ul class="ps-3 mb-0 text-secondary">
                 ${c.flagship_courses.map((cr) => `<li>${cr}</li>`).join("")}
               </ul>
@@ -575,28 +1585,28 @@ function renderCollegeComparisonMatrix(colleges) {
         </tr>
 
         <!-- Eligibility Criteria -->
-        <tr class="table-light">
+        <tr class="compare-section-header">
           <td colspan="${colleges.length + 1}" class="fw-bold text-primary small text-uppercase py-2 px-3">
             📋 Course Eligibility Requirements
           </td>
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Minimum Eligibility Criteria</td>
-          ${colleges.map((c) => `<td class="small text-secondary">${c.eligibility_criteria}</td>`).join("")}
+          <td class="benchmark-col fw-bold text-secondary">Minimum Eligibility Criteria</td>
+          ${colleges.map((c) => `<td style="min-width: 300px;" class="small text-secondary">${c.eligibility_criteria}</td>`).join("")}
         </tr>
 
         <!-- Entrance Exam & Exam Schedule -->
-        <tr class="table-light">
+        <tr class="compare-section-header">
           <td colspan="${colleges.length + 1}" class="fw-bold text-primary small text-uppercase py-2 px-3">
             📝 Entrance Exam Guidance &amp; Exact Schedule
           </td>
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Entrance Exams Accepted</td>
+          <td class="benchmark-col fw-bold text-secondary">Entrance Exams Accepted</td>
           ${colleges
             .map(
               (c) => `
-            <td>
+            <td style="min-width: 300px;">
               <div class="d-flex flex-wrap gap-1 justify-content-center">
                 ${c.entrance_exams.map((e) => `<span class="badge bg-info-subtle text-dark border small">${e}</span>`).join("")}
               </div>
@@ -606,11 +1616,11 @@ function renderCollegeComparisonMatrix(colleges) {
             .join("")}
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Exam Application Dates</td>
+          <td class="benchmark-col fw-bold text-secondary">Exam Application Dates</td>
           ${colleges
             .map(
               (c) => `
-            <td class="small text-center">
+            <td style="min-width: 300px;" class="small text-center">
               <div><strong>Start:</strong> ${c.exam_schedule.application_start}</div>
               <div class="text-danger"><strong>Last Date:</strong> ${c.exam_schedule.last_date}</div>
             </td>
@@ -619,11 +1629,11 @@ function renderCollegeComparisonMatrix(colleges) {
             .join("")}
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Exam Date &amp; Results</td>
+          <td class="benchmark-col fw-bold text-secondary">Exam Date &amp; Results</td>
           ${colleges
             .map(
               (c) => `
-            <td class="small text-center">
+            <td style="min-width: 300px;" class="small text-center">
               <div><strong>Exam Date:</strong> ${c.exam_schedule.exam_date}</div>
               <div class="text-success"><strong>Result:</strong> ${c.exam_schedule.result_date}</div>
             </td>
@@ -633,36 +1643,36 @@ function renderCollegeComparisonMatrix(colleges) {
         </tr>
 
         <!-- Admission & Counselling Guidance -->
-        <tr class="table-light">
+        <tr class="compare-section-header">
           <td colspan="${colleges.length + 1}" class="fw-bold text-primary small text-uppercase py-2 px-3">
             ⚡ Admission &amp; Counselling Procedure
           </td>
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Complete Admission Process</td>
-          ${colleges.map((c) => `<td class="small text-secondary" style="line-height: 1.6;">${c.admission_counselling_process}</td>`).join("")}
+          <td class="benchmark-col fw-bold text-secondary">Complete Admission Process</td>
+          ${colleges.map((c) => `<td style="min-width: 300px;" class="small text-secondary" style="line-height: 1.6;">${c.admission_counselling_process}</td>`).join("")}
         </tr>
 
         <!-- Fees & Scholarships -->
-        <tr class="table-light">
+        <tr class="compare-section-header">
           <td colspan="${colleges.length + 1}" class="fw-bold text-primary small text-uppercase py-2 px-3">
             💰 Annual Fees &amp; Scholarship Coverage
           </td>
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Tuition Fees / Year</td>
-          ${colleges.map((c) => `<td class="text-center fw-bold text-success small">${c.tuition_fees_per_year}</td>`).join("")}
+          <td class="benchmark-col fw-bold text-secondary">Tuition Fees / Year</td>
+          ${colleges.map((c) => `<td style="min-width: 300px;" class="text-center fw-bold text-success small">${c.tuition_fees_per_year}</td>`).join("")}
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Hostel &amp; Mess Fees / Year</td>
-          ${colleges.map((c) => `<td class="text-center text-muted small">${c.hostel_mess_fees_per_year}</td>`).join("")}
+          <td class="benchmark-col fw-bold text-secondary">Hostel &amp; Mess Fees / Year</td>
+          ${colleges.map((c) => `<td style="min-width: 300px;" class="text-center text-muted small">${c.hostel_mess_fees_per_year}</td>`).join("")}
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Scholarships Available</td>
+          <td class="benchmark-col fw-bold text-secondary">Scholarships Available</td>
           ${colleges
             .map(
               (c) => `
-            <td class="small">
+            <td style="min-width: 300px;" class="small">
               <ul class="ps-3 mb-0 text-success">
                 ${c.scholarships_available.map((s) => `<li>${s}</li>`).join("")}
               </ul>
@@ -673,29 +1683,29 @@ function renderCollegeComparisonMatrix(colleges) {
         </tr>
 
         <!-- Placements -->
-        <tr class="table-light">
+        <tr class="compare-section-header">
           <td colspan="${colleges.length + 1}" class="fw-bold text-primary small text-uppercase py-2 px-3">
             🚀 Campus Placement Packages &amp; Opportunities
           </td>
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Highest CTC Package</td>
-          ${colleges.map((c) => `<td class="text-center fw-bold text-dark">${c.placement_stats.highest_package}</td>`).join("")}
+          <td class="benchmark-col fw-bold text-secondary">Highest CTC Package</td>
+          ${colleges.map((c) => `<td style="min-width: 300px;" class="text-center fw-bold text-dark">${c.placement_stats.highest_package}</td>`).join("")}
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Average CTC Package</td>
-          ${colleges.map((c) => `<td class="text-center fw-bold text-primary fs-6">${c.placement_stats.average_package}</td>`).join("")}
+          <td class="benchmark-col fw-bold text-secondary">Average CTC Package</td>
+          ${colleges.map((c) => `<td style="min-width: 300px;" class="text-center fw-bold text-primary fs-6">${c.placement_stats.average_package}</td>`).join("")}
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Placement Success %</td>
-          ${colleges.map((c) => `<td class="text-center fw-bold text-success">${c.placement_stats.placement_percentage}</td>`).join("")}
+          <td class="benchmark-col fw-bold text-secondary">Placement Success %</td>
+          ${colleges.map((c) => `<td style="min-width: 300px;" class="text-center fw-bold text-success">${c.placement_stats.placement_percentage}</td>`).join("")}
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Top Visiting Recruiters</td>
+          <td class="benchmark-col fw-bold text-secondary">Top Visiting Recruiters</td>
           ${colleges
             .map(
               (c) => `
-            <td>
+            <td style="min-width: 300px;">
               <div class="d-flex flex-wrap gap-1 justify-content-center">
                 ${c.placement_stats.top_recruiters.map((r) => `<span class="badge bg-secondary-subtle text-dark small">${r}</span>`).join("")}
               </div>
@@ -706,17 +1716,17 @@ function renderCollegeComparisonMatrix(colleges) {
         </tr>
 
         <!-- Facilities -->
-        <tr class="table-light">
+        <tr class="compare-section-header">
           <td colspan="${colleges.length + 1}" class="fw-bold text-primary small text-uppercase py-2 px-3">
             🏛️ Campus Infrastructure &amp; Facilities
           </td>
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Campus Facilities</td>
+          <td class="benchmark-col fw-bold text-secondary">Campus Facilities</td>
           ${colleges
             .map(
               (c) => `
-            <td class="small">
+            <td style="min-width: 300px;" class="small">
               <ul class="ps-3 mb-0 text-secondary">
                 ${c.campus_facilities.map((f) => `<li>${f}</li>`).join("")}
               </ul>
@@ -727,17 +1737,17 @@ function renderCollegeComparisonMatrix(colleges) {
         </tr>
 
         <!-- Pros & Cons -->
-        <tr class="table-light">
+        <tr class="compare-section-header">
           <td colspan="${colleges.length + 1}" class="fw-bold text-primary small text-uppercase py-2 px-3">
             ⚖️ Key Advantages &amp; Considerations
           </td>
         </tr>
         <tr>
-          <td class="fw-bold text-success">Verified Advantages</td>
+          <td class="benchmark-col fw-bold text-success">Verified Advantages</td>
           ${colleges
             .map(
               (c) => `
-            <td class="small">
+            <td style="min-width: 300px;" class="small">
               <ul class="ps-3 mb-0 text-success">
                 ${c.pros.map((p) => `<li>${p}</li>`).join("")}
               </ul>
@@ -747,11 +1757,11 @@ function renderCollegeComparisonMatrix(colleges) {
             .join("")}
         </tr>
         <tr>
-          <td class="fw-bold text-danger">Considerations</td>
+          <td class="benchmark-col fw-bold text-danger">Considerations</td>
           ${colleges
             .map(
               (c) => `
-            <td class="small">
+            <td style="min-width: 300px;" class="small">
               <ul class="ps-3 mb-0 text-secondary">
                 ${c.cons.map((cn) => `<li>${cn}</li>`).join("")}
               </ul>
@@ -839,17 +1849,20 @@ function renderCourseComparisonMatrix(courses) {
   const container = document.getElementById("course-compare-matrix-container");
   if (!container) return;
 
-  const colWidth = Math.floor(75 / courses.length);
+  const minTableWidth = Math.max(900, 240 + courses.length * 280);
 
   container.innerHTML = `
-    <table class="table career-compare-table align-middle mb-0">
+    <table class="table career-compare-table align-middle mb-0" style="min-width: ${minTableWidth}px; width: 100%;">
       <thead>
         <tr>
-          <th style="width: 25%;" class="bg-light text-secondary">COURSE COMPARISON</th>
+          <th class="benchmark-col" style="width: 240px; min-width: 240px;">
+            <div class="fw-bold text-secondary text-uppercase small">Course Benchmark</div>
+            <div class="text-muted" style="font-size: 0.72rem;">Comparing ${courses.length} Academic Pathways</div>
+          </th>
           ${courses
             .map(
               (cr) => `
-            <th style="width: ${colWidth}%;" class="text-center">
+            <th style="min-width: 280px;" class="text-center">
               <h5 class="fw-bold mb-1 text-dark">${cr.course_name}</h5>
               <span class="badge bg-primary-subtle text-primary border rounded-pill px-2.5 py-1 small fw-bold">
                 ${cr.duration}
@@ -862,15 +1875,15 @@ function renderCourseComparisonMatrix(courses) {
       </thead>
       <tbody>
         <tr>
-          <td class="fw-bold text-secondary">Eligibility Criteria</td>
-          ${courses.map((cr) => `<td class="small text-secondary">${cr.eligibility}</td>`).join("")}
+          <td class="benchmark-col fw-bold text-secondary">Eligibility Criteria</td>
+          ${courses.map((cr) => `<td style="min-width: 280px;" class="small text-secondary">${cr.eligibility}</td>`).join("")}
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Required Entrance Exams</td>
+          <td class="benchmark-col fw-bold text-secondary">Required Entrance Exams</td>
           ${courses
             .map(
               (cr) => `
-            <td>
+            <td style="min-width: 280px;">
               <div class="d-flex flex-wrap gap-1 justify-content-center">
                 ${cr.entrance_exams.map((e) => `<span class="badge bg-light text-dark border small">${e}</span>`).join("")}
               </div>
@@ -880,15 +1893,15 @@ function renderCourseComparisonMatrix(courses) {
             .join("")}
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Average Starting Salary</td>
-          ${courses.map((cr) => `<td class="text-center fw-bold text-success fs-6">${cr.avg_starting_salary}</td>`).join("")}
+          <td class="benchmark-col fw-bold text-secondary">Average Starting Salary</td>
+          ${courses.map((cr) => `<td style="min-width: 280px;" class="text-center fw-bold text-success fs-6">${cr.avg_starting_salary}</td>`).join("")}
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Top Roles &amp; Opportunities</td>
+          <td class="benchmark-col fw-bold text-secondary">Top Roles &amp; Opportunities</td>
           ${courses
             .map(
               (cr) => `
-            <td class="small">
+            <td style="min-width: 280px;" class="small">
               <ul class="ps-3 mb-0 text-secondary">
                 ${cr.top_roles.map((r) => `<li>${r}</li>`).join("")}
               </ul>
@@ -898,11 +1911,11 @@ function renderCourseComparisonMatrix(courses) {
             .join("")}
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Future Scopes &amp; Lateral Entry</td>
+          <td class="benchmark-col fw-bold text-secondary">Future Scopes &amp; Lateral Entry</td>
           ${courses
             .map(
               (cr) => `
-            <td class="small">
+            <td style="min-width: 280px;" class="small">
               <ul class="ps-3 mb-0 text-secondary">
                 ${cr.future_scopes.map((f) => `<li>${f}</li>`).join("")}
               </ul>
@@ -912,13 +1925,69 @@ function renderCourseComparisonMatrix(courses) {
             .join("")}
         </tr>
         <tr>
-          <td class="fw-bold text-secondary">Why Choose This Course</td>
-          ${courses.map((cr) => `<td class="small text-dark fw-medium">${cr.why_choose}</td>`).join("")}
+          <td class="benchmark-col fw-bold text-secondary">Why Choose This Course</td>
+          ${courses.map((cr) => `<td style="min-width: 280px;" class="small text-dark fw-medium">${cr.why_choose}</td>`).join("")}
         </tr>
       </tbody>
     </table>
   `;
 }
+
+// -------------------------------------------------------------
+// FULL PAGE / WIDE VIEW TOGGLE HANDLER
+// -------------------------------------------------------------
+function toggleFullPageCompare(type) {
+  const boxId = type === "college" ? "college-compare-view-box" : "course-compare-view-box";
+  const box = document.getElementById(boxId);
+  if (!box) return;
+
+  const isFull = box.classList.toggle("compare-fullpage-modal");
+  const btn = document.getElementById(type === "college" ? "colleges-fs-btn" : "courses-fs-btn");
+  const icon = document.getElementById(type === "college" ? "colleges-fs-icon" : "courses-fs-icon");
+  const label = document.getElementById(type === "college" ? "colleges-fs-label" : "courses-fs-label");
+
+  if (isFull) {
+    document.body.style.overflow = "hidden";
+    if (icon) icon.textContent = "✕";
+    if (label) label.textContent = "Exit Full Page View";
+    if (btn) {
+      btn.classList.remove("btn-outline-primary");
+      btn.classList.add("btn-danger");
+    }
+    box.scrollTop = 0;
+  } else {
+    document.body.style.overflow = "";
+    if (icon) icon.textContent = "⛶";
+    if (label) label.textContent = "Full Page View";
+    if (btn) {
+      btn.classList.remove("btn-danger");
+      btn.classList.add("btn-outline-primary");
+    }
+  }
+}
+window.toggleFullPageCompare = toggleFullPageCompare;
+
+// Escape key listener to exit full page comparison
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    const modals = document.querySelectorAll(".compare-fullpage-modal");
+    if (modals.length > 0) {
+      modals.forEach((m) => m.classList.remove("compare-fullpage-modal"));
+      document.body.style.overflow = "";
+      ["colleges", "courses"].forEach((prefix) => {
+        const btn = document.getElementById(`${prefix}-fs-btn`);
+        const icon = document.getElementById(`${prefix}-fs-icon`);
+        const label = document.getElementById(`${prefix}-fs-label`);
+        if (btn) {
+          btn.classList.remove("btn-danger");
+          btn.classList.add("btn-outline-primary");
+        }
+        if (icon) icon.textContent = "⛶";
+        if (label) label.textContent = "Full Page View";
+      });
+    }
+  }
+});
 
 // -------------------------------------------------------------
 // 4. PATHWAY DETAIL MODAL
@@ -1158,18 +2227,58 @@ function renderSchoolExams() {
   if (!container) return;
 
   let filtered = allSchoolExams;
+
+  // 1. Group Filtering (Computer Science vs Biology vs Commerce vs Arts vs Vocational vs 10th)
+  if (activeAcademicGroup && activeAcademicGroup !== "all") {
+    filtered = filtered.filter((e) => {
+      const groups = (e.target_groups || []).map((g) => g.toLowerCase());
+      return groups.includes(activeAcademicGroup.toLowerCase());
+    });
+  }
+
+  // 2. Stage Filtering (After 10th vs After 12th)
   if (activeExamStageFilter === "after_10th") {
-    filtered = allSchoolExams.filter((e) => e.target_stage === "after_10th");
+    filtered = filtered.filter((e) => e.target_stage === "after_10th");
   } else if (activeExamStageFilter === "after_12th") {
-    filtered = allSchoolExams.filter((e) => e.target_stage === "after_12th");
+    filtered = filtered.filter((e) => e.target_stage === "after_12th");
+  }
+
+  // 3. Fallback Auto-Heal: If zero exams resulted from a stage filter mismatch with the selected group
+  if ((!filtered || filtered.length === 0) && activeAcademicGroup && activeAcademicGroup !== "all") {
+    const groupMatches = allSchoolExams.filter((e) => {
+      const groups = (e.target_groups || []).map((g) => g.toLowerCase());
+      return groups.includes(activeAcademicGroup.toLowerCase());
+    });
+    if (groupMatches.length > 0) {
+      filtered = groupMatches;
+      activeExamStageFilter = activeAcademicGroup === "sslc_10th" ? "after_10th" : "after_12th";
+      document.querySelectorAll("#exam-stage-filter-btns button").forEach((b) => {
+        if (b.getAttribute("data-exam-stage") === activeExamStageFilter) {
+          b.classList.remove("btn-outline-primary");
+          b.classList.add("btn-primary", "shadow-sm");
+        } else {
+          b.classList.remove("btn-primary", "shadow-sm");
+          b.classList.add("btn-outline-primary");
+        }
+      });
+    }
+  }
+
+  // Update count badge
+  const countBadge = document.getElementById("active-group-count-badge");
+  if (countBadge) {
+    countBadge.textContent = `${filtered.length} Exams Available`;
   }
 
   if (!filtered || filtered.length === 0) {
     container.innerHTML = `
       <div class="col-12 text-center py-5 bg-white rounded-4 border">
         <div class="fs-1 mb-2">📋</div>
-        <h6 class="fw-bold text-dark">No admission schedules found for this stage.</h6>
-        <p class="text-muted small mb-0">Switch to "All Schedules" or change the filter above.</p>
+        <h6 class="fw-bold text-dark">No entrance exams found for this group.</h6>
+        <p class="text-muted small mb-0">Switch your selected academic group above to see exams.</p>
+        <button class="btn btn-sm btn-outline-primary rounded-pill px-4 mt-3 fw-bold" onclick="filterExamsByAcademicGroup('all', null)">
+          🌐 Show All Groups
+        </button>
       </div>
     `;
     return;
@@ -1184,7 +2293,11 @@ function renderSchoolExams() {
           : `<span class="badge bg-warning text-dark small rounded-pill px-2.5 py-1">Entrance Exam</span>`;
         const stageBadge = e.target_stage === "after_10th"
           ? `<span class="badge bg-info bg-opacity-25 text-info-emphasis fw-bold rounded-pill small px-2.5 py-1">📘 After 10th (SSLC)</span>`
-          : `<span class="badge bg-primary bg-opacity-25 text-primary-emphasis fw-bold rounded-pill small px-2.5 py-1">🎓 After 12th (HSC)</span>`;
+          : `<span class="badge bg-primary bg-opacity-25 text-primary-emphasis fw-bold rounded-pill small px-2.5 py-1">🎓 12th Grade (HSC)</span>`;
+
+        const groupTag = e.group_badge
+          ? `<span class="badge bg-light text-primary border small rounded-pill fw-semibold">${e.group_badge}</span>`
+          : "";
 
         const calBtn = e.google_calendar_url
           ? `<a href="${e.google_calendar_url}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger btn-sm rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm">
@@ -1196,13 +2309,50 @@ function renderSchoolExams() {
 
         const cleanDomain = e.official_url ? e.official_url.replace("https://", "").replace("http://", "").replace("www.", "").split("/")[0] : "tn.gov.in";
 
+        // Positions Badges (Up to 4)
+        const positionsList = (e.career_positions || []).slice(0, 4);
+        const positionsHtml = positionsList.length > 0
+          ? `
+            <div class="mb-2.5 p-2.5 bg-primary bg-opacity-10 border border-primary-subtle rounded-3">
+              <div class="small fw-bold text-primary mb-1.5 d-flex align-items-center gap-1">
+                <span>💼</span> Target Positions &amp; Career Opportunities:
+              </div>
+              <div class="d-flex flex-wrap gap-1">
+                ${positionsList.map((p) => `<span class="badge bg-white text-dark border small fw-semibold py-1 px-2 rounded-pill shadow-xs">${p}</span>`).join("")}
+              </div>
+            </div>
+          `
+          : "";
+
+        const salaryHtml = e.average_salary_package
+          ? `<div class="small mb-1"><strong class="text-success">💰 Avg Starting Package:</strong> <span class="fw-bold text-success">${e.average_salary_package}</span></div>`
+          : "";
+
+        const collegesHtml = (e.top_colleges_tn && e.top_colleges_tn.length > 0)
+          ? `<div class="small mb-1"><strong class="text-dark">🏛️ Top TN Campuses:</strong> <span class="text-secondary">${e.top_colleges_tn.slice(0, 3).join(", ")}</span></div>`
+          : "";
+
+        const perksHtml = e.tn_quota_perks
+          ? `<div class="p-2 bg-warning bg-opacity-10 border border-warning-subtle rounded-3 small mb-2 text-dark">
+              <strong>🌟 Tamil Nadu Perks &amp; Quotas:</strong> ${e.tn_quota_perks}
+            </div>`
+          : "";
+
+        const schedule = e.exam_schedule_breakdown || {};
+        const counsellingHtml = schedule.counselling_schedule
+          ? `<div class="fw-semibold text-secondary mb-1">
+              <strong>🏆 Counselling / Results:</strong> <span class="text-dark">${schedule.counselling_schedule}</span>
+            </div>`
+          : "";
+
         return `
       <div class="col-md-6 col-lg-4">
         <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100 d-flex flex-column transition-all hover-shadow">
           <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
             <div>
-              <div class="mb-1">${stageBadge} ${admissionBadge}</div>
-              <h6 class="fw-bold text-dark mb-0">${e.exam_name}</h6>
+              <div class="d-flex gap-1 flex-wrap mb-1">${stageBadge} ${admissionBadge}</div>
+              <h5 class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">${e.exam_name}</h5>
+              <div class="mb-1">${groupTag}</div>
             </div>
           </div>
 
@@ -1210,29 +2360,37 @@ function renderSchoolExams() {
             <strong>🏛️ Conducting Body:</strong> <span class="text-secondary">${e.conducting_body}</span>
           </div>
 
+          <!-- Exam Dates & Schedule Box -->
           <div class="p-3 bg-light rounded-3 mb-2 small border">
             <div class="fw-semibold text-secondary mb-1.5">
-              <strong class="text-dark">🎯 Target Courses:</strong> <span class="text-dark">${e.target_courses.join(", ")}</span>
+              <strong class="text-dark">🎓 Degree Courses:</strong> <span class="text-dark">${e.target_courses.join(", ")}</span>
             </div>
             <div class="fw-semibold text-danger mb-1.5">
               <strong>⏳ Application Window:</strong> <span>${e.registration_start} &rarr; ${e.registration_deadline}</span>
             </div>
-            <div class="fw-semibold text-success mb-1.5">
-              <strong>🗓️ Exam / Counselling Date:</strong> <span>${e.exam_date}</span>
+            <div class="fw-semibold text-primary mb-1.5">
+              <strong>🗓️ Examination Date(s):</strong> <span>${e.exam_date}</span>
             </div>
+            ${counsellingHtml}
             <div class="text-muted">
               <strong>🎓 Eligibility:</strong> <span class="text-dark">${e.eligibility_summary}</span>
             </div>
           </div>
 
+          <!-- Career Opportunities & Positions -->
+          ${positionsHtml}
+          ${salaryHtml}
+          ${collegesHtml}
+          ${perksHtml}
+
           <p class="small text-secondary mb-3 flex-grow-1">
             <strong>Key Process / Syllabus:</strong> ${e.syllabus_highlights}
           </p>
 
-          <div class="d-flex flex-column gap-2 pt-2 border-top">
+          <div class="d-flex flex-column gap-2 pt-2 border-top mt-auto">
             ${calBtn}
             <a href="${e.official_url}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm rounded-pill fw-semibold text-center shadow-sm">
-              🔗 Official TN Portal (${cleanDomain})
+              🔗 Official Portal (${cleanDomain})
             </a>
           </div>
         </div>
@@ -1241,6 +2399,172 @@ function renderSchoolExams() {
       }
     )
     .join("");
+}
+
+// -------------------------------------------------------------
+// 7. ACADEMIC GROUP FILTERING (COMPUTER SCIENCE vs BIOLOGY etc)
+// -------------------------------------------------------------
+
+function filterExamsByAcademicGroup(group, btn) {
+  activeAcademicGroup = group || "all";
+
+  // Smart Synchronize with Stage Filter:
+  // If 10th standard SSLC is picked, stage filter becomes "after_10th"
+  // If any 12th group is picked, stage filter becomes "after_12th"
+  // If "all" is picked, stage filter becomes "all"
+  if (activeAcademicGroup === "sslc_10th") {
+    activeExamStageFilter = "after_10th";
+  } else if (activeAcademicGroup !== "all") {
+    activeExamStageFilter = "after_12th";
+  } else {
+    activeExamStageFilter = "all";
+  }
+
+  // Update #exam-stage-filter-btns button visual states
+  document.querySelectorAll("#exam-stage-filter-btns button").forEach((b) => {
+    if (b.getAttribute("data-exam-stage") === activeExamStageFilter) {
+      b.classList.remove("btn-outline-primary");
+      b.classList.add("btn-primary", "shadow-sm");
+    } else {
+      b.classList.remove("btn-primary", "shadow-sm");
+      b.classList.add("btn-outline-primary");
+    }
+  });
+
+  // Update #btn-12th-only-toggle button visual state
+  const btn12 = document.getElementById("btn-12th-only-toggle");
+  if (btn12) {
+    if (activeExamStageFilter === "after_12th") {
+      btn12.classList.remove("btn-outline-primary");
+      btn12.classList.add("btn-primary", "shadow-sm");
+    } else {
+      btn12.classList.remove("btn-primary", "shadow-sm");
+      btn12.classList.add("btn-outline-primary");
+    }
+  }
+
+  // Update button active states
+  document.querySelectorAll("#exam-academic-group-selector .academic-group-btn").forEach((b) => {
+    if (b.getAttribute("data-group") === activeAcademicGroup) {
+      b.classList.add("active");
+    } else {
+      b.classList.remove("active");
+    }
+  });
+
+  // Update Banner Content
+  const iconEl = document.getElementById("active-group-icon");
+  const titleEl = document.getElementById("active-group-title");
+  const descEl = document.getElementById("active-group-desc");
+  const headingEl = document.getElementById("exams-section-heading");
+  const subHeadingEl = document.getElementById("exams-section-subheading");
+
+  const groupInfo = {
+    computer_science: {
+      icon: "💻",
+      title: "Showing Engineering & Technology Entrance Exams for: 12th Computer Science & Maths Group",
+      desc: "Displaying exclusively JEE Main, JEE Advanced, TNEA (Anna University), BITSAT, NATA Architecture, Navy 10+2 B.Tech Cadet Scheme, and UPSC NDA. Unlocks Software Engineer, AI/ML Specialist, Systems Architect, VLSI, and Defence Officer careers. Medical exams (NEET-UG) are strictly hidden.",
+      heading: "💻 Engineering & Technology Entrance Exams (JEE, TNEA, BITSAT, NATA, Navy Cadet)",
+      subheading: "Only entrance exams and single-window counselling portals open to Computer Science & Maths stream students."
+    },
+    biology: {
+      icon: "🧬",
+      title: "Showing Healthcare, Medical & Life Sciences Entrance Exams for: 12th Biology / Pure Science Group",
+      desc: "Displaying exclusively NEET-UG (MBBS/BDS TN DME 85% Quota), Paramedical & B.Sc Nursing, TANUVAS Veterinary (BVSc & AH), TNAU Agriculture (B.Sc Agri), and TN B.Pharm. Unlocks Doctor, Dental Surgeon, Veterinary Surgeon, Agricultural Officer, and Clinical Specialist positions. Engineering exams (JEE/TNEA) are strictly hidden.",
+      heading: "🧬 Medical, Dental, Veterinary & Agri Entrance Exams (NEET-UG, TANUVAS, TNAU, Nursing)",
+      subheading: "Only medical, nursing, paramedical, veterinary, and agriculture admission channels open to Biology students."
+    },
+    commerce: {
+      icon: "📊",
+      title: "Showing Professional Finance, Accounting & Corporate Law Exams for: 12th Commerce Group",
+      desc: "Displaying exclusively ICAI CA Foundation, ICMAI CMA Foundation, ICSI CSEET, TNGASA Commerce, and TNDALU B.Com. LL.B. Unlocks Chartered Accountant (CA), Cost Accountant, Company Secretary, Financial Analyst, and Investment Banker positions.",
+      heading: "📊 Professional Commerce, Chartered Accountancy & Finance Exams (CA, CMA, CS, B.Com)",
+      subheading: "National professional qualifications and university admission streams open to Commerce students."
+    },
+    arts: {
+      icon: "📚",
+      title: "Showing Law, Humanities, Civil Services & Design Exams for: 12th Arts & Humanities Group",
+      desc: "Displaying exclusively TNDALU 5-Year Law, CLAT-UG (TNNLU Trichy), TNGASA Arts, NIFT Fashion Design, and UPSC NDA Army. Unlocks High Court Advocate, Civil Services (IAS/IPS), Fashion Designer, Policy Analyst, and Journalist positions.",
+      heading: "📚 Arts, Humanities, Law & Design Entrance Exams (TNDALU Law, CLAT, NIFT, TNGASA)",
+      subheading: "Single-window admissions and competitive exams open to Humanities & Arts stream students."
+    },
+    vocational: {
+      icon: "⚙️",
+      title: "Showing Lateral Entry & Technical Single-Window Admissions for: 12th Vocational HSC Stream",
+      desc: "Displaying exclusively DOTE Lateral Entry Polytechnic Admissions and TNEA Vocational Engineering Quota. Unlocks Junior QA Engineer, Shop Floor Supervisor, and Direct B.E Degree seats.",
+      heading: "⚙️ Vocational & Technical Single-Window Admissions (DOTE Lateral & TNEA Vocational)",
+      subheading: "Direct 2nd year polytechnic lateral entry and specialized government technical admissions."
+    },
+    sslc_10th: {
+      icon: "📘",
+      title: "Showing Admissions & Recruitment Exams After: 10th Standard (SSLC Pass)",
+      desc: "Displaying exclusively DOTE 3-Year Polytechnic, DET ITI, TNPSC Group 4 & VAO, and TNUSRB Police Constable.",
+      heading: "📘 Direct Higher Education & Recruitment Exams After 10th Standard",
+      subheading: "Government polytechnic diplomas, technical trade certifications, and permanent state public services."
+    },
+    all: {
+      icon: "🌐",
+      title: "Showing All Higher Education Entrance Exams for: 12th Grade Students",
+      desc: "Select your specific 12th-grade academic group above (Computer Science, Biology, Commerce, Arts, or Vocational) to filter exclusively to your eligible exams and career positions.",
+      heading: "📅 12th Grade Entrance Exams & Career Gateways (All Streams)",
+      subheading: "Official registration windows, syllabus blueprints, and 1-click Google Calendar sync across all streams."
+    }
+  };
+
+  const info = groupInfo[activeAcademicGroup] || groupInfo["all"];
+  if (iconEl) iconEl.textContent = info.icon;
+  if (titleEl) titleEl.textContent = info.title;
+  if (descEl) descEl.textContent = info.desc;
+  if (headingEl) headingEl.textContent = info.heading;
+  if (subHeadingEl) subHeadingEl.textContent = info.subheading;
+
+  // Sync position sector filter to match chosen group
+  const sectorMap = {
+    computer_science: "Engineering & Technology",
+    biology: "Medical & Healthcare",
+    commerce: "Banking, Finance & Commerce",
+    arts: "Law & Judiciary"
+  };
+  if (sectorMap[activeAcademicGroup]) {
+    activePosSectorFilter = sectorMap[activeAcademicGroup];
+    const sectorSelect = document.getElementById("position-sector-select");
+    if (sectorSelect) sectorSelect.value = sectorMap[activeAcademicGroup];
+  } else if (activeAcademicGroup === "all") {
+    activePosSectorFilter = "all";
+    const sectorSelect = document.getElementById("position-sector-select");
+    if (sectorSelect) sectorSelect.value = "all";
+  }
+
+  renderSchoolExams();
+  renderCareerPositions();
+}
+
+function filterExamsByGradeStage(stage, btn) {
+  activeExamStageFilter = stage;
+  if (stage === "after_12th" && activeAcademicGroup === "sslc_10th") {
+    activeAcademicGroup = "computer_science";
+  }
+
+  const btn12 = document.getElementById("btn-12th-only-toggle");
+  if (btn12) {
+    if (stage === "after_12th") {
+      btn12.classList.remove("btn-outline-primary");
+      btn12.classList.add("btn-primary", "shadow-sm");
+    } else {
+      btn12.classList.remove("btn-primary", "shadow-sm");
+      btn12.classList.add("btn-outline-primary");
+    }
+  }
+
+  document.querySelectorAll("#exam-academic-group-selector .academic-group-btn").forEach((b) => {
+    if (b.getAttribute("data-group") === activeAcademicGroup) {
+      b.classList.add("active");
+    } else {
+      b.classList.remove("active");
+    }
+  });
+
+  filterExamsByAcademicGroup(activeAcademicGroup);
 }
 
 // -------------------------------------------------------------
@@ -1309,6 +2633,17 @@ function renderCareerPositions() {
   if (!container) return;
 
   let filtered = allCareerPositions;
+
+  // Filter by academic group
+  if (activeAcademicGroup && activeAcademicGroup !== "all") {
+    filtered = filtered.filter((p) => {
+      if (p.target_group && p.target_group.toLowerCase() === activeAcademicGroup.toLowerCase()) {
+        return true;
+      }
+      const pGroups = (p.target_groups || []).map((g) => g.toLowerCase());
+      return pGroups.includes(activeAcademicGroup.toLowerCase());
+    });
+  }
 
   // Filter by qualification stage
   if (activePosStageFilter === "after_10th") {
@@ -1474,6 +2809,7 @@ function resetPositionFilters() {
   activePosStageFilter = "all";
   activePosSectorFilter = "all";
   activePosSearchQuery = "";
+  activeAcademicGroup = "all";
 
   const searchInput = document.getElementById("position-search-input");
   if (searchInput) searchInput.value = "";
@@ -1491,6 +2827,15 @@ function resetPositionFilters() {
     }
   });
 
+  document.querySelectorAll(".academic-group-btn").forEach((btn) => {
+    if (btn.getAttribute("data-academic-group") === "all") {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+
+  renderSchoolExams();
   renderCareerPositions();
 }
 
