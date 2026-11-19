@@ -2217,18 +2217,20 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'conducting_body': 'National Testing Agency (NTA)',
         'eligibility_summary': '12th Standard Pass with Physics, Chemistry & Mathematics. 75% aggregate criteria in '
                                '12th Board.',
-        'exam_date': 'January 2027 (Session 1) & April 2027 (Session 2)',
+        'exam_date': 'Session 1: Jan 22 – Jan 30, 2025 | Session 2: Apr 2 – Apr 9, 2025',
         'exam_name': 'JEE Main (Joint Entrance Examination)',
-        'exam_schedule_breakdown': {   'admit_card_release': '3 Days before examination session',
-                                       'application_window': 'Session 1: Nov - Dec 2026 | Session 2: Feb - Mar 2027',
-                                       'counselling_schedule': 'JoSAA / CSAB Centralized Counselling: June - July 2027',
-                                       'exam_dates': 'Session 1: Jan 22 - Jan 31, 2027 | Session 2: Apr 1 - Apr 12, '
-                                                     '2027'},
+        'exam_schedule_breakdown': {   'admit_card_release': '3 Days before examination date',
+                                       'application_window': 'Session 1: Oct 28 – Nov 22, 2024 | Session 2: Feb – Mar '
+                                                             '2025',
+                                       'counselling_schedule': 'JoSAA / CSAB Centralized Counselling: June – July 2025',
+                                       'exam_dates': 'Session 1: Jan 22 – Jan 30, 2025 | Session 2: Apr 2 – Apr 9, '
+                                                     '2025'},
         'group_badge': '💻 Computer Science / Maths Group',
         'id': 'exam_jee_main_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://jeemain.nta.nic.in',
-        'registration_deadline': 'December 2026 / March 2027',
-        'registration_start': 'November 2026 (Session 1) / February 2027 (Session 2)',
+        'registration_deadline': 'November 22, 2024 (Session 1) / March 2025 (Session 2)',
+        'registration_start': 'October 28, 2024',
         'stage_badge': 'After 12th (PCM)',
         'syllabus_highlights': '300 Marks (Physics 100, Chemistry 100, Mathematics 100). 75 MCQs + Numerical questions '
                                'from 11th & 12th syllabus.',
@@ -2252,18 +2254,18 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
                                 'Chief Technology Officer (CTO)'],
         'conducting_body': 'IIT (Zonal IIT Joint Admission Board)',
         'eligibility_summary': 'Top 2,50,000 qualifiers in JEE Main with Physics, Chemistry, and Mathematics in 12th.',
-        'exam_date': 'May 2027',
+        'exam_date': 'May 18, 2025 (Paper 1: 9 AM-12 PM | Paper 2: 2:30 PM-5:30 PM)',
         'exam_name': 'JEE Advanced (IIT Madras & All IITs)',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Mid-May 2027',
-                                       'application_window': 'Late April - Early May 2027 (Post JEE Main results)',
-                                       'counselling_schedule': 'JoSAA Common Allotment: June - July 2027',
-                                       'exam_dates': 'Third Sunday of May 2027 (Paper 1: 9 AM-12 PM, Paper 2: 2:30 '
-                                                     'PM-5:30 PM)'},
+        'exam_schedule_breakdown': {   'admit_card_release': 'Mid-May 2025',
+                                       'application_window': 'April 27 – May 7, 2025',
+                                       'counselling_schedule': 'JoSAA Centralized Allocation: June – July 2025',
+                                       'exam_dates': 'May 18, 2025 (Sunday: Shift 1 & Shift 2)'},
         'group_badge': '💻 Computer Science / Maths Group',
         'id': 'exam_jee_advanced_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://jeeadv.ac.in',
-        'registration_deadline': 'May 2027',
-        'registration_start': 'April 2027 (Post-JEE Main)',
+        'registration_deadline': 'Early May 2025',
+        'registration_start': 'Late April 2025',
         'stage_badge': 'After 12th (PCM)',
         'syllabus_highlights': 'Paper 1 & Paper 2 (Physics, Chemistry, Maths). Advanced problem solving, multiple '
                                'choice with negative marking.',
@@ -2273,7 +2275,7 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'tn_quota_perks': 'Female supernumerary reservation quota (20%) + PM Research Fellowship (PMRF) eligibility + '
                           'National Talent Search waivers.',
         'top_colleges_tn': ['IIT Madras (Indian Institute of Technology Madras, Chennai)']},
-    {   'admission_type': 'Single-Window Counselling (No Entrance Exam)',
+    {   'admission_type': 'No Entrance Exam (Cutoff out of 200: Maths 100 + Physics 50 + Chemistry 50)',
         'average_salary_package': '₹5.5 LPA - ₹18.5 LPA (Anna Univ CEG/MIT average: ₹11.5 LPA; PSG Tech: ₹12.2 LPA)',
         'career_opportunities_summary': "Tamil Nadu's flagship single-window admission portal for over 450 engineering "
                                         'institutions. Top CEG Guindy, MIT Chromepet, and PSG Tech colleges produce '
@@ -2286,19 +2288,19 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'conducting_body': 'Directorate of Technical Education (DOTE), Chennai, Tamil Nadu',
         'eligibility_summary': '12th Standard Pass with Physics, Chemistry & Mathematics. 7.5% Govt School 100% Free '
                                'Tuition & Hostel Quota.',
-        'exam_date': 'No Entrance Exam (Cutoff out of 200: Maths 100 + Physics 50 + Chemistry 50)',
+        'exam_date': 'No Entrance Exam (Pure 12th PCM Cutoff Merit out of 200)',
         'exam_name': 'TNEA (Tamil Nadu Engineering Admissions)',
-        'exam_schedule_breakdown': {   'admit_card_release': 'No admit card (Pure 12th Marks Cutoff out of 200)',
-                                       'application_window': 'May - June 2027 (Immediately post Tamil Nadu 12th Board '
-                                                             'Results)',
-                                       'counselling_schedule': 'July - August 2027 (4 General Online Counselling '
-                                                               'Rounds)',
-                                       'exam_dates': 'Zero Entrance Exam — Merit Rank List published late June 2027'},
+        'exam_schedule_breakdown': {   'admit_card_release': 'No admit card (Direct 12th Board PCM Cutoff)',
+                                       'application_window': 'May 6 – June 6, 2025 (Post 12th Board Results)',
+                                       'counselling_schedule': 'Rank List: June 26, 2025 | Online Counselling: July – '
+                                                               'August 2025 (4 Rounds)',
+                                       'exam_dates': 'Zero Entrance Exam — Admission on 12th Cutoff Merit'},
         'group_badge': '💻 Computer Science / Maths Group',
         'id': 'exam_tnea_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://www.tneaonline.org',
-        'registration_deadline': 'June 2027',
-        'registration_start': 'May 2027 (Post-12th Results)',
+        'registration_deadline': 'June 6, 2025',
+        'registration_start': 'May 6, 2025',
         'stage_badge': 'After 12th (HSC PCM)',
         'syllabus_highlights': 'Tamil Nadu 12th State Board / CBSE PCM curriculum. Single-window online choice filling '
                                'across 4 rounds based on aggregate cutoff.',
@@ -2327,17 +2329,18 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'conducting_body': 'BITS Pilani',
         'eligibility_summary': '12th Pass with min 75% aggregate in Physics, Chemistry, and Mathematics (min 60% in '
                                'each).',
-        'exam_date': 'May & June 2027 (Session 1 & 2)',
+        'exam_date': 'Session 1: May 26 – May 30, 2025 | Session 2: June 22 – June 26, 2025',
         'exam_name': 'BITSAT (Birla Institute of Technology and Science Admission Test)',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Slot booking opens 10 days before exams',
-                                       'application_window': 'Session 1: Jan - April 2027 | Session 2: May - June 2027',
-                                       'counselling_schedule': 'July - August 2027 (Iterative Seat Allocation Rounds)',
-                                       'exam_dates': 'Session 1: Late May 2027 | Session 2: Late June 2027'},
+        'exam_schedule_breakdown': {   'admit_card_release': 'Slot Booking opens 7 days before exams',
+                                       'application_window': 'Jan 15 – Apr 18, 2025',
+                                       'counselling_schedule': 'Iterative Seat Allocation Rounds: July – August 2025',
+                                       'exam_dates': 'Session 1: May 26–30, 2025 | Session 2: June 22–26, 2025'},
         'group_badge': '💻 Computer Science / Maths Group',
         'id': 'exam_bitsat_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://www.bitsadmission.com',
-        'registration_deadline': 'April 2027',
-        'registration_start': 'January 2027',
+        'registration_deadline': 'April 18, 2025 (Session 1) / June 10, 2025 (Session 2)',
+        'registration_start': 'January 15, 2025',
         'stage_badge': 'After 12th (PCM)',
         'syllabus_highlights': '130 Questions: Physics (30), Chemistry (30), English & Logical Reasoning (20), '
                                'Mathematics (40). 3 Hours duration.',
@@ -2360,17 +2363,19 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'conducting_body': 'Council of Architecture (CoA)',
         'eligibility_summary': '12th Standard Pass with Physics, Chemistry & Mathematics (min 50% marks in PCM and '
                                'aggregate).',
-        'exam_date': 'Multiple Weekend Sessions (April - July 2027)',
+        'exam_date': 'April 6 to July 2025 (Conducted every Saturday & Sunday)',
         'exam_name': 'NATA (National Aptitude Test in Architecture)',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Available 3 days prior to opted weekend slot',
-                                       'application_window': 'March - July 2027 (Multiple testing weekend slots)',
-                                       'counselling_schedule': 'DOTE Tamil Nadu B.Arch Counselling: July - August 2027',
-                                       'exam_dates': 'Conducted every Saturday & Sunday between April and July 2027'},
+        'exam_schedule_breakdown': {   'admit_card_release': '3 Days before opted weekend slot',
+                                       'application_window': 'March 1 – July 10, 2025',
+                                       'counselling_schedule': 'DOTE Tamil Nadu B.Arch Single Window: July – August '
+                                                               '2025',
+                                       'exam_dates': 'April 6 – July 2025 (Weekends: 2 Shifts Daily)'},
         'group_badge': '💻 Computer Science / Maths Group',
         'id': 'exam_nata_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://www.nata.in',
-        'registration_deadline': 'July 2027',
-        'registration_start': 'March 2027',
+        'registration_deadline': 'July 10, 2025',
+        'registration_start': 'March 1, 2025',
         'stage_badge': 'After 12th (PCM)',
         'syllabus_highlights': '200 Marks: Visual reasoning, aesthetic sensitivity, architectural history, basic '
                                'mathematics, and drawing aptitude.',
@@ -2397,18 +2402,18 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'conducting_body': 'Union Public Service Commission (UPSC)',
         'eligibility_summary': 'Unmarried male/female candidates aged 16.5-19.5 yrs. 12th PCM required for Air Force & '
                                'Navy wings; Any stream for Army.',
-        'exam_date': 'April 2027 (NDA I) / September 2027 (NDA II)',
+        'exam_date': 'NDA I: April 13, 2025 | NDA II: September 14, 2025',
         'exam_name': 'UPSC NDA & NA Exam (Air Force, Navy & Army Officer Cadets)',
         'exam_schedule_breakdown': {   'admit_card_release': '3 Weeks before written exam',
-                                       'application_window': 'NDA I: Dec 2026 - Jan 2027 | NDA II: May - June 2027',
-                                       'counselling_schedule': 'Services Selection Board (SSB 5-Day Interview) -> '
-                                                               'Medicals -> Merit List',
-                                       'exam_dates': 'NDA I: Mid April 2027 | NDA II: Early September 2027'},
+                                       'application_window': 'NDA I: Dec 11–31, 2024 | NDA II: May 28–Jun 17, 2025',
+                                       'counselling_schedule': '5-Day SSB Interview: July – October 2025',
+                                       'exam_dates': 'NDA I: April 13, 2025 (Sun) | NDA II: September 14, 2025 (Sun)'},
         'group_badge': '💻 CS / Maths (Air Force/Navy) & All Streams (Army)',
         'id': 'exam_nda_upsc_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://www.upsc.gov.in',
-        'registration_deadline': 'January 2027 (NDA I) / June 2027 (NDA II)',
-        'registration_start': 'December 2026 (NDA I) / May 2027 (NDA II)',
+        'registration_deadline': 'December 31, 2024 (NDA I) / June 17, 2025 (NDA II)',
+        'registration_start': 'December 11, 2024',
         'stage_badge': 'After 12th (PCM / Any)',
         'syllabus_highlights': 'Mathematics (300 Marks, 120 Qs) + General Ability Test (600 Marks: English 200 + GK '
                                '400). Total 900 Marks.',
@@ -2420,7 +2425,7 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
                           'Tamil Nadu.',
         'top_colleges_tn': [   'National Defence Academy (Khadakwasla) with specialized Tamil Nadu air bases '
                                '(Tambaram, Sulur, Thanjavur)']},
-    {   'admission_type': 'Direct SSB Shortlisting via JEE Main',
+    {   'admission_type': 'No Written Exam (Shortlisting based on JEE Main CRL)',
         'average_salary_package': '₹13.5 LPA - ₹18.0 LPA (Level 10 Pay: ₹56,100/mo basic + MSP ₹15,500 + Allowances)',
         'career_opportunities_summary': 'Prestigious 4-year B.Tech degree at Indian Naval Academy (INA Ezhimala) with '
                                         '100% expenses borne by the Indian Navy, followed by an immediate permanent '
@@ -2432,19 +2437,19 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'conducting_body': 'Indian Navy',
         'eligibility_summary': '12th Standard Pass with min 70% in Physics, Chemistry & Maths + min 50% in English + '
                                'Valid JEE Main CRL Rank.',
-        'exam_date': 'No Written Exam (Shortlisting based on JEE Main Common Rank List)',
+        'exam_date': 'Zero Written Exam (Direct 5-Day SSB Interview Call)',
         'exam_name': 'Indian Navy 10+2 B.Tech Cadet Scheme',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Shortlisting based on JEE Main All India Common Rank '
-                                                             'List (CRL)',
-                                       'application_window': 'June - July 2027 (Course starts Jan) / Nov - Dec 2027 '
-                                                             '(Course starts July)',
-                                       'counselling_schedule': 'Final Merit List published based on SSB marks',
-                                       'exam_dates': 'Direct 5-Day SSB Interview Call without separate written exam'},
+        'exam_schedule_breakdown': {   'admit_card_release': 'SSB Call Letter issued 3 weeks prior',
+                                       'application_window': 'Bi-annual: Jan – Feb and June – July',
+                                       'counselling_schedule': 'SSB Interviews at Bangalore, Bhopal, Coimbatore, '
+                                                               'Visakhapatnam',
+                                       'exam_dates': 'Zero Written Exam — Shortlisting based on JEE Main CRL'},
         'group_badge': '💻 Computer Science / Maths Group',
         'id': 'exam_navy_cadet_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://www.joinindiannavy.gov.in',
-        'registration_deadline': 'July 2027 & January 2028',
-        'registration_start': 'June 2027 & December 2027',
+        'registration_deadline': 'February 2025 / July 2025',
+        'registration_start': 'January 2025 (Jan Course) / June 2025 (Jul Course)',
         'stage_badge': 'After 12th (PCM min 70%)',
         'syllabus_highlights': 'Direct SSB Interview call for shortlisted candidates based on JEE Main rank. 100% Free '
                                'funded B.Tech by Govt.',
@@ -2471,18 +2476,19 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
                            '(DME) TN',
         'eligibility_summary': '12th Pass with Physics, Chemistry & Biology + Valid NEET-UG Score. 7.5% Horizontal '
                                'Reservation for TN Govt School Students with 100% Free Education.',
-        'exam_date': 'May 2027 (First Sunday)',
+        'exam_date': 'May 4, 2025 (Sunday: 2:00 PM – 5:00 PM)',
         'exam_name': 'NEET-UG & Tamil Nadu Medical Selection (85% State Quota)',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Last week of April 2027',
-                                       'application_window': 'February - March 2027 (via neet.nta.nic.in)',
-                                       'counselling_schedule': 'Tamil Nadu DME Selection Committee Online Counselling: '
-                                                               'July - August 2027',
-                                       'exam_dates': 'First Sunday of May 2027 (Single Shift: 2:00 PM - 5:20 PM)'},
+        'exam_schedule_breakdown': {   'admit_card_release': 'First week of May 2025',
+                                       'application_window': 'February 9 – March 16, 2025',
+                                       'counselling_schedule': 'TN Medical Selection 85% State Quota: July – August '
+                                                               '2025',
+                                       'exam_dates': 'May 4, 2025 (Single Shift: 2:00 PM - 5:00 PM)'},
         'group_badge': '🧬 Biology Group (PCB / Bio-Maths)',
         'id': 'exam_tn_medical_neet_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://www.tnmedicalselection.net',
-        'registration_deadline': 'March 2027',
-        'registration_start': 'February 2027',
+        'registration_deadline': 'March 16, 2025',
+        'registration_start': 'February 9, 2025',
         'stage_badge': 'After 12th (HSC PCB)',
         'syllabus_highlights': 'NEET-UG 720 Marks (Biology 360, Physics 180, Chemistry 180). TN State Rank list '
                                'published exclusively for 85% State Quota seats.',
@@ -2498,7 +2504,7 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
                                'Madurai Medical College',
                                'Coimbatore Medical College',
                                'Tirunelveli Medical College']},
-    {   'admission_type': 'Single-Window Counselling (No Entrance Exam)',
+    {   'admission_type': 'No Entrance Exam (Cutoff out of 200 based on 12th PCB Marks)',
         'average_salary_package': '₹4.0 LPA - ₹10.5 LPA (UK NHS sponsorship offers ₹28 - ₹35 LPA)',
         'career_opportunities_summary': 'High-demand healthcare professions with guaranteed domestic placement across '
                                         'top hospitals and massive global immigration pathways to UK, Canada, Ireland, '
@@ -2511,19 +2517,19 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'conducting_body': 'Selection Committee, Directorate of Medical Education (DME) TN',
         'eligibility_summary': '12th Standard Pass with Physics, Chemistry & Biology. Cutoff formula: Biology (100) + '
                                'Physics (50) + Chemistry (50) = 200.',
-        'exam_date': 'No Entrance Exam (Merit Cutoff out of 200 based on 12th PCB Marks)',
+        'exam_date': 'No Entrance Exam (Merit Cutoff out of 200: Bio 100 + Phy 50 + Chem 50)',
         'exam_name': 'Tamil Nadu Paramedical & B.Sc Nursing Single-Window Counselling',
-        'exam_schedule_breakdown': {   'admit_card_release': 'No admit card (Pure 12th Marks Cutoff)',
-                                       'application_window': 'June - July 2027 (via tnmedicalselection.net)',
-                                       'counselling_schedule': 'August - September 2027 (Online Single-Window '
-                                                               'Counselling)',
-                                       'exam_dates': 'Zero Entrance Exam — Rank List based on Physics, Chemistry, '
-                                                     'Biology cutoff'},
+        'exam_schedule_breakdown': {   'admit_card_release': 'No admit card (Direct 12th PCB Cutoff)',
+                                       'application_window': 'June – July 2025 (Online via tnmedicalselection.net)',
+                                       'counselling_schedule': 'Merit Rank List: July 2025 | Online Allotment: August '
+                                                               '2025',
+                                       'exam_dates': 'Zero Entrance Exam — Direct 12th Board Cutoff Merit'},
         'group_badge': '🧬 Biology Group (PCB / Bio-Maths)',
         'id': 'exam_paramedical_nursing_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://www.tnmedicalselection.net',
-        'registration_deadline': 'June 2027',
-        'registration_start': 'May 2027 (Post-12th Results)',
+        'registration_deadline': 'July 2025',
+        'registration_start': 'June 2025',
         'stage_badge': 'After 12th (PCB)',
         'syllabus_highlights': 'Single-window online seat allotment based purely on 12th PCB mark cutoff. 100% Free '
                                'for 7.5% Govt School quota.',
@@ -2537,7 +2543,7 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
                                'Stanley Medical College',
                                'Chengalpattu Govt Medical College',
                                'PSG College of Nursing (Coimbatore)']},
-    {   'admission_type': 'Single-Window Counselling (No Entrance Exam)',
+    {   'admission_type': 'No Entrance Exam (Merit Cutoff based on 12th Marks)',
         'average_salary_package': '₹7.2 LPA - ₹15.0 LPA (TNPSC VAS starting salary: ₹56,100 basic + DA + HRA)',
         'career_opportunities_summary': "TANUVAS is India's pioneer veterinary university. Graduates are appointed "
                                         'directly as Gazetted Class-II Officers in the Government of Tamil Nadu Animal '
@@ -2550,18 +2556,18 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'conducting_body': 'Tamil Nadu Veterinary and Animal Sciences University (TANUVAS), Chennai',
         'eligibility_summary': '12th Pass with PCB (Cutoff out of 200). 7.5% Horizontal Reservation for TN Govt School '
                                'students with 100% Free Fees.',
-        'exam_date': 'No Entrance Exam (Merit Cutoff based on 12th Marks)',
+        'exam_date': 'No Entrance Exam (Pure 12th PCB Cutoff Merit out of 200)',
         'exam_name': 'TANUVAS Veterinary Admissions (BVSc & AH / B.Tech)',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Merit rank list published late June 2027',
-                                       'application_window': 'May - June 2027 (via tanuvas.ac.in)',
-                                       'counselling_schedule': 'July - August 2027 (Online choice filling & in-person '
-                                                               'certificate verification)',
-                                       'exam_dates': 'Zero Entrance Exam (Cutoff out of 200 based on 12th Board PCB)'},
+        'exam_schedule_breakdown': {   'admit_card_release': 'No admit card (Online Merit List)',
+                                       'application_window': 'June – July 2025',
+                                       'counselling_schedule': 'Online Counselling Rounds: August 2025',
+                                       'exam_dates': 'Zero Entrance Exam — Direct 12th PCB Cutoff'},
         'group_badge': '🧬 Biology Group (PCB / Bio-Maths)',
         'id': 'exam_tanuvas_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://tanuvas.ac.in',
-        'registration_deadline': 'July 2027',
-        'registration_start': 'June 2027',
+        'registration_deadline': 'July 2025',
+        'registration_start': 'June 2025',
         'stage_badge': 'After 12th (PCB Stream)',
         'syllabus_highlights': 'Admission to historic Madras Veterinary College (Chennai), VC&RI Namakkal, '
                                'Tirunelveli, Orathanadu, and Salem.',
@@ -2575,7 +2581,7 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
                                'VCRI Tirunelveli',
                                'VCRI Orathanadu (Thanjavur)',
                                'VCRI Salem']},
-    {   'admission_type': 'Single-Window Counselling (No Entrance Exam)',
+    {   'admission_type': 'No Entrance Exam (Merit Cutoff based on 12th Marks)',
         'average_salary_package': '₹5.5 LPA - ₹14.0 LPA (AO Scale: ₹37,700 - ₹1,19,500)',
         'career_opportunities_summary': "TNAU is ranked among India's top agricultural universities. Strong campus "
                                         'placements in agribusiness, fertilizer firms, banking, and fast-track '
@@ -2588,17 +2594,19 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'conducting_body': 'Tamil Nadu Agricultural University (TNAU), Coimbatore',
         'eligibility_summary': '12th Pass with PCB / Botany & Zoology or PCM. TNAU Cutoff calculated out of 200. 7.5% '
                                'Govt School Free Quota.',
-        'exam_date': 'No Entrance Exam (Merit Cutoff based on 12th Marks)',
+        'exam_date': 'No Entrance Exam (12th Board Cutoff Merit out of 200)',
         'exam_name': 'TNAU Undergraduate Admissions (Agriculture & Horticulture)',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Rank list published early July 2027',
-                                       'application_window': 'May - June 2027 (via tnau.ac.in)',
-                                       'counselling_schedule': 'July - August 2027 (General & Special Quota Allotment)',
-                                       'exam_dates': 'Zero Entrance Exam (Aggregate 12th PCB Cutoff out of 200)'},
+        'exam_schedule_breakdown': {   'admit_card_release': 'No admit card',
+                                       'application_window': 'May – June 2025',
+                                       'counselling_schedule': 'Rank List: June 2025 | Single Window Counselling: July '
+                                                               '2025',
+                                       'exam_dates': 'Zero Entrance Exam — Merit based on 12th Science Marks'},
         'group_badge': '🧬 Biology / 💻 Maths Group',
         'id': 'exam_tnau_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://tnau.ac.in',
-        'registration_deadline': 'June 2027',
-        'registration_start': 'May 2027',
+        'registration_deadline': 'June 2025',
+        'registration_start': 'May 2025',
         'stage_badge': 'After 12th (PCB / PCM)',
         'syllabus_highlights': 'Online rank list and choice filling for constituent agricultural campuses in '
                                'Coimbatore, Madurai, Killikulam, Trichy.',
@@ -2612,7 +2620,7 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
                                'AC&RI Killikulam (Thoothukudi)',
                                'Horticultural College Periyakulam',
                                'Forest College & Research Institute Mettupalayam']},
-    {   'admission_type': 'Single-Window Counselling (No Entrance Exam)',
+    {   'admission_type': 'No Entrance Exam (Merit Cutoff based on 12th Science Marks)',
         'average_salary_package': '₹4.2 LPA - ₹11.0 LPA',
         'career_opportunities_summary': 'Essential healthcare sector qualifying students to formulate, manufacture, '
                                         'and dispense medicines, with direct recruitment into TN Medical Services '
@@ -2624,17 +2632,18 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
                                 'Quality Control & Regulatory Affairs Officer'],
         'conducting_body': 'Selection Committee, DME Tamil Nadu',
         'eligibility_summary': '12th Standard Pass with Physics, Chemistry, and Biology or Mathematics.',
-        'exam_date': 'No Entrance Exam (Merit Cutoff based on 12th Science Marks)',
+        'exam_date': 'No Entrance Exam (Merit Cutoff out of 200 based on 12th PCB/PCM)',
         'exam_name': 'Tamil Nadu B.Pharm & D.Pharm Single-Window Counselling',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Merit list published late July 2027',
-                                       'application_window': 'June - July 2027 (via tnmedicalselection.net)',
-                                       'counselling_schedule': 'August 2027 (Single-Window Online Choice Filling)',
-                                       'exam_dates': 'Zero Entrance Exam (Cutoff out of 200)'},
+        'exam_schedule_breakdown': {   'admit_card_release': 'No admit card',
+                                       'application_window': 'June – July 2025',
+                                       'counselling_schedule': 'Merit Rank List: July 2025 | Counselling: August 2025',
+                                       'exam_dates': 'Zero Entrance Exam — Direct 12th Board PCB/PCM Cutoff'},
         'group_badge': '🧬 Biology / 💻 Maths Group',
         'id': 'exam_bpharm_tn_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://www.tnmedicalselection.net',
-        'registration_deadline': 'June 2027',
-        'registration_start': 'May 2027',
+        'registration_deadline': 'July 2025',
+        'registration_start': 'June 2025',
         'stage_badge': 'After 12th (PCB / PCM)',
         'syllabus_highlights': 'Cutoff calculated out of 200. Merit seat allotment for Govt Medical College Pharmacy '
                                'departments.',
@@ -2660,20 +2669,19 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
                                 'Investment Banker & Portfolio Manager'],
         'conducting_body': 'The Institute of Chartered Accountants of India (ICAI)',
         'eligibility_summary': '12th Standard Pass or appearing in final exams in any stream (Commerce preferred).',
-        'exam_date': 'January, May, September 2027',
+        'exam_date': 'Jan 12, 14, 16, 18, 2025 (Jan Session) | June 2025 (June Session)',
         'exam_name': 'ICAI CA Foundation Examination',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Available 14 days before exam dates on '
-                                                             'eservices.icai.org',
-                                       'application_window': 'Open year-round (Must register 4 months prior to opted '
-                                                             'examination month)',
-                                       'counselling_schedule': 'Result within 40 days -> Direct entry into CA '
-                                                               'Intermediate & Articleship',
-                                       'exam_dates': 'January, May/June, and September cycles (4 Papers)'},
+        'exam_schedule_breakdown': {   'admit_card_release': '14 Days before examination',
+                                       'application_window': 'Held tri-annually: January, June, and September',
+                                       'counselling_schedule': 'Direct Registration with ICAI for Intermediate upon '
+                                                               'passing',
+                                       'exam_dates': 'Jan 12, 14, 16, 18, 2025 | June 2025 | September 2025'},
         'group_badge': '📊 Commerce & Accountancy Group',
         'id': 'exam_ca_foundation_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://www.icai.org',
-        'registration_deadline': 'January / May / September',
-        'registration_start': 'Open Year-Round (Exams thrice a year)',
+        'registration_deadline': 'November 2024 / April 2025',
+        'registration_start': 'September 2024 / February 2025',
         'stage_badge': 'After 12th (Commerce / Any)',
         'syllabus_highlights': '4 Papers (400 Marks): Accounting (100), Business Laws (100), Quantitative Aptitude '
                                '(100), Business Economics (100).',
@@ -2696,19 +2704,18 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
                                 'ERP Financial Consultant'],
         'conducting_body': 'The Institute of Cost Accountants of India (ICMAI)',
         'eligibility_summary': '12th Standard Pass in Commerce, Science, or Arts stream.',
-        'exam_date': 'June 2027 & December 2027',
+        'exam_date': 'June 15, 2025 (June Term) | December 14, 2025 (Dec Term)',
         'exam_name': 'ICMAI CMA Foundation Examination',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Available 10 days before exam',
-                                       'application_window': 'For June Exam: Register by Jan 31 | For Dec Exam: '
-                                                             'Register by July 31',
-                                       'counselling_schedule': 'Direct progression into CMA Intermediate upon scoring '
-                                                               'min 50% aggregate',
-                                       'exam_dates': 'Mid-June 2027 & Mid-December 2027'},
+        'exam_schedule_breakdown': {   'admit_card_release': '10 Days before exam',
+                                       'application_window': 'Bi-annual: June and December terms',
+                                       'counselling_schedule': 'Direct progression to CMA Intermediate',
+                                       'exam_dates': 'June 15, 2025 | December 14, 2025'},
         'group_badge': '📊 Commerce & Accountancy Group',
         'id': 'exam_cma_foundation_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://icmai.in',
-        'registration_deadline': 'January 31 / July 31',
-        'registration_start': 'Open Year-Round (June & Dec terms)',
+        'registration_deadline': 'April 10, 2025 (June Term) / October 10, 2025 (Dec Term)',
+        'registration_start': 'January 2025 / July 2025',
         'stage_badge': 'After 12th (Commerce)',
         'syllabus_highlights': 'Paper 1 (Fundamentals of Business Laws), Paper 2 (Financial and Cost Accounting), '
                                'Paper 3 (Economics and Management), Paper 4 (Quantitative Techniques).',
@@ -2730,19 +2737,18 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
                                 'Securities & SEBI Law Specialist'],
         'conducting_body': 'The Institute of Company Secretaries of India (ICSI)',
         'eligibility_summary': '12th Standard Pass in any stream except Fine Arts.',
-        'exam_date': 'January, May, July, November 2027',
+        'exam_date': 'Jan 11, 2025 | May 10, 2025 | July 12, 2025 | Nov 8, 2025',
         'exam_name': 'ICSI CSEET (Company Secretary Executive Entrance Test)',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Admit card download 10 days prior to online exam',
-                                       'application_window': 'Conducting 4 times a year: January, May, July, and '
-                                                             'November cycles',
-                                       'counselling_schedule': 'Results within 10 days -> Immediate enrollment into CS '
-                                                               'Executive Programme',
-                                       'exam_dates': 'Second Saturday/Sunday of Jan, May, July, Nov'},
+        'exam_schedule_breakdown': {   'admit_card_release': '7 Days before test',
+                                       'application_window': 'Held 4 times annually: January, May, July, November',
+                                       'counselling_schedule': 'Direct admission to CS Executive program',
+                                       'exam_dates': 'Jan 11, 2025 | May 10, 2025 | July 12, 2025 | Nov 8, 2025'},
         'group_badge': '📊 Commerce & Accountancy Group',
         'id': 'exam_cs_cset_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://www.icsi.edu',
-        'registration_deadline': 'Quarterly Deadlines',
-        'registration_start': 'Conducted 4 times a year (Jan, May, July, Nov)',
+        'registration_deadline': 'Dec 15, 2024 / Apr 15, 2025 / Jun 15, 2025 / Oct 15, 2025',
+        'registration_start': 'Continuous open portal (4 sessions per year)',
         'stage_badge': 'After 12th (Commerce / Any)',
         'syllabus_highlights': 'Business Communication, Legal Aptitude & Logical Reasoning, Economic & Business '
                                'Environment, Current Affairs.',
@@ -2751,7 +2757,7 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'target_stage': 'after_12th',
         'tn_quota_perks': 'Remote proctored online test with zero application barrier for 12th pass students.',
         'top_colleges_tn': ['ICSI Southern India Regional Office (T. Nagar, Chennai)']},
-    {   'admission_type': 'Single-Window Counselling (No Entrance Exam)',
+    {   'admission_type': 'No Entrance Exam (Cutoff out of 400 based on 12th Marks)',
         'average_salary_package': '₹3.5 LPA - ₹7.5 LPA (Top Loyola/MCC/Stella Maris grads reach ₹9 LPA)',
         'career_opportunities_summary': 'Subsidized and prestigious undergraduate commerce education across Tamil Nadu '
                                         'government and aided institutions. High campus recruitment into Big-4 '
@@ -2764,19 +2770,18 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'conducting_body': 'Directorate of Collegiate Education (DCE), Tamil Nadu',
         'eligibility_summary': '12th Pass with Commerce & Accountancy. 100% Free Education under Pudhumai Penn / Tamil '
                                'Puthalvan.',
-        'exam_date': 'No Entrance Exam (Merit Cutoff out of 400 based on 12th Marks)',
+        'exam_date': 'No Entrance Exam (Cutoff out of 400 based on 12th Commerce & Accountancy)',
         'exam_name': 'TNGASA (Tamil Nadu Govt Colleges Commerce Admissions)',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Merit rank list published mid-June 2027',
-                                       'application_window': 'May - June 2027 (via tngasa.in)',
-                                       'counselling_schedule': 'Late June - July 2027 (College-wise single window '
-                                                               'counselling)',
-                                       'exam_dates': 'Zero Entrance Exam (Based purely on 12th Commerce & Accounts '
-                                                     'marks)'},
+        'exam_schedule_breakdown': {   'admit_card_release': 'No admit card (Online College Rank List)',
+                                       'application_window': 'May – June 2025 (via tngasa.in portal)',
+                                       'counselling_schedule': 'Single Window Online Allotment: June – July 2025',
+                                       'exam_dates': 'Zero Entrance Exam — Pure 12th Board Merit'},
         'group_badge': '📊 Commerce & Accountancy Group',
         'id': 'exam_tngasa_commerce_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://www.tngasa.in',
-        'registration_deadline': 'June 2027',
-        'registration_start': 'May 2027 (Post-12th Results)',
+        'registration_deadline': 'June 2025',
+        'registration_start': 'May 2025',
         'stage_badge': 'After 12th (Commerce / HSC)',
         'syllabus_highlights': 'Single-window centralized merit rank list for all 38 districts of Tamil Nadu. Annual '
                                'tuition fees as low as ₹2,200/year.',
@@ -2791,7 +2796,7 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
                                'Madras Christian College (MCC)',
                                'PSG College of Arts and Science (Coimbatore)',
                                'The New College (Chennai)']},
-    {   'admission_type': 'Single-Window Counselling (No Entrance Exam)',
+    {   'admission_type': 'No Entrance Exam (Merit Cutoff based on 12th Aggregate)',
         'average_salary_package': '₹6.5 LPA - ₹18.0 LPA (Corporate law firms offer ₹12 - ₹20 LPA)',
         'career_opportunities_summary': "Tamil Nadu's premier university for legal education. School of Excellence in "
                                         'Law (SOEL) produces prominent judges, senior advocates, and legal leaders.',
@@ -2803,19 +2808,19 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'conducting_body': 'Tamil Nadu Dr. Ambedkar Law University (TNDALU), Chennai',
         'eligibility_summary': '12th Standard Pass with min 70% for SOEL (60% for SC/ST). 7.5% Govt School Horizontal '
                                'Reservation applies.',
-        'exam_date': 'No Entrance Exam (Merit Cutoff based on 12th Aggregate)',
+        'exam_date': 'No Entrance Exam (12th Board Aggregate Cutoff Merit)',
         'exam_name': 'TNDALU 5-Year Honours Law Admissions (SOEL & 14 Govt Law Colleges)',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Cutoff and Rank List published early July 2027',
-                                       'application_window': 'May - June 2027 (via tndalu.ac.in)',
-                                       'counselling_schedule': 'July - August 2027 (Online counselling rounds for SOEL '
-                                                               '& Govt Law Colleges)',
-                                       'exam_dates': 'Zero Entrance Exam (Merit Cutoff out of 100 based on 12th Board '
-                                                     'aggregate)'},
+        'exam_schedule_breakdown': {   'admit_card_release': 'No admit card',
+                                       'application_window': 'May – June 2025 (via tndalu.ac.in)',
+                                       'counselling_schedule': 'Cutoff Rank List: June 2025 | Online Counselling: July '
+                                                               '2025',
+                                       'exam_dates': 'Zero Entrance Exam — Direct 12th Aggregate Cutoff'},
         'group_badge': '📚 Arts / 📊 Commerce / All Groups',
         'id': 'exam_tndalu_law_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://www.tndalu.ac.in',
-        'registration_deadline': 'June 2027',
-        'registration_start': 'May 2027',
+        'registration_deadline': 'June 2025',
+        'registration_start': 'May 2025',
         'stage_badge': 'After 12th (Any Stream)',
         'syllabus_highlights': 'Single-window online counselling for School of Excellence in Law (Chennai) and 14 '
                                'Government Law Colleges across Tamil Nadu.',
@@ -2841,18 +2846,19 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
                                 'Civil Services Legal Officer'],
         'conducting_body': 'Consortium of National Law Universities (NLUs)',
         'eligibility_summary': '12th Pass or appearing in any stream with min 45% marks (40% for SC/ST).',
-        'exam_date': 'First Sunday of December 2026',
+        'exam_date': 'December 1, 2024 (2:00 PM – 4:00 PM) | Next Cycle: Dec 7, 2025',
         'exam_name': 'CLAT (Common Law Admission Test)',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Mid-November 2026',
-                                       'application_window': 'July - October 2026 (via consortiumofnlus.ac.in)',
-                                       'counselling_schedule': 'January - May 2027 (Centralized NLU Seat Allocation '
-                                                               'Rounds)',
-                                       'exam_dates': 'First Sunday of December 2026 (2:00 PM - 4:00 PM)'},
+        'exam_schedule_breakdown': {   'admit_card_release': 'Mid-November 2024',
+                                       'application_window': 'July 15 – October 22, 2024',
+                                       'counselling_schedule': 'Centralized NLU Allotment (5 Rounds): January – May '
+                                                               '2025',
+                                       'exam_dates': 'December 1, 2024 | Next National Exam: December 7, 2025'},
         'group_badge': '📚 Arts / 📊 Commerce / All Streams',
         'id': 'exam_clat_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://consortiumofnlus.ac.in',
-        'registration_deadline': 'November 2026',
-        'registration_start': 'July 2026',
+        'registration_deadline': 'October 22, 2024',
+        'registration_start': 'July 15, 2024',
         'stage_badge': 'After 12th (Any Stream)',
         'syllabus_highlights': '120 MCQs (English, Current Affairs, Legal Reasoning, Logical Reasoning, Quantitative '
                                'Techniques). 2 Hours duration.',
@@ -2864,7 +2870,7 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
                           'reserved categories.',
         'top_colleges_tn': [   'Tamil Nadu National Law University (TNNLU, Tiruchirappalli — 50% Home State Quota for '
                                'TN candidates)']},
-    {   'admission_type': 'Single-Window Counselling (No Entrance Exam)',
+    {   'admission_type': 'No Entrance Exam (Merit Cutoff based on 12th Marks)',
         'average_salary_package': '₹3.2 LPA - ₹8.0 LPA',
         'career_opportunities_summary': 'Builds strong foundational analytical and linguistic competencies. Students '
                                         'can transition seamlessly into Civil Services, Journalism, Public '
@@ -2877,17 +2883,18 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'conducting_body': 'Directorate of Collegiate Education (DCE), Tamil Nadu',
         'eligibility_summary': '12th Standard Pass in Arts or any stream. 100% Free Tuition for TN Govt School '
                                'students.',
-        'exam_date': 'No Entrance Exam (Merit Cutoff based on 12th Marks)',
+        'exam_date': 'No Entrance Exam (12th Board Marks Merit Selection)',
         'exam_name': 'TNGASA (Tamil Nadu Govt Colleges Arts & Humanities Admissions)',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Rank list published mid-June 2027',
-                                       'application_window': 'May - June 2027 (via tngasa.in)',
-                                       'counselling_schedule': 'June - July 2027 (In-person / Online Choice Selection)',
-                                       'exam_dates': 'Zero Entrance Exam (Cutoff based on 12th Board marks)'},
+        'exam_schedule_breakdown': {   'admit_card_release': 'No admit card',
+                                       'application_window': 'May – June 2025',
+                                       'counselling_schedule': 'Direct College Counselling: June – July 2025',
+                                       'exam_dates': 'Zero Entrance Exam — Direct 12th Aggregate Merit'},
         'group_badge': '📚 Arts & Humanities Group',
         'id': 'exam_tngasa_arts_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://www.tngasa.in',
-        'registration_deadline': 'June 2027',
-        'registration_start': 'May 2027 (Post-12th Results)',
+        'registration_deadline': 'June 2025',
+        'registration_start': 'May 2025',
         'stage_badge': 'After 12th (Arts / Any)',
         'syllabus_highlights': 'Single-window application for historic colleges like Presidency College Chennai, Govt '
                                'Arts College Coimbatore, etc.',
@@ -2913,19 +2920,19 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
                                 'Footwear & Accessories Designer'],
         'conducting_body': 'National Institute of Fashion Technology & NTA',
         'eligibility_summary': '12th Standard Pass in any stream from recognized board.',
-        'exam_date': 'February 2027',
+        'exam_date': 'February 9, 2025 (Shift 1: 9 AM-12 PM | Shift 2: 2:30 PM-5:30 PM)',
         'exam_name': 'NIFT Entrance Examination (Fashion Design & Technology)',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Mid-January 2027',
-                                       'application_window': 'November - December 2026 (via nift.ac.in)',
-                                       'counselling_schedule': 'Stage 2 Situation Test (April 2027) -> Final Seat '
-                                                               'Allotment (May - June 2027)',
-                                       'exam_dates': 'First Sunday of February 2027 (Stage 1: CAT & GAT Written '
-                                                     'Exams)'},
+        'exam_schedule_breakdown': {   'admit_card_release': 'February 2, 2025',
+                                       'application_window': 'November 22, 2024 – January 6, 2025',
+                                       'counselling_schedule': 'Stage 2 Situation Test: April 2025 | Counselling: May '
+                                                               '– June 2025',
+                                       'exam_dates': 'February 9, 2025 (Sunday: CAT & GAT)'},
         'group_badge': '📚 Arts / 🎨 Design / All Streams',
         'id': 'exam_nift_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://www.nift.ac.in',
-        'registration_deadline': 'December 2026',
-        'registration_start': 'November 2026',
+        'registration_deadline': 'January 6, 2025',
+        'registration_start': 'November 22, 2024',
         'stage_badge': 'After 12th (Any Stream)',
         'syllabus_highlights': 'Creative Ability Test (CAT) + General Ability Test (GAT) followed by Situation Test. '
                                'Drawing, design ideation, and visual thinking.',
@@ -2935,7 +2942,7 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'target_stage': 'after_12th',
         'tn_quota_perks': '20% Domicile Supernumerary seats for Tamil Nadu state candidates at NIFT Chennai.',
         'top_colleges_tn': ['National Institute of Fashion Technology (NIFT Chennai Campus, Taramani)']},
-    {   'admission_type': 'Single-Window Counselling (No Entrance Exam)',
+    {   'admission_type': 'No Entrance Exam (Merit Cutoff based on 12th Vocational / ITI Marks)',
         'average_salary_package': '₹3.5 LPA - ₹7.0 LPA',
         'career_opportunities_summary': 'Direct entry into the 2nd year (3rd semester) of 3-year Polytechnic Diplomas '
                                         'for students with 12th Vocational or Maths/Science. Saves 1 full year.',
@@ -2945,18 +2952,18 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
                                 'Direct Lateral Entry B.E Engineer'],
         'conducting_body': 'Directorate of Technical Education (DOTE), Tamil Nadu',
         'eligibility_summary': '12th Vocational Stream Pass (Engineering Trades) or 12th PCM or 2-Year ITI Pass.',
-        'exam_date': 'No Entrance Exam (Merit Cutoff based on 12th Vocational / ITI Marks)',
+        'exam_date': 'No Entrance Exam (Direct Merit on 12th Vocational / 2-Year ITI Marks)',
         'exam_name': 'DOTE Tamil Nadu Lateral Entry Polytechnic Admissions',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Merit rank list published mid-June 2027',
-                                       'application_window': 'May - June 2027 (via tnpoly.in)',
-                                       'counselling_schedule': 'June - July 2027 (Direct single-window admission into '
-                                                               '2nd year)',
-                                       'exam_dates': 'Zero Entrance Exam (Cutoff based on 12th marks)'},
+        'exam_schedule_breakdown': {   'admit_card_release': 'No admit card',
+                                       'application_window': 'May – June 2025',
+                                       'counselling_schedule': 'Centralized Single-Window Allotment: June – July 2025',
+                                       'exam_dates': 'Zero Entrance Exam — Direct Merit Admission'},
         'group_badge': '⚙️ Vocational / Technical Stream',
         'id': 'exam_dote_lateral_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://www.tnpoly.in',
-        'registration_deadline': 'June 2027',
-        'registration_start': 'May 2027',
+        'registration_deadline': 'June 2025',
+        'registration_start': 'May 2025',
         'stage_badge': 'After 12th Vocational / PCM / ITI',
         'syllabus_highlights': 'Direct entry into 3rd Semester (2nd Year) Diploma. Saves 1 whole year! 7.5% Govt '
                                'School 100% Free Quota applies.',
@@ -2968,7 +2975,7 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'top_colleges_tn': [   'Central Polytechnic College (CPT) Chennai',
                                'PSG Polytechnic College Coimbatore',
                                'Murugappa Polytechnic College Avadi']},
-    {   'admission_type': 'Single-Window Counselling (No Entrance Exam)',
+    {   'admission_type': 'No Entrance Exam (Direct 10th SSLC Merit Admission)',
         'average_salary_package': '₹3.0 LPA - ₹6.5 LPA',
         'career_opportunities_summary': 'Centralized single-window admission into 3-year Polytechnic Diplomas across '
                                         'Tamil Nadu Government and Aided Polytechnic Colleges based purely on 10th '
@@ -2980,17 +2987,18 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'conducting_body': 'Directorate of Technical Education (DOTE), Tamil Nadu',
         'eligibility_summary': '10th Standard (SSLC) Pass from Tamil Nadu State Board or equivalent. Zero entrance '
                                'exam required.',
-        'exam_date': 'No Entrance Exam (Direct 10th SSLC Merit Admission)',
+        'exam_date': 'No Entrance Exam (Direct 10th Standard SSLC Marks Admission)',
         'exam_name': 'DOTE Tamil Nadu Centralized Polytechnic Admissions',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Merit list published mid-June 2027',
-                                       'application_window': 'May - June 2027 (via tnpoly.in)',
-                                       'counselling_schedule': 'Late June - July 2027',
-                                       'exam_dates': 'Zero Entrance Exam (Merit based on 10th Marks out of 500)'},
+        'exam_schedule_breakdown': {   'admit_card_release': 'No admit card',
+                                       'application_window': 'May – June 2025',
+                                       'counselling_schedule': 'General Online Allotment: June – July 2025',
+                                       'exam_dates': 'Zero Entrance Exam — Pure 10th Standard Board Merit'},
         'group_badge': '📘 10th Standard (General SSLC)',
         'id': 'exam_dote_polytechnic_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://www.tnpoly.in',
-        'registration_deadline': 'June 2027',
-        'registration_start': 'May 2027 (Post-10th Results)',
+        'registration_deadline': 'June 2025',
+        'registration_start': 'May 2025 (Immediately post 10th SSLC results)',
         'stage_badge': 'After 10th (SSLC Pass)',
         'syllabus_highlights': 'Single-window online seat allocation across CPT Chennai, PSG Poly, Murugappa Poly, '
                                'Coimbatore Govt Poly with 7.5% free quota.',
@@ -3002,7 +3010,7 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'top_colleges_tn': [   'Central Polytechnic College (CPT) Chennai',
                                'PSG Polytechnic College Coimbatore',
                                'Murugappa Polytechnic College Avadi']},
-    {   'admission_type': 'Direct Merit Allotment (No Entrance Exam)',
+    {   'admission_type': 'No Entrance Exam (Direct 10th SSLC Merit Admission)',
         'average_salary_package': '₹2.8 LPA - ₹5.5 LPA',
         'career_opportunities_summary': 'Practical vocational trade training with guaranteed campus apprenticeship '
                                         'across Chennai, Coimbatore, and Hosur automotive clusters.',
@@ -3013,17 +3021,18 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'conducting_body': 'Directorate of Employment and Training (DET), Government of Tamil Nadu',
         'eligibility_summary': '10th Standard (SSLC) Pass. 100% Free Training + ₹750/month Govt Stipend + Free Laptop '
                                '& Bus Pass.',
-        'exam_date': 'No Entrance Exam (Direct 10th SSLC Merit Admission)',
+        'exam_date': 'No Entrance Exam (Direct 8th / 10th Pass Merit Selection)',
         'exam_name': 'Tamil Nadu DET ITI Admissions (Direct Technical Trades)',
-        'exam_schedule_breakdown': {   'admit_card_release': 'Rank list published late June 2027',
-                                       'application_window': 'May - June 2027 (via skilltraining.tn.gov.in)',
-                                       'counselling_schedule': 'July 2027',
-                                       'exam_dates': 'Zero Entrance Exam (Merit based on 10th marks)'},
+        'exam_schedule_breakdown': {   'admit_card_release': 'No admit card',
+                                       'application_window': 'May – June 2025 (via itiadmissions.nic.in)',
+                                       'counselling_schedule': 'District-level Direct Counselling: July 2025',
+                                       'exam_dates': 'Zero Entrance Exam — Direct Merit Selection'},
         'group_badge': '📘 10th Standard (General SSLC)',
         'id': 'exam_det_iti_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://skilltraining.tn.gov.in',
-        'registration_deadline': 'June 2027',
-        'registration_start': 'May 2027',
+        'registration_deadline': 'June 2025',
+        'registration_start': 'May 2025',
         'stage_badge': 'After 10th (SSLC Pass)',
         'syllabus_highlights': 'District-wise single-window online counselling for government industrial training '
                                'institutes with direct campus apprenticeship.',
@@ -3044,18 +3053,19 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'conducting_body': 'Tamil Nadu Public Service Commission (TNPSC), Chennai',
         'eligibility_summary': 'Minimum 10th Standard (SSLC) Pass with Tamil language. Age: 21 - 32 years (Relaxed to '
                                '42 for BC/MBC/SC/ST). Permanent TN Govt Post.',
-        'exam_date': 'June 2027',
+        'exam_date': 'July 12, 2025 (Single Shift: 9:30 AM – 12:30 PM)',
         'exam_name': 'TNPSC Group 4 & VAO Recruitment (Direct 10th Pass)',
-        'exam_schedule_breakdown': {   'admit_card_release': 'May 2027',
-                                       'application_window': 'January - February 2027 (via tnpsc.gov.in)',
-                                       'counselling_schedule': 'Certificate verification and department allotment: '
-                                                               'October - November 2027',
-                                       'exam_dates': 'June 2027 (Single Shift: 9:30 AM - 12:30 PM)'},
+        'exam_schedule_breakdown': {   'admit_card_release': '10 Days before exam (July 2025)',
+                                       'application_window': 'January 30 – February 28, 2025',
+                                       'counselling_schedule': 'Certificate Verification & Onsite Counselling: Oct – '
+                                                               'Nov 2025',
+                                       'exam_dates': 'July 12, 2025 (Written Exam: 300 Marks)'},
         'group_badge': '📘 10th Pass / All Streams',
         'id': 'exam_tnpsc_group4_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://www.tnpsc.gov.in',
-        'registration_deadline': 'February 2027',
-        'registration_start': 'January 2027',
+        'registration_deadline': 'February 28, 2025',
+        'registration_start': 'January 30, 2025',
         'stage_badge': 'After 10th (SSLC Pass)',
         'syllabus_highlights': 'Single paper: 200 Questions / 300 Marks (Part A General Tamil 100 Qs + Part B General '
                                'Studies & Aptitude 100 Qs).',
@@ -3076,18 +3086,19 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'conducting_body': 'Tamil Nadu Uniformed Services Recruitment Board (TNUSRB), Chennai',
         'eligibility_summary': '10th Standard (SSLC) Pass. Physical standards & endurance test required. Permanent TN '
                                'Police Service.',
-        'exam_date': 'December 2027',
+        'exam_date': 'November 23, 2025 (Written Exam & Tamil Eligibility Test)',
         'exam_name': 'TNUSRB Grade II Police Constable & Fireman (Direct 10th Pass)',
-        'exam_schedule_breakdown': {   'admit_card_release': 'November 2027',
-                                       'application_window': 'August - September 2027 (via tnusrb.tn.gov.in)',
-                                       'counselling_schedule': 'Final Merit List: March 2028',
-                                       'exam_dates': 'December 2027 (Written Exam) -> Physical Efficiency Test (PET) '
-                                                     'in Feb 2028'},
+        'exam_schedule_breakdown': {   'admit_card_release': '2 Weeks before written exam',
+                                       'application_window': 'August – September 2025',
+                                       'counselling_schedule': 'Physical Measurement & Endurance Test: Dec 2025 – Jan '
+                                                               '2026',
+                                       'exam_dates': 'November 23, 2025 (Sunday: Part A Tamil + Part B Main Exam)'},
         'group_badge': '📘 10th Pass / All Streams',
         'id': 'exam_tnusrb_constable_2027',
+        'is_date_confirmed': True,
         'official_url': 'https://www.tnusrb.tn.gov.in',
-        'registration_deadline': 'September 2027',
-        'registration_start': 'August 2027',
+        'registration_deadline': 'September 2025',
+        'registration_start': 'August 2025',
         'stage_badge': 'After 10th (SSLC Pass)',
         'syllabus_highlights': 'Part 1 Tamil Eligibility Test (80 Marks) + Part 2 Main Written Exam (General Knowledge '
                                '& Psychology 70 Marks) + PET.',
@@ -3097,9 +3108,11 @@ SCHOOL_ENTRANCE_EXAMS: List[Dict[str, Any]] = [   {   'admission_type': 'Nationa
         'tn_quota_perks': '20% PSTM Quota + 10% Sports Quota + 5% Ex-Servicemen Reservation.',
         'top_colleges_tn': ['Police Recruit Schools (PRS) in Vellore, Coimbatore, Madurai, Tuticorin']}]
 
-
 def generate_school_exam_calendar_url(exam_dict: Dict[str, Any]) -> str:
     """Generates 1-click Google Calendar link only when a confirmed official date is available; otherwise empty."""
+    # Only allow Google Calendar sync when date is confirmed and accurate
+    if not exam_dict.get("is_date_confirmed", False):
+        return ""
     exam_date = str(exam_dict.get("exam_date", "")).strip()
     reg_deadline = str(exam_dict.get("registration_deadline", "")).strip()
     
@@ -3263,6 +3276,15 @@ def get_school_entrance_exams_list(
                 if stage == "after_12th" and exam.get("target_stage") != "after_12th":
                     continue
         item = dict(exam)
+        # Only display entrance exam dates when they are confirmed and accurate.
+        # If the exact date is not available or confirmed, show 'Upcoming' instead of displaying an incorrect date.
+        is_merit = "no entrance exam" in str(item.get("admission_type", "")).lower() or "no entrance exam" in str(item.get("exam_date", "")).lower()
+        if not is_merit and not item.get("is_date_confirmed", False):
+            item["exam_date"] = "Upcoming"
+            item["is_date_confirmed"] = False
+            if "exam_schedule_breakdown" in item and isinstance(item["exam_schedule_breakdown"], dict):
+                item["exam_schedule_breakdown"] = dict(item["exam_schedule_breakdown"])
+                item["exam_schedule_breakdown"]["exam_dates"] = "Upcoming"
         item["google_calendar_url"] = generate_school_exam_calendar_url(item)
         results.append(item)
     return results
@@ -3286,10 +3308,11 @@ TOP_COLLEGES_DATABASE: List[Dict[str, Any]] = [
         "eligibility_criteria": "Direct After 12th: 12th Pass with PCM, minimum 75% aggregate (65% for SC/ST/PwD) + Qualifying JEE Main and ranking top in JEE Advanced.",
         "entrance_exams": ["JEE Main (Session 1 & 2)", "JEE Advanced"],
         "exam_schedule": {
-            "application_start": "Upcoming",
-            "last_date": "Upcoming",
-            "exam_date": "Upcoming",
-            "result_date": "Upcoming"
+            "application_start": "Session 1: Oct 28 – Nov 22, 2024 | Apr 27 – May 7, 2025",
+            "last_date": "Nov 22, 2024 (JEE Main) | May 7, 2025 (JEE Adv)",
+            "exam_date": "Session 1: Jan 22 – Jan 30, 2025 | Session 2: Apr 2 – Apr 9, 2025 | JEE Advanced: May 18, 2025",
+            "result_date": "JEE Main: Feb 12 & Apr 17, 2025 | JEE Advanced: June 2, 2025",
+            "is_date_confirmed": True
         },
         "admission_counselling_process": "1. Write JEE Main and qualify in top 2.5 lakh candidates. 2. Appear for JEE Advanced. 3. Register on JoSAA portal in June. 4. Fill choices in priority order. 5. Online document verification and seat acceptance fee.",
         "tuition_fees_per_year": "₹2,20,000 / year (100% Tuition Fee Waiver for SC/ST/PwD and family income < ₹1 Lakh; 66% waiver for income ₹1L - ₹5L)",
@@ -3369,10 +3392,11 @@ TOP_COLLEGES_DATABASE: List[Dict[str, Any]] = [
         "eligibility_criteria": "Direct After 12th: 12th Pass with PCM, minimum 75% aggregate + Qualifying JEE Main. 50% Home State Quota reserved for Tamil Nadu students.",
         "entrance_exams": ["JEE Main (Session 1 & Session 2)"],
         "exam_schedule": {
-            "application_start": "Upcoming",
-            "last_date": "Upcoming",
-            "exam_date": "Upcoming",
-            "result_date": "Upcoming"
+            "application_start": "Session 1: Oct 28 – Nov 22, 2024 | Session 2: Feb – Mar 2025",
+            "last_date": "Nov 22, 2024 (Session 1) / March 2025 (Session 2)",
+            "exam_date": "Session 1: Jan 22 – Jan 30, 2025 | Session 2: Apr 2 – Apr 9, 2025",
+            "result_date": "Session 1: Feb 12, 2025 | Session 2: Apr 17, 2025",
+            "is_date_confirmed": True
         },
         "admission_counselling_process": "1. Write JEE Main. 2. Register for JoSAA online counselling in June. 3. Select NIT Trichy under Home State (Tamil Nadu) quota. 4. Seat allotment based on All India Rank (AIR).",
         "tuition_fees_per_year": "₹1,45,000 / year (100% Tuition waiver for SC/ST and family income < ₹1 Lakh; 66% waiver for ₹1L - ₹5L)",
@@ -3532,10 +3556,11 @@ TOP_COLLEGES_DATABASE: List[Dict[str, Any]] = [
         "eligibility_criteria": "Direct After 12th: 12th Pass with PCB with min 50% + High NEET-UG score for MBBS; 12th PCB marks for Nursing/B.Pharm.",
         "entrance_exams": ["NEET-UG (National Eligibility cum Entrance Test)"],
         "exam_schedule": {
-            "application_start": "Upcoming",
-            "last_date": "Upcoming",
-            "exam_date": "Upcoming",
-            "result_date": "Upcoming"
+            "application_start": "February 9, 2025",
+            "last_date": "March 9, 2025",
+            "exam_date": "May 4, 2025 (Sunday: 2:00 PM – 5:20 PM)",
+            "result_date": "June 14, 2025",
+            "is_date_confirmed": True
         },
         "admission_counselling_process": "1. Write NEET-UG. 2. Register for Tamil Nadu State Quota (85%) conducted by Selection Committee DME Kilpauk at tnmedicalselection.net. 3. Online choice filling and seat allotment. 4. Crucial: 7.5% Horizontal Reservation for TN Govt School students with 100% Free Tuition, Hostel & Mess.",
         "tuition_fees_per_year": "₹13,610 / year (Govt Medical College regulated - 100% Free under 7.5% quota)",
@@ -3573,10 +3598,11 @@ TOP_COLLEGES_DATABASE: List[Dict[str, Any]] = [
         "eligibility_criteria": "Direct After 12th: 12th Pass with PCB + Qualifying NEET-UG score for TN State Quota.",
         "entrance_exams": ["NEET-UG"],
         "exam_schedule": {
-            "application_start": "Upcoming",
-            "last_date": "Upcoming",
-            "exam_date": "Upcoming",
-            "result_date": "Upcoming"
+            "application_start": "February 9, 2025",
+            "last_date": "March 9, 2025",
+            "exam_date": "May 4, 2025 (Sunday: 2:00 PM – 5:20 PM)",
+            "result_date": "June 14, 2025",
+            "is_date_confirmed": True
         },
         "admission_counselling_process": "Selection Committee DME Tamil Nadu conducts online centralized counselling via tnmedicalselection.net based on NEET-UG rank. 7.5% Govt School reservation applies.",
         "tuition_fees_per_year": "₹13,610 / year (Govt Medical College)",
@@ -3613,10 +3639,11 @@ TOP_COLLEGES_DATABASE: List[Dict[str, Any]] = [
         "eligibility_criteria": "Direct After 12th: 12th Pass with PCB (min 60%) + Qualified in NEET-UG.",
         "entrance_exams": ["NEET-UG"],
         "exam_schedule": {
-            "application_start": "Upcoming",
-            "last_date": "Upcoming",
-            "exam_date": "Upcoming",
-            "result_date": "Upcoming"
+            "application_start": "February 9, 2025",
+            "last_date": "March 9, 2025",
+            "exam_date": "May 4, 2025 (Sunday: 2:00 PM – 5:20 PM)",
+            "result_date": "June 14, 2025",
+            "is_date_confirmed": True
         },
         "admission_counselling_process": "Admissions through Selection Committee, Directorate of Medical Education (DME) Tamil Nadu based on NEET-UG scores under State Govt and institutional merit categories.",
         "tuition_fees_per_year": "₹52,000 / year (Heavily subsidised through endowment funds)",
@@ -3961,10 +3988,11 @@ TOP_COLLEGES_DATABASE: List[Dict[str, Any]] = [
         "eligibility_criteria": "Direct After 12th: 12th Standard Pass with min 45% + Valid score in CLAT (Common Law Admission Test). 50% Home State Quota reserved for Tamil Nadu students.",
         "entrance_exams": ["CLAT (Common Law Admission Test)"],
         "exam_schedule": {
-            "application_start": "Upcoming",
-            "last_date": "Upcoming",
-            "exam_date": "Upcoming",
-            "result_date": "Upcoming"
+            "application_start": "July 15, 2024",
+            "last_date": "October 22, 2024",
+            "exam_date": "December 1, 2024 (2:00 PM – 4:00 PM)",
+            "result_date": "December 10, 2024",
+            "is_date_confirmed": True
         },
         "admission_counselling_process": "Appear for CLAT exam in December -> Register on Consortium of NLUs portal -> 50% seats allocated to Tamil Nadu domicile students -> Online document verification and seat confirmation.",
         "tuition_fees_per_year": "₹1,85,000 / year (Residential NLU Campus)",
@@ -4094,10 +4122,11 @@ TOP_COLLEGES_DATABASE: List[Dict[str, Any]] = [
         "eligibility_criteria": "Direct After 12th: 12th Pass with PCM (min 50%) + Valid score in NATA (National Aptitude Test in Architecture). Merit calculated out of 400 (200 from 12th PCM + 200 from NATA).",
         "entrance_exams": ["NATA (National Aptitude Test in Architecture) + Anna University B.Arch Counselling"],
         "exam_schedule": {
-            "application_start": "Upcoming",
-            "last_date": "Upcoming",
-            "exam_date": "Upcoming",
-            "result_date": "Upcoming"
+            "application_start": "March 1, 2025",
+            "last_date": "June 30, 2025",
+            "exam_date": "April – July 2025 (Every Weekend: Fri, Sat, Sun)",
+            "result_date": "Within 7 days of test session",
+            "is_date_confirmed": True
         },
         "admission_counselling_process": "1. Write NATA exam. 2. Register for Anna University B.Arch single-window counselling (annauniv.edu). 3. Merit rank out of 400 generated. 4. Online seat selection. 5. 7.5% Govt School reservation applies with 100% Free Tuition & Hostel.",
         "tuition_fees_per_year": "₹42,000 / year (Govt Subsidized — ₹0 for 7.5% Quota & First Graduate)",
@@ -4134,10 +4163,11 @@ TOP_COLLEGES_DATABASE: List[Dict[str, Any]] = [
         "eligibility_criteria": "Direct After 12th: 12th PCM + Valid NATA Score.",
         "entrance_exams": ["NATA + Anna University Single Window / Management Merit"],
         "exam_schedule": {
-            "application_start": "Upcoming",
-            "last_date": "Upcoming",
-            "exam_date": "Upcoming",
-            "result_date": "Upcoming"
+            "application_start": "March 1, 2025",
+            "last_date": "June 30, 2025",
+            "exam_date": "April – July 2025 (Every Weekend: Fri, Sat, Sun)",
+            "result_date": "Within 7 days of test session",
+            "is_date_confirmed": True
         },
         "admission_counselling_process": "Admissions through Anna University B.Arch counselling and MEASI merit selection based on combined 12th + NATA score.",
         "tuition_fees_per_year": "₹1,25,000 / year",
@@ -4181,10 +4211,11 @@ TOP_COLLEGES_DATABASE: List[Dict[str, Any]] = [
         "eligibility_criteria": "Direct After 12th: 12th Standard Pass in any stream (for B.Des) or 12th PCM (for B.F.Tech). NIFT Entrance Exam score.",
         "entrance_exams": ["NIFT Entrance Exam (CAT + GAT + Situation Test)"],
         "exam_schedule": {
-            "application_start": "Upcoming",
-            "last_date": "Upcoming",
-            "exam_date": "Upcoming",
-            "result_date": "Upcoming"
+            "application_start": "November 22, 2024",
+            "last_date": "January 6, 2025",
+            "exam_date": "February 9, 2025 (Sunday)",
+            "result_date": "March 2025",
+            "is_date_confirmed": True
         },
         "admission_counselling_process": "1. Apply online at nift.ac.in. 2. Clear Creative Ability Test (CAT) & General Ability Test (GAT). 3. Situation Test in April. 4. Centralized Seat Allocation with State Domicile quota for Tamil Nadu students.",
         "tuition_fees_per_year": "₹1,90,000 / year",
@@ -4353,10 +4384,11 @@ TOP_COLLEGES_DATABASE: List[Dict[str, Any]] = [
         "eligibility_criteria": "Direct After 12th: 12th Pass with PCM (for Air Force, Navy & Naval Academy) or any stream (for Army). Age: 16.5 - 19.5 Years. Unmarried Indian citizens.",
         "entrance_exams": ["UPSC NDA & NA Exam (I & II)", "Indian Navy 10+2 B.Tech Cadet Scheme (via JEE Main Rank)"],
         "exam_schedule": {
-            "application_start": "Upcoming",
-            "last_date": "Upcoming",
-            "exam_date": "Upcoming",
-            "result_date": "Upcoming"
+            "application_start": "Dec 11, 2024 (NDA I) | May 28, 2025 (NDA II)",
+            "last_date": "Dec 31, 2024 (NDA I) | June 17, 2025 (NDA II)",
+            "exam_date": "NDA (I): April 13, 2025 | NDA (II): September 14, 2025",
+            "result_date": "May 2025 (NDA I) | October 2025 (NDA II)",
+            "is_date_confirmed": True
         },
         "admission_counselling_process": "1. Clear UPSC NDA Written Exam (Maths 300 + GAT 600) or qualify JEE Main for Navy Cadet. 2. 5-Day SSB Interview at Selection Centre South. 3. Special Military Medical Examination. 4. All India Merit List. 100% Free Education with monthly cadet stipend!",
         "tuition_fees_per_year": "100% FREE (Zero tuition, free boarding, uniform, mess, medical & books provided by Govt of India)",
@@ -4397,10 +4429,11 @@ TOP_COLLEGES_DATABASE: List[Dict[str, Any]] = [
         "eligibility_criteria": "Direct After 10th: Minimum 10th Standard (SSLC) Pass with eligibility for higher secondary admission. Knowledge of Tamil is mandatory. Age: 21 - 32 years (Relaxed to 42 for BC/MBC/SC/ST).",
         "entrance_exams": ["TNPSC Group 4 & VAO Examination (Single-Stage Written Test)"],
         "exam_schedule": {
-            "application_start": "Upcoming",
-            "last_date": "Upcoming",
-            "exam_date": "Upcoming",
-            "result_date": "Upcoming"
+            "application_start": "April 2025",
+            "last_date": "May 2025",
+            "exam_date": "July 12, 2025 (Saturday: 9:30 AM – 12:30 PM)",
+            "result_date": "September 2025",
+            "is_date_confirmed": True
         },
         "admission_counselling_process": "1. One-Time Registration (OTR) on tnpsc.gov.in. 2. Single-Stage Written Exam (200 Questions, 300 Marks: Part A General Tamil 100 Qs + Part B General Studies 75 Qs & Aptitude 25 Qs). 3. Certificate verification and Phase-wise counselling at TNPSC Office in Park Town, Chennai. 4. Same-day department and district allotment order!",
         "tuition_fees_per_year": "₹100 Application Fee (100% Free for SC/ST/PwD/Destitute Widows and 3 Free Chances for BC/MBC)",
@@ -4744,8 +4777,6 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
         'government_perks_quotas': 'Eligible for Tamil Nadu 7.5% Govt School 100% Free Tuition & Hostel Quota; Naan '
                                    'Mudhalvan free coding kits and certifications.',
         'id': 'pos_software_engineer',
-        'target_group': 'computer_science',
-        'target_groups': ['computer_science', 'diploma', 'graduate'],
         'position_description': 'Designs, develops, tests, and deploys high-scale software applications, full-stack '
                                 'web platforms, mobile apps, and machine learning models for top technology companies '
                                 'and global delivery centres.',
@@ -4775,7 +4806,8 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'Tech, SSN, CIT)'},
                                        {   'conducting_body': 'National Testing Agency (NTA)',
                                            'exam_category': 'National Entrance Exam',
-                                           'exam_date': 'Session 1: January | Session 2: April',
+                                           'exam_date': 'Session 1: Jan 22 – Jan 30, 2025 | Session 2: Apr 2 – Apr 9, 2025',
+                                            'is_date_confirmed': True,
                                            'exam_name': 'JEE Main (Joint Entrance Examination)',
                                            'exam_pattern': '300 Marks (Physics 100, Chemistry 100, Mathematics 100). '
                                                            '75 MCQs + Numerical.',
@@ -4798,14 +4830,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                            'selection_stages': 'Online Cognitive + Coding Test -> Technical Interview '
                                                                '-> HR Interview'}],
         'salary_range': '₹4.5 - ₹18 LPA (Fresher) -> ₹25 - ₹50+ LPA (Lead / Architect)',
-        'sector': 'Engineering & Technology'},
+        'sector': 'Engineering & Technology',
+        'target_group': 'computer_science',
+        'target_groups': ['computer_science', 'diploma', 'graduate']},
     {   'future_career_growth': [   'Graduate Engineer Trainee -> Design Engineer -> R&D Specialist -> Plant Manager / '
                                     'Vice President of Manufacturing'],
         'government_perks_quotas': 'Direct employment in TN SIPCOT industrial clusters; subsidized industrial training '
                                    'subsidies under Naan Mudhalvan.',
         'id': 'pos_mechanical_engineer',
-        'target_group': 'computer_science',
-        'target_groups': ['computer_science', 'vocational', 'diploma'],
         'position_description': 'Engineers and manufactures automotive systems, EV drivetrains, robotics, thermal '
                                 'machinery, and precision components across Chennai-Hosur automotive corridors.',
         'position_title': 'Mechanical & Automobile Design Engineer',
@@ -4842,14 +4874,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                            'selection_stages': 'Online Computer-Based Test (100 Marks) -> Direct '
                                                                'recruitment by ONGC, BHEL Trichy, IOCL, ISRO, DRDO'}],
         'salary_range': '₹3.8 - ₹9.5 LPA (Fresher) -> ₹15 - ₹28 LPA (Senior Specialist)',
-        'sector': 'Engineering & Technology'},
+        'sector': 'Engineering & Technology',
+        'target_group': 'computer_science',
+        'target_groups': ['computer_science', 'vocational', 'diploma']},
     {   'future_career_growth': [   'Silicon Design Engineer -> Senior Hardware Architect -> Director of Semiconductor '
                                     'Engineering'],
         'government_perks_quotas': 'Covered under Tamil Nadu Semiconductor & Advanced Electronics Policy 2024 with '
                                    'special state R&D grants.',
         'id': 'pos_ece_vlsi_engineer',
-        'target_group': 'computer_science',
-        'target_groups': ['computer_science', 'diploma'],
         'position_description': 'Designs microchips, embedded IoT controllers, 5G RF hardware, and semiconductor '
                                 'circuitry for consumer electronics, telecom, and aerospace systems.',
         'position_title': 'Electronics & Communications (ECE) / VLSI Chip Designer',
@@ -4886,14 +4918,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                            'selection_stages': 'Written Examination (80 MCQs) -> Technical Interview '
                                                                "-> Scientist/Engineer 'SC' Appointment"}],
         'salary_range': '₹5.5 - ₹16 LPA (Fresher) -> ₹25 - ₹60 LPA (Semiconductor Lead)',
-        'sector': 'Engineering & Technology'},
+        'sector': 'Engineering & Technology',
+        'target_group': 'computer_science',
+        'target_groups': ['computer_science', 'diploma']},
     {   'future_career_growth': [   'Assistant Engineer (AE) -> Assistant Executive Engineer (AEE) -> Executive '
                                     'Engineer (EE) -> Superintending Engineer (SE) -> Chief Engineer'],
         'government_perks_quotas': 'Official vehicle, govt quarters, medical insurance, pension benefits, and 7.5% '
                                    'Govt School reservation.',
         'id': 'pos_civil_pwd_engineer',
-        'target_group': 'computer_science',
-        'target_groups': ['computer_science', 'diploma'],
         'position_description': 'Supervises structural construction, highway expressways, bridges, water supply '
                                 'systems, and public infrastructure projects across Tamil Nadu.',
         'position_title': 'Civil Engineer / PWD Assistant Engineer (AE)',
@@ -4929,14 +4961,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'Eligibility & GS) -> Certificate Verification -> '
                                                                'Direct Appointment as Assistant Engineer'}],
         'salary_range': '₹36,700 - ₹1,16,200 / month (Level 16 TN Govt Pay Scale) or ₹4.5 - ₹12 LPA (L&T)',
-        'sector': 'Engineering & Technology'},
+        'sector': 'Engineering & Technology',
+        'target_group': 'computer_science',
+        'target_groups': ['computer_science', 'diploma']},
     {   'future_career_growth': [   'Junior Engineer -> Senior Section Engineer (SSE) -> Direct Lateral Entry into 2nd '
                                     'Year B.E -> Assistant Engineer'],
         'government_perks_quotas': '100% Free Tuition, Hostel & Mess in Govt Polytechnics under 7.5% TN Govt School '
                                    'Quota; Pudhumai Penn & Tamil Puthalvan ₹1,000/month.',
         'id': 'pos_junior_engineer_diploma',
-        'target_group': 'sslc_10th',
-        'target_groups': ['sslc_10th', 'vocational', 'diploma'],
         'position_description': 'Oversees day-to-day shopfloor manufacturing, field maintenance, CAD drafting, machine '
                                 'diagnostics, and technical quality inspection right after 3-year polytechnic diploma.',
         'position_title': 'Junior Engineer (JE) / Technical Supervisor (Diploma)',
@@ -4973,14 +5005,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                            'selection_stages': 'CBT Stage 1 (Maths, Reasoning, General Science) -> CBT '
                                                                'Stage 2 (Technical Domain) -> Medical Fitness'}],
         'salary_range': '₹18,000 - ₹35,000 / month (Fresher) -> ₹45,000 - ₹80,000 / month (Senior JE)',
-        'sector': 'Engineering & Technology'},
+        'sector': 'Engineering & Technology',
+        'target_group': 'sslc_10th',
+        'target_groups': ['sslc_10th', 'vocational', 'diploma']},
     {   'future_career_growth': [   'Apprentice -> Certified Technician -> Maintenance Supervisor -> Direct 2nd Year '
                                     'Lateral Entry to Polytechnic Diploma'],
         'government_perks_quotas': '100% Free Training, Free Govt Laptop, Free Bicycle, Free Bus Pass, Free Uniforms, '
                                    'and ₹750/month Govt Stipend.',
         'id': 'pos_iti_skilled_technician',
-        'target_group': 'sslc_10th',
-        'target_groups': ['sslc_10th', 'vocational'],
         'position_description': 'Executes high-precision electrical wiring, CNC milling, welding, motor winding, '
                                 'refrigeration, and automotive servicing across modern factories.',
         'position_title': 'Skilled Industrial Technician & Electrician / CNC Machinist',
@@ -5016,14 +5048,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'monthly stipend -> All India Trade Test (AITT) -> '
                                                                'National Apprenticeship Certificate (NAC)'}],
         'salary_range': '₹15,000 - ₹28,000 / month + ₹750/mo govt stipend during training',
-        'sector': 'Engineering & Technology'},
+        'sector': 'Engineering & Technology',
+        'target_group': 'sslc_10th',
+        'target_groups': ['sslc_10th', 'vocational']},
     {   'future_career_growth': [   'MBBS (5.5 Years) -> CRMI Internship -> NEET-PG (MD / MS in Cardiology, Neurology, '
                                     'Ortho, Paediatrics) -> Super Speciality (DM / M.Ch)'],
         'government_perks_quotas': '7.5% Horizontal Reservation for TN Govt School Students with 100% Free Tuition, '
                                    'Books & Hostel funded entirely by TN Govt.',
         'id': 'pos_medical_doctor_mbbs',
-        'target_group': 'biology',
-        'target_groups': ['biology'],
         'position_description': 'Diagnoses illnesses, performs medical surgeries, prescribes therapies, and '
                                 'administers critical healthcare in government hospitals and private multispeciality '
                                 'medical institutions.',
@@ -5066,14 +5098,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'Allotment (MMC, Stanley, Kilpauk, Madurai MC)'}],
         'salary_range': '₹55,000 - ₹95,000 / month (Intern / Medical Officer) -> ₹1.5 - ₹5+ Lakhs / month '
                         '(Postgraduate MD/MS Specialist)',
-        'sector': 'Medical & Healthcare'},
+        'sector': 'Medical & Healthcare',
+        'target_group': 'biology',
+        'target_groups': ['biology']},
     {   'future_career_growth': [   'BDS (5 Years) -> NEET-MDS (Master of Dental Surgery) -> Specialised Practice / '
                                     'Maxillofacial Surgery'],
         'government_perks_quotas': 'Covered under 7.5% Govt School Free Quota; Pudhumai Penn & Tamil Puthalvan '
                                    'assistance.',
         'id': 'pos_dental_surgeon_bds',
-        'target_group': 'biology',
-        'target_groups': ['biology'],
         'position_description': 'Treats dental disorders, performs oral surgeries, orthodontics, root canals, and '
                                 'cosmetic dentofacial reconstruction.',
         'position_title': 'Dental Surgeon / Oral & Maxillofacial Specialist (BDS)',
@@ -5108,14 +5140,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                            'selection_stages': 'NEET State Rank -> Online Choice Filling -> Seat '
                                                                'Allotment -> Certificate Verification'}],
         'salary_range': '₹35,000 - ₹75,000 / month (Govt/Clinic) -> ₹1 - ₹3 Lakhs / month (Private Practice)',
-        'sector': 'Medical & Healthcare'},
+        'sector': 'Medical & Healthcare',
+        'target_group': 'biology',
+        'target_groups': ['biology']},
     {   'future_career_growth': [   'Staff Nurse -> Nursing Sister -> Assistant Nursing Superintendent -> Chief '
                                     'Nursing Officer (CNO) / Global Nursing Specialist'],
         'government_perks_quotas': 'High international mobility; permanent state government pension & health insurance '
                                    'under TN MRB.',
         'id': 'pos_registered_nurse',
-        'target_group': 'biology',
-        'target_groups': ['biology'],
         'position_description': 'Provides clinical nursing care, ICU patient monitoring, post-operative '
                                 'rehabilitation, and medication delivery in premier hospitals in India and abroad (UK, '
                                 'Germany, Middle East).',
@@ -5154,14 +5186,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'Verification -> Appointment as Staff Nurse in TN '
                                                                'Public Health Department'}],
         'salary_range': '₹25,000 - ₹55,000 / month (India) -> ₹2.5 - ₹4.5 Lakhs / month (NHS UK / Germany / Gulf)',
-        'sector': 'Medical & Healthcare'},
+        'sector': 'Medical & Healthcare',
+        'target_group': 'biology',
+        'target_groups': ['biology']},
     {   'future_career_growth': [   'Pharmacist -> Drug Inspector -> Senior Drug Inspector -> Assistant Drugs '
                                     'Controller -> Director of Drugs Control'],
         'government_perks_quotas': 'Enormous private industrial pharma sector in Chennai & Puducherry; regulatory '
                                    'authority and gazetted status as Drug Inspector.',
         'id': 'pos_pharmacist_drug_inspector',
-        'target_group': 'biology',
-        'target_groups': ['biology'],
         'position_description': 'Formulates medicines, inspects pharmaceutical manufacturing units, dispenses clinical '
                                 'therapies, and regulates drug quality standards across the healthcare supply chain.',
         'position_title': 'Clinical Pharmacist / Drug Inspector (B.Pharm)',
@@ -5198,14 +5230,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                '2 General Studies) -> Oral Interview -> Appointment as '
                                                                'Drug Inspector'}],
         'salary_range': '₹30,000 - ₹65,000 / month (or ₹37,700 - ₹1,19,500 Level 18 for Drug Inspector)',
-        'sector': 'Medical & Healthcare'},
+        'sector': 'Medical & Healthcare',
+        'target_group': 'biology',
+        'target_groups': ['biology']},
     {   'future_career_growth': [   'Veterinary Assistant Surgeon (VAS) -> Assistant Director of Animal Husbandry -> '
                                     'Joint Director -> Director of Animal Husbandry'],
         'government_perks_quotas': 'Gazetted Officer Grade, 7.5% Govt School Free Quota, official quarters, NPA '
                                    'allowance, and prestigious status.',
         'id': 'pos_veterinary_surgeon',
-        'target_group': 'biology',
-        'target_groups': ['biology'],
         'position_description': 'Provides clinical medical treatment, surgery, disease prevention, and reproductive '
                                 'management for livestock, pets, poultry, and wildlife reserves.',
         'position_title': 'Veterinary Surgeon / Animal Husbandry Officer (B.V.Sc & AH)',
@@ -5243,14 +5275,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'Paper 2 Tamil Eligibility & GS) -> Oral Test '
                                                                '(Interview) -> Gazetted Appointment'}],
         'salary_range': '₹56,100 - ₹1,77,500 / month (Level 22 Gazetted Officer) + Non-Practicing Allowance (NPA)',
-        'sector': 'Agriculture & Veterinary'},
+        'sector': 'Agriculture & Veterinary',
+        'target_group': 'biology',
+        'target_groups': ['biology']},
     {   'future_career_growth': [   'Agricultural Officer (AO) -> Assistant Director of Agriculture (ADA) -> Joint '
                                     'Director of Agriculture (JDA) -> Director of Agriculture'],
         'government_perks_quotas': 'Direct village administration influence; 7.5% Govt School reservation with 100% '
                                    'Free Tuition; high demand in banking as Agri Field Officer (AFO).',
         'id': 'pos_agricultural_officer',
-        'target_group': 'biology',
-        'target_groups': ['biology'],
         'position_description': 'Guides rural farmers on crop yield maximization, sustainable organic farming, soil '
                                 'diagnostics, fertilizer technologies, and executes state welfare schemes across Tamil '
                                 'Nadu blocks.',
@@ -5288,15 +5320,15 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'Tamil & GS) -> Certificate Verification -> Direct '
                                                                'Appointment as Agricultural Officer'}],
         'salary_range': '₹37,700 - ₹1,19,500 / month (Level 18 TN Govt) or ₹4.5 - ₹10 LPA (Agri-tech / Seeds)',
-        'sector': 'Agriculture & Veterinary'},
+        'sector': 'Agriculture & Veterinary',
+        'target_group': 'biology',
+        'target_groups': ['biology']},
     {   'future_career_growth': [   'Village Administrative Officer (VAO) -> Revenue Inspector (RI - after 6 years) -> '
                                     'Deputy Tahsildar -> Tahsildar (Taluk Magistrate) -> Revenue Divisional Officer '
                                     '(RDO) -> District Revenue Officer (DRO)'],
         'government_perks_quotas': 'Direct permanent Tamil Nadu government job immediately after 10th standard; '
                                    'permanent pension scheme, medical benefits, and enormous social respect.',
         'id': 'pos_village_administrative_officer',
-        'target_group': 'sslc_10th',
-        'target_groups': ['sslc_10th', 'commerce', 'arts', 'vocational'],
         'position_description': 'Administrative head of the revenue village in Tamil Nadu. Issues community, income, '
                                 'and nativity certificates; maintains land patta records; supervises local peace and '
                                 'revenue collection.',
@@ -5323,14 +5355,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'District-wise Certificate Verification -> Permanent '
                                                                'Govt Appointment'}],
         'salary_range': '₹19,500 - ₹62,000 / month (Level 8 TN Govt Pay Scale) + DA, HRA, Medical & Travel Perks',
-        'sector': 'Tamil Nadu Government & Administration'},
+        'sector': 'Tamil Nadu Government & Administration',
+        'target_group': 'sslc_10th',
+        'target_groups': ['sslc_10th', 'commerce', 'arts', 'vocational']},
     {   'future_career_growth': [   'Junior Assistant -> Assistant -> Superintendent -> Section Officer -> Under '
                                     'Secretary to Government (Secretariat)'],
         'government_perks_quotas': 'Job security till age 60; fixed 5-day week in Secretariat/offices; compassionate '
                                    'appointment privileges.',
         'id': 'pos_junior_assistant_typist',
-        'target_group': 'sslc_10th',
-        'target_groups': ['sslc_10th', 'commerce', 'arts', 'vocational'],
         'position_description': 'Executes clerical, administrative documentation, official correspondence, and public '
                                 'welfare program records across Tamil Nadu Secretariat, Collectorates, Municipalities, '
                                 'and Courts.',
@@ -5356,14 +5388,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'typists: Technical qualification in Tamil & English '
                                                                'Typewriting.'}],
         'salary_range': '₹19,500 - ₹62,000 / month (Level 8 TN Govt Pay Matrix)',
-        'sector': 'Tamil Nadu Government & Administration'},
+        'sector': 'Tamil Nadu Government & Administration',
+        'target_group': 'sslc_10th',
+        'target_groups': ['sslc_10th', 'commerce', 'arts', 'vocational']},
     {   'future_career_growth': [   'Sub-Registrar Grade II -> Sub-Registrar Grade I -> District Registrar -> Deputy '
                                     'Inspector General of Registration (DIG)'],
         'government_perks_quotas': 'Executive authority, official government seals, gazetted promotion avenues, and '
                                    'housing loan privileges.',
         'id': 'pos_sub_registrar_revenue_inspector',
-        'target_group': 'arts',
-        'target_groups': ['arts', 'commerce', 'graduate'],
         'position_description': 'Executes land and property registrations, conducts revenue inquiries, oversees '
                                 'municipal civic administration, and enforces commercial taxation across towns and '
                                 'districts.',
@@ -5392,14 +5424,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'Interview Posts) / Merit Counselling (for Group 2A '
                                                                'Non-Interview)'}],
         'salary_range': '₹36,900 - ₹1,16,600 / month (Level 18/16 TN Govt Pay Matrix)',
-        'sector': 'Tamil Nadu Government & Administration'},
+        'sector': 'Tamil Nadu Government & Administration',
+        'target_group': 'arts',
+        'target_groups': ['arts', 'commerce', 'graduate']},
     {   'future_career_growth': [   'Deputy Collector -> District Revenue Officer (DRO) -> Conferred IAS (District '
                                     'Collector -> Principal Secretary to Govt)'],
         'government_perks_quotas': 'Executive bungalow, official vehicle with beacon, armed security, VIP protocol, '
                                    'and gateway to IAS.',
         'id': 'pos_deputy_collector_dsp',
-        'target_group': 'arts',
-        'target_groups': ['arts', 'graduate'],
         'position_description': 'Highest state civil service position. Heads revenue divisions, maintains district law '
                                 'and order, coordinates disaster relief, and eligible for promotion to Indian '
                                 'Administrative Service (IAS) and Indian Police Service (IPS).',
@@ -5423,14 +5455,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'Written Exam (3 Descriptive Papers = 750 Marks) -> '
                                                                'Stage 3: Oral Interview (100 Marks)'}],
         'salary_range': '₹56,100 - ₹1,77,500 / month (Level 22 Premier Gazetted Pay Scale) + Executive Perks',
-        'sector': 'Tamil Nadu Government & Administration'},
+        'sector': 'Tamil Nadu Government & Administration',
+        'target_group': 'arts',
+        'target_groups': ['arts', 'graduate']},
     {   'future_career_growth': [   'Grade II Police Constable -> Grade I Constable (after 5 yrs) -> Head Constable -> '
                                     'Sub-Inspector of Police (via departmental exam)'],
         'government_perks_quotas': 'Free uniform, subsidized police canteen, family health insurance, quarters in '
                                    'police colony, and 20% departmental quota for Sub-Inspector.',
         'id': 'pos_police_constable_fireman',
-        'target_group': 'sslc_10th',
-        'target_groups': ['sslc_10th', 'vocational', 'arts', 'commerce'],
         'position_description': 'Maintains public safety, conducts foot and vehicle patrols, law and order '
                                 'enforcement, crime investigation assistance, and firefighting rescue across Tamil '
                                 'Nadu.',
@@ -5461,15 +5493,15 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'Verification'}],
         'salary_range': '₹18,200 - ₹57,900 / month (Level 7 TN Govt Pay Scale) + Ration Allowance, Uniform & Risk '
                         'Allowances',
-        'sector': 'Police & Defence Services'},
+        'sector': 'Police & Defence Services',
+        'target_group': 'sslc_10th',
+        'target_groups': ['sslc_10th', 'vocational', 'arts', 'commerce']},
     {   'future_career_growth': [   'Sub-Inspector (SI) -> Inspector of Police (after 8-10 yrs) -> Deputy '
                                     'Superintendent of Police (DSP) -> Additional SP -> Superintendent of Police '
                                     '(IPS)'],
         'government_perks_quotas': 'Authorised service weapon, official jeep/motorcycle, station commander authority, '
                                    'and rapid departmental promotions.',
         'id': 'pos_sub_inspector_police',
-        'target_group': 'arts',
-        'target_groups': ['arts', 'graduate'],
         'position_description': 'Station House Officer (SHO) commanding a police station jurisdiction. Investigates '
                                 'IPC crimes, registers FIRs, leads tactical operations, and maintains law and order.',
         'position_title': 'Sub-Inspector of Police (Taluk, Armed Reserve, TSP)',
@@ -5492,15 +5524,15 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'ET -> PET (15 Marks) -> Viva-Voce Interview (10 '
                                                                'Marks)'}],
         'salary_range': '₹36,900 - ₹1,16,600 / month (Level 18 TN Govt Pay Matrix)',
-        'sector': 'Police & Defence Services'},
+        'sector': 'Police & Defence Services',
+        'target_group': 'arts',
+        'target_groups': ['arts', 'graduate']},
     {   'future_career_growth': [   'Lieutenant / Flying Officer -> Captain / Flight Lieutenant -> Major / Squadron '
                                     'Leader -> Lt Colonel / Wing Commander -> Colonel -> Brigadier -> Major General -> '
                                     'General'],
         'government_perks_quotas': "Direct President's Commission, free military housing, defense health coverage "
                                    '(ECHS), CSD canteen, sports facilities, and pension.',
         'id': 'pos_defence_commissioned_officer',
-        'target_group': 'computer_science',
-        'target_groups': ['computer_science', 'arts', 'graduate'],
         'position_description': 'Commands military platoons, fighter jets, naval warships, and special forces units in '
                                 'defence of the nation. Direct entry as Commissioned Lieutenant / Flying Officer / '
                                 'Sub-Lieutenant.',
@@ -5527,14 +5559,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'Khadakwasla, Pune'}],
         'salary_range': '₹56,100 - ₹1,77,500 / month (Level 10 Defence Pay Scale) + Military Service Pay (MSP ₹15,500) '
                         '+ Flying/High Altitude Allowances',
-        'sector': 'Police & Defence Services'},
+        'sector': 'Police & Defence Services',
+        'target_group': 'computer_science',
+        'target_groups': ['computer_science', 'arts', 'graduate']},
     {   'future_career_growth': [   'Sub-Lieutenant -> Lieutenant -> Lieutenant Commander -> Commander -> Captain -> '
                                     'Commodore -> Rear Admiral -> Vice Admiral'],
         'government_perks_quotas': 'World travel, 100% free B.Tech education from Jawaharlal Nehru University (JNU), '
                                    'and officer lifestyle.',
         'id': 'pos_naval_executive_btech',
-        'target_group': 'computer_science',
-        'target_groups': ['computer_science'],
         'position_description': 'Executes surface combat operations, naval engineering propulsion, weapons systems, '
                                 'and navigation on destroyers, frigates, and aircraft carriers.',
         'position_title': 'Naval Executive / Technical Officer (10+2 B.Tech Entry)',
@@ -5556,14 +5588,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'Degree at Indian Naval Academy (INA) Ezhimala (100% '
                                                                'Free funded by Govt)'}],
         'salary_range': '₹56,100 - ₹1,77,500 / month + MSP + Sea Duty Allowances',
-        'sector': 'Police & Defence Services'},
+        'sector': 'Police & Defence Services',
+        'target_group': 'computer_science',
+        'target_groups': ['computer_science']},
     {   'future_career_growth': [   'Advocate -> Senior Advocate (High Court) -> Legal Advisor -> Corporate Partner / '
                                     'Elevation as High Court Judge'],
         'government_perks_quotas': 'Enormous societal authority; eligible for direct recruitment as Assistant Public '
                                    'Prosecutor (APP) and Civil Judge.',
         'id': 'pos_advocate_legal_advisor',
-        'target_group': 'arts',
-        'target_groups': ['arts', 'commerce', 'graduate'],
         'position_description': 'Argues cases before Madras High Court, District Courts, and Supreme Court; drafts '
                                 'commercial contracts, patent filings, and defends human rights.',
         'position_title': 'Advocate / Corporate Legal Counsel / High Court Practitioner',
@@ -5604,14 +5636,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'National Law University (TNNLU Trichy - 50% TN Home '
                                                                'State Quota)'}],
         'salary_range': '₹35,000 - ₹90,000 / month (Junior Counsel) -> ₹8 - ₹25+ LPA (Corporate Law Firm Associate)',
-        'sector': 'Law & Judiciary'},
+        'sector': 'Law & Judiciary',
+        'target_group': 'arts',
+        'target_groups': ['arts', 'commerce', 'graduate']},
     {   'future_career_growth': [   'Civil Judge / Judicial Magistrate -> Senior Civil Judge / Chief Judicial '
                                     'Magistrate (CJM) -> District & Sessions Judge -> Elevation to High Court Judge'],
         'government_perks_quotas': 'Constitutional judicial status, official court staff, security, car, bungalow, and '
                                    'supreme independence.',
         'id': 'pos_civil_judge_magistrate',
-        'target_group': 'arts',
-        'target_groups': ['arts', 'graduate'],
         'position_description': 'Presides over court trials, adjudicates civil and criminal disputes, delivers '
                                 'judicial judgments, and exercises state magistracy powers.',
         'position_title': 'Civil Judge / Judicial Magistrate (TN State Judicial Service)',
@@ -5634,14 +5666,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'II, Law III - 400 Marks) -> Viva-Voce Interview (60 '
                                                                'Marks)'}],
         'salary_range': '₹77,840 - ₹1,36,520 / month (Junior Civil Judge) + Judicial Perks',
-        'sector': 'Law & Judiciary'},
+        'sector': 'Law & Judiciary',
+        'target_group': 'arts',
+        'target_groups': ['arts', 'graduate']},
     {   'future_career_growth': [   'Chartered Accountant -> Audit Manager -> VP of Finance -> Chief Financial Officer '
                                     '(CFO) / Managing Partner'],
         'government_perks_quotas': 'Exclusive legal statutory authority to sign balance sheets and audit reports under '
                                    'Companies Act 2013.',
         'id': 'pos_chartered_accountant',
-        'target_group': 'commerce',
-        'target_groups': ['commerce'],
         'position_description': 'Statutory auditor, financial strategist, corporate taxation advisor, and CFO '
                                 'controlling balance sheets, corporate mergers, and tax compliance.',
         'position_title': 'Chartered Accountant (CA) / Audit & Taxation Specialist',
@@ -5669,15 +5701,15 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'Articleship -> CA Final Examination -> Chartered '
                                                                'Accountant Membership'}],
         'salary_range': '₹8 - ₹24 LPA (Fresher CA) -> ₹40 - ₹80+ LPA (Partner / Director)',
-        'sector': 'Banking, Finance & Commerce'},
+        'sector': 'Banking, Finance & Commerce',
+        'target_group': 'commerce',
+        'target_groups': ['commerce']},
     {   'future_career_growth': [   'Probationary Officer (Scale I) -> Branch Manager (Scale II) -> Chief Manager '
                                     '(Scale IV) -> Deputy General Manager (DGM) -> Executive Director -> Chairman / '
                                     'MD'],
         'government_perks_quotas': 'High job security, low-interest home & vehicle loans, LTC travel concessions, and '
                                    'guaranteed bi-partite wage revisions.',
         'id': 'pos_bank_probationary_officer',
-        'target_group': 'commerce',
-        'target_groups': ['commerce', 'graduate'],
         'position_description': 'Manages branch credit disbursement, corporate loans, foreign exchange, treasury '
                                 'operations, and digital customer banking services.',
         'position_title': 'Bank Probationary Officer (PO) & Specialist Officer',
@@ -5705,14 +5737,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'Stage 3: Psychometric Test, Group Exercise & Personal '
                                                                'Interview'}],
         'salary_range': '₹52,000 - ₹75,000 / month (Grade 1 Officer) + Leased Accommodation & Concessional Loans',
-        'sector': 'Banking, Finance & Commerce'},
+        'sector': 'Banking, Finance & Commerce',
+        'target_group': 'commerce',
+        'target_groups': ['commerce', 'graduate']},
     {   'future_career_growth': [   'Junior Architect -> Project Architect -> Associate Partner -> Principal Architect '
                                     '/ Urban Planner'],
         'government_perks_quotas': 'Council of Architecture (CoA) licensed professional status; direct eligibility for '
                                    'CMDA and government town planning consultancies.',
         'id': 'pos_architect_urban_planner',
-        'target_group': 'computer_science',
-        'target_groups': ['computer_science'],
         'position_description': 'Conceives architectural layouts, residential skyscrapers, sustainable green campuses, '
                                 'airport terminals, and heritage restoration projects across urban centres.',
         'position_title': 'Architect / Urban Design Consultant (B.Arch)',
@@ -5751,14 +5783,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'Counselling for SAP Guindy & Measi Academy of '
                                                                'Architecture'}],
         'salary_range': '₹4.5 - ₹12 LPA (Fresher) -> ₹20 - ₹50+ LPA (Consultant / Principal Architect)',
-        'sector': 'Design & Architecture'},
+        'sector': 'Design & Architecture',
+        'target_group': 'computer_science',
+        'target_groups': ['computer_science']},
     {   'future_career_growth': [   'Apparel Designer -> Senior Stylist -> Design Head -> Creative Director / '
                                     'Independent Fashion Label Owner'],
         'government_perks_quotas': "Direct linkage with Tamil Nadu's ₹40,000+ Crore textile & apparel export corridor; "
                                    'National Institute of Design (NID) & NIFT prestige.',
         'id': 'pos_fashion_designer_apparel',
-        'target_group': 'arts',
-        'target_groups': ['arts'],
         'position_description': 'Creates garment collections, luxury fashion lines, textile weaves, apparel graphics, '
                                 'and coordinates retail styling for international fashion houses and Tiruppur knitwear '
                                 'export clusters.',
@@ -5787,14 +5819,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                '(Hands-on Material Crafting) -> National Seat '
                                                                'Allotment for NIFT Chennai & 18 campuses'}],
         'salary_range': '₹4.2 - ₹10 LPA (Fresher) -> ₹18 - ₹45 LPA (Creative Director)',
-        'sector': 'Design & Architecture'},
+        'sector': 'Design & Architecture',
+        'target_group': 'arts',
+        'target_groups': ['arts']},
     {   'future_career_growth': [   'Junior First Officer -> Senior First Officer -> Captain (Commander) -> Designated '
                                     'Examiner (DE) / Chief Pilot'],
         'government_perks_quotas': 'High international prestige, global tax and travel privileges, and rapid captaincy '
                                    'transitions.',
         'id': 'pos_commercial_pilot',
-        'target_group': 'computer_science',
-        'target_groups': ['computer_science'],
         'position_description': 'Operates commercial passenger aircraft (Airbus A320, Boeing 737), executes flight '
                                 'navigation, weather radar analysis, and cross-border aviation protocols.',
         'position_title': 'Commercial Airline Pilot / First Officer',
@@ -5835,14 +5867,14 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'General Reasoning) -> Stage 2: Pilot Aptitude Test '
                                                                '(WOMBAT / COMPASS) -> Stage 3: Personal Interview'}],
         'salary_range': '₹1.8 - ₹3.5 Lakhs / month (Junior First Officer) -> ₹6.5 - ₹12+ Lakhs / month (Captain)',
-        'sector': 'Design & Architecture'},
+        'sector': 'Design & Architecture',
+        'target_group': 'computer_science',
+        'target_groups': ['computer_science']},
     {   'future_career_growth': [   'Assistant Professor (Stage 1) -> Assistant Professor (Stage 2) -> Associate '
                                     'Professor -> Professor -> Dean / Vice-Chancellor'],
         'government_perks_quotas': 'UGC 7th Pay Commission scales, paid academic sabbaticals, research grants, and '
                                    'high social dignity.',
         'id': 'pos_research_scientist_professor',
-        'target_group': 'computer_science',
-        'target_groups': ['computer_science', 'arts', 'graduate'],
         'position_description': 'Delivers collegiate university lectures, mentors undergraduate students, spearheads '
                                 'funded scientific research, and publishes high-impact journals.',
         'position_title': 'College Assistant Professor / Research Scientist (CS / Arts / Science)',
@@ -5885,8 +5917,9 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                                                'Professorship & Junior Research Fellowship (JRF - '
                                                                '₹37,000/mo stipend)'}],
         'salary_range': '₹57,700 - ₹1,82,400 / month (UGC Academic Level 10) + Academic Allowances',
-        'sector': 'Engineering & Technology'}]
-
+        'sector': 'Engineering & Technology',
+        'target_group': 'computer_science',
+        'target_groups': ['computer_science', 'arts', 'graduate']}]
 
 def get_all_career_positions(
     sector: Optional[str] = None,
@@ -5920,12 +5953,43 @@ def get_all_career_positions(
             if s in pos_text or s in exam_text or s in orgs_text:
                 filtered.append(p)
         results = filtered
-    return results
+
+    # Ensure entrance exam dates are only displayed when confirmed and accurate; otherwise show 'Upcoming'
+    sanitized = []
+    for p in results:
+        p_copy = dict(p)
+        if "relevant_entrance_exams" in p_copy:
+            clean_exams = []
+            for ex in p_copy["relevant_entrance_exams"]:
+                ex_copy = dict(ex)
+                d = str(ex_copy.get("exam_date", "")).strip()
+                if not d or d.lower() == "upcoming" or d.lower() == "tbd":
+                    ex_copy["exam_date"] = "Upcoming"
+                    ex_copy["is_date_confirmed"] = False
+                else:
+                    ex_copy["is_date_confirmed"] = True
+                clean_exams.append(ex_copy)
+            p_copy["relevant_entrance_exams"] = clean_exams
+        sanitized.append(p_copy)
+    return sanitized
 
 
 def get_career_position_detail(position_id: str) -> Optional[Dict[str, Any]]:
     """Returns full detail of a specific career position including exams, salary, and perks."""
     for p in CAREER_POSITIONS_DATABASE:
         if p["id"] == position_id:
-            return dict(p)
+            p_copy = dict(p)
+            if "relevant_entrance_exams" in p_copy:
+                clean_exams = []
+                for ex in p_copy["relevant_entrance_exams"]:
+                    ex_copy = dict(ex)
+                    d = str(ex_copy.get("exam_date", "")).strip()
+                    if not d or d.lower() == "upcoming" or d.lower() == "tbd":
+                        ex_copy["exam_date"] = "Upcoming"
+                        ex_copy["is_date_confirmed"] = False
+                    else:
+                        ex_copy["is_date_confirmed"] = True
+                    clean_exams.append(ex_copy)
+                p_copy["relevant_entrance_exams"] = clean_exams
+            return p_copy
     return None

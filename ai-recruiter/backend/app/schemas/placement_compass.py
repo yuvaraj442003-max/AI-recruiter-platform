@@ -208,6 +208,7 @@ class SchoolEntranceExamEvent(BaseModel):
     target_stage: Optional[str] = None
     stage_badge: Optional[str] = None
     admission_type: Optional[str] = None
+    is_date_confirmed: Optional[bool] = False
     model_config = {"extra": "allow"}
 
 
@@ -221,6 +222,7 @@ class RelevantExamDetail(BaseModel):
     exam_date: str
     exam_pattern: str
     how_to_prepare: str
+    is_date_confirmed: Optional[bool] = False
     model_config = {"extra": "allow"}
 
 

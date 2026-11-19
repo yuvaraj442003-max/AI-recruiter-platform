@@ -72,7 +72,7 @@ function renderIntegrityReport(report) {
   if (candNameEl) candNameEl.textContent = candidate.full_name || "Candidate";
   if (assessNameEl) {
     assessNameEl.textContent = isInterview
-      ? "AI Video Interview Session"
+      ? "Video Interview Session"
       : "Technical Coding Assessment";
   }
   if (subIdEl) subIdEl.textContent = report.session_id ? report.session_id.substring(0, 8) : "—";

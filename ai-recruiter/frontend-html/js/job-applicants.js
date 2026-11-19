@@ -228,7 +228,7 @@
                   🎉 Select
                 </button>
                 <button class="btn btn-sm btn-outline-light fw-semibold open-applicant-profile-link" data-app-id="${app.id}">
-                  🤖 AI Screening
+                  📋 Screening
                 </button>
                 <button class="btn btn-sm btn-outline-success text-white border-success fw-semibold download-resume-btn" data-candidate-id="${candId}">
                   📄 Resume
@@ -242,7 +242,7 @@
                 <button class="btn btn-sm btn-outline-secondary text-light border-secondary fw-semibold feedback-btn" data-app-id="${app.id}" data-name="${escapeHtml(candidateName)}">
                   💬 Feedback
                 </button>
-                <a href="integrity-report.html?application_id=${app.id}" target="_blank" class="btn btn-sm btn-outline-info text-info border-info fw-semibold" title="View AI Proctoring & Integrity Audit Report">
+                <a href="integrity-report.html?application_id=${app.id}" target="_blank" class="btn btn-sm btn-outline-info text-info border-info fw-semibold" title="View Proctoring & Integrity Audit Report">
                   🛡️ Integrity
                 </a>
                 <button class="btn btn-sm btn-primary fw-bold open-applicant-profile-link px-3 shadow-sm" data-app-id="${app.id}">
@@ -305,17 +305,17 @@
             <span class="badge ${scoreClass} px-2 py-1 rounded-pill fs-6">${atsScore}%</span>
           </td>
           <td onclick="event.stopPropagation();">
-            <button class="badge bg-primary-subtle text-primary border border-primary px-2 py-1 rounded-pill fs-6 open-applicant-profile-link cursor-pointer" data-app-id="${app.id}" title="View AI Screening Breakdown">
+            <button class="badge bg-primary-subtle text-primary border border-primary px-2 py-1 rounded-pill fs-6 open-applicant-profile-link cursor-pointer" data-app-id="${app.id}" title="View Screening Breakdown">
               ${app.overall_score ? Math.round(app.overall_score) + '%' : (app.screening_status === 'completed' ? 'Completed' : 'Screening ➔')}
             </button>
           </td>
           <td onclick="event.stopPropagation();">
-            <a href="integrity-report.html?attempt_id=${app.coding_attempt_id || app.id}" class="badge bg-info-subtle text-dark border border-info px-2 py-1 rounded-pill fs-6 text-decoration-none" title="View AI-Assisted Integrity Monitoring Report">
+            <a href="integrity-report.html?attempt_id=${app.coding_attempt_id || app.id}" class="badge bg-info-subtle text-dark border border-info px-2 py-1 rounded-pill fs-6 text-decoration-none" title="View Integrity Monitoring Report">
               ${codingScore} 🛡️
             </a>
           </td>
           <td onclick="event.stopPropagation();">
-            <a href="interview-scorecard.html?interview_id=${app.interview_id || app.id}&job_id=${currentJob ? currentJob.id : ''}" class="badge bg-purple-subtle text-dark border border-purple px-2 py-1 rounded-pill fs-6 text-decoration-none" title="View AI Executive Candidate Scorecard">
+            <a href="interview-scorecard.html?interview_id=${app.interview_id || app.id}&job_id=${currentJob ? currentJob.id : ''}" class="badge bg-purple-subtle text-dark border border-purple px-2 py-1 rounded-pill fs-6 text-decoration-none" title="View Executive Candidate Scorecard">
               ${interviewScore} 📊
             </a>
           </td>
@@ -333,7 +333,7 @@
                 <li><button class="dropdown-item d-flex align-items-center gap-2 text-primary fw-bold quick-status-btn" data-app-id="${app.id}" data-status="shortlisted"><span>⭐</span> Shortlist Candidate</button></li>
                 <li><button class="dropdown-item d-flex align-items-center gap-2 text-success fw-bold quick-status-btn" data-app-id="${app.id}" data-status="selected"><span>🎉</span> Select Candidate</button></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><button class="dropdown-item d-flex align-items-center gap-2 open-applicant-profile-link" data-app-id="${app.id}"><span>🤖</span> AI Screening</button></li>
+                <li><button class="dropdown-item d-flex align-items-center gap-2 open-applicant-profile-link" data-app-id="${app.id}"><span>📋</span> Candidate Screening</button></li>
                 <li><button class="dropdown-item d-flex align-items-center gap-2 download-resume-btn" data-candidate-id="${candId}"><span>📄</span> Download Resume</button></li>
                 <li><button class="dropdown-item d-flex align-items-center gap-2 msg-applicant-btn" data-user-id="${candidateProfile.user_id || ''}" data-name="${escapeHtml(candidateName)}"><span>💬</span> Send Message</button></li>
                 <li><button class="dropdown-item d-flex align-items-center gap-2 schedule-applicant-btn" data-app-id="${app.id}" data-candidate-id="${candId}" data-candidate-name="${escapeHtml(candidateName)}"><span>📅</span> Schedule Interview</button></li>
@@ -857,10 +857,10 @@
       <!-- AI Candidate Recommendation Section -->
       <div class="card border-0 shadow-sm p-4 text-dark" style="background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%); border-radius: 14px; border-left: 6px solid #28a745 !important;">
         <div class="d-flex align-items-center gap-2 mb-3">
-          <span class="fs-2">🤖</span>
+          <span class="fs-2">🎯</span>
           <div>
-            <h5 class="fw-bold text-success mb-0">AI Candidate Hiring Recommendation</h5>
-            <span class="small text-muted">Powered by Recruiter Platform LLM &amp; multi-dimensional ATS evaluation</span>
+            <h5 class="fw-bold text-success mb-0">Candidate Hiring Recommendation</h5>
+            <span class="small text-muted">Powered by multi-dimensional ATS evaluation &amp; scoring benchmarks</span>
           </div>
         </div>
 
@@ -1011,7 +1011,7 @@
     const salScore = Math.round(result.salary_score ?? (app.salary_score || brk.salary_match || 80));
     const commScore = Math.round(result.communication_score ?? (app.communication_score || brk.communication || 85));
 
-    const aiSummary = result.ai_summary || app.ai_summary || session?.ai_summary || app.summary || (isFailed ? "Candidate failed evaluation. Does not meet core role qualifications." : "Candidate pre-screening questionnaire has been initiated. Complete AI evaluation summary and multi-dimensional analysis will be updated upon completion.");
+    const aiSummary = result.ai_summary || app.ai_summary || session?.ai_summary || app.summary || (isFailed ? "Candidate failed evaluation. Does not meet core role qualifications." : "Candidate pre-screening questionnaire has been initiated. Complete evaluation summary and multi-dimensional analysis will be updated upon completion.");
 
     return `
       <!-- Candidate Assessment Banner & Subscore Breakdown -->

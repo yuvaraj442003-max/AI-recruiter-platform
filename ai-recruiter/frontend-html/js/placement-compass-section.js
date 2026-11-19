@@ -154,7 +154,7 @@
         {
           id: "job_cs_aiml",
           title: "AI / Machine Learning Engineer & Data Scientist",
-          icon: "🤖",
+          icon: "🧠",
           sector: "Artificial Intelligence & Analytics",
           type: "tech",
           starting_salary: "₹7.5 LPA - ₹28.0 LPA",

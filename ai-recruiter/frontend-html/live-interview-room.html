@@ -262,7 +262,7 @@
         const aiText = msg.text;
         document.getElementById('ai-speech-subtitle').textContent = `"${aiText}"`;
         document.getElementById('turn-status-badge').className = 'badge bg-primary';
-        document.getElementById('turn-status-badge').textContent = '🔊 AI Speaking...';
+        document.getElementById('turn-status-badge').textContent = '🔊 Interviewer Speaking...';
         animateAvatar(true);
 
         // Play TTS audio if available or use WebSpeech fallback
@@ -290,7 +290,7 @@
       }
       else if (msg.type === 'ai.processing') {
         document.getElementById('turn-status-badge').className = 'badge bg-warning text-dark';
-        document.getElementById('turn-status-badge').textContent = '🧠 AI Analyzing Response...';
+        document.getElementById('turn-status-badge').textContent = '🧠 Analyzing Response...';
       }
       else if (msg.type === 'candidate.transcript') {
         document.getElementById('candidate-live-transcript').textContent = `"${msg.text}"`;

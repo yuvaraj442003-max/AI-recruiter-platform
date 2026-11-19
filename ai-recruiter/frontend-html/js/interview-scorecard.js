@@ -88,7 +88,7 @@ async function loadScorecard(interviewId) {
 }
 
 async function regenerateScorecard(interviewId) {
-  if (!confirm("Re-analyze this interview session using AI Intelligence?")) return;
+  if (!confirm("Re-analyze this interview session using Verified Intelligence?")) return;
 
   const btnRegen = document.getElementById("btn-regenerate");
   if (btnRegen) {
@@ -363,7 +363,7 @@ function renderQuestionEvaluations(evals) {
           <div class="col"><div class="p-2 bg-body-tertiary rounded border"><strong>Clarity:</strong> ${Math.round(qe.clarity_score)}</div></div>
           <div class="col"><div class="p-2 bg-body-tertiary rounded border"><strong>Relevance:</strong> ${Math.round(qe.relevance_score)}</div></div>
         </div>
-        ${qe.evaluation_summary ? `<div class="alert alert-light border mb-0 small"><strong>AI Feedback:</strong> ${qe.evaluation_summary}</div>` : ""}
+        ${qe.evaluation_summary ? `<div class="alert alert-light border mb-0 small"><strong>Evaluation Feedback:</strong> ${qe.evaluation_summary}</div>` : ""}
       </div>
     `;
     container.appendChild(card);

@@ -1159,7 +1159,7 @@
                               onclick="startMilestoneQuiz('${r.slug}', '${mId}', true)"
                               title="Generate fresh practice questions for this topic"
                             >
-                              <span>🤖</span>
+                              <span>⚡</span>
                               <span>Practice Test</span>
                             </button>
                           </div>
@@ -2860,7 +2860,7 @@
         accentColor = "#0284c7";
         gradient = "linear-gradient(135deg, rgba(2, 132, 199, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%)";
       } else if (subLower.includes("ai") || subLower.includes("machine learning") || subLower.includes("ml")) {
-        icon = "🤖";
+        icon = "🧠";
         accentColor = "#ec4899";
         gradient = "linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)";
       } else if (subLower.includes("operating") || subLower.includes("os")) {
@@ -3153,7 +3153,7 @@
     else if (subLower.includes("operating") || subLower.includes("os")) icon = "⚙️";
     else if (subLower.includes("network") || subLower.includes("cn")) icon = "📡";
     else if (subLower.includes("data engineering") || subLower.includes("big data")) icon = "📊";
-    else if (subLower.includes("ai") || subLower.includes("machine learning")) icon = "🤖";
+    else if (subLower.includes("ai") || subLower.includes("machine learning")) icon = "🧠";
     else if (subLower.includes("verbal") || subLower.includes("english")) icon = "🗣️";
 
     if (bookModalIcon) bookModalIcon.textContent = icon;

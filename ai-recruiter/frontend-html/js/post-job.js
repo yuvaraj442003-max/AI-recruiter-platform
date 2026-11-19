@@ -68,7 +68,7 @@
     } finally {
       analyzeBtn.disabled = false;
       analyzeSpinner.classList.add("d-none");
-      analyzeBtnText.textContent = "Analyze with AI";
+      analyzeBtnText.textContent = "Analyze Content";
     }
   });
 
@@ -171,11 +171,11 @@
 
       if (createdJob.fraud_risk_level === "HIGH" || createdJob.status === "pending_review") {
         showAlert(
-          `Job "${createdJob.title}" saved, but AI Fraud Scan detected risk factors (Score: ${createdJob.fraud_risk_score}/100). It is currently under Admin Review before publishing.`,
+          `Job "${createdJob.title}" saved, but Fraud Scan detected risk factors (Score: ${createdJob.fraud_risk_score}/100). It is currently under Admin Review before publishing.`,
           "warning"
         );
       } else {
-        showAlert(`"${createdJob.title}" passed AI fraud verification and was published successfully!`, "success");
+        showAlert(`"${createdJob.title}" passed fraud verification and was published successfully!`, "success");
       }
       form.reset();
       document.getElementById("employment-type").value = "full_time";

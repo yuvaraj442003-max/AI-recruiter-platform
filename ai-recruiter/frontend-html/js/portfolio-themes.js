@@ -919,15 +919,15 @@ const PortfolioThemesEngine = (() => {
     // ----------------------------------------------------
     {
       id: "ai_tech",
-      name: "AI / Tech HUD",
+      name: "Systems / Tech HUD",
       category: "ai",
-      categoryName: "AI & Cyber",
+      categoryName: "Systems & Cyber",
       layout: "ai_tech",
       layoutName: "Neural Interface & Telemetry",
       layoutBadge: "Neural HUD",
-      icon: "🤖",
+      icon: "⚡",
       desc: "Sci-fi cyber void, radar avatar rings, neural pod matrix, telemetry cards, glowing corner brackets",
-      tags: ["AI", "HUD", "Sci-Fi"],
+      tags: ["Telemetry", "HUD", "Cyber"],
       defaultPrimary: "#06b6d4",
       defaultSecondary: "#c084fc",
       font: "Plus Jakarta Sans",
@@ -4839,7 +4839,7 @@ const PortfolioThemesEngine = (() => {
               <div class="ai-corner-accent ai-corner-bl"></div>
               <div class="ai-corner-accent ai-corner-br"></div>
               <h5 class="fw-bold mb-3" style="color: #06b6d4; font-family: monospace;">// PROFESSIONAL BACKGROUND</h5>
-              <p class="lead mb-0" style="color: #cbd5e1; font-size: 1.15rem; line-height: 1.8;">${about || headline || `${name} is an artificial intelligence and software architecture specialist.`}</p>
+              <p class="lead mb-0" style="color: #cbd5e1; font-size: 1.15rem; line-height: 1.8;">${about || headline || `${name} is a software and systems architecture specialist.`}</p>
             </div>
           ` : ""}
 

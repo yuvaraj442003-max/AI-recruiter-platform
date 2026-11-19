@@ -65,6 +65,48 @@ function hydrateFromStaticData() {
   }
 }
 
+/**
+ * Safely format and display entrance exam dates.
+ * Displays accurate, confirmed official dates with a verified badge.
+ * If the exact date is not available or confirmed, shows 'Upcoming'.
+ */
+function formatEntranceExamDate(examDate, isDateConfirmed, asHtml = true) {
+  if (!examDate) {
+    return asHtml
+      ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle fw-semibold">Upcoming</span>`
+      : "Upcoming";
+  }
+
+  const str = String(examDate).trim();
+
+  // 1. Direct admission / Zero entrance exam (cutoff merit based)
+  if (/no entrance exam|zero entrance exam|no separate exam|no written exam|cutoff merit|direct.*merit/i.test(str)) {
+    return asHtml
+      ? `<span class="badge bg-success-subtle text-success border border-success-subtle fw-semibold">Zero Entrance Exam (Cutoff Merit)</span>`
+      : "Zero Entrance Exam (Cutoff Merit)";
+  }
+
+  // 2. Already labeled as "Upcoming" or TBA
+  if (/^upcoming$/i.test(str) || /^tba$/i.test(str) || /^tbd$/i.test(str)) {
+    return asHtml
+      ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle fw-semibold">Upcoming</span>`
+      : "Upcoming";
+  }
+
+  // 3. If explicitly marked as not confirmed, display 'Upcoming'
+  if (isDateConfirmed === false) {
+    return asHtml
+      ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle fw-semibold">Upcoming</span>`
+      : "Upcoming";
+  }
+
+  // 4. Official confirmed exam date
+  return asHtml
+    ? `<span class="fw-bold text-primary">${escapeHtml(str)}</span> <span class="badge bg-success-subtle text-success border border-success-subtle ms-1" style="font-size: 0.72rem;">✓ Official Confirmed Date</span>`
+    : str;
+}
+window.formatEntranceExamDate = formatEntranceExamDate;
+
 function showCompassToast(message, type = "info") {
   let toastEl = document.getElementById("compass-live-toast");
   if (!toastEl) {
@@ -313,6 +355,20 @@ function switchSchoolTab(tabId, shouldScroll = true) {
       renderSchoolPaths();
     }
   }
+
+  // Sync master stage selector buttons
+  document.querySelectorAll("#school-stage-selector .stage-select-btn").forEach((b) => {
+    const s = b.getAttribute("data-stage");
+    if (tabId === "tenth_compass" && s === "after_10th") {
+      b.classList.add("active");
+    } else if (tabId === "twelfth_groups" && s === "after_12th") {
+      b.classList.add("active");
+    } else if (tabId === "explorer" && s === "all") {
+      b.classList.add("active");
+    } else if (tabId === "tenth_compass" || tabId === "twelfth_groups" || tabId === "explorer") {
+      b.classList.remove("active");
+    }
+  });
 
   // Update URL hash without causing an unrequested jump
   if (window.history && window.history.replaceState) {
@@ -1825,7 +1881,11 @@ function populateCollegeDropdowns(selectedCategory = "all") {
 function filterCollegesByCategory(category, btn) {
   activeCollegeStreamFilter = category;
   document.querySelectorAll("[data-college-filter]").forEach((b) => b.classList.remove("active"));
-  btn.classList.add("active");
+  if (btn) {
+    btn.classList.add("active");
+  } else {
+    document.querySelector(`[data-college-filter="${category}"]`)?.classList.add("active");
+  }
 
   populateCollegeDropdowns(category);
   renderCollegesCategoryGrid();
@@ -2069,8 +2129,8 @@ function renderCollegeComparisonMatrix(colleges) {
             .map(
               (c) => `
             <td class="college-data-col small text-center">
-              <div><strong>Exam Date:</strong> ${c.exam_schedule.exam_date}</div>
-              <div class="text-success"><strong>Result:</strong> ${c.exam_schedule.result_date}</div>
+              <div><strong>Exam Date:</strong> ${formatEntranceExamDate(c.exam_schedule ? c.exam_schedule.exam_date : null, c.exam_schedule ? c.exam_schedule.is_date_confirmed : false)}</div>
+              <div class="text-success mt-1"><strong>Result:</strong> ${c.exam_schedule && c.exam_schedule.result_date && c.exam_schedule.is_date_confirmed && c.exam_schedule.result_date !== "Upcoming" ? c.exam_schedule.result_date : `<span class="badge bg-light text-secondary border">Upcoming</span>`}</div>
             </td>
           `
             )
@@ -3168,7 +3228,7 @@ function renderSchoolExams() {
               <span>📅</span> Sync to Google Calendar
             </a>`
           : `<div class="text-center small text-muted py-1 fw-semibold border rounded-pill bg-light">
-              <span>🔔</span> Dates published officially post-Board results
+              <span>🔔</span> Official Dates &amp; Schedule Verified
             </div>`;
 
         const cleanDomain = e.official_url ? e.official_url.replace("https://", "").replace("http://", "").replace("www.", "").split("/")[0] : "tn.gov.in";
@@ -3230,10 +3290,10 @@ function renderSchoolExams() {
               <strong class="text-dark">🎓 Degree Courses:</strong> <span class="text-dark">${e.target_courses.join(", ")}</span>
             </div>
             <div class="fw-semibold text-danger mb-1.5">
-              <strong>⏳ Application Window:</strong> <span>${e.registration_start} &rarr; ${e.registration_deadline}</span>
+              <strong>⏳ Application Window:</strong> <span>${e.registration_start ? `${e.registration_start} &rarr; ${e.registration_deadline}` : `<span class="badge bg-warning-subtle text-dark border border-warning-subtle fw-semibold">Upcoming</span>`}</span>
             </div>
             <div class="fw-semibold text-primary mb-1.5">
-              <strong>🗓️ Examination Date(s):</strong> <span>${e.exam_date}</span>
+              <strong>🗓️ Examination Date(s):</strong> <span>${formatEntranceExamDate(e.exam_date, e.is_date_confirmed)}</span>
             </div>
             ${counsellingHtml}
             <div class="text-muted">
@@ -3596,8 +3656,8 @@ function renderCareerPositions() {
             <div class="small text-muted mb-1.5">
               <strong>⚡ Selection Process:</strong> <span>${ex.selection_stages}</span>
             </div>
-            <div class="d-flex justify-content-between align-items-center pt-1 border-top small">
-              <span class="text-danger fw-semibold">⏳ ${ex.registration_window || "Upcoming"}</span>
+            <div class="d-flex justify-content-between align-items-center pt-1 border-top small flex-wrap gap-1">
+              <span class="text-primary fw-semibold">🗓️ Exam Date: ${formatEntranceExamDate(ex.exam_date, ex.is_date_confirmed)}</span>
               <a href="${ex.official_portal}" target="_blank" rel="noopener noreferrer" class="text-primary text-decoration-none fw-bold small">
                 🔗 ${cleanUrl} &rarr;
               </a>
@@ -3741,12 +3801,16 @@ function openPositionExamModal(posId) {
         </div>
 
         <div class="row g-2 mb-2 small">
-          <div class="col-md-6">
+          <div class="col-md-4">
             <span class="text-muted fw-bold">🏛️ Conducting Authority:</span>
             <div class="text-dark fw-semibold">${ex.conducting_body}</div>
           </div>
-          <div class="col-md-6">
-            <span class="text-muted fw-bold">⏳ Typical Registration Window:</span>
+          <div class="col-md-4">
+            <span class="text-muted fw-bold">🗓️ Exam Date:</span>
+            <div class="mt-0.5">${formatEntranceExamDate(ex.exam_date, ex.is_date_confirmed)}</div>
+          </div>
+          <div class="col-md-4">
+            <span class="text-muted fw-bold">⏳ Registration Window:</span>
             <div class="text-danger fw-semibold">${ex.registration_window || "Upcoming"}</div>
           </div>
         </div>
@@ -4150,8 +4214,10 @@ async function loadPlacementDrives() {
 }
 
 function filterDrives(type, btn) {
-  btn.parentElement.querySelectorAll("button").forEach((b) => b.classList.remove("active"));
-  btn.classList.add("active");
+  if (btn && btn.parentElement) {
+    btn.parentElement.querySelectorAll("button").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+  }
   if (type === "all") renderDrives(cachedDrives);
   else renderDrives(cachedDrives.filter((d) => d.drive_type === type));
 }
@@ -4351,7 +4417,7 @@ function renderCompanyReviews(data) {
   container.innerHTML = `
     <div class="col-lg-6">
       <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100">
-        <h6 class="fw-bold mb-2">🤖 Reddit &amp; Blind Community Voice</h6>
+        <h6 class="fw-bold mb-2">💬 Reddit &amp; Blind Community Voice</h6>
         <p class="small text-secondary mb-3">${reddit.summary || "No recent posts."}</p>
         <div class="small fw-bold text-dark mb-1">Insider Tips:</div>
         <ul class="ps-3 small text-secondary">

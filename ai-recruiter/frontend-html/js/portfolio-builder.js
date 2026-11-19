@@ -212,7 +212,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     return fallback;
   }
 
-  function setAiLoading(show, title = "Gemini AI Generating Portfolio...", step = "Analyzing prompt and persona...") {
+  function setAiLoading(show, title = "Generating Dynamic Portfolio...", step = "Analyzing prompt and persona...") {
     if (show) {
       aiLoadingTitle.textContent = title;
       aiLoadingStep.textContent = step;
@@ -224,7 +224,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       aiLoadingOverlay.classList.add("d-none");
       btnGenerateGemini.disabled = false;
       btnGenerateIcon.textContent = "✨";
-      btnGenerateText.textContent = "Generate with Gemini AI";
+      btnGenerateText.textContent = "Generate Portfolio";
     }
   }
 
@@ -741,10 +741,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     },
     {
       id: "cyber-hud",
-      category: "ai",
+      category: "systems",
       name: "Cyberpunk Neural HUD",
-      badge: "AI Telemetry • Holographic",
-      icon: "🤖",
+      badge: "Telemetry • Holographic",
+      icon: "⚡",
       layout: "ai_tech",
       theme_id: "ai_tech",
       primary_color: "#00e5ff",
@@ -752,7 +752,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       ambient_color: "#090d16",
       dark_mode: true,
       animation: "⚡ Glowing Pulse & Radar Telemetry",
-      prompt: "Design a futuristic Cyberpunk Neural HUD portfolio for an advanced AI & Systems Specialist. Use an ultra-dark OLED obsidian palette with glowing neon cyan (#00e5ff) and hyper-violet (#a855f7) accents. Incorporate telemetry radar stats, neural network architecture flowcharts, sub-100ms inference benchmarks, and animated terminal command line widgets."
+      prompt: "Design a futuristic Cyberpunk Neural HUD portfolio for an advanced Systems & Cloud Specialist. Use an ultra-dark OLED obsidian palette with glowing neon cyan (#00e5ff) and hyper-violet (#a855f7) accents. Incorporate telemetry radar stats, neural network architecture flowcharts, sub-100ms inference benchmarks, and animated terminal command line widgets."
     },
     {
       id: "terminal-ide",
@@ -1187,7 +1187,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             verifyScoreBadge.className = "badge bg-warning-subtle text-warning border border-warning border-opacity-25 px-2.5 py-1";
           }
           if (verifyStatusTitle) verifyStatusTitle.textContent = "Please Verify & Complete Candidate Details";
-          if (verifyStatusDesc) verifyStatusDesc.textContent = "Some authentic details require confirmation before Gemini AI generates your portfolio.";
+          if (verifyStatusDesc) verifyStatusDesc.textContent = "Some authentic details require confirmation before generating your portfolio.";
         } else {
           if (verifyScoreBadge) {
             verifyScoreBadge.textContent = "Score: 100% Verified";
@@ -1261,13 +1261,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Execution routine: triggers generation only after candidate validation
     async function executeValidatedPortfolioGeneration(promptText, verifiedData) {
-      setAiLoading(true, "✨ Information Verified! Gemini AI Synthesizing Portfolio...", "Grounding portfolio strictly on your verified candidate credentials...");
+      setAiLoading(true, "✨ Information Verified! Synthesizing Portfolio...", "Grounding portfolio strictly on your verified candidate credentials...");
 
       const t1 = setTimeout(() => {
-        aiLoadingStep.textContent = "Gemini AI: Architecting unique layout, bespoke copy, and verified design tokens...";
+        aiLoadingStep.textContent = "Architecting unique layout, bespoke copy, and verified design tokens...";
       }, 1400);
       const t2 = setTimeout(() => {
-        aiLoadingStep.textContent = "Gemini AI: Synthesizing live responsive components, impact metrics & services...";
+        aiLoadingStep.textContent = "Synthesizing live responsive components, impact metrics & services...";
       }, 3000);
 
       try {
@@ -1289,7 +1289,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           if (btnGenerateText) btnGenerateText.textContent = "Regenerate Portfolio";
           if (displayActivePrompt) displayActivePrompt.textContent = promptText;
           openEditMode();
-          showAlert("✨ Candidate information verified and portfolio generated successfully with Gemini AI!", "success");
+          showAlert("✨ Candidate information verified and portfolio generated successfully!", "success");
         } else {
           throw new Error(res?.message || "Generation did not return portfolio data");
         }
@@ -1297,7 +1297,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         clearTimeout(t1);
         clearTimeout(t2);
         console.error("Generation error:", err);
-        showAlert(err.message || "Could not generate portfolio with Gemini AI. Please check your network or try again.", "danger");
+        showAlert(err.message || "Could not generate portfolio. Please check your network or try again.", "danger");
       } finally {
         setAiLoading(false);
       }
@@ -1354,7 +1354,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   async function executePromptRefinement(instruction) {
-    setAiLoading(true, "Gemini AI Refining Portfolio...", `Applying refinement: "${instruction}"...`);
+    setAiLoading(true, "Refining Portfolio...", `Applying refinement: "${instruction}"...`);
     try {
       const res = await portfolioAPI.generateFromPrompt(instruction, {
         include_resume: true,
@@ -1366,7 +1366,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         syncDataToUI();
         renderLivePreview();
         inputRefinePrompt.value = "";
-        showAlert("✨ Gemini AI successfully refined your portfolio!", "success");
+        showAlert("✨ Successfully refined your portfolio!", "success");
       } else {
         throw new Error(res?.message || "Refinement failed");
       }
@@ -1594,14 +1594,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     btnRewriteHeadline.addEventListener("click", async () => {
-      setAiLoading(true, "Gemini AI Polishing Headline...", "Refining professional headline with impactful phrasing...");
+      setAiLoading(true, "Polishing Headline...", "Refining professional headline with impactful phrasing...");
       try {
         const res = await portfolioAPI.refineSection("headline", "Make it punchier, authoritative, and role-tailored");
         if (res && res.data) {
           currentPortfolio = res.data;
           syncDataToUI();
           renderLivePreview();
-          showAlert("✨ Headline polished successfully with Gemini AI!", "success");
+          showAlert("✨ Headline polished successfully!", "success");
         }
       } catch (err) {
         showAlert("Failed to polish headline.", "danger");
@@ -1611,14 +1611,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     btnRewriteAbout.addEventListener("click", async () => {
-      setAiLoading(true, "Gemini AI Polishing Bio...", "Polishing About Me narrative with active verbs and executive vision...");
+      setAiLoading(true, "Polishing Bio...", "Polishing About Me narrative with active verbs and executive vision...");
       try {
         const res = await portfolioAPI.refineSection("about", "Polish narrative with strong impact verbs and clear professional vision");
         if (res && res.data) {
           currentPortfolio = res.data;
           syncDataToUI();
           renderLivePreview();
-          showAlert("✨ About Me bio polished successfully with Gemini AI!", "success");
+          showAlert("✨ About Me bio polished successfully!", "success");
         }
       } catch (err) {
         showAlert("Failed to polish bio.", "danger");
@@ -1654,7 +1654,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     btnReorganizeSkills.addEventListener("click", async () => {
-      setAiLoading(true, "Gemini AI Categorizing Skills...", "Organizing skills into clean industry-standard categories...");
+      setAiLoading(true, "Categorizing Skills...", "Organizing skills into clean industry-standard categories...");
       try {
         const res = await portfolioAPI.refineSection("skills", "Categorize skills cleanly into 3-4 standard engineering groups");
         if (res && res.data) {
@@ -2990,7 +2990,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (aiCodeBtnSpinner) aiCodeBtnSpinner.classList.remove("d-none");
         if (aiCodeBtnIcon) aiCodeBtnIcon.classList.add("d-none");
         if (aiCodeBtnText) aiCodeBtnText.textContent = "Synthesizing Code...";
-        if (aiCodeStatusMsg) aiCodeStatusMsg.textContent = "Gemini AI is generating bespoke HTML/CSS code...";
+        if (aiCodeStatusMsg) aiCodeStatusMsg.textContent = "Generating bespoke HTML/CSS code...";
 
         try {
           const res = await portfolioAPI.generateHtmlCode(prompt, {
@@ -3015,7 +3015,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
 
             if (aiCodeStatusMsg) aiCodeStatusMsg.textContent = "✓ Bespoke code synthesized and loaded live!";
-            showAlert("✨ Bespoke HTML/CSS code generated with Gemini AI! Your custom website is active in the live preview.", "success");
+            showAlert("✨ Bespoke HTML/CSS code generated! Your custom website is active in the live preview.", "success");
 
             // Auto save so the generated code persists
             if (btnSavePortfolio) {
@@ -3032,7 +3032,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           btnGenerateAiCode.disabled = false;
           if (aiCodeBtnSpinner) aiCodeBtnSpinner.classList.add("d-none");
           if (aiCodeBtnIcon) aiCodeBtnIcon.classList.remove("d-none");
-          if (aiCodeBtnText) aiCodeBtnText.textContent = "Generate Code with Gemini";
+          if (aiCodeBtnText) aiCodeBtnText.textContent = "Generate Custom Code";
         }
       });
     }

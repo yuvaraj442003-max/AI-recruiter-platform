@@ -260,7 +260,7 @@
         <h3 class="fw-bold text-dark mb-1">${job.title}</h3>
         <div class="text-muted fs-6">📍 Location: <strong>${job.location || "Remote / Unspecified"}</strong></div>
         ${job.salary_range ? `<div class="text-success fw-semibold mt-1">💰 Salary: ${job.salary_range}</div>` : ""}
-        ${job.fraud_risk_score ? `<div class="small text-muted mt-2">🛡️ AI Scam Risk Score: <strong>${job.fraud_risk_score}/100</strong> (${job.fraud_risk_level})</div>` : ''}
+        ${job.fraud_risk_score ? `<div class="small text-muted mt-2">🛡️ Scam Risk Score: <strong>${job.fraud_risk_score}/100</strong> (${job.fraud_risk_level})</div>` : ''}
       </div>
 
       <!-- Extended Requirements Breakdown Cards -->
@@ -335,7 +335,7 @@
       const items = res.data;
       if (!items || !items.length) {
         recommendedListEl.innerHTML =
-          '<div class="col-12"><div class="p-3 text-center border rounded bg-white text-secondary small">No recommendations available yet. <a href="upload-resume.html">Upload your resume</a> to unlock AI-matched job recommendations.</div></div>';
+          '<div class="col-12"><div class="p-3 text-center border rounded bg-white text-secondary small">No recommendations available yet. <a href="upload-resume.html">Upload your resume</a> to unlock tailored job recommendations.</div></div>';
         return;
       }
 
@@ -354,7 +354,7 @@
       attachCardHandlers(recommendedListEl);
     } catch (err) {
       recommendedListEl.innerHTML =
-        '<div class="col-12"><div class="p-3 text-center border rounded bg-white text-secondary small">Upload your resume to unlock AI-matched job recommendations. <a href="upload-resume.html">Upload Resume →</a></div></div>';
+        '<div class="col-12"><div class="p-3 text-center border rounded bg-white text-secondary small">Upload your resume to unlock tailored job recommendations. <a href="upload-resume.html">Upload Resume →</a></div></div>';
     }
   }
 

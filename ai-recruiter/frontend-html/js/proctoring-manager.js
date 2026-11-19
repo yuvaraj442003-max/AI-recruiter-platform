@@ -70,9 +70,9 @@ class ProctoringManager {
         padding: 1rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       `;
 
-      const title = this.mode === "interview" ? "AI Video Interview Proctoring Pre-Check" : "Technical Assessment System & Proctoring Check";
+      const title = this.mode === "interview" ? "Video Interview Proctoring Pre-Check" : "Technical Assessment System & Proctoring Check";
       const desc = this.mode === "interview"
-        ? "Before beginning your AI Video Interview, please verify your camera and microphone setup. Live proctoring and dialogue recording will remain active throughout the session."
+        ? "Before beginning your Video Interview, please verify your camera and microphone setup. Live proctoring and dialogue recording will remain active throughout the session."
         : "To maintain test integrity, your assessment session is monitored. Please verify your camera, microphone, and browser permissions below.";
 
       modalWrapper.innerHTML = `
@@ -82,7 +82,7 @@ class ProctoringManager {
               <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🛡️</div>
               <div>
                 <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #fff;">${title}</h3>
-                <span style="font-size: 0.8rem; opacity: 0.9;">Secure AI Proctoring Environment</span>
+                <span style="font-size: 0.8rem; opacity: 0.9;">Secure Proctoring Environment</span>
               </div>
             </div>
           </div>
