@@ -105,10 +105,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Load initial mode
   const savedMode = localStorage.getItem("compass_active_hub") || "school";
-  setCompassMode(savedMode);
+  setCompassMode(savedMode, false);
 
   // Synchronously hydrate from static pre-bundled data first
   hydrateFromStaticData();
+
+  // Route to specific tab if in URL hash or query params
+  initUrlTabRouting();
 
   // Initialize both engines asynchronously
   await initSchoolCareerHub();
@@ -129,7 +132,7 @@ function setupUserGreeting() {
 // -------------------------------------------------------------
 // TOP HUB SWITCHER (SCHOOL GUIDE vs COLLEGE PLACEMENT)
 // -------------------------------------------------------------
-function setCompassMode(mode) {
+function setCompassMode(mode, shouldScroll = false) {
   localStorage.setItem("compass_active_hub", mode);
 
   const btnSchool = document.getElementById("btn-mode-school");
@@ -149,7 +152,9 @@ function setCompassMode(mode) {
     hubSchool?.classList.add("d-none");
   }
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  if (shouldScroll) {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 }
 
 // =========================================================================
@@ -219,11 +224,20 @@ async function initSchoolCareerHub() {
   }
 }
 
-// Subnav Tabs in School Mode
-function switchSchoolTab(tabId) {
-  const tabs = ["explorer", "twelfth_groups", "tenth_compass", "colleges", "courses", "matcher", "exams", "roadmap"];
-  const buttons = document.querySelectorAll("[data-school-tab]");
+let activeTwelfthGroup = "computer_science";
 
+// Subnav Tabs in School Mode
+function switchSchoolTab(tabId, shouldScroll = true) {
+  const tabs = ["explorer", "twelfth_groups", "tenth_compass", "colleges", "courses", "matcher", "exams", "roadmap"];
+  if (!tabs.includes(tabId)) {
+    tabId = "explorer";
+  }
+
+  // Ensure school mode is active in the master hub switcher
+  setCompassMode("school", false);
+
+  // Update button active states
+  const buttons = document.querySelectorAll("[data-school-tab]");
   buttons.forEach((btn) => {
     if (btn.getAttribute("data-school-tab") === tabId) {
       btn.classList.add("active");
@@ -232,6 +246,7 @@ function switchSchoolTab(tabId) {
     }
   });
 
+  // Switch visible tab panel
   tabs.forEach((t) => {
     const el = document.getElementById(`school-tab-${t}`);
     if (el) {
@@ -243,7 +258,100 @@ function switchSchoolTab(tabId) {
     }
   });
 
-  window.scrollTo({ top: 120, behavior: "smooth" });
+  // Auto-hydrate & render section content dynamically on demand
+  if (tabId === "twelfth_groups") {
+    const dossier = document.getElementById("twelfth-group-guidance-dossier");
+    if (!dossier || !dossier.innerHTML.trim()) {
+      renderTwelfthGroupGuidance(activeTwelfthGroup || "computer_science");
+    }
+    try { updateCutoffCalculatorInputs(); } catch (e) {}
+  } else if (tabId === "tenth_compass") {
+    const tenthGrid = document.getElementById("tenth-routes-cards-grid");
+    if (!tenthGrid || !tenthGrid.innerHTML.trim()) {
+      renderTenthGuidanceRoutes();
+    }
+  } else if (tabId === "colleges") {
+    if (!allCollegesList || allCollegesList.length === 0) {
+      if (typeof window !== "undefined" && window.COMPASS_STATIC_DATA && window.COMPASS_STATIC_DATA.colleges) {
+        allCollegesList = [...window.COMPASS_STATIC_DATA.colleges];
+      }
+    }
+    populateCollegeDropdowns();
+    const matrix = document.getElementById("college-compare-matrix-container");
+    if (!matrix || !matrix.innerHTML.trim()) {
+      presetCollegeCompare("engineering");
+    }
+  } else if (tabId === "courses") {
+    if (!allComparableCourses || allComparableCourses.length === 0) {
+      if (typeof window !== "undefined" && window.COMPASS_STATIC_DATA && window.COMPASS_STATIC_DATA.courses) {
+        allComparableCourses = [...window.COMPASS_STATIC_DATA.courses];
+      }
+    }
+    populateCourseDropdowns();
+    const matrix = document.getElementById("course-compare-matrix-container");
+    if (!matrix || !matrix.innerHTML.trim()) {
+      presetCourseCompare("be_cs_vs_bsc_cs");
+    }
+  } else if (tabId === "exams") {
+    if (!allSchoolExams || allSchoolExams.length === 0) {
+      if (typeof window !== "undefined" && window.COMPASS_STATIC_DATA && window.COMPASS_STATIC_DATA.exams) {
+        allSchoolExams = [...window.COMPASS_STATIC_DATA.exams];
+      }
+    }
+    const list = document.getElementById("school-exams-list");
+    if (!list || !list.innerHTML.trim()) {
+      renderSchoolExams();
+    }
+  } else if (tabId === "explorer") {
+    if (!allSchoolPaths || allSchoolPaths.length === 0) {
+      if (typeof window !== "undefined" && window.COMPASS_STATIC_DATA && window.COMPASS_STATIC_DATA.paths) {
+        allSchoolPaths = [...window.COMPASS_STATIC_DATA.paths];
+      }
+    }
+    const grid = document.getElementById("school-paths-grid");
+    if (!grid || !grid.innerHTML.trim()) {
+      renderSchoolPaths();
+    }
+  }
+
+  // Update URL hash without causing an unrequested jump
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState(null, "", `#${tabId}`);
+  }
+
+  // Smoothly scroll directly to the subnav container so the user immediately sees the tab content below
+  if (shouldScroll) {
+    const subnav = document.getElementById("school-subnav-container");
+    if (subnav) {
+      const rect = subnav.getBoundingClientRect();
+      const targetY = window.pageYOffset + rect.top - 80;
+      window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
+    }
+  }
+}
+window.switchSchoolTab = switchSchoolTab;
+
+function initUrlTabRouting() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const tabParam = urlParams.get("tab");
+  const rawHash = (window.location.hash || "").replace("#", "").replace("school-tab-", "");
+  const target = tabParam || rawHash;
+  const validTabs = ["explorer", "twelfth_groups", "tenth_compass", "colleges", "courses", "matcher", "exams", "roadmap"];
+
+  if (target && validTabs.includes(target)) {
+    switchSchoolTab(target, false);
+  }
+}
+window.initUrlTabRouting = initUrlTabRouting;
+
+if (typeof window !== "undefined") {
+  window.addEventListener("hashchange", () => {
+    const rawHash = (window.location.hash || "").replace("#", "").replace("school-tab-", "");
+    const validTabs = ["explorer", "twelfth_groups", "tenth_compass", "colleges", "courses", "matcher", "exams", "roadmap"];
+    if (rawHash && validTabs.includes(rawHash)) {
+      switchSchoolTab(rawHash, true);
+    }
+  });
 }
 
 // -------------------------------------------------------------
@@ -1062,6 +1170,7 @@ function renderTwelfthGroupGuidance(groupKey) {
 }
 
 function selectTwelfthGuidanceGroup(groupKey, btn) {
+  activeTwelfthGroup = groupKey;
   document.querySelectorAll("#twelfth-group-buttons-container .academic-group-btn").forEach((b) => {
     if (b.getAttribute("data-twelfth-group") === groupKey) {
       b.classList.add("active");
