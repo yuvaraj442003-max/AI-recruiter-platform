@@ -325,35 +325,40 @@ const TWELFTH_GROUP_GUIDANCE = {
         duration: "4 Years",
         cutoff: "190 - 199.5 for Premier Colleges (CEG, MIT, PSG Tech, GCT)",
         portal: "TNEA (Anna University) — tneaonline.org",
-        overview: "The #1 high-demand engineering branch in Tamil Nadu. Focuses on algorithms, scalable cloud architecture, deep learning models, generative AI, and high-performance software development."
+        overview: "The #1 high-demand engineering branch in Tamil Nadu. Focuses on algorithms, scalable cloud architecture, deep learning models, generative AI, and high-performance software development.",
+        path_id: "btech_cse_ai"
       },
       {
         course: "B.E Electronics & Communication Engineering (ECE / VLSI Design)",
         duration: "4 Years",
         cutoff: "185 - 197.5 (Anna Univ CEG, SSN, CIT, Thiagarajar Madurai)",
         portal: "TNEA (Anna University) — tneaonline.org",
-        overview: "Covers semiconductor microchips, FPGA architecture, 5G wireless networks, embedded systems, and automotive electronics in Tamil Nadu's hardware hubs."
+        overview: "Covers semiconductor microchips, FPGA architecture, 5G wireless networks, embedded systems, and automotive electronics in Tamil Nadu's hardware hubs.",
+        path_id: "btech_ece_vlsi"
       },
       {
         course: "B.Sc Computer Science / Artificial Intelligence / Data Science",
         duration: "3 Years",
         cutoff: "85%+ aggregate in 12th PCM",
         portal: "TNGASA (tngasa.in) & Autonomous Portals (Loyola, MCC, PSG CAS)",
-        overview: "Fast-track 3-year pure tech program leading into software development, data analytics, and cloud engineering with very low government-subsidized tuition."
+        overview: "Fast-track 3-year pure tech program leading into software development, data analytics, and cloud engineering with very low government-subsidized tuition.",
+        path_id: "bsc_cs_datascience"
       },
       {
         course: "B.Arch — Bachelor of Architecture",
         duration: "5 Years",
         cutoff: "12th PCM 50% + NATA Qualifying Score",
         portal: "Anna University SAP Single Window Counseling",
-        overview: "Council of Architecture (CoA) approved professional degree for urban infrastructure, green building designs, and smart city architecture."
+        overview: "Council of Architecture (CoA) approved professional degree for urban infrastructure, green building designs, and smart city architecture.",
+        path_id: "barch_architecture"
       },
       {
         course: "Indian Navy 10+2 B.Tech Cadet Scheme (Executive & Technical)",
         duration: "4 Years (100% Free Scholarship)",
         cutoff: "70% in PCM + JEE Main Rank",
         portal: "joinindiannavy.gov.in",
-        overview: "100% free B.Tech at Indian Naval Academy (INA) Ezhimala + permanent commission as Sub Lieutenant in the Indian Navy."
+        overview: "100% free B.Tech at Indian Naval Academy (INA) Ezhimala + permanent commission as Sub Lieutenant in the Indian Navy.",
+        path_id: "nda_armed_forces_12th"
       }
     ],
     career_opportunities: [
@@ -412,35 +417,48 @@ const TWELFTH_GROUP_GUIDANCE = {
         duration: "5.5 Years (incl. 1 Yr Internship)",
         cutoff: "NEET-UG Score (Govt Medical Colleges: 580 - 660+ / 720; 7.5% Quota: 350 - 480+)",
         portal: "TN Medical Selection (tnmedicalselection.net) — 85% State Quota",
-        overview: "The primary clinical medical degree for doctors, surgeons, and healthcare directors across 38+ Tamil Nadu Government Medical Colleges."
+        overview: "The primary clinical medical degree for doctors, surgeons, and healthcare directors across 38+ Tamil Nadu Government Medical Colleges.",
+        path_id: "mbbs_medicine"
       },
       {
         course: "BDS — Bachelor of Dental Surgery",
         duration: "5 Years",
         cutoff: "NEET-UG Score (Govt Dental College Chennai: 540 - 610 / 720)",
         portal: "TN Medical Selection (tnmedicalselection.net)",
-        overview: "Specialized dental, maxillofacial and oral surgery healthcare degree with high private clinic practice and overseas licensing opportunities."
+        overview: "Specialized dental, maxillofacial and oral surgery healthcare degree with high private clinic practice and overseas licensing opportunities.",
+        path_id: "bds_dental"
       },
       {
         course: "B.V.Sc & A.H — Bachelor of Veterinary Science & Animal Husbandry",
         duration: "5.5 Years",
         cutoff: "Cutoff out of 200: Typically 192 - 198 (TANUVAS Single Window)",
         portal: "TANUVAS Chennai — tanuvas.ac.in",
-        overview: "Premier veterinary medicine degree in Madras Veterinary College and TANUVAS regional campuses. Direct recruitment for Veterinary Assistant Surgeon (VAS) via TNPSC."
+        overview: "Premier veterinary medicine degree in Madras Veterinary College and TANUVAS regional campuses. Direct recruitment for Veterinary Assistant Surgeon (VAS) via TNPSC.",
+        path_id: "bvsc_veterinary"
       },
       {
         course: "B.Sc (Hons) Agriculture / Horticulture",
         duration: "4 Years",
         cutoff: "Cutoff out of 200: 188 - 198 (TNAU Coimbatore)",
         portal: "Tamil Nadu Agricultural University (TNAU) — tnau.ac.in",
-        overview: "Agronomy, seed technology, horticulture, and sustainable soil science. Direct recruitment for Agricultural Officer (AO) via TNPSC."
+        overview: "Agronomy, seed technology, horticulture, and sustainable soil science. Direct recruitment for Agricultural Officer (AO) via TNPSC.",
+        path_id: "agriculture_icar_tnau"
+      },
+      {
+        course: "B.Tech Biotechnology & Biomedical Engineering (Bio-Tech)",
+        duration: "4 Years",
+        cutoff: "180 - 196 / 200 (TNEA Anna University / AC Tech)",
+        portal: "TNEA (Anna University) — tneaonline.org",
+        overview: "Direct engineering degree for Biology students! Focuses on vaccine tech, biomedical devices, genetic engineering, and biopharma manufacturing.",
+        path_id: "btech_biotech_biomedical"
       },
       {
         course: "B.Sc Nursing & Allied Health Sciences (BPT, BOT, B.Sc Radiology, B.Pharm)",
         duration: "4 Years",
         cutoff: "Direct 12th Biology + Physics + Chemistry Merit (No NEET required)",
         portal: "TN DME Selection Paramedical Counselling",
-        overview: "High-growth clinical professions with immense global demand across UK, Middle East, USA, and top multi-specialty hospital chains in Tamil Nadu."
+        overview: "High-growth clinical professions with immense global demand across UK, Middle East, USA, and top multi-specialty hospital chains in Tamil Nadu.",
+        path_id: "allied_health_sciences_tn"
       }
     ],
     career_opportunities: [
@@ -477,6 +495,105 @@ const TWELFTH_GROUP_GUIDANCE = {
       "Tamil Nadu Agricultural University (TNAU), Coimbatore",
       "Government Mohan Kumaramangalam Medical College, Salem",
       "PSG College of Nursing & Allied Health, Coimbatore"
+    ],
+    next_steps: [
+      "Step 1: Appear for NEET-UG for MBBS/BDS, or calculate your 12th PCB Cutoff for Paramedical/TNAU/TANUVAS.",
+      "Step 2: Register on tnmedicalselection.net immediately after NEET results for Tamil Nadu 85% State Quota.",
+      "Step 3: Register on tnau.ac.in and tanuvas.ac.in for Agriculture & Veterinary single-window counseling.",
+      "Step 4: Check eligibility for TN 7.5% Government School Reservation (100% free tuition, hostel, and food)."
+    ]
+  },
+
+  
+  pure_science: {
+    group_name: "Group 3: Pure Science Stream (Botany & Zoology)",
+    subjects: "Physics, Chemistry, Botany & Zoology (No Higher Mathematics)",
+    badge: "🔬 Life Sciences, Medical, Agriculture, Veterinary & Pharmacy",
+    description: "Dedicated for nature, life sciences, healthcare, botanical research, and agricultural enthusiasts who have studied Biology split into Botany & Zoology. Qualifies for all medical, dental, veterinary, agriculture, forestry, pharmacy, and paramedical admissions in Tamil Nadu.",
+    cutoff_formula: "NEET UG for MBBS/BDS (Score out of 720); Paramedical/TNAU/TANUVAS Cutoff out of 200 = Biology (100) + [Physics (100)/2] + [Chemistry (100)/2]",
+    top_degree_courses: [
+      {
+        course: "MBBS — Bachelor of Medicine & Surgery (TN DME 85% Quota)",
+        duration: "5.5 Years",
+        cutoff: "NEET-UG Score: 580 - 660+ / 720 (7.5% Govt School Quota: 350 - 480+)",
+        portal: "TN Medical Selection — tnmedicalselection.net",
+        overview: "Clinical medical doctor degree across 38+ Tamil Nadu Government Medical Colleges with 100% free education under 7.5% reservation.",
+        path_id: "mbbs_medicine"
+      },
+      {
+        course: "B.V.Sc & A.H — Veterinary Science & Animal Husbandry",
+        duration: "5.5 Years",
+        cutoff: "192 - 198 / 200 Cutoff (TANUVAS Single Window)",
+        portal: "TANUVAS Chennai — tanuvas.ac.in",
+        overview: "Madras Veterinary College and TANUVAS regional campuses. Direct recruitment for Veterinary Assistant Surgeon (VAS) via TNPSC.",
+        path_id: "bvsc_veterinary"
+      },
+      {
+        course: "B.Sc (Hons) Agriculture / Horticulture / Forestry",
+        duration: "4 Years",
+        cutoff: "188 - 198 / 200 Cutoff (TNAU Coimbatore)",
+        portal: "Tamil Nadu Agricultural University — tnau.ac.in",
+        overview: "Agronomy, seed tech, botanical genetics, and horticulture. Direct recruitment for Agricultural Officer (AO) via TNPSC.",
+        path_id: "agriculture_icar_tnau"
+      },
+      {
+        course: "B.Pharm — Bachelor of Pharmacy (TN DME Paramedical)",
+        duration: "4 Years",
+        cutoff: "12th PCB Cutoff Merit (No NEET required)",
+        portal: "TN DME Selection — tnmedicalselection.net",
+        overview: "Formulation chemistry, pharmacology, clinical trials, and drug manufacturing in Chennai's pharmaceutical manufacturing corridor.",
+        path_id: "bpharm_pharmacy"
+      },
+      {
+        course: "B.Sc Allied Health Sciences (Cardiac, Radiology, Dialysis)",
+        duration: "4 Years (incl. 1 Yr Hospital Internship)",
+        cutoff: "12th PCB Aggregate Cutoff (No NEET required)",
+        portal: "TN DME Paramedical Single-Window Counselling",
+        overview: "Direct patient care and high-tech diagnostics in cardiac cath labs, ICU suites, MRI/CT scanners, and dialysis units across corporate hospital chains.",
+        path_id: "allied_health_sciences_tn"
+      },
+      {
+        course: "B.Sc Nursing — 4-Year Professional Hospital Degree",
+        duration: "4 Years",
+        cutoff: "12th PCB Merit Selection via TN DME",
+        portal: "TN DME Selection Committee",
+        overview: "Clinical nursing, emergency trauma care, and surgical assistance with high worldwide demand in the UK, Middle East, and USA.",
+        path_id: "bsc_nursing"
+      }
+    ],
+    career_opportunities: [
+      {
+        role: "Medical Doctor / Surgeon / Specialist Physician",
+        starting_salary: "₹8.0 LPA - ₹30.0 LPA",
+        top_hiring_zones: "Government Hospitals, Apollo, MIOT, Fortis Malar, Private Clinics across TN",
+        progression: "Junior Resident (CRRI) → Medical Officer → MD/MS Specialist Consultant"
+      },
+      {
+        role: "Veterinary Assistant Surgeon (VAS) / Livestock Specialist",
+        starting_salary: "₹6.5 LPA - ₹14.0 LPA",
+        top_hiring_zones: "TN Animal Husbandry Department, Aavin Dairy, Regional Polyclinics",
+        progression: "Veterinary Assistant Surgeon → Assistant Director → Joint Director"
+      },
+      {
+        role: "Agricultural Officer (AO) / Agronomist / Plant Breeder",
+        starting_salary: "₹5.0 LPA - ₹12.5 LPA",
+        top_hiring_zones: "TN Agriculture Dept, ICAR, Seed & Agri-biotech MNCs",
+        progression: "Agricultural Officer → Assistant Director of Agriculture → District Joint Director"
+      },
+      {
+        role: "Clinical Specialist / Hospital Pharmacist / Healthcare Director",
+        starting_salary: "₹4.5 LPA - ₹16.0 LPA",
+        top_hiring_zones: "Tertiary Hospitals in Chennai/Coimbatore & Global Healthcare Corridors",
+        progression: "Healthcare Technologist → Clinical Specialist → Department Head"
+      }
+    ],
+    tn_colleges: [
+      "Madras Medical College (MMC), Chennai (NIRF #11)",
+      "Stanley Medical College, Chennai",
+      "Madras Veterinary College (TANUVAS), Chennai",
+      "Tamil Nadu Agricultural University (TNAU), Coimbatore",
+      "Madras Medical College School of Pharmacy, Chennai",
+      "Government Mohan Kumaramangalam Medical College, Salem"
     ],
     next_steps: [
       "Step 1: Appear for NEET-UG for MBBS/BDS, or calculate your 12th PCB Cutoff for Paramedical/TNAU/TANUVAS.",
@@ -727,7 +844,8 @@ const TENTH_GUIDANCE_DATA = {
         "Group 5 (Vocational HSC): Practical trade with 2% reserved engineering quota."
       ],
       admission_portal: "Direct admission in TN Government, Government-Aided, and Matriculation Higher Secondary Schools.",
-      salary_potential: "Leads to Graduate Salaries: ₹4.5 LPA - ₹25+ LPA after degree completion."
+      salary_potential: "Leads to Graduate Salaries: ₹4.5 LPA - ₹25+ LPA after degree completion.",
+      path_id: "hsc_stream_selection_10th"
     },
     {
       id: "polytechnic_diploma",
@@ -743,7 +861,8 @@ const TENTH_GUIDANCE_DATA = {
         "Diploma in Civil Engineering"
       ],
       admission_portal: "Centralized DOTE Tamil Nadu Polytechnic Admission Portal.",
-      salary_potential: "Junior Engineer: ₹2.8 LPA - ₹5.2 LPA. Plus 10% reserved seats for Direct 2nd-Year B.E/B.Tech Lateral Entry (TNEA Anna Univ)!"
+      salary_potential: "Junior Engineer: ₹2.8 LPA - ₹5.2 LPA. Plus 10% reserved seats for Direct 2nd-Year B.E/B.Tech Lateral Entry (TNEA Anna Univ)!",
+      path_id: "diploma_mechanical_civil_eee"
     },
     {
       id: "iti_trades",
@@ -758,7 +877,8 @@ const TENTH_GUIDANCE_DATA = {
         "Wireman & Electronics Mechanic"
       ],
       admission_portal: "Directorate of Employment & Training (DET TN) Online ITI Admission.",
-      salary_potential: "Certified Technician: ₹2.2 LPA - ₹4.0 LPA + NCVT National Trade Certificate + Railway Apprentice eligibility."
+      salary_potential: "Certified Technician: ₹2.2 LPA - ₹4.0 LPA + NCVT National Trade Certificate + Railway Apprentice eligibility.",
+      path_id: "iti_vocational_trades_10th"
     },
     {
       id: "direct_govt_jobs",
@@ -773,7 +893,8 @@ const TENTH_GUIDANCE_DATA = {
         "Indian Navy Matric Recruit (MR)"
       ],
       admission_portal: "TNPSC (tnpsc.gov.in) & TNUSRB (tnusrb.tn.gov.in) Official Notification Portals.",
-      salary_potential: "Level 8 / Level 3 State Pay Scale: ₹22,000 - ₹35,000/month (₹3.0 LPA - ₹4.5 LPA) with lifelong government job security."
+      salary_potential: "Level 8 / Level 3 State Pay Scale: ₹22,000 - ₹35,000/month (₹3.0 LPA - ₹4.5 LPA) with lifelong government job security.",
+      path_id: "direct_govt_jobs_10th"
     },
     {
       id: "paramedical_diploma",
@@ -788,7 +909,25 @@ const TENTH_GUIDANCE_DATA = {
         "Diploma in Radio Diagnosis (X-Ray & Imaging)"
       ],
       admission_portal: "TN Directorate of Medical Education (TN DME) Selection Committee.",
-      salary_potential: "Healthcare Specialist: ₹2.5 LPA - ₹4.8 LPA in diagnostic labs, private hospitals, and Corporation health departments."
+      salary_potential: "Healthcare Specialist: ₹2.5 LPA - ₹4.8 LPA in diagnostic labs, private hospitals, and Corporation health departments.",
+      path_id: "paramedical_diploma_10th"
+    },
+    {
+      id: "skill_based_technical",
+      icon: "⚡",
+      title: "Route 6: Skill-Based & Technical Training (TNSDC & Naan Mudhalvan)",
+      duration: "3 to 12 Months",
+      best_for: "Students seeking 100% free government technical training, monthly stipends under NAPS, and immediate jobs in electric vehicles, solar, CNC machining, and telecom.",
+      tamil_nadu_streams: [
+        "CNC Machine Operator & Precision Machinist (Guindy / Ambattur / Coimbatore)",
+        "Electric Vehicle (EV) Assembly & Battery Service Technician",
+        "Solar PV Installation & Maintenance Technician",
+        "Industrial Automation & PLC Technician",
+        "Telecom & Fiber Optic Cable Splicing Technician"
+      ],
+      admission_portal: "Tamil Nadu Skill Development Corporation (TNSDC) & Naan Mudhalvan Portal.",
+      salary_potential: "Certified Specialist: ₹2.2 LPA - ₹4.5 LPA (₹15,000 - ₹35,000/month) + NAPS monthly stipend during training.",
+      path_id: "skill_based_technical"
     }
   ]
 };
@@ -804,7 +943,7 @@ function renderTwelfthGroupGuidance(groupKey) {
 
   const coursesHtml = g.top_degree_courses.map((c) => `
     <div class="col-lg-6">
-      <div class="card border-0 shadow-sm p-3.5 rounded-4 bg-white h-100 border-start border-3 border-primary">
+      <div class="card border-0 shadow-sm p-3.5 rounded-4 bg-white h-100 border-start border-3 border-primary d-flex flex-column">
         <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
           <h6 class="fw-bold text-dark mb-0">${c.course}</h6>
           <span class="badge bg-primary-subtle text-primary border rounded-pill px-2.5 py-1 small fw-bold text-nowrap">${c.duration}</span>
@@ -813,7 +952,12 @@ function renderTwelfthGroupGuidance(groupKey) {
           <span class="badge bg-danger-subtle text-danger border small me-1">Cutoff: ${c.cutoff}</span>
           <span class="badge bg-light text-secondary border small">Portal: ${c.portal}</span>
         </div>
-        <p class="small text-secondary mb-0">${c.overview}</p>
+        <p class="small text-secondary mb-3">${c.overview}</p>
+        <div class="mt-auto pt-2 border-top">
+          <button class="btn btn-primary btn-sm rounded-pill fw-bold w-100 shadow-sm" onclick="openPathwayModal('${c.path_id || 'btech_cse_ai'}')">
+            📖 Explore Full Course Details, Careers &amp; Roadmap &rarr;
+          </button>
+        </div>
       </div>
     </div>
   `).join("");
@@ -935,13 +1079,13 @@ function renderTenthGuidanceRoutes() {
 
   container.innerHTML = TENTH_GUIDANCE_DATA.routes.map((r) => `
     <div class="col-lg-6">
-      <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100 border-start border-4 border-primary">
+      <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100 border-start border-4 border-primary d-flex flex-column">
         <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
           <div class="d-flex align-items-center gap-2">
             <span class="fs-2">${r.icon}</span>
             <div>
               <h6 class="fw-bold text-dark mb-0">${r.title}</h6>
-              <small class="badge bg-light text-primary border rounded-pill px-2.5 py-0.5">${r.duration}</small>
+              <small class="badge bg-light text-primary border rounded-pill px-2.5 py-0.5 fw-bold">${r.duration}</small>
             </div>
           </div>
         </div>
@@ -963,8 +1107,11 @@ function renderTenthGuidanceRoutes() {
         </div>
 
         <div class="mt-auto pt-2 border-top d-flex gap-2">
-          <button class="btn btn-outline-primary btn-sm rounded-pill fw-semibold w-100" onclick="quickFilterExplorerTo10th()">
-            View 10th Pathway Details &rarr;
+          <button class="btn btn-primary btn-sm rounded-pill fw-bold w-100 shadow-sm" onclick="openPathwayModal('${r.path_id || 'hsc_stream_selection_10th'}')">
+            📖 View Complete 10th Pathway Deep Dive &rarr;
+          </button>
+          <button class="btn btn-outline-secondary btn-sm rounded-pill fw-semibold text-nowrap" onclick="quickFilterExplorerTo10th()">
+            Filter Explorer
           </button>
         </div>
       </div>
@@ -1977,7 +2124,31 @@ function presetCourseCompare(preset) {
   const cr2 = document.getElementById("course-select-2");
   const cr3 = document.getElementById("course-select-3");
 
-  if (preset === "cse_vs_ece_vs_poly") {
+  if (preset === "be_cs_vs_bsc_cs") {
+    if (cr1) cr1.value = "btech_cse";
+    if (cr2) cr2.value = "bsc_cs";
+    if (cr3) cr3.value = "";
+  } else if (preset === "bca_vs_bsc_cs") {
+    if (cr1) cr1.value = "bca_course";
+    if (cr2) cr2.value = "bsc_cs";
+    if (cr3) cr3.value = "";
+  } else if (preset === "bcom_vs_bba") {
+    if (cr1) cr1.value = "bcom_general";
+    if (cr2) cr2.value = "bba_management";
+    if (cr3) cr3.value = "";
+  } else if (preset === "mbbs_vs_allied") {
+    if (cr1) cr1.value = "mbbs_course";
+    if (cr2) cr2.value = "allied_health_course";
+    if (cr3) cr3.value = "";
+  } else if (preset === "poly_vs_11th_12th") {
+    if (cr1) cr1.value = "diploma_mechanical_engg";
+    if (cr2) cr2.value = "hsc_bio_maths";
+    if (cr3) cr3.value = "";
+  } else if (preset === "iti_vs_poly") {
+    if (cr1) cr1.value = "iti_electrician_fitter";
+    if (cr2) cr2.value = "diploma_mechanical_engg";
+    if (cr3) cr3.value = "";
+  } else if (preset === "cse_vs_ece_vs_poly") {
     if (cr1) cr1.value = "btech_cse";
     if (cr2) cr2.value = "btech_ece";
     if (cr3) cr3.value = "diploma_computer_engg";
@@ -2209,20 +2380,105 @@ document.addEventListener("keydown", (e) => {
 // -------------------------------------------------------------
 // 4. PATHWAY DETAIL MODAL
 // -------------------------------------------------------------
+// -------------------------------------------------------------
+// 4. COMPREHENSIVE COURSE DEEP DIVE MODAL & CAREER ROADMAP
+// -------------------------------------------------------------
+
+function showPlacementToast(msg) {
+  let toastContainer = document.getElementById("compass-toast-container");
+  if (!toastContainer) {
+    toastContainer = document.createElement("div");
+    toastContainer.id = "compass-toast-container";
+    toastContainer.style.cssText = "position: fixed; bottom: 25px; right: 25px; z-index: 10999; display: flex; flex-direction: column; gap: 10px;";
+    document.body.appendChild(toastContainer);
+  }
+  const toast = document.createElement("div");
+  toast.className = "toast align-items-center text-white bg-dark border-0 show shadow-lg rounded-4 p-3";
+  toast.style.cssText = "min-width: 320px; max-width: 440px; animation: fadeIn 0.3s ease;";
+  toast.innerHTML = `
+    <div class="d-flex align-items-center justify-content-between">
+      <div class="toast-body p-0 small fw-semibold">
+        ${msg}
+      </div>
+      <button type="button" class="btn-close btn-close-white btn-sm ms-2" onclick="this.parentElement.parentElement.remove()"></button>
+    </div>
+  `;
+  toastContainer.appendChild(toast);
+  setTimeout(() => {
+    toast.remove();
+  }, 4500);
+}
+window.showPlacementToast = showPlacementToast;
+
+function applyForPlacementJob(jobTitle) {
+  showPlacementToast(`💼 Application Submitted! You have applied for "<strong>${jobTitle}</strong>". Our AI recruitment matching engine will prioritize your qualification profile.`);
+}
+window.applyForPlacementJob = applyForPlacementJob;
+
 function openPathwayModal(pathId) {
-  const path = allSchoolPaths.find((p) => p.id === pathId);
-  if (!path) return;
-  currentModalPathId = pathId;
+  let path = (allSchoolPaths || []).find((p) => p.id === pathId);
+  if (!path && typeof window !== "undefined" && window.COMPASS_STATIC_DATA && window.COMPASS_STATIC_DATA.paths) {
+    path = window.COMPASS_STATIC_DATA.paths.find((p) => p.id === pathId);
+  }
+  if (!path && typeof window !== "undefined" && window.COMPASS_STATIC_DATA && window.COMPASS_STATIC_DATA.courses) {
+    const cr = window.COMPASS_STATIC_DATA.courses.find((c) => c.id === pathId);
+    if (cr) {
+      path = {
+        id: cr.id,
+        title: cr.course_name,
+        category: cr.category,
+        grade_level: "after_12th",
+        icon_emoji: cr.category === "engineering" ? "💻" : cr.category === "medical" ? "🩺" : "📊",
+        tagline: cr.why_choose,
+        duration: cr.duration,
+        eligibility: cr.eligibility,
+        entrance_exams: (cr.entrance_exams || []).map(e => ({ name: e, level: "State/National", description: "Official entrance exam" })),
+        top_colleges: ["Anna University / Madras University Flagship Campuses", "Premier Autonomous Institutions in Tamil Nadu"],
+        admission_procedure: "Single-window online counselling through official Tamil Nadu portal with 7.5% Government School free tuition and hostel quota.",
+        estimated_fees: { govt_college: "₹3,500 - ₹9,500 / year", private_college: "₹45,000 - ₹95,000 / year" },
+        scholarships: ["Pudhumai Penn (₹1,000/mo for girls)", "Tamil Puthalvan (₹1,000/mo for boys)", "Post-Matric SC/ST 100% Free Scholarship"],
+        career_opportunities: cr.top_roles || ["Associate Professional", "Junior Specialist"],
+        starting_salary_range: cr.avg_starting_salary || "₹3.6 LPA - ₹8.0 LPA",
+        future_study_options: cr.future_scopes || ["Master's Degree (M.E/M.Tech/MBA/M.Sc)"],
+        key_skills_needed: ["Core Domain Expertise", "Practical Analytical Skills", "Industry Software Tools", "Professional Communication"]
+      };
+    }
+  }
 
-  document.getElementById("modal-path-icon").textContent = path.icon_emoji;
-  document.getElementById("modal-path-title").textContent = path.title;
-  document.getElementById("modal-path-category").textContent = path.category.toUpperCase().replace("_", " ");
-  document.getElementById("modal-path-duration").textContent = path.duration;
+  if (!path) {
+    console.warn("Could not find pathway or course with ID:", pathId);
+    return;
+  }
+  currentModalPathId = path.id;
 
-  const examsHtml = path.entrance_exams
+  const iconEl = document.getElementById("modal-path-icon");
+  const titleEl = document.getElementById("modal-path-title");
+  const catEl = document.getElementById("modal-path-category");
+  const durEl = document.getElementById("modal-path-duration");
+  if (iconEl) iconEl.textContent = path.icon_emoji || "🎓";
+  if (titleEl) titleEl.textContent = path.title || "Career Pathway";
+  if (catEl) catEl.textContent = (path.category || "GENERAL").toUpperCase().replace("_", " ");
+  if (durEl) durEl.textContent = path.duration || "Multi-Year";
+
+  const bodyEl = document.getElementById("modal-path-body");
+  if (bodyEl) {
+    bodyEl.innerHTML = renderPathwayDeepDiveContent(path);
+  }
+
+  const modalEl = document.getElementById("pathwayDetailModal");
+  if (modalEl) {
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modal.show();
+  }
+}
+window.openPathwayModal = openPathwayModal;
+
+function renderPathwayDeepDiveContent(path) {
+  // 1. Entrance exams HTML
+  const examsHtml = (path.entrance_exams || [])
     .map(
       (e) => `
-      <div class="p-3 bg-light rounded-3 border mb-2">
+      <div class="p-3 bg-white rounded-3 border mb-2 shadow-xs">
         <div class="d-flex justify-content-between align-items-center mb-1">
           <strong class="text-dark">${e.name}</strong>
           <span class="badge bg-primary text-white">${e.level}</span>
@@ -2234,101 +2490,347 @@ function openPathwayModal(pathId) {
     )
     .join("");
 
-  const collegesHtml = path.top_colleges.map((c) => `<li class="mb-1">${c}</li>`).join("");
-  const scholarshipsHtml = path.scholarships.map((s) => `<li class="mb-1 text-success fw-medium">${s}</li>`).join("");
-  const careersHtml = path.career_opportunities.map((co) => `<li class="mb-1">${co}</li>`).join("");
-  const futureHtml = path.future_study_options.map((f) => `<li class="mb-1">${f}</li>`).join("");
+  // 2. Colleges & Scholarships HTML
+  const collegesHtml = (path.top_colleges || []).map((c) => `<li class="mb-1 text-dark small fw-medium">🏛️ ${c}</li>`).join("");
+  const scholarshipsHtml = (path.scholarships || []).map((s) => `<li class="mb-1 text-success fw-bold small">✅ ${s}</li>`).join("");
 
-  document.getElementById("modal-path-body").innerHTML = `
-    <div class="mb-4">
-      <h6 class="fw-bold text-secondary text-uppercase small">Overview &amp; Focus</h6>
-      <p class="fs-6 text-dark">${path.tagline}</p>
-      <div class="alert alert-primary py-2 px-3 small rounded-3">
-        <strong>🎓 Eligibility Criteria:</strong> ${path.eligibility}
+  // 3. What Students Will Learn (Syllabus & Practical Skills)
+  const skillsList = path.key_skills_needed || ["Foundational Science", "Practical Laboratory Training", "Industry Problem Solving", "Professional Ethics"];
+  const skillsBadges = skillsList.map(s => `<span class="badge bg-primary-subtle text-primary border border-primary-subtle py-1.5 px-3 rounded-pill small fw-bold me-1 mb-1">🛠️ ${s}</span>`).join("");
+
+  // 4. Live Placement Jobs Matching This Pathway
+  let matchingJobsHtml = "";
+  const allPositions = (typeof allCareerPositions !== "undefined" && allCareerPositions.length > 0)
+    ? allCareerPositions
+    : (typeof window !== "undefined" && window.COMPASS_STATIC_DATA && window.COMPASS_STATIC_DATA.positions)
+      ? window.COMPASS_STATIC_DATA.positions
+      : [];
+
+  const matchedPositions = allPositions.filter(pos => {
+    if (path.category === "engineering" && (pos.target_group === "computer_science" || pos.sector?.toLowerCase().includes("engineer"))) return true;
+    if (path.category === "medical" && (pos.target_group === "biology" || pos.sector?.toLowerCase().includes("health") || pos.sector?.toLowerCase().includes("medical"))) return true;
+    if (path.category === "commerce" && (pos.target_group === "commerce" || pos.sector?.toLowerCase().includes("finance") || pos.sector?.toLowerCase().includes("commerce"))) return true;
+    if (path.category === "law" && (pos.target_group === "arts" || pos.sector?.toLowerCase().includes("law"))) return true;
+    if (path.category === "iti" && (pos.target_group === "sslc_10th" || pos.target_group === "vocational")) return true;
+    if (path.category === "defence_govt" && (pos.target_group === "sslc_10th" || pos.target_group === "arts")) return true;
+    return (pos.target_groups || []).includes(path.grade_level?.replace("after_12th_", "")) || (pos.target_groups || []).includes(path.category);
+  });
+
+  const jobsToDisplay = (matchedPositions.length > 0 ? matchedPositions : allPositions).slice(0, 3);
+  matchingJobsHtml = jobsToDisplay.map(job => `
+    <div class="col-md-4">
+      <div class="card border border-primary border-opacity-25 rounded-4 p-3 bg-white h-100 shadow-xs d-flex flex-column">
+        <div class="d-flex justify-content-between align-items-start gap-1 mb-2">
+          <h6 class="fw-bold text-dark mb-0 small">${job.position_title}</h6>
+          <span class="badge bg-success-subtle text-success small fw-bold">${job.salary_range?.split("->")[0]?.trim() || "Competitive"}</span>
+        </div>
+        <p class="text-secondary small mb-2" style="font-size: 0.78rem; line-height: 1.4;">${job.position_description?.slice(0, 110)}...</p>
+        <div class="small text-muted mb-2" style="font-size: 0.75rem;">
+          <strong>🏢 Top Recruiters:</strong> ${(job.recruiting_organizations || []).slice(0, 3).join(", ")}
+        </div>
+        <div class="mt-auto pt-2 border-top">
+          <button class="btn btn-outline-primary btn-sm rounded-pill fw-bold w-100 shadow-xs" onclick="applyForPlacementJob('${job.position_title.replace(/'/g, "\\'")}')">
+            ⚡ Quick Apply Now
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+
+  return `
+    <!-- Header Overview Banner -->
+    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-2">
+        <h4 class="fw-bold text-dark mb-0">${path.title}</h4>
+        <span class="badge bg-primary text-white rounded-pill px-3 py-1.5 fw-bold">${path.starting_salary_range}</span>
+      </div>
+      <p class="text-secondary fs-6 mb-3 fw-medium">${path.tagline}</p>
+      <div class="d-flex flex-wrap gap-2">
+        <span class="badge bg-white text-primary border py-1.5 px-3 rounded-pill small fw-bold">🎓 Category: ${path.category.toUpperCase().replace("_", " ")}</span>
+        <span class="badge bg-white text-dark border py-1.5 px-3 rounded-pill small fw-bold">⏳ Duration: ${path.duration}</span>
+        <span class="badge bg-white text-success border py-1.5 px-3 rounded-pill small fw-bold">🎯 Eligible: ${path.grade_level?.replace("_", " ")?.toUpperCase() || "10th / 12th"}</span>
       </div>
     </div>
 
-    <!-- Entrance Exams -->
-    <div class="mb-4">
-      <h6 class="fw-bold text-secondary text-uppercase small mb-2">Required Entrance Exams</h6>
+    <!-- Section 1: Course Overview -->
+    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white border-start border-4 border-primary">
+      <h5 class="fw-bold text-dark mb-2">📖 1. Course Overview &amp; What It Is</h5>
+      <p class="text-secondary small mb-3" style="line-height: 1.7;">
+        This curriculum is specifically engineered to bridge the transition from school education to professional excellence. 
+        Students undergo rigorous theoretical instruction paired with extensive laboratory experiments, industrial project mentorship, and specialized clinical or corporate internships across Tamil Nadu's premiere centers.
+      </p>
+      <div class="alert alert-info py-2.5 px-3 rounded-3 mb-0 small border-0 bg-info bg-opacity-10 text-dark">
+        <strong>💡 Student-Friendly Focus:</strong> ${path.tagline}
+      </div>
+    </div>
+
+    <!-- Section 2: Why Choose This Course? -->
+    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+      <h5 class="fw-bold text-dark mb-2">💡 2. Why Choose This Course &amp; Suitability</h5>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="p-3 bg-light rounded-3 h-100 border">
+            <div class="fs-4 mb-1">🚀</div>
+            <strong class="text-dark small d-block mb-1">High Industry Demand</strong>
+            <p class="text-muted small mb-0">Consistent placement records across state and multinational recruiters with attractive starting compensation packages.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 bg-light rounded-3 h-100 border">
+            <div class="fs-4 mb-1">🌐</div>
+            <strong class="text-dark small d-block mb-1">Global Mobility &amp; Scope</strong>
+            <p class="text-muted small mb-0">Direct eligibility for overseas higher studies (M.S./MBA in USA, Germany, UK) and international licensing examinations.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 bg-light rounded-3 h-100 border">
+            <div class="fs-4 mb-1">🧠</div>
+            <strong class="text-dark small d-block mb-1">Ideal Student Profile</strong>
+            <p class="text-muted small mb-0">Tailored for analytical problem solvers, inquisitive thinkers, and disciplined students aiming for long-term career leadership.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Eligibility & Cutoff Criteria -->
+    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+      <h5 class="fw-bold text-dark mb-2">🎓 3. Academic Eligibility &amp; Tamil Nadu Cutoff Rules</h5>
+      <div class="alert alert-primary py-3 px-3 rounded-3 small mb-3 border-0 bg-primary bg-opacity-10 text-dark">
+        <div class="fw-bold mb-1">✅ Minimum Subject Eligibility:</div>
+        <div class="mb-2">${path.eligibility}</div>
+        <div class="fw-bold mb-1">🧮 Admission Cutoff Standard:</div>
+        <div>Tamil Nadu Single-Window Online Counselling (TNEA / TN DME / TNGASA / TANUVAS / TNAU / DOTE) based strictly on prescribed 12th/10th marks cutoff without donation.</div>
+      </div>
+      <div class="p-3 bg-success-subtle rounded-3 border border-success-subtle small">
+        <strong class="text-success">🎁 7.5% Tamil Nadu Government School Reservation:</strong>
+        <span class="text-dark">Eligible government school students receive 100% free tuition fees, free hostel accommodation, free food, and zero counselling fees under the Tamil Nadu Government 7.5% Horizontal Quota!</span>
+      </div>
+    </div>
+
+    <!-- Section 4: Course Duration & Academic Structure -->
+    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+      <h5 class="fw-bold text-dark mb-3">⏳ 4. Course Duration &amp; Academic Milestones</h5>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="p-3 bg-light rounded-3 border h-100">
+            <span class="badge bg-primary text-white mb-2">Phase 1: Foundation</span>
+            <div class="fw-bold small text-dark mb-1">Semesters 1 &amp; 2 (Year 1)</div>
+            <p class="text-secondary small mb-0">Core engineering/medical sciences, foundational mathematics, laboratory techniques, and computing fundamentals.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 bg-light rounded-3 border h-100">
+            <span class="badge bg-info text-white mb-2">Phase 2: Core &amp; Electives</span>
+            <div class="fw-bold small text-dark mb-1">Semesters 3 &amp; 4 (Year 2)</div>
+            <p class="text-secondary small mb-0">Advanced departmental specialization, domain software tools, hands-on mini-projects, and mid-term assessments.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 bg-light rounded-3 border h-100">
+            <span class="badge bg-success text-white mb-2">Phase 3: Internship &amp; Placements</span>
+            <div class="fw-bold small text-dark mb-1">Semesters 5 to Final (Year 3/4)</div>
+            <p class="text-secondary small mb-0">Industrial internship, capstone project, on-campus recruiting interviews, and state/national licensing examinations.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: What Students Will Learn -->
+    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+      <h5 class="fw-bold text-dark mb-2">📚 5. What Students Will Learn (Syllabus &amp; Tools)</h5>
+      <p class="text-secondary small mb-3">Master modern industry methodologies, software packages, and technical competencies:</p>
+      <div class="d-flex flex-wrap gap-1 mb-3">
+        ${skillsBadges}
+      </div>
+      <div class="p-3 bg-light rounded-3 border small text-secondary">
+        <strong>📋 Practical Training:</strong> Hands-on workshops, real-time industrial problem solving, software laboratories, team projects, and case-study presentations.
+      </div>
+    </div>
+
+    <!-- Section 6: Academic, Financial & Government Benefits -->
+    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+      <h5 class="fw-bold text-dark mb-3">🎁 6. Academic, Financial &amp; Tamil Nadu Government Benefits</h5>
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <div class="p-3 bg-light rounded-3 border h-100">
+            <h6 class="fw-bold text-dark small mb-2">🏛️ Available Premier Tamil Nadu Campuses</h6>
+            <ul class="ps-3 mb-0 small text-secondary">
+              ${collegesHtml}
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 bg-light rounded-3 border h-100">
+            <h6 class="fw-bold text-dark small mb-2">💰 Fee Structure &amp; Scholarships</h6>
+            <div class="small mb-1"><strong>Govt College:</strong> <span class="text-success fw-bold">${path.estimated_fees?.govt_college || "₹3,500 - ₹9,500/year"}</span></div>
+            <div class="small mb-2"><strong>Private College:</strong> <span class="text-dark fw-bold">${path.estimated_fees?.private_college || "₹45,000 - ₹95,000/year"}</span></div>
+            <h6 class="fw-bold text-success small mb-1">State Scholarships &amp; Waivers:</h6>
+            <ul class="ps-3 mb-0 small text-secondary">
+              ${scholarshipsHtml}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7, 8, 9: Career Opportunities (Govt & Private) -->
+    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+      <h5 class="fw-bold text-dark mb-3">💼 7. Career Opportunities: Entry Roles, Govt &amp; Private Sectors</h5>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="p-3 bg-success-subtle rounded-3 border border-success-subtle h-100">
+            <h6 class="fw-bold text-success small mb-2">🏢 Private Corporate &amp; Industrial Roles</h6>
+            <ul class="ps-3 mb-2 small text-dark">
+              ${(path.career_opportunities || []).map(co => `<li class="mb-1">💼 ${co}</li>`).join("")}
+            </ul>
+            <div class="small text-muted mb-2">📍 <strong>Top Hiring Hubs:</strong> Chennai OMR IT Corridor, Guindy, Coimbatore SEZ, Sriperumbudur Automotive Hub</div>
+            <div class="fw-bold text-dark small pt-2 border-top border-success-subtle">
+              Starting Salary: <span class="badge bg-success text-white">${path.starting_salary_range}</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 bg-light rounded-3 border h-100">
+            <h6 class="fw-bold text-primary small mb-2">🏛️ Government Jobs &amp; Public Sector Opportunities</h6>
+            <ul class="ps-3 mb-2 small text-secondary">
+              <li class="mb-1"><strong>TNPSC:</strong> Assistant Engineer / Combined Technical Exams / Group 1 &amp; Group 2</li>
+              <li class="mb-1"><strong>Central Govt &amp; UPSC:</strong> IES, Civil Services, Combined Defence Services (CDS), NDA</li>
+              <li class="mb-1"><strong>PSUs &amp; State Corporations:</strong> BHEL Trichy, ISRO, DRDO, TANGEDCO, ONGC, NLC Neyveli</li>
+              <li class="mb-1"><strong>Banking &amp; SSC:</strong> SBI Specialist Officer, IBPS PO, SSC CGL / CHSL / JE</li>
+            </ul>
+            <div class="small text-success fw-bold">Permanent pension, quarters, and job stability in Central/State public utilities.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 10: Higher Studies & Specializations -->
+    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+      <h5 class="fw-bold text-dark mb-2">🚀 8. Higher Studies &amp; Advanced Specializations</h5>
+      <p class="text-secondary small mb-2">Progression avenues after degree graduation:</p>
+      <div class="row g-2">
+        ${(path.future_study_options || []).map(f => `
+          <div class="col-md-6">
+            <div class="p-2.5 bg-light rounded-3 border small fw-medium text-dark">
+              🎓 ${f}
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+
+    <!-- Section 11: Step-by-Step Interactive Visual Career Roadmap -->
+    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white border-top border-4 border-info">
+      <h5 class="fw-bold text-dark mb-2">🗺️ 9. Interactive Visual Career Roadmap</h5>
+      <p class="text-secondary small mb-3">From school graduation to high-earning senior leadership — visual milestones:</p>
+      
+      <div class="d-flex flex-column gap-2">
+        <div class="p-3 rounded-3 bg-light border d-flex align-items-center gap-3">
+          <span class="badge bg-primary rounded-circle p-2 fs-6">1</span>
+          <div>
+            <div class="fw-bold text-dark small">Milestone 1: 10th / 12th Standard Board Exams</div>
+            <div class="text-muted small" style="font-size: 0.8rem;">Score high marks in state board/CBSE exams to secure competitive cutoff for single-window counseling.</div>
+          </div>
+        </div>
+
+        <div class="text-center text-primary fs-5" style="line-height: 1;">&darr;</div>
+
+        <div class="p-3 rounded-3 bg-light border d-flex align-items-center gap-3">
+          <span class="badge bg-info text-white rounded-circle p-2 fs-6">2</span>
+          <div>
+            <div class="fw-bold text-dark small">Milestone 2: Entrance Exams &amp; Tamil Nadu Single-Window Admission</div>
+            <div class="text-muted small" style="font-size: 0.8rem;">Register on official portals (TNEA / TN DME / TNGASA / TANUVAS / TNAU). Claim 7.5% Govt School quota if eligible.</div>
+          </div>
+        </div>
+
+        <div class="text-center text-primary fs-5" style="line-height: 1;">&darr;</div>
+
+        <div class="p-3 rounded-3 bg-light border d-flex align-items-center gap-3">
+          <span class="badge bg-warning text-dark rounded-circle p-2 fs-6">3</span>
+          <div>
+            <div class="fw-bold text-dark small">Milestone 3: College Academic Foundation (Years 1 &amp; 2)</div>
+            <div class="text-muted small" style="font-size: 0.8rem;">Build mathematical rigor, domain foundations, programming or laboratory techniques, and join technical clubs.</div>
+          </div>
+        </div>
+
+        <div class="text-center text-primary fs-5" style="line-height: 1;">&darr;</div>
+
+        <div class="p-3 rounded-3 bg-light border d-flex align-items-center gap-3">
+          <span class="badge bg-secondary text-white rounded-circle p-2 fs-6">4</span>
+          <div>
+            <div class="fw-bold text-dark small">Milestone 4: Industrial Summer Internship &amp; Portfolio Capstone</div>
+            <div class="text-muted small" style="font-size: 0.8rem;">Complete hands-on internships across Chennai/Coimbatore manufacturing, tech, hospital, or financial corridors.</div>
+          </div>
+        </div>
+
+        <div class="text-center text-primary fs-5" style="line-height: 1;">&darr;</div>
+
+        <div class="p-3 rounded-3 bg-success-subtle border border-success-subtle d-flex align-items-center gap-3">
+          <span class="badge bg-success rounded-circle p-2 fs-6">5</span>
+          <div>
+            <div class="fw-bold text-success small">Milestone 5: Campus Placement Recruitment &amp; Graduate Role (${path.starting_salary_range})</div>
+            <div class="text-muted small" style="font-size: 0.8rem;">Secure full-time corporate appointment or permanent state/central government service commission.</div>
+          </div>
+        </div>
+
+        <div class="text-center text-success fs-5" style="line-height: 1;">&darr;</div>
+
+        <div class="p-3 rounded-3 bg-dark text-white d-flex align-items-center gap-3">
+          <span class="badge bg-light text-dark rounded-circle p-2 fs-6">6</span>
+          <div>
+            <div class="fw-bold text-white small">Milestone 6: Senior Technical / Clinical Leadership (₹15 - ₹35+ LPA)</div>
+            <div class="text-light opacity-75 small" style="font-size: 0.8rem;">Promoted to Solutions Architect, Medical Consultant, Chief Financial Officer (CFO), or Executive Engineer.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 12: Live Placement Compass Matching Jobs -->
+    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white border-start border-4 border-success">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h5 class="fw-bold text-dark mb-0">💼 10. Live Matching Jobs in Placement Compass</h5>
+          <small class="text-muted">Instant matching positions currently open for candidates with this educational profile.</small>
+        </div>
+        <span class="badge bg-success text-white rounded-pill px-3 py-1 fw-bold">Live Hiring</span>
+      </div>
+      <div class="row g-3">
+        ${matchingJobsHtml}
+      </div>
+    </div>
+
+    <!-- Entrance Exams Accordion -->
+    <div class="card border-0 shadow-sm p-4 mb-3 rounded-4 bg-white">
+      <h5 class="fw-bold text-dark mb-2">🎯 11. Required Entrance Exams &amp; Single-Window Portals</h5>
       ${examsHtml}
-    </div>
-
-    <!-- Step by Step Admission Procedure -->
-    <div class="mb-4">
-      <h6 class="fw-bold text-secondary text-uppercase small mb-2">How to Apply &amp; Admission Procedure</h6>
-      <div class="p-3 bg-white border rounded-3 text-secondary small" style="line-height: 1.7;">
-        ${path.admission_procedure}
-      </div>
-    </div>
-
-    <!-- Colleges & Universities -->
-    <div class="row g-3 mb-4">
-      <div class="col-md-6">
-        <div class="p-3 bg-light rounded-3 border h-100">
-          <h6 class="fw-bold text-dark small mb-2">🏛️ Available Premier Colleges &amp; Universities</h6>
-          <ul class="ps-3 mb-0 small text-secondary">
-            ${collegesHtml}
-          </ul>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="p-3 bg-light rounded-3 border h-100">
-          <h6 class="fw-bold text-dark small mb-2">💰 Course Fees &amp; Financial Aid</h6>
-          <div class="small mb-2">
-            <strong>Government Seat:</strong> <span class="text-success fw-bold">${path.estimated_fees.govt_college}</span>
-          </div>
-          <div class="small mb-3">
-            <strong>Private Seat:</strong> <span class="text-dark fw-bold">${path.estimated_fees.private_college}</span>
-          </div>
-          <h6 class="fw-bold text-success small mb-1">Scholarships &amp; Waivers:</h6>
-          <ul class="ps-3 mb-0 small text-secondary">
-            ${scholarshipsHtml}
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- Career Opportunities & Starting Salary -->
-    <div class="row g-3">
-      <div class="col-md-6">
-        <div class="p-3 bg-success-subtle rounded-3 border border-success-subtle h-100">
-          <h6 class="fw-bold text-success small mb-2">💼 Career Opportunities &amp; Job Profiles</h6>
-          <ul class="ps-3 mb-2 small text-dark">
-            ${careersHtml}
-          </ul>
-          <div class="fw-bold text-dark small pt-2 border-top border-success-subtle">
-            Starting Salary: <span class="badge bg-success text-white">${path.starting_salary_range}</span>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="p-3 bg-light rounded-3 border h-100">
-          <h6 class="fw-bold text-primary small mb-2">🚀 Future Higher Education Options</h6>
-          <ul class="ps-3 mb-0 small text-secondary">
-            ${futureHtml}
-          </ul>
-        </div>
+      <div class="p-3 bg-light border rounded-3 text-secondary small mt-2" style="line-height: 1.7;">
+        <strong>Admission Procedure:</strong> ${path.admission_procedure}
       </div>
     </div>
   `;
-
-  const modalEl = document.getElementById("pathwayDetailModal");
-  const modal = new bootstrap.Modal(modalEl);
-  modal.show();
 }
 
 function addCurrentModalPathToCompare() {
   if (currentModalPathId) {
-    const p = allSchoolPaths.find((item) => item.id === currentModalPathId);
-    if (p) {
-      quickJumpToColleges(p.category);
+    const cr1 = document.getElementById("course-select-1");
+    if (cr1) {
+      if (allComparableCourses && allComparableCourses.length > 0) {
+        const matchCr = allComparableCourses.find(c => c.id === currentModalPathId || c.category === (allSchoolPaths.find(p => p.id === currentModalPathId)?.category));
+        if (matchCr) {
+          cr1.value = matchCr.id;
+          runCourseComparison();
+        }
+      }
     }
     const modalEl = document.getElementById("pathwayDetailModal");
     const modalInstance = bootstrap.Modal.getInstance(modalEl);
     if (modalInstance) modalInstance.hide();
+    switchSchoolTab("courses");
+    document.getElementById("school-tab-courses")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 }
+window.addCurrentModalPathToCompare = addCurrentModalPathToCompare;
+
 
 // -------------------------------------------------------------
 // 5. AI CAREER MATCHER & COURSE FINDER

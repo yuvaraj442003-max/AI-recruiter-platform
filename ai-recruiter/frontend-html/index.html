@@ -2056,6 +2056,37 @@
       window.location.href = `portfolio-builder.html?handle=${encodeURIComponent(handle || "my-portfolio")}`;
     }
   </script>
+
+  <!-- Modal: Placement Compass Career Pathway Detail Explorer -->
+  <div class="modal fade" id="pathwayDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+        <div class="modal-header border-bottom p-4" style="background: linear-gradient(135deg, #0c4a6e 0%, #0369a1 100%); color: #fff;">
+          <div class="d-flex align-items-center gap-3">
+            <span class="fs-1 p-2 bg-white bg-opacity-15 rounded-3" id="modal-path-icon">🎓</span>
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-warning text-dark px-2.5 py-0.5 rounded-pill small fw-bold" id="modal-path-category">Category</span>
+                <span class="badge bg-white bg-opacity-20 text-white rounded-pill small" id="modal-path-duration">Duration</span>
+              </div>
+              <h4 class="modal-title fw-bold mb-0 text-white" id="modal-path-title">Course Title</h4>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4 p-md-5" id="modal-path-body">
+          <!-- Loaded dynamically -->
+        </div>
+        <div class="modal-footer border-top p-3 px-4 d-flex justify-content-between bg-light">
+          <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-semibold" data-bs-dismiss="modal">Close Guide</button>
+          <a href="placement-compass.html#school-tab-courses" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" id="modal-btn-compare-add">
+            ⚖️ Add to Career Comparison &rarr;
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="js/placement-compass-data.js"></script>
   <script src="js/placement-compass-section.js"></script>
   <script src="js/mobile-nav.js"></script>

@@ -789,43 +789,51 @@
             <div class="card border-0 shadow-sm p-3 mb-4 rounded-4 bg-white">
               <label class="form-label small fw-bold text-secondary text-uppercase mb-2">Select Your 12th-Grade Studied Group:</label>
               <div class="d-flex gap-2 flex-wrap" id="twelfth-group-buttons-container">
-                <button class="academic-group-btn active" data-twelfth-group="computer_science" onclick="selectTwelfthGuidanceGroup('computer_science', this)">
-                  <span class="fs-4">💻</span>
-                  <div>
-                    <div class="fw-bold">Computer Science &amp; Maths Group</div>
-                    <div class="small text-muted">Physics, Chemistry, Maths &amp; CS (Engineering, AI, Tech, Arch)</div>
-                  </div>
-                </button>
-
                 <button class="academic-group-btn" data-twelfth-group="biology" onclick="selectTwelfthGuidanceGroup('biology', this)">
                   <span class="fs-4">🧬</span>
                   <div>
-                    <div class="fw-bold">Biology / Pure Science Group</div>
-                    <div class="small text-muted">Physics, Chemistry, Biology &amp; Maths (MBBS, Agri, Vet, Nursing)</div>
+                    <div class="fw-bold">Group 1: Bio-Maths Group</div>
+                    <div class="small text-muted">Physics, Chemistry, Biology &amp; Maths (MBBS, TNEA Biotech, Agri, Vet)</div>
+                  </div>
+                </button>
+
+                <button class="academic-group-btn active" data-twelfth-group="computer_science" onclick="selectTwelfthGuidanceGroup('computer_science', this)">
+                  <span class="fs-4">💻</span>
+                  <div>
+                    <div class="fw-bold">Group 2: CS &amp; Maths Group</div>
+                    <div class="small text-muted">Physics, Chemistry, Maths &amp; CS (Engineering, AI, Tech, Arch, Navy)</div>
+                  </div>
+                </button>
+
+                <button class="academic-group-btn" data-twelfth-group="pure_science" onclick="selectTwelfthGuidanceGroup('pure_science', this)">
+                  <span class="fs-4">🔬</span>
+                  <div>
+                    <div class="fw-bold">Group 3: Pure Science Group</div>
+                    <div class="small text-muted">Physics, Chemistry, Botany &amp; Zoology (MBBS, Vet, Agri, Pharmacy, Paramedical)</div>
                   </div>
                 </button>
 
                 <button class="academic-group-btn" data-twelfth-group="commerce" onclick="selectTwelfthGuidanceGroup('commerce', this)">
                   <span class="fs-4">📊</span>
                   <div>
-                    <div class="fw-bold">Commerce &amp; Accountancy Group</div>
-                    <div class="small text-muted">Commerce, Accountancy, Economics &amp; Business Maths (CA, CMA, B.Com)</div>
+                    <div class="fw-bold">Group 4: Commerce &amp; Accounts</div>
+                    <div class="small text-muted">Commerce, Accountancy, Economics &amp; Business Maths (CA, CMA, CS, B.Com, Fintech)</div>
                   </div>
                 </button>
 
                 <button class="academic-group-btn" data-twelfth-group="arts" onclick="selectTwelfthGuidanceGroup('arts', this)">
                   <span class="fs-4">📚</span>
                   <div>
-                    <div class="fw-bold">Arts &amp; Humanities Group</div>
-                    <div class="small text-muted">History, Political Science, Economics, Geography (Law, IAS/IPS, Design)</div>
+                    <div class="fw-bold">Group 5: Arts &amp; Humanities</div>
+                    <div class="small text-muted">History, Political Science, Economics, Geography (5-Yr Law, UPSC Civil Services)</div>
                   </div>
                 </button>
 
                 <button class="academic-group-btn" data-twelfth-group="vocational" onclick="selectTwelfthGuidanceGroup('vocational', this)">
                   <span class="fs-4">⚙️</span>
                   <div>
-                    <div class="fw-bold">Vocational Higher Secondary Stream</div>
-                    <div class="small text-muted">Practical Technical Trades (TNEA 2% Engg Quota &amp; DOTE Lateral)</div>
+                    <div class="fw-bold">Group 6: Vocational Stream</div>
+                    <div class="small text-muted">Technical Trades (TNEA 2% Engg Quota &amp; DOTE Lateral Entry)</div>
                   </div>
                 </button>
               </div>
@@ -1191,17 +1199,23 @@
                   <p class="text-muted small mb-0">Compare degrees and diplomas side-by-side to understand curriculum differences, entrance exams, starting salaries, and long-term career growth in Tamil Nadu.</p>
                 </div>
                 <div class="d-flex gap-2 flex-wrap">
-                  <button class="btn btn-outline-primary btn-sm rounded-pill fw-semibold" onclick="presetCourseCompare('cse_vs_ece_vs_poly')">
-                    12th: B.Tech CSE vs ECE vs Polytechnic Lateral
+                  <button class="btn btn-primary btn-sm rounded-pill fw-semibold shadow-xs" onclick="presetCourseCompare('be_cs_vs_bsc_cs')">
+                    💻 B.E. CS vs B.Sc CS
                   </button>
-                  <button class="btn btn-outline-success btn-sm rounded-pill fw-semibold" onclick="presetCourseCompare('mbbs_vs_pharm_vs_nurse')">
-                    12th: MBBS vs B.Pharm vs Nursing (TN DME)
+                  <button class="btn btn-outline-primary btn-sm rounded-pill fw-semibold" onclick="presetCourseCompare('bca_vs_bsc_cs')">
+                    🖥️ BCA vs B.Sc CS
                   </button>
-                  <button class="btn btn-outline-warning btn-sm rounded-pill fw-semibold" onclick="presetCourseCompare('10th_stream_vs_poly_vs_iti')">
-                    10th: 11th Bio-Maths vs Polytechnic vs ITI Trade
+                  <button class="btn btn-outline-info btn-sm rounded-pill fw-semibold" onclick="presetCourseCompare('bcom_vs_bba')">
+                    📊 B.Com vs BBA
                   </button>
-                  <button class="btn btn-outline-secondary btn-sm rounded-pill fw-semibold" onclick="presetCourseCompare('law_vs_govt')">
-                    Govt: 5-Yr Law vs NDA Cadet vs TNPSC VAO
+                  <button class="btn btn-outline-success btn-sm rounded-pill fw-semibold" onclick="presetCourseCompare('mbbs_vs_allied')">
+                    🩺 MBBS vs Allied Health
+                  </button>
+                  <button class="btn btn-outline-warning btn-sm rounded-pill fw-semibold" onclick="presetCourseCompare('poly_vs_11th_12th')">
+                    🔧 Polytechnic vs 11th &amp; 12th
+                  </button>
+                  <button class="btn btn-outline-dark btn-sm rounded-pill fw-semibold" onclick="presetCourseCompare('iti_vs_poly')">
+                    🛠️ ITI vs Polytechnic Diploma
                   </button>
                 </div>
               </div>

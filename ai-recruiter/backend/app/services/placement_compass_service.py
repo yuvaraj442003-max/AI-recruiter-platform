@@ -1272,6 +1272,58 @@ SCHOOL_CAREER_PATHS: List[Dict[str, Any]] = [
         "future_study_options": ["Departmental Promotion to Revenue Inspector (RI), Tahsildar, Head Constable & Sub-Inspector", "Distance Degree via University of Madras IDE"],
         "key_skills_needed": ["General Tamil Grammar & Literature", "Tamil Nadu History & Culture", "Basic Arithmetic & Mental Ability", "Public Administration Integrity"]
     },
+    {
+        "id": "skill_based_technical",
+        "title": "Skill-Based & Technical Training (TNSDC, Naan Mudhalvan & NAPS)",
+        "category": "iti",
+        "grade_level": "after_10th",
+        "eligible_grades": ["after_10th", "after_12th_vocational"],
+        "icon_emoji": "⚡",
+        "tagline": "Free Government Technical Training, Naan Mudhalvan Industry Bootcamps, NSDC Certifications & Paid Apprenticeships",
+        "duration": "3 to 12 Months",
+        "eligibility": "10th Standard (SSLC) Pass from TN State Board / CBSE. Age 14 years and above.",
+        "entrance_exams": [
+            {"name": "TNSDC / Naan Mudhalvan Skill Enrolment", "level": "State", "official_portal": "https://www.naanmudhalvan.tn.gov.in", "description": "Direct online application for sponsored technical certifications."},
+            {"name": "National Apprenticeship Promotion Scheme (NAPS)", "level": "National", "official_portal": "https://www.apprenticeshipindia.gov.in", "description": "Monthly stipend-backed industrial apprenticeship training across automotive and electrical hubs."}
+        ],
+        "top_colleges": [
+            "Tamil Nadu Skill Development Corporation (TNSDC) Centers",
+            "Government ITI Skill Hubs (Guindy, Ambattur, Coimbatore)",
+            "Apex Skill Development Centers (ASDC) Chennai",
+            "MSME Technology Centre, Chennai & Tiruchirappalli",
+            "L&T Construction Skills Training Institute (CSTI), Kanchipuram"
+        ],
+        "admission_procedure": "Direct online admission via Naan Mudhalvan and TNSDC portals. No application fee. 100% free courses with monthly stipends under NAPS/TNSDC.",
+        "estimated_fees": {
+            "govt_college": "100% Free (Zero Tuition + Free Tool Kit)",
+            "govt_aided_college": "100% Free (Government Sponsored)",
+            "private_college": "Zero Cost under CSR and Govt Schemes"
+        },
+        "scholarships": [
+            "National Apprenticeship Stipend (₹7,000 - ₹12,000 / month)",
+            "TNSDC Free Uniform and Tool Kit Scheme",
+            "Pudhumai Penn / Tamil Puthalvan Support"
+        ],
+        "career_opportunities": [
+            "CNC Machine Operator & Programmer",
+            "Solar PV System Installation Technician",
+            "EV Assembly & Battery Service Technician",
+            "Industrial Automation & PLC Technician",
+            "Telecommunication & Fiber Optics Technician"
+        ],
+        "starting_salary_range": "₹2.2 LPA - ₹4.5 LPA (₹15,000 - ₹35,000/month)",
+        "future_study_options": [
+            "NCVT National Apprenticeship Certificate (NAC)",
+            "Lateral Entry into 2nd-Year Polytechnic Diploma via DOTE",
+            "Advanced Specialized Industry Certifications (Siemens / Bosch / L&T)"
+        ],
+        "key_skills_needed": [
+            "Practical Tool Handling & Blueprint Reading",
+            "Electrical Safety & Circuit Wiring",
+            "Machine Maintenance & CNC Setup",
+            "Workplace Health & Safety Standards"
+        ]
+    },
 
     # ==================== B. DIRECT NEXT STEPS AFTER 12TH GRADE (HSC) ====================
     {
@@ -4590,6 +4642,66 @@ COURSE_COMPARISON_REPOSITORY: List[Dict[str, Any]] = [
         "top_roles": ["Lieutenant (Indian Army)", "Flying Officer (Indian Air Force)", "Sub-Lieutenant (Indian Navy)"],
         "future_scopes": ["Defence Services Staff College (DSSC), Wellington, Nilgiris, Tamil Nadu"],
         "why_choose": "Supreme national pride, prestigious military leadership, 100% free education with stipend, and lifelong officer benefits."
+    },
+    {
+        "id": "bsc_cs",
+        "course_name": "B.Sc Computer Science (TNGASA & Autonomous)",
+        "category": "arts_science",
+        "duration": "3 Years (6 Semesters)",
+        "eligibility": "12th Pass with Mathematics, Computer Science, or Business Maths.",
+        "entrance_exams": ["TNGASA Single-Window Counselling", "Autonomous College Merit"],
+        "avg_starting_salary": "₹3.5 LPA - ₹7.0 LPA",
+        "top_roles": ["Junior Software Developer", "Web Application Developer", "QA Automation Tester", "Junior Data Analyst"],
+        "future_scopes": ["Direct MCA admission via TANCET at Anna University CEG", "M.Sc Data Science & AI", "MBA Systems"],
+        "why_choose": "Cost-effective 3-year IT degree with low government tuition fees; allows early entry into software jobs or progression to MCA."
+    },
+    {
+        "id": "bca_course",
+        "course_name": "BCA — Bachelor of Computer Applications",
+        "category": "arts_science",
+        "duration": "3 Years (6 Semesters)",
+        "eligibility": "12th Pass with Computer Science, Mathematics, or Commerce.",
+        "entrance_exams": ["TNGASA Single-Window Online Counselling", "Autonomous College Direct Merit"],
+        "avg_starting_salary": "₹3.6 LPA - ₹7.5 LPA",
+        "top_roles": ["Full-Stack Web Developer", "Mobile App Developer", "Database Administrator", "Cloud Support Associate"],
+        "future_scopes": ["Direct eligibility for 2-Year MCA at Anna University CEG via TANCET", "M.Sc Information Technology", "MBA Systems"],
+        "why_choose": "100% application-oriented IT degree focusing on software development frameworks, mobile applications, and cloud tools."
+    },
+    {
+        "id": "bcom_general",
+        "course_name": "B.Com — Bachelor of Commerce (General / Corporate)",
+        "category": "commerce",
+        "duration": "3 Years (6 Semesters)",
+        "eligibility": "12th Pass in Commerce, Accountancy, and Economics / Business Maths.",
+        "entrance_exams": ["TNGASA Online Single-Window Counselling", "Autonomous Merit Portals (Loyola, MCC, Ethiraj)"],
+        "avg_starting_salary": "₹3.8 LPA - ₹8.0 LPA",
+        "top_roles": ["Financial Analyst", "Accountant", "Audit Assistant", "Tax Consultant", "Commercial Banking Officer"],
+        "future_scopes": ["Chartered Accountancy (CA Inter & Final)", "CMA / CS Certification", "MBA Finance at IIMs / DoMS IIT Madras", "M.Com"],
+        "why_choose": "The golden standard for finance and business careers in India. High campus recruitment from Big 4 accounting firms and global banks."
+    },
+    {
+        "id": "bba_management",
+        "course_name": "BBA — Bachelor of Business Administration",
+        "category": "commerce",
+        "duration": "3 Years (6 Semesters)",
+        "eligibility": "12th Standard Pass from any stream (Commerce, Science, or Arts).",
+        "entrance_exams": ["TNGASA Single-Window Counselling", "Autonomous College Merit Selection"],
+        "avg_starting_salary": "₹3.5 LPA - ₹7.2 LPA",
+        "top_roles": ["Business Development Executive", "HR Operations Associate", "Marketing Specialist", "Supply Chain Trainee"],
+        "future_scopes": ["MBA via CAT / MAT / TANCET at top IIMs, IIT Madras DoMS, or Great Lakes Chennai"],
+        "why_choose": "Ideal for students interested in leadership, business strategy, startup entrepreneurship, human resources, and marketing."
+    },
+    {
+        "id": "allied_health_course",
+        "course_name": "B.Sc Allied Health Sciences (Cardiac / Radiology / Lab Tech)",
+        "category": "medical",
+        "duration": "4 Years (3 Years Academic + 1 Year Hospital Internship)",
+        "eligibility": "12th Pass with Physics, Chemistry & Biology (PCB). Minimum 50% aggregate.",
+        "entrance_exams": ["TN DME Selection Paramedical Single-Window Counselling (No NEET required)"],
+        "avg_starting_salary": "₹3.8 LPA - ₹7.5 LPA (Domestic) | ₹18 - ₹28 LPA (Gulf/UK/USA)",
+        "top_roles": ["Cardiac Technologist", "Radiology / MRI Technologist", "Dialysis Therapist", "Perfusionist"],
+        "future_scopes": ["M.Sc Allied Health Sciences", "Hospital Healthcare Administration (MHA)", "Global Clinical Practice"],
+        "why_choose": "Clinical hospital profession without NEET! Direct diagnosis, critical care, and patient recovery in cardiac ICU, radiology labs, and surgical suites."
     }
 ]
 

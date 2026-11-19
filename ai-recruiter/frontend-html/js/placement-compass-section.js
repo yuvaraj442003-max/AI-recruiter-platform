@@ -889,9 +889,14 @@
             <div><strong>🎓 Eligibility:</strong> <span class="text-secondary">${p.eligibility}</span></div>
             <div><strong>🏛️ Campuses:</strong> <span class="text-secondary">${(p.top_colleges || []).slice(0, 2).join(", ")}</span></div>
           </div>
-          <a href="placement-compass.html" class="btn btn-outline-info btn-sm rounded-pill fw-semibold mt-auto">
-            View Syllabus &amp; Portals &rarr;
-          </a>
+          <div class="d-flex gap-2 mt-auto">
+            <button class="btn btn-primary btn-sm rounded-pill fw-bold w-100 shadow-sm" onclick="openPathwayModal('${p.id}')">
+              📖 Explore Deep Dive &rarr;
+            </button>
+            <a href="placement-compass.html" class="btn btn-outline-info btn-sm rounded-pill fw-semibold text-nowrap">
+              Portal
+            </a>
+          </div>
         </div>
       </div>
     `
@@ -936,3 +941,174 @@
   // Auto initialize on DOMContentLoaded
   document.addEventListener("DOMContentLoaded", initPlacementCompassSection);
 })();
+
+// Standalone Modal handler for Placement Compass Course Deep Dive on Homepage
+if (typeof window !== "undefined" && !window.openPathwayModal) {
+  window.openPathwayModal = function(pathId) {
+    if (typeof window.COMPASS_STATIC_DATA === "undefined" || !window.COMPASS_STATIC_DATA.paths) {
+      window.location.href = "placement-compass.html";
+      return;
+    }
+    const path = window.COMPASS_STATIC_DATA.paths.find(p => p.id === pathId) || window.COMPASS_STATIC_DATA.paths[0];
+    if (!path) {
+      window.location.href = "placement-compass.html";
+      return;
+    }
+
+    const iconEl = document.getElementById("modal-path-icon");
+    const titleEl = document.getElementById("modal-path-title");
+    const catEl = document.getElementById("modal-path-category");
+    const durEl = document.getElementById("modal-path-duration");
+    if (iconEl) iconEl.textContent = path.icon_emoji || "🎓";
+    if (titleEl) titleEl.textContent = path.title || "Career Pathway";
+    if (catEl) catEl.textContent = (path.category || "GENERAL").toUpperCase().replace("_", " ");
+    if (durEl) durEl.textContent = path.duration || "Multi-Year";
+
+    const skillsList = path.key_skills_needed || ["Foundational Science", "Practical Laboratory Training", "Industry Problem Solving", "Professional Ethics"];
+    const skillsBadges = skillsList.map(s => `<span class="badge bg-primary-subtle text-primary border border-primary-subtle py-1.5 px-3 rounded-pill small fw-bold me-1 mb-1">🛠️ ${s}</span>`).join("");
+    const collegesHtml = (path.top_colleges || []).map(c => `<li class="mb-1 text-dark small fw-medium">🏛️ ${c}</li>`).join("");
+    const scholarshipsHtml = (path.scholarships || []).map(s => `<li class="mb-1 text-success fw-bold small">✅ ${s}</li>`).join("");
+
+    const examsHtml = (path.entrance_exams || [])
+      .map(e => `
+        <div class="p-3 bg-white rounded-3 border mb-2 shadow-xs">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <strong class="text-dark">${e.name}</strong>
+            <span class="badge bg-primary text-white">${e.level}</span>
+          </div>
+          <p class="small text-secondary mb-1">${e.description}</p>
+          ${e.official_portal ? `<a href="${e.official_portal}" target="_blank" rel="noopener noreferrer" class="small text-primary fw-bold text-decoration-none">🔗 Official Portal: ${e.official_portal} &rarr;</a>` : ""}
+        </div>
+      `)
+      .join("");
+
+    const bodyEl = document.getElementById("modal-path-body");
+    if (bodyEl) {
+      bodyEl.innerHTML = `
+        <div class="card border-0 shadow-sm p-4 mb-4 rounded-4" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-2">
+            <h4 class="fw-bold text-dark mb-0">${path.title}</h4>
+            <span class="badge bg-primary text-white rounded-pill px-3 py-1.5 fw-bold">${path.starting_salary_range}</span>
+          </div>
+          <p class="text-secondary fs-6 mb-3 fw-medium">${path.tagline}</p>
+          <div class="d-flex flex-wrap gap-2">
+            <span class="badge bg-white text-primary border py-1.5 px-3 rounded-pill small fw-bold">🎓 Category: ${path.category.toUpperCase().replace("_", " ")}</span>
+            <span class="badge bg-white text-dark border py-1.5 px-3 rounded-pill small fw-bold">⏳ Duration: ${path.duration}</span>
+            <span class="badge bg-white text-success border py-1.5 px-3 rounded-pill small fw-bold">🎯 Eligible: ${path.grade_level?.replace("_", " ")?.toUpperCase() || "10th / 12th"}</span>
+          </div>
+        </div>
+
+        <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white border-start border-4 border-primary">
+          <h5 class="fw-bold text-dark mb-2">📖 1. Course Overview &amp; What It Is</h5>
+          <p class="text-secondary small mb-3" style="line-height: 1.7;">
+            This curriculum is specifically engineered to bridge the transition from school education to professional excellence. 
+            Students undergo rigorous theoretical instruction paired with extensive laboratory experiments, industrial project mentorship, and specialized clinical or corporate internships across Tamil Nadu's premiere centers.
+          </p>
+          <div class="alert alert-info py-2.5 px-3 rounded-3 mb-0 small border-0 bg-info bg-opacity-10 text-dark">
+            <strong>💡 Student-Friendly Focus:</strong> ${path.tagline}
+          </div>
+        </div>
+
+        <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+          <h5 class="fw-bold text-dark mb-2">🎓 2. Academic Eligibility &amp; Tamil Nadu Cutoff Rules</h5>
+          <div class="alert alert-primary py-3 px-3 rounded-3 small mb-3 border-0 bg-primary bg-opacity-10 text-dark">
+            <div class="fw-bold mb-1">✅ Minimum Subject Eligibility:</div>
+            <div class="mb-2">${path.eligibility}</div>
+            <div class="fw-bold mb-1">🧮 Admission Cutoff Standard:</div>
+            <div>Tamil Nadu Single-Window Online Counselling (TNEA / TN DME / TNGASA / TANUVAS / TNAU / DOTE) based strictly on prescribed 12th/10th marks cutoff without donation.</div>
+          </div>
+          <div class="p-3 bg-success-subtle rounded-3 border border-success-subtle small">
+            <strong class="text-success">🎁 7.5% Tamil Nadu Government School Reservation:</strong>
+            <span class="text-dark">Eligible government school students receive 100% free tuition fees, free hostel accommodation, free food, and zero counselling fees under the Tamil Nadu Government 7.5% Horizontal Quota!</span>
+          </div>
+        </div>
+
+        <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+          <h5 class="fw-bold text-dark mb-2">📚 3. What Students Will Learn (Syllabus &amp; Tools)</h5>
+          <div class="d-flex flex-wrap gap-1 mb-3">
+            ${skillsBadges}
+          </div>
+          <div class="p-3 bg-light rounded-3 border small text-secondary">
+            <strong>📋 Practical Training:</strong> Hands-on workshops, real-time industrial problem solving, software laboratories, team projects, and case-study presentations.
+          </div>
+        </div>
+
+        <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+          <h5 class="fw-bold text-dark mb-3">🎁 4. Academic, Financial &amp; Tamil Nadu Government Benefits</h5>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <div class="p-3 bg-light rounded-3 border h-100">
+                <h6 class="fw-bold text-dark small mb-2">🏛️ Available Premier Tamil Nadu Campuses</h6>
+                <ul class="ps-3 mb-0 small text-secondary">
+                  ${collegesHtml}
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="p-3 bg-light rounded-3 border h-100">
+                <h6 class="fw-bold text-dark small mb-2">💰 Fee Structure &amp; Scholarships</h6>
+                <div class="small mb-1"><strong>Govt College:</strong> <span class="text-success fw-bold">${path.estimated_fees?.govt_college || "₹3,500 - ₹9,500/year"}</span></div>
+                <div class="small mb-2"><strong>Private College:</strong> <span class="text-dark fw-bold">${path.estimated_fees?.private_college || "₹45,000 - ₹95,000/year"}</span></div>
+                <h6 class="fw-bold text-success small mb-1">State Scholarships &amp; Waivers:</h6>
+                <ul class="ps-3 mb-0 small text-secondary">
+                  ${scholarshipsHtml}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white border-top border-4 border-info">
+          <h5 class="fw-bold text-dark mb-2">🗺️ 5. Interactive Visual Career Roadmap</h5>
+          <div class="d-flex flex-column gap-2">
+            <div class="p-2.5 rounded-3 bg-light border d-flex align-items-center gap-3">
+              <span class="badge bg-primary rounded-circle p-2 fs-6">1</span>
+              <div>
+                <div class="fw-bold text-dark small">School Phase: 10th / 12th Board Exams</div>
+                <div class="text-muted small">Score high marks for single-window counseling cutoffs.</div>
+              </div>
+            </div>
+            <div class="text-center text-primary fs-5" style="line-height: 1;">&darr;</div>
+            <div class="p-2.5 rounded-3 bg-light border d-flex align-items-center gap-3">
+              <span class="badge bg-info text-white rounded-circle p-2 fs-6">2</span>
+              <div>
+                <div class="fw-bold text-dark small">Admission Phase: TNEA / TN DME / TNGASA Counseling</div>
+                <div class="text-muted small">Secure seat allotment with 7.5% Govt School Free Quota if eligible.</div>
+              </div>
+            </div>
+            <div class="text-center text-primary fs-5" style="line-height: 1;">&darr;</div>
+            <div class="p-2.5 rounded-3 bg-light border d-flex align-items-center gap-3">
+              <span class="badge bg-warning text-dark rounded-circle p-2 fs-6">3</span>
+              <div>
+                <div class="fw-bold text-dark small">College Phase: Labs, Projects &amp; Internships</div>
+                <div class="text-muted small">Gain hands-on competencies and industrial summer training.</div>
+              </div>
+            </div>
+            <div class="text-center text-primary fs-5" style="line-height: 1;">&darr;</div>
+            <div class="p-2.5 rounded-3 bg-success-subtle border border-success-subtle d-flex align-items-center gap-3">
+              <span class="badge bg-success rounded-circle p-2 fs-6">4</span>
+              <div>
+                <div class="fw-bold text-success small">Placement Phase: Graduate Career Appointment (${path.starting_salary_range})</div>
+                <div class="text-muted small">Join top companies or permanent Tamil Nadu state public services.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card border-0 shadow-sm p-4 mb-3 rounded-4 bg-white">
+          <h5 class="fw-bold text-dark mb-2">🎯 6. Required Entrance Exams &amp; Portals</h5>
+          ${examsHtml}
+          <div class="p-3 bg-light border rounded-3 text-secondary small mt-2">
+            <strong>Admission Procedure:</strong> ${path.admission_procedure}
+          </div>
+        </div>
+      `;
+    }
+
+    const modalEl = document.getElementById("pathwayDetailModal");
+    if (modalEl && typeof bootstrap !== "undefined") {
+      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+      modal.show();
+    }
+  };
+}
