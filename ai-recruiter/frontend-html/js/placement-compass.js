@@ -1292,6 +1292,9 @@ function filterPathsByCategory(cat, btn) {
       if (activeGradeFilter === "after_10th") {
         cat = "diploma_polytechnic";
         showCompassToast("Selected Polytechnic / Diploma — the direct technical engineering pathway after 10th Standard.", "info");
+      } else if (activeGradeFilter === "after_12th_commerce" || activeGradeFilter === "after_12th_arts") {
+        cat = "arts_science";
+        showCompassToast("B.E/B.Tech requires 12th Mathematics. Showing BCA & Financial Technology — the premier software, computing & tech pathways for your group!", "info");
       } else {
         activeGradeFilter = "after_12th_pcm";
         showCompassToast("Switched to 12th Science (PCM / Maths) — Engineering (B.E/B.Tech) admissions in Tamil Nadu require Higher Secondary Mathematics.", "info");
@@ -1439,7 +1442,18 @@ function renderSchoolPaths() {
     return;
   }
 
-  grid.innerHTML = filtered
+  const noticeHtml = (activeGradeFilter === "after_12th_pcb" && activeCatFilter === "engineering") ? `
+    <div class="col-12 mb-3">
+      <div class="alert alert-info py-2.5 px-3 rounded-4 d-flex align-items-center gap-3 mb-0 shadow-xs">
+        <span class="fs-3">🧬</span>
+        <div class="small">
+          <strong class="text-primary">Bio-Engineering Pathways for 12th Biology:</strong> B.Tech Biotechnology &amp; Biomedical Engineering in Tamil Nadu admit 12th Biology students directly via Anna University / TNEA and premier universities. <em>(For conventional CSE/ECE/Mechanical, 12th PCM with Mathematics is required via TNEA).</em>
+        </div>
+      </div>
+    </div>
+  ` : "";
+
+  grid.innerHTML = noticeHtml + filtered
     .map((path) => {
       const examsBadges = path.entrance_exams
         .slice(0, 3)
@@ -1699,20 +1713,18 @@ function renderCollegeComparisonMatrix(colleges) {
   const container = document.getElementById("college-compare-matrix-container");
   if (!container) return;
 
-  const minTableWidth = Math.max(780, 200 + colleges.length * 260);
-
   container.innerHTML = `
-    <table class="table career-compare-table align-middle mb-0" style="min-width: ${minTableWidth}px; width: 100%;">
+    <table class="table career-compare-table align-middle mb-0" id="college-comparison-table">
       <thead>
         <tr>
-          <th class="benchmark-col" style="width: 200px; min-width: 180px; position: sticky; left: 0; z-index: 2; background: #f8fafc;">
+          <th class="benchmark-col" style="position: sticky; left: 0; z-index: 2; background: #f8fafc;">
             <div class="fw-bold text-secondary text-uppercase small">College Benchmark</div>
             <div class="text-muted" style="font-size: 0.72rem;">Comparing ${colleges.length} TN Institutions</div>
           </th>
           ${colleges
             .map(
               (c) => `
-            <th style="min-width: 300px;" class="text-center">
+            <th class="college-data-col text-center">
               <div class="fs-1 mb-1">${c.logo_emoji}</div>
               <h5 class="fw-bold mb-0 text-dark">${c.name}</h5>
               <div class="small text-muted mb-1">📍 ${c.location}</div>
@@ -1734,14 +1746,14 @@ function renderCollegeComparisonMatrix(colleges) {
         </tr>
         <tr>
           <td class="benchmark-col fw-bold text-secondary">Accreditation &amp; Status</td>
-          ${colleges.map((c) => `<td style="min-width: 300px;" class="text-center small fw-semibold text-dark">${c.accreditation}</td>`).join("")}
+          ${colleges.map((c) => `<td class="college-data-col text-center small fw-semibold text-dark">${c.accreditation}</td>`).join("")}
         </tr>
         <tr>
           <td class="benchmark-col fw-bold text-secondary">Flagship Degrees / Courses</td>
           ${colleges
             .map(
               (c) => `
-            <td style="min-width: 300px;" class="small">
+            <td class="college-data-col small">
               <ul class="ps-3 mb-0 text-secondary">
                 ${c.flagship_courses.map((cr) => `<li>${cr}</li>`).join("")}
               </ul>
@@ -1759,7 +1771,7 @@ function renderCollegeComparisonMatrix(colleges) {
         </tr>
         <tr>
           <td class="benchmark-col fw-bold text-secondary">Minimum Eligibility Criteria</td>
-          ${colleges.map((c) => `<td style="min-width: 300px;" class="small text-secondary">${c.eligibility_criteria}</td>`).join("")}
+          ${colleges.map((c) => `<td class="college-data-col small text-secondary">${c.eligibility_criteria}</td>`).join("")}
         </tr>
 
         <!-- Entrance Exam & Exam Schedule -->
@@ -1773,7 +1785,7 @@ function renderCollegeComparisonMatrix(colleges) {
           ${colleges
             .map(
               (c) => `
-            <td style="min-width: 300px;">
+            <td class="college-data-col">
               <div class="d-flex flex-wrap gap-1 justify-content-center">
                 ${c.entrance_exams.map((e) => `<span class="badge bg-info-subtle text-dark border small">${e}</span>`).join("")}
               </div>
@@ -1787,7 +1799,7 @@ function renderCollegeComparisonMatrix(colleges) {
           ${colleges
             .map(
               (c) => `
-            <td style="min-width: 300px;" class="small text-center">
+            <td class="college-data-col small text-center">
               <div><strong>Start:</strong> ${c.exam_schedule.application_start}</div>
               <div class="text-danger"><strong>Last Date:</strong> ${c.exam_schedule.last_date}</div>
             </td>
@@ -1800,7 +1812,7 @@ function renderCollegeComparisonMatrix(colleges) {
           ${colleges
             .map(
               (c) => `
-            <td style="min-width: 300px;" class="small text-center">
+            <td class="college-data-col small text-center">
               <div><strong>Exam Date:</strong> ${c.exam_schedule.exam_date}</div>
               <div class="text-success"><strong>Result:</strong> ${c.exam_schedule.result_date}</div>
             </td>
@@ -1817,7 +1829,7 @@ function renderCollegeComparisonMatrix(colleges) {
         </tr>
         <tr>
           <td class="benchmark-col fw-bold text-secondary">Complete Admission Process</td>
-          ${colleges.map((c) => `<td style="min-width: 300px;" class="small text-secondary" style="line-height: 1.6;">${c.admission_counselling_process}</td>`).join("")}
+          ${colleges.map((c) => `<td class="college-data-col small text-secondary" style="line-height: 1.6;">${c.admission_counselling_process}</td>`).join("")}
         </tr>
 
         <!-- Fees & Scholarships -->
@@ -1828,18 +1840,18 @@ function renderCollegeComparisonMatrix(colleges) {
         </tr>
         <tr>
           <td class="benchmark-col fw-bold text-secondary">Tuition Fees / Year</td>
-          ${colleges.map((c) => `<td style="min-width: 300px;" class="text-center fw-bold text-success small">${c.tuition_fees_per_year}</td>`).join("")}
+          ${colleges.map((c) => `<td class="college-data-col text-center fw-bold text-success small">${c.tuition_fees_per_year}</td>`).join("")}
         </tr>
         <tr>
           <td class="benchmark-col fw-bold text-secondary">Hostel &amp; Mess Fees / Year</td>
-          ${colleges.map((c) => `<td style="min-width: 300px;" class="text-center text-muted small">${c.hostel_mess_fees_per_year}</td>`).join("")}
+          ${colleges.map((c) => `<td class="college-data-col text-center text-muted small">${c.hostel_mess_fees_per_year}</td>`).join("")}
         </tr>
         <tr>
           <td class="benchmark-col fw-bold text-secondary">Scholarships Available</td>
           ${colleges
             .map(
               (c) => `
-            <td style="min-width: 300px;" class="small">
+            <td class="college-data-col small">
               <ul class="ps-3 mb-0 text-success">
                 ${c.scholarships_available.map((s) => `<li>${s}</li>`).join("")}
               </ul>
@@ -1857,22 +1869,22 @@ function renderCollegeComparisonMatrix(colleges) {
         </tr>
         <tr>
           <td class="benchmark-col fw-bold text-secondary">Highest CTC Package</td>
-          ${colleges.map((c) => `<td style="min-width: 300px;" class="text-center fw-bold text-dark">${c.placement_stats.highest_package}</td>`).join("")}
+          ${colleges.map((c) => `<td class="college-data-col text-center fw-bold text-dark">${c.placement_stats.highest_package}</td>`).join("")}
         </tr>
         <tr>
           <td class="benchmark-col fw-bold text-secondary">Average CTC Package</td>
-          ${colleges.map((c) => `<td style="min-width: 300px;" class="text-center fw-bold text-primary fs-6">${c.placement_stats.average_package}</td>`).join("")}
+          ${colleges.map((c) => `<td class="college-data-col text-center fw-bold text-primary fs-6">${c.placement_stats.average_package}</td>`).join("")}
         </tr>
         <tr>
           <td class="benchmark-col fw-bold text-secondary">Placement Success %</td>
-          ${colleges.map((c) => `<td style="min-width: 300px;" class="text-center fw-bold text-success">${c.placement_stats.placement_percentage}</td>`).join("")}
+          ${colleges.map((c) => `<td class="college-data-col text-center fw-bold text-success">${c.placement_stats.placement_percentage}</td>`).join("")}
         </tr>
         <tr>
           <td class="benchmark-col fw-bold text-secondary">Top Visiting Recruiters</td>
           ${colleges
             .map(
               (c) => `
-            <td style="min-width: 300px;">
+            <td class="college-data-col">
               <div class="d-flex flex-wrap gap-1 justify-content-center">
                 ${c.placement_stats.top_recruiters.map((r) => `<span class="badge bg-secondary-subtle text-dark small">${r}</span>`).join("")}
               </div>
@@ -1893,7 +1905,7 @@ function renderCollegeComparisonMatrix(colleges) {
           ${colleges
             .map(
               (c) => `
-            <td style="min-width: 300px;" class="small">
+            <td class="college-data-col small">
               <ul class="ps-3 mb-0 text-secondary">
                 ${c.campus_facilities.map((f) => `<li>${f}</li>`).join("")}
               </ul>
@@ -1914,7 +1926,7 @@ function renderCollegeComparisonMatrix(colleges) {
           ${colleges
             .map(
               (c) => `
-            <td style="min-width: 300px;" class="small">
+            <td class="college-data-col small">
               <ul class="ps-3 mb-0 text-success">
                 ${c.pros.map((p) => `<li>${p}</li>`).join("")}
               </ul>
@@ -1928,7 +1940,7 @@ function renderCollegeComparisonMatrix(colleges) {
           ${colleges
             .map(
               (c) => `
-            <td style="min-width: 300px;" class="small">
+            <td class="college-data-col small">
               <ul class="ps-3 mb-0 text-secondary">
                 ${c.cons.map((cn) => `<li>${cn}</li>`).join("")}
               </ul>
@@ -2030,20 +2042,18 @@ function renderCourseComparisonMatrix(courses) {
   const container = document.getElementById("course-compare-matrix-container");
   if (!container) return;
 
-  const minTableWidth = Math.max(780, 200 + courses.length * 260);
-
   container.innerHTML = `
-    <table class="table career-compare-table align-middle mb-0" style="min-width: ${minTableWidth}px; width: 100%;">
+    <table class="table career-compare-table align-middle mb-0" id="course-comparison-table">
       <thead>
         <tr>
-          <th class="benchmark-col" style="width: 200px; min-width: 180px; position: sticky; left: 0; z-index: 2; background: #f8fafc;">
+          <th class="benchmark-col" style="position: sticky; left: 0; z-index: 2; background: #f8fafc;">
             <div class="fw-bold text-secondary text-uppercase small">Course Benchmark</div>
             <div class="text-muted" style="font-size: 0.72rem;">Comparing ${courses.length} Academic Pathways</div>
           </th>
           ${courses
             .map(
               (cr) => `
-            <th style="min-width: 280px;" class="text-center">
+            <th class="course-data-col text-center">
               <h5 class="fw-bold mb-1 text-dark">${cr.course_name}</h5>
               <span class="badge bg-primary-subtle text-primary border rounded-pill px-2.5 py-1 small fw-bold">
                 ${cr.duration}
@@ -2057,14 +2067,14 @@ function renderCourseComparisonMatrix(courses) {
       <tbody>
         <tr>
           <td class="benchmark-col fw-bold text-secondary">Eligibility Criteria</td>
-          ${courses.map((cr) => `<td style="min-width: 280px;" class="small text-secondary">${cr.eligibility}</td>`).join("")}
+          ${courses.map((cr) => `<td class="course-data-col small text-secondary">${cr.eligibility}</td>`).join("")}
         </tr>
         <tr>
           <td class="benchmark-col fw-bold text-secondary">Required Entrance Exams</td>
           ${courses
             .map(
               (cr) => `
-            <td style="min-width: 280px;">
+            <td class="course-data-col">
               <div class="d-flex flex-wrap gap-1 justify-content-center">
                 ${cr.entrance_exams.map((e) => `<span class="badge bg-light text-dark border small">${e}</span>`).join("")}
               </div>
@@ -2075,14 +2085,14 @@ function renderCourseComparisonMatrix(courses) {
         </tr>
         <tr>
           <td class="benchmark-col fw-bold text-secondary">Average Starting Salary</td>
-          ${courses.map((cr) => `<td style="min-width: 280px;" class="text-center fw-bold text-success fs-6">${cr.avg_starting_salary}</td>`).join("")}
+          ${courses.map((cr) => `<td class="course-data-col text-center fw-bold text-success fs-6">${cr.avg_starting_salary}</td>`).join("")}
         </tr>
         <tr>
           <td class="benchmark-col fw-bold text-secondary">Top Roles &amp; Opportunities</td>
           ${courses
             .map(
               (cr) => `
-            <td style="min-width: 280px;" class="small">
+            <td class="course-data-col small">
               <ul class="ps-3 mb-0 text-secondary">
                 ${cr.top_roles.map((r) => `<li>${r}</li>`).join("")}
               </ul>
@@ -2096,7 +2106,7 @@ function renderCourseComparisonMatrix(courses) {
           ${courses
             .map(
               (cr) => `
-            <td style="min-width: 280px;" class="small">
+            <td class="course-data-col small">
               <ul class="ps-3 mb-0 text-secondary">
                 ${cr.future_scopes.map((f) => `<li>${f}</li>`).join("")}
               </ul>
@@ -2107,7 +2117,7 @@ function renderCourseComparisonMatrix(courses) {
         </tr>
         <tr>
           <td class="benchmark-col fw-bold text-secondary">Why Choose This Course</td>
-          ${courses.map((cr) => `<td style="min-width: 280px;" class="small text-dark fw-medium">${cr.why_choose}</td>`).join("")}
+          ${courses.map((cr) => `<td class="course-data-col small text-dark fw-medium">${cr.why_choose}</td>`).join("")}
         </tr>
       </tbody>
     </table>
@@ -2115,8 +2125,17 @@ function renderCourseComparisonMatrix(courses) {
 }
 
 // -------------------------------------------------------------
-// FULL PAGE / WIDE VIEW TOGGLE HANDLER
+// HORIZONTAL SCROLL & FULL PAGE / WIDE VIEW HANDLERS
 // -------------------------------------------------------------
+function scrollCompareTable(type, direction) {
+  const container = document.getElementById(type === "college" ? "college-compare-matrix-container" : "course-compare-matrix-container");
+  if (container) {
+    const shift = direction === "next" ? 340 : -340;
+    container.scrollBy({ left: shift, behavior: "smooth" });
+  }
+}
+window.scrollCompareTable = scrollCompareTable;
+
 function toggleFullPageCompare(type) {
   const boxId = type === "college" ? "college-compare-view-box" : "course-compare-view-box";
   const box = document.getElementById(boxId);
@@ -2127,22 +2146,37 @@ function toggleFullPageCompare(type) {
   const icon = document.getElementById(type === "college" ? "colleges-fs-icon" : "courses-fs-icon");
   const label = document.getElementById(type === "college" ? "colleges-fs-label" : "courses-fs-label");
 
+  let floatBtn = document.getElementById("compare-floating-exit-btn");
+
   if (isFull) {
     document.body.style.overflow = "hidden";
     if (icon) icon.textContent = "✕";
     if (label) label.textContent = "Exit Full Page View";
     if (btn) {
-      btn.classList.remove("btn-outline-primary");
+      btn.classList.remove("btn-primary", "btn-outline-primary");
       btn.classList.add("btn-danger");
     }
     box.scrollTop = 0;
+
+    if (!floatBtn) {
+      floatBtn = document.createElement("button");
+      floatBtn.id = "compare-floating-exit-btn";
+      floatBtn.className = "btn btn-danger btn-sm rounded-pill px-3 py-2 fw-bold shadow-lg position-fixed";
+      floatBtn.style.cssText = "top: 20px; right: 28px; z-index: 10600; cursor: pointer;";
+      floatBtn.innerHTML = "✕ Exit Full Page View (Esc)";
+      floatBtn.onclick = () => toggleFullPageCompare(type);
+      document.body.appendChild(floatBtn);
+    }
   } else {
     document.body.style.overflow = "";
     if (icon) icon.textContent = "⛶";
     if (label) label.textContent = "Full Page View";
     if (btn) {
       btn.classList.remove("btn-danger");
-      btn.classList.add("btn-outline-primary");
+      btn.classList.add("btn-primary");
+    }
+    if (floatBtn) {
+      floatBtn.remove();
     }
   }
 }
@@ -2155,13 +2189,15 @@ document.addEventListener("keydown", (e) => {
     if (modals.length > 0) {
       modals.forEach((m) => m.classList.remove("compare-fullpage-modal"));
       document.body.style.overflow = "";
+      const floatBtn = document.getElementById("compare-floating-exit-btn");
+      if (floatBtn) floatBtn.remove();
       ["colleges", "courses"].forEach((prefix) => {
         const btn = document.getElementById(`${prefix}-fs-btn`);
         const icon = document.getElementById(`${prefix}-fs-icon`);
         const label = document.getElementById(`${prefix}-fs-label`);
         if (btn) {
           btn.classList.remove("btn-danger");
-          btn.classList.add("btn-outline-primary");
+          btn.classList.add("btn-primary");
         }
         if (icon) icon.textContent = "⛶";
         if (label) label.textContent = "Full Page View";
@@ -2422,7 +2458,9 @@ function renderSchoolExams() {
 
   // Update #exam-stage-filter-btns button visual states
   document.querySelectorAll("#exam-stage-filter-btns button").forEach((b) => {
-    if (b.getAttribute("data-exam-stage") === activeExamStageFilter) {
+    const bStage = b.getAttribute("data-exam-stage");
+    const isTarget = (activeAcademicGroup === "sslc_10th") ? (bStage === "after_10th") : (bStage === activeExamStageFilter);
+    if (isTarget) {
       b.classList.remove("btn-outline-primary");
       b.classList.add("btn-primary", "shadow-sm");
     } else {
@@ -2442,7 +2480,9 @@ function renderSchoolExams() {
   }
 
   // 2. Stage Filtering (After 10th vs After 12th)
-  if (activeExamStageFilter === "after_10th") {
+  if (activeAcademicGroup === "sslc_10th") {
+    filtered = filtered.filter((e) => e.target_stage === "after_10th");
+  } else if (activeExamStageFilter === "after_10th") {
     filtered = filtered.filter((e) => e.target_stage === "after_10th");
   } else if (activeExamStageFilter === "after_12th") {
     filtered = filtered.filter((e) => e.target_stage === "after_12th");
@@ -2450,23 +2490,31 @@ function renderSchoolExams() {
 
   // 3. Fallback Auto-Heal: If zero exams resulted from a stage filter mismatch with the selected group
   if ((!filtered || filtered.length === 0) && activeAcademicGroup && activeAcademicGroup !== "all") {
-    const groupMatches = (allSchoolExams || []).filter((e) => {
-      const groups = (e.target_groups || []).map((g) => g.toLowerCase());
-      return groups.includes(activeAcademicGroup.toLowerCase());
-    });
-    if (groupMatches.length > 0) {
-      filtered = groupMatches;
-      activeExamStageFilter = activeAcademicGroup === "sslc_10th" ? "after_10th" : "after_12th";
-      document.querySelectorAll("#exam-stage-filter-btns button").forEach((b) => {
-        if (b.getAttribute("data-exam-stage") === activeExamStageFilter) {
-          b.classList.remove("btn-outline-primary");
-          b.classList.add("btn-primary", "shadow-sm");
-        } else {
-          b.classList.remove("btn-primary", "shadow-sm");
-          b.classList.add("btn-outline-primary");
-        }
+    if (activeAcademicGroup === "sslc_10th") {
+      filtered = (allSchoolExams || []).filter((e) => {
+        const groups = (e.target_groups || []).map((g) => g.toLowerCase());
+        return groups.includes("sslc_10th") || e.target_stage === "after_10th";
       });
+      activeExamStageFilter = "after_10th";
+    } else {
+      const groupMatches = (allSchoolExams || []).filter((e) => {
+        const groups = (e.target_groups || []).map((g) => g.toLowerCase());
+        return groups.includes(activeAcademicGroup.toLowerCase());
+      });
+      if (groupMatches.length > 0) {
+        filtered = groupMatches;
+        activeExamStageFilter = "after_12th";
+      }
     }
+    document.querySelectorAll("#exam-stage-filter-btns button").forEach((b) => {
+      if (b.getAttribute("data-exam-stage") === activeExamStageFilter) {
+        b.classList.remove("btn-outline-primary");
+        b.classList.add("btn-primary", "shadow-sm");
+      } else {
+        b.classList.remove("btn-primary", "shadow-sm");
+        b.classList.add("btn-outline-primary");
+      }
+    });
   }
 
   // Update count badge

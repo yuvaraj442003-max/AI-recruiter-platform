@@ -312,13 +312,13 @@
     .career-compare-table th {
       background: #f8fafc;
       font-weight: 700;
-      padding: 16px;
+      padding: 14px 16px;
       vertical-align: middle;
       border-bottom: 2px solid var(--compass-border);
     }
 
     .career-compare-table td {
-      padding: 16px;
+      padding: 14px 16px;
       vertical-align: top;
       border-bottom: 1px solid #f1f5f9;
     }
@@ -329,6 +329,9 @@
       position: sticky;
       left: 0;
       z-index: 5;
+      width: 220px;
+      min-width: 190px;
+      max-width: 240px;
       background: #f8fafc !important;
       border-right: 2px solid #e2e8f0;
       box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
@@ -336,6 +339,36 @@
     .career-compare-table thead th.benchmark-col {
       z-index: 6;
       background: #f1f5f9 !important;
+    }
+
+    .career-compare-table th.college-data-col,
+    .career-compare-table td.college-data-col,
+    .career-compare-table th.course-data-col,
+    .career-compare-table td.course-data-col {
+      min-width: 240px;
+      width: 33.333%;
+    }
+
+    /* Large screen responsive fit (laptops & desktops): Table fills full container without horizontal cutoff! */
+    @media (min-width: 1100px) {
+      .career-compare-table {
+        table-layout: fixed !important;
+        width: 100% !important;
+        min-width: 100% !important;
+      }
+      .career-compare-table th.benchmark-col,
+      .career-compare-table td.benchmark-col {
+        width: 210px !important;
+        min-width: 190px !important;
+        max-width: 230px !important;
+      }
+      .career-compare-table th.college-data-col,
+      .career-compare-table td.college-data-col,
+      .career-compare-table th.course-data-col,
+      .career-compare-table td.course-data-col {
+        min-width: 0 !important;
+        width: auto !important;
+      }
     }
 
     /* Section category divider row */
@@ -355,14 +388,22 @@
       z-index: 10500 !important;
       background: #f8fafc !important;
       overflow-y: auto !important;
-      padding: 24px !important;
+      padding: 24px 32px !important;
       margin: 0 !important;
-      box-shadow: 0 0 50px rgba(0, 0, 0, 0.3) !important;
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.4) !important;
     }
 
     .compare-fullpage-modal .career-compare-table-wrapper {
-      max-height: calc(100vh - 160px);
+      max-height: calc(100vh - 140px);
       overflow-y: auto !important;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .compare-fullpage-modal .career-compare-table {
+      table-layout: fixed !important;
+      width: 100% !important;
+      min-width: 100% !important;
+    }
     }
     .academic-group-btn {
       border: 2px solid #e2e8f0;
@@ -1113,10 +1154,11 @@
                   </div>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                  <span class="badge bg-light text-secondary border small px-2.5 py-1.5 d-none d-md-inline">
-                    ⇄ Scroll horizontally or expand to Full Page
-                  </span>
-                  <button id="colleges-fs-btn" class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-sm d-flex align-items-center gap-1" onclick="toggleFullPageCompare('college')">
+                  <div class="btn-group btn-group-sm me-1 d-none d-sm-inline-flex" role="group">
+                    <button class="btn btn-outline-secondary btn-sm rounded-pill px-2.5 py-1" onclick="scrollCompareTable('college', 'prev')" title="Previous College">◀ Prev</button>
+                    <button class="btn btn-outline-secondary btn-sm rounded-pill px-2.5 py-1" onclick="scrollCompareTable('college', 'next')" title="Next College">Next ▶</button>
+                  </div>
+                  <button id="colleges-fs-btn" class="btn btn-primary btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-sm d-flex align-items-center gap-1.5 hover-lift" onclick="toggleFullPageCompare('college')">
                     <span id="colleges-fs-icon">⛶</span> <span id="colleges-fs-label">Full Page View</span>
                   </button>
                 </div>
@@ -1203,10 +1245,11 @@
                   </div>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                  <span class="badge bg-light text-secondary border small px-2.5 py-1.5 d-none d-md-inline">
-                    ⇄ Scroll horizontally or expand to Full Page
-                  </span>
-                  <button id="courses-fs-btn" class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-sm d-flex align-items-center gap-1" onclick="toggleFullPageCompare('course')">
+                  <div class="btn-group btn-group-sm me-1 d-none d-sm-inline-flex" role="group">
+                    <button class="btn btn-outline-secondary btn-sm rounded-pill px-2.5 py-1" onclick="scrollCompareTable('course', 'prev')" title="Previous Pathway">◀ Prev</button>
+                    <button class="btn btn-outline-secondary btn-sm rounded-pill px-2.5 py-1" onclick="scrollCompareTable('course', 'next')" title="Next Pathway">Next ▶</button>
+                  </div>
+                  <button id="courses-fs-btn" class="btn btn-primary btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-sm d-flex align-items-center gap-1.5 hover-lift" onclick="toggleFullPageCompare('course')">
                     <span id="courses-fs-icon">⛶</span> <span id="courses-fs-label">Full Page View</span>
                   </button>
                 </div>

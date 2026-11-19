@@ -489,6 +489,140 @@ window.COMPASS_STATIC_DATA = {
       ]
     },
     {
+      "id": "btech_biotech_biomedical",
+      "title": "B.Tech Biotechnology & Biomedical Engineering (Bio-Tech / Healthcare Tech)",
+      "category": "engineering",
+      "grade_level": "after_12th_pcb",
+      "eligible_grades": [
+        "after_12th_pcb",
+        "after_12th_pcm"
+      ],
+      "icon_emoji": "🧬",
+      "tagline": "Bio-Process Engineering, Medical Devices, Genetics & Vaccine Technology for Biology & Maths Students",
+      "duration": "4 Years (8 Semesters)",
+      "eligibility": "12th Pass with Biology, Physics & Chemistry (PCB) or PCM. Direct TNEA Anna University admission open to Biology students.",
+      "entrance_exams": [
+        {
+          "name": "TNEA (Anna University AC Tech Biotech)",
+          "level": "State",
+          "official_portal": "https://www.tneaonline.org",
+          "description": "Single-window online counselling based on 12th PCB/PCM aggregate cutoff."
+        },
+        {
+          "name": "VITEEE / SRMJEEE (Biotechnology Stream)",
+          "level": "National",
+          "official_portal": "https://vit.ac.in",
+          "description": "National entrance tests with separate PCB Biology engineering merit lists."
+        }
+      ],
+      "top_colleges": [
+        "Alagappa College of Technology (AC Tech, Anna University Chennai)",
+        "PSG College of Technology, Coimbatore",
+        "Coimbatore Institute of Technology (CIT), Coimbatore",
+        "VIT University, Vellore (Biotechnology School)",
+        "SASTRA Deemed University, Thanjavur",
+        "Rajalakshmi Engineering College (Biotech/Biomedical), Chennai"
+      ],
+      "admission_procedure": "TNEA single-window counselling for Anna University AC Tech campus and top self-financing colleges. Biology students are fully eligible for Biotechnology and Biomedical Engineering branches. 7.5% Govt School reservation applies with 100% free fees.",
+      "estimated_fees": {
+        "govt_college": "₹31,000 / year (Anna University AC Tech)",
+        "govt_aided_college": "₹45,000 / year (PSG Tech)",
+        "private_college": "₹85,000 - ₹1,80,000 / year"
+      },
+      "scholarships": [
+        "7.5% TN Govt School Free Seats (Tuition, Hostel, Mess)",
+        "First Graduate Concession (₹25,000/yr)",
+        "Pudhumai Penn / Tamil Puthalvan (₹1,000/mo)"
+      ],
+      "career_opportunities": [
+        "Biomedical Equipment Specialist (Siemens Healthineers, Philips Healthcare)",
+        "Bioprocess & Vaccine Production Engineer (Serum Institute, Bharat Biotech, Biocon)",
+        "Clinical Data Analyst & Bioinformatician (Novartis, TCS Healthcare, IQVIA)",
+        "Quality Control Microbiologist / Analytical Biochemist",
+        "Genetic & Molecular Research Associate"
+      ],
+      "starting_salary_range": "₹4.5 LPA - ₹16.0 LPA",
+      "future_study_options": [
+        "M.Tech Biotechnology / Bioinformatics at IIT Madras / Anna University",
+        "MS in Biomedical Engineering abroad (Germany/USA)",
+        "CSIR NET / GATE Life Sciences for Scientists"
+      ],
+      "key_skills_needed": [
+        "Bioprocess Technology",
+        "Bioinformatics (Python/R)",
+        "Biomedical Instrumentation",
+        "Molecular Biology & PCR",
+        "GMP Regulatory Compliance"
+      ]
+    },
+    {
+      "id": "bca_fintech_computing",
+      "title": "BCA & B.Com Financial Technology (Software & Fintech Systems)",
+      "category": "arts_science",
+      "grade_level": "after_12th_commerce",
+      "eligible_grades": [
+        "after_12th_commerce",
+        "after_12th_arts",
+        "after_12th_pcm"
+      ],
+      "icon_emoji": "💻",
+      "tagline": "Software Development, Algorithmic Finance, Cloud ERP & Business Analytics for Commerce & Tech Students",
+      "duration": "3 Years (6 Semesters)",
+      "eligibility": "12th Standard Pass in Commerce, Computer Science, or Arts stream.",
+      "entrance_exams": [
+        {
+          "name": "TNGASA (Tamil Nadu Govt Arts & Science Counselling)",
+          "level": "State",
+          "official_portal": "https://www.tngasa.in",
+          "description": "Single-window online admission based on 12th marks."
+        },
+        {
+          "name": "Loyola / MCC Autonomous Online Admission",
+          "level": "College Level",
+          "official_portal": "https://loyolacollege.edu",
+          "description": "Direct merit allotment for top arts & science autonomous colleges."
+        }
+      ],
+      "top_colleges": [
+        "Loyola College, Chennai (Autonomous)",
+        "PSG College of Arts & Science, Coimbatore",
+        "Madras Christian College (MCC), Chennai",
+        "Stella Maris College, Chennai",
+        "Presidency College, Chennai (NIRF #3)"
+      ],
+      "admission_procedure": "TNGASA single window online admission for 164+ Government Arts & Science colleges across Tamil Nadu, plus direct merit portal for autonomous colleges. 7.5% Govt School reservation and Pudhumai Penn / Tamil Puthalvan ₹1,000/mo apply.",
+      "estimated_fees": {
+        "govt_college": "₹3,500 / year (Presidency / Queen Mary's)",
+        "govt_aided_college": "₹15,000 - ₹35,000 / year (Loyola / PSG CAS)",
+        "private_college": "₹45,000 - ₹80,000 / year"
+      },
+      "scholarships": [
+        "Pudhumai Penn (₹1,000/month for girl students)",
+        "Tamil Puthalvan (₹1,000/month for boy students)",
+        "Post-Matric SC/ST 100% Free Scholarship"
+      ],
+      "career_opportunities": [
+        "Fintech Systems Analyst (Zoho, PayPal, Standard Chartered GBS Chennai)",
+        "Full-Stack Web & App Developer",
+        "SAP FICO / ERP Financial Consultant",
+        "Business Intelligence & Data Analyst",
+        "Accounts & Investment Operations Associate"
+      ],
+      "starting_salary_range": "₹3.8 LPA - ₹12.5 LPA",
+      "future_study_options": [
+        "MCA (Master of Computer Applications) via TANCET",
+        "MBA Finance / Fintech at IIT Madras DoMS",
+        "Chartered Financial Analyst (CFA USA)"
+      ],
+      "key_skills_needed": [
+        "Python & SQL",
+        "Web Technologies (HTML/CSS/JS)",
+        "Financial Accounting & Modeling",
+        "SAP / Tally ERP",
+        "Data Analytics"
+      ]
+    },
+    {
       "id": "mbbs_medicine",
       "title": "MBBS \u2014 Bachelor of Medicine and Bachelor of Surgery (TN DME Selection)",
       "category": "medical",
