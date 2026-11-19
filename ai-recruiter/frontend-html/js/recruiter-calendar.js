@@ -210,7 +210,7 @@
         start_time_iso: isoStr,
         duration_minutes: parseInt(document.getElementById("sched-duration").value) || 30,
         timezone_name: document.getElementById("sched-timezone").value || "Asia/Kolkata",
-        interview_type: "AI Technical Interview",
+        interview_type: "Technical Interview",
         send_email: document.getElementById("chk-sched-email").checked,
         sync_calendar: document.getElementById("chk-sched-cal").checked,
       };

@@ -104,7 +104,7 @@ function renderScreeningDetails(session) {
   if (result.ai_summary) {
     aiSummaryText.innerHTML = result.ai_summary.split("\n").map(line => `<div class="mb-1">${escapeHtml(line)}</div>`).join("");
   } else {
-    aiSummaryText.textContent = "Detailed AI summary available upon completion of all questions.";
+    aiSummaryText.textContent = "Detailed summary available upon completion of all questions.";
   }
 
   // Populate Q&A Transcript
@@ -151,7 +151,7 @@ function renderScreeningDetails(session) {
       </div>
       ${ans ? `
       <div>
-        <strong class="text-dark small">AI Extracted Data & Justification:</strong>
+        <strong class="text-dark small">Extracted Data & Justification:</strong>
         <div class="extracted-box mt-1">${escapeHtml(extractedFormatted)}</div>
         <div class="text-muted small mt-1"><em>Reason: ${escapeHtml(ans.ai_reason || 'Evaluated')}</em></div>
       </div>

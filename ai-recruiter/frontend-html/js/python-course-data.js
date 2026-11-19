@@ -644,7 +644,7 @@ window.PYTHON_COURSE_DATA = [
         },
         "realTimeProjectTask": {
           "domain": "Applicant Tracking Systems & Access Control (RBAC)",
-          "companies": "LinkedIn, Workday, AI Recruiter",
+          "companies": "LinkedIn, Workday, Recruiter Platform",
           "productionScenario": "Evaluating whether candidate resumes meet job prerequisite skills or validating API authorization scopes.",
           "implementationGuidance": "Always convert lists to sets before performing membership queries or intersection checks.",
           "productionSafeguard": "Do not rely on set iteration order; sets are explicitly unordered in Python."

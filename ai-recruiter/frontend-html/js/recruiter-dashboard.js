@@ -577,7 +577,7 @@
               <div class="fs-1 mb-2">📤</div>
               <h6 class="fw-bold text-dark">No Bulk Resumes Uploaded Yet</h6>
               <p class="small text-muted mb-3" style="max-width: 480px; margin: 0 auto;">
-                Upload candidate resumes in the Bulk Resume Upload section to let AI automatically parse qualifications, evaluate skills, and identify their best matching job role(s).
+                Upload candidate resumes in the Bulk Resume Upload section to let the system automatically parse qualifications, evaluate skills, and identify their best matching job role(s).
               </p>
               <button class="btn btn-sm btn-success fw-bold px-3 py-1.5 shadow-sm" data-bs-toggle="modal" data-bs-target="#bulkUploadModal">
                 📤 Upload Resumes Now
@@ -899,7 +899,7 @@
     const salScore = Math.round(result.salary_score ?? (app.salary_score || (isFailed ? 0 : 80)));
     const commScore = Math.round(result.communication_score ?? (app.communication_score || (isFailed ? 0 : 85)));
 
-    const aiSummary = result.ai_summary || app.ai_summary || session?.ai_summary || (isFailed ? "Candidate failed evaluation. Does not meet core role qualifications." : "Detailed AI summary available upon completion of all questions.");
+    const aiSummary = result.ai_summary || app.ai_summary || session?.ai_summary || (isFailed ? "Candidate failed evaluation. Does not meet core role qualifications." : "Detailed summary available upon completion of all questions.");
 
     return `
       <div class="assessment-breakdown-container">
@@ -1011,7 +1011,7 @@
         <div class="card border-0 shadow-sm mb-3" style="border-radius: 12px; background: #ffffff;">
           <div class="card-body p-4">
             <h5 class="fw-bold mb-3 d-flex align-items-center gap-2 text-dark">
-              <span class="text-primary">🤖</span> AI Evaluation Summary
+              <span class="text-primary">📋</span> Evaluation Summary
             </h5>
             <div class="text-secondary" style="line-height: 1.6;">
               ${aiSummary.split('\n').map(line => `<p class="mb-1">${escapeHtml(line)}</p>`).join('')}

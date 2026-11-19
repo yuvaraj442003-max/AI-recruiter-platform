@@ -1274,7 +1274,7 @@
       <div class="card p-4 mb-4 border-0 shadow-sm" style="background: linear-gradient(135deg, #f4f7ff 0%, #ffffff 100%); border-radius: 12px;">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
           <div>
-            <span class="badge bg-primary text-white mb-1">AI Resume Coach Analysis</span>
+            <span class="badge bg-primary text-white mb-1">Resume Coach Analysis</span>
             <h4 class="fw-bold text-dark mb-0">Overall Resume Quality Score</h4>
             <p class="text-muted small mb-0">Based on target job description, action verbs, keyword density, and metrics.</p>
           </div>
@@ -1423,7 +1423,7 @@
                   const typeLabel = isFrontend
                     ? `🎨 <strong>Frontend Developer Coding Assessment</strong> (${item.questions_count} Coding Challenges)`
                     : (isAI
-                        ? `🤖 <strong>AI Developer Coding Assessment</strong> (${item.questions_count} Coding Challenges)`
+                        ? `💻 <strong>Advanced Developer Coding Assessment</strong> (${item.questions_count} Coding Challenges)`
                         : (isDev 
                             ? `💻 <strong>Technical Coding Assessment</strong> (${item.questions_count} Coding Challenges)` 
                             : (isRecruiter 
@@ -1432,7 +1432,7 @@
                   const typeBadge = isFrontend
                     ? `<span class="badge bg-dark border border-warning text-warning me-1">🎨 Frontend</span>`
                     : (isAI
-                        ? `<span class="badge bg-dark border border-info text-info me-1">🤖 AI Dev</span>`
+                        ? `<span class="badge bg-dark border border-info text-info me-1">💻 Advanced Dev</span>`
                         : (isDev 
                             ? `<span class="badge bg-dark border border-info text-info me-1">💻 Coding</span>` 
                             : `<span class="badge bg-dark border border-primary text-primary me-1">📝 Aptitude</span>`));
@@ -1566,7 +1566,7 @@
         html += `</tbody></table></div>`;
         container.innerHTML = html;
       } else {
-        container.innerHTML = '<div class="text-muted small text-center py-3">No live AI voice interviews scheduled for your applications yet.</div>';
+        container.innerHTML = '<div class="text-muted small text-center py-3">No live voice interviews scheduled for your applications yet.</div>';
       }
     } catch (err) {
       container.innerHTML = `<div class="text-danger small text-center py-3">Error loading voice interviews: ${err.message}</div>`;

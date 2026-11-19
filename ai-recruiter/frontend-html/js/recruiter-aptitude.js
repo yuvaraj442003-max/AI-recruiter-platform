@@ -191,7 +191,7 @@ async function handleGenerateQuestions() {
   const btn = document.getElementById("btn-generate");
   const originalHtml = btn.innerHTML;
   btn.disabled = true;
-  btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span> Generating ${numQuestions} Aptitude Questions with AI...`;
+  btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span> Generating ${numQuestions} Aptitude Questions...`;
 
   showAlert(`Synthesizing ${numQuestions} verified questions across ${selectedTopics.length} topics. Please wait a moment...`, "info");
 
@@ -216,7 +216,7 @@ async function handleGenerateQuestions() {
     }
   } catch (err) {
     console.error("AI Generation error:", err);
-    showAlert(err.message || "An error occurred while communicating with the AI service.", "danger");
+    showAlert(err.message || "An error occurred while communicating with the assessment service.", "danger");
   } finally {
     btn.disabled = false;
     btn.innerHTML = originalHtml;
@@ -433,7 +433,7 @@ async function handleSaveQuestionEdit() {
 // ==============================================================================
 
 async function handleRegenerateQuestion(questionId, btnEl) {
-  if (!confirm("Regenerate this question with a fresh problem statement and options using AI?")) {
+  if (!confirm("Regenerate this question with a fresh problem statement and options?")) {
     return;
   }
 

@@ -27,19 +27,19 @@ var escapeHtml = window.escapeHtml;
   let activeFilterStage = "all";
 
   const ALL_TRACKS = [
-    { id: "python", name: "Python Full-Stack", icon: "🐍", badge: "AI & Fast-Track" },
+    { id: "python", name: "Python Full-Stack", icon: "🐍", badge: "Core & Fast-Track" },
     { id: "java", name: "Java Programming", icon: "☕", badge: "Most Popular for Placements" },
     { id: "dsa", name: "DSA Placement Mastery", icon: "⚡", badge: "Placement Essential" },
     { id: "web_dev", name: "Full-Stack Web Dev", icon: "🌐", badge: "High Demand" },
-    { id: "ai_ml", name: "AI and Machine Learning", icon: "🤖", badge: "Future-Ready AI" },
+    { id: "ai_ml", name: "Machine Learning & Data Science", icon: "📊", badge: "Future-Ready Tech" },
     { id: "data_science", name: "Data Science", icon: "📊", badge: "High Salary Roles" },
     { id: "cloud_computing", name: "Cloud Computing", icon: "☁️", badge: "Cloud Architect Track" },
     { id: "aws", name: "AWS (Amazon Web Services)", icon: "🚀", badge: "Top Cloud Certification" },
     { id: "cybersecurity", name: "Cybersecurity", icon: "🛡️", badge: "High Demand Security" },
     { id: "devops", name: "DevOps", icon: "🔄", badge: "CI/CD & Kubernetes Mastery" },
     { id: "sql_db", name: "SQL & Database Management", icon: "🗄️", badge: "Core Placement Skill" },
-    { id: "gen_ai", name: "Generative AI", icon: "✨", badge: "Cutting-Edge & High Salary" },
-    { id: "deep_learning", name: "Deep Learning", icon: "🧠", badge: "Advanced AI & Research" },
+    { id: "gen_ai", name: "Generative Systems & Neural Networks", icon: "✨", badge: "Cutting-Edge & High Salary" },
+    { id: "deep_learning", name: "Deep Learning", icon: "🧠", badge: "Advanced Neural Research" },
     { id: "software_testing", name: "Software Testing & QA", icon: "🧪", badge: "QA Automation & SDET" },
   ];
 

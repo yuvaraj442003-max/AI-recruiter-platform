@@ -452,7 +452,7 @@
     } finally {
       generateSummaryBtn.disabled = false;
       generateSummarySpinner.classList.add("d-none");
-      generateSummaryText.textContent = "Regenerate with AI";
+      generateSummaryText.textContent = "Regenerate Summary";
     }
   });
 
@@ -557,7 +557,7 @@
       <div class="card p-4 mb-4 border-0 shadow-sm" style="background: linear-gradient(135deg, #f4f7ff 0%, #ffffff 100%); border-radius: 12px;">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
           <div>
-            <span class="badge bg-primary text-white mb-1">AI Resume Coach Analysis</span>
+            <span class="badge bg-primary text-white mb-1">Resume Coach Analysis</span>
             <h4 class="fw-bold text-dark mb-0">Overall Resume Quality Score</h4>
             <p class="text-muted small mb-0">Based on target job description, action verbs, keyword density, and metrics.</p>
           </div>

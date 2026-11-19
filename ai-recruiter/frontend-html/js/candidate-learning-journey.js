@@ -88,18 +88,18 @@ var escapeHtml = window.escapeHtml;
     },
     available_courses: [
       { id: "java", name: "Java Programming", icon: "☕", badge: "Most Popular for Placements", is_selected: true },
-      { id: "python", name: "Python Full-Stack", icon: "🐍", badge: "AI & Fast-Track", is_selected: false },
+      { id: "python", name: "Python Full-Stack", icon: "🐍", badge: "Core & Fast-Track", is_selected: false },
       { id: "dsa", name: "DSA Placement Mastery", icon: "⚡", badge: "Placement Essential", is_selected: false },
       { id: "web_dev", name: "Full-Stack Web Dev", icon: "🌐", badge: "High Demand", is_selected: false },
-      { id: "ai_ml", name: "AI and Machine Learning", icon: "🤖", badge: "Future-Ready AI", is_selected: false },
+      { id: "ai_ml", name: "Machine Learning & Data Science", icon: "📊", badge: "Future-Ready Tech", is_selected: false },
       { id: "data_science", name: "Data Science", icon: "📊", badge: "High Salary Roles", is_selected: false },
       { id: "cloud_computing", name: "Cloud Computing", icon: "☁️", badge: "Cloud Architect Track", is_selected: false },
       { id: "aws", name: "AWS (Amazon Web Services)", icon: "🚀", badge: "Top Cloud Certification", is_selected: false },
       { id: "cybersecurity", name: "Cybersecurity", icon: "🛡️", badge: "High Demand Security", is_selected: false },
       { id: "devops", name: "DevOps", icon: "🔄", badge: "CI/CD & Kubernetes Mastery", is_selected: false },
       { id: "sql_db", name: "SQL & Database Management", icon: "🗄️", badge: "Core Placement Skill", is_selected: false },
-      { id: "gen_ai", name: "Generative AI", icon: "✨", badge: "Cutting-Edge & High Salary", is_selected: false },
-      { id: "deep_learning", name: "Deep Learning", icon: "🧠", badge: "Advanced AI & Research", is_selected: false },
+      { id: "gen_ai", name: "Generative Systems & Neural Networks", icon: "✨", badge: "Cutting-Edge & High Salary", is_selected: false },
+      { id: "deep_learning", name: "Deep Learning", icon: "🧠", badge: "Advanced Neural Research", is_selected: false },
       { id: "software_testing", name: "Software Testing & QA", icon: "🧪", badge: "QA Automation & SDET", is_selected: false },
     ],
     active_phase_num: 1,
@@ -174,7 +174,7 @@ var escapeHtml = window.escapeHtml;
           { id: "java-301", name: "Spring Boot RESTful Microservice Architecture", progress_percent: 0.0, status: "Upcoming" },
           { id: "java-302", name: "High-Throughput Kafka Message Pipeline", progress_percent: 0.0, status: "Upcoming" },
           { id: "java-303", name: "Distributed In-Memory Cache with Redis", progress_percent: 0.0, status: "Upcoming" },
-          { id: "java-304", name: "Full-Stack AI Recruitment Portal in Java", progress_percent: 0.0, status: "Upcoming" },
+          { id: "java-304", name: "Full-Stack Recruitment Portal in Java", progress_percent: 0.0, status: "Upcoming" },
         ],
         action_url: "coding-assessment.html?mode=projects&lang=java",
         action_text: "Build Java Projects",
@@ -184,16 +184,16 @@ var escapeHtml = window.escapeHtml;
         phase_num: 4,
         name: "Phase 4: Placement Ready",
         date_range: "",
-        subtitle: "Company Java technical interview questions & AI mock interviews",
+        subtitle: "Company Java technical interview questions & mock interviews",
         progress_percent: 0.0,
         status: "Upcoming",
         is_locked: true,
         icon: "trophy",
         level: "Placement Ready",
-        topics_covered: ["Top 50 Java Technical Interview Q&A (TCS, Infosys, Amazon)", "Java Concurrency & JVM Tuning Scenarios", "Speed Quantitative & Reasoning Drills", "Live AI Java Technical Mock Interview"],
+        topics_covered: ["Top 50 Java Technical Interview Q&A (TCS, Infosys, Amazon)", "Java Concurrency & JVM Tuning Scenarios", "Speed Quantitative & Reasoning Drills", "Live Java Technical Mock Interview"],
         courses: [
           { id: "java-401", name: "Top 12 Company Java Technical Interview Questions", progress_percent: 0.0, status: "Upcoming" },
-          { id: "java-402", name: "AI Proctored Live Java Mock Interview Simulator", progress_percent: 0.0, status: "Upcoming" },
+          { id: "java-402", name: "Proctored Live Java Mock Interview Simulator", progress_percent: 0.0, status: "Upcoming" },
           { id: "java-403", name: "HR Behavioral & STAR Scenario Practice", progress_percent: 0.0, status: "Upcoming" },
           { id: "java-404", name: "Company Speed Aptitude & Reasoning Drills", progress_percent: 0.0, status: "Upcoming" },
         ],
@@ -946,16 +946,16 @@ var escapeHtml = window.escapeHtml;
               phase_num: 3,
               name: "Phase 3: Advanced & Projects",
               date_range: dynDates[2],
-              subtitle: "Build production AI agents and distributed backends",
+              subtitle: "Build production distributed backends and microservices",
               progress_percent: 0.0,
               status: "Upcoming",
               is_locked: true,
               icon: "briefcase",
-              topics_covered: ["FastAPI Microservices Architecture", "Redis Asynchronous Caching & Rate Limiting", "Celery Task Queue & Distributed Workers", "LangChain & AI Agent Orchestration"],
+              topics_covered: ["FastAPI Microservices Architecture", "Redis Asynchronous Caching & Rate Limiting", "Celery Task Queue & Distributed Workers", "LangChain & Systems Orchestration"],
               courses: [
                 { id: "py-301", name: "Distributed Microservices with FastAPI & Docker", progress_percent: 0.0, status: "Upcoming" },
                 { id: "py-302", name: "Asynchronous Redis & Celery Background Queues", progress_percent: 0.0, status: "Upcoming" },
-                { id: "py-303", name: "Autonomous AI Agents with OpenAI & LangChain", progress_percent: 0.0, status: "Upcoming" },
+                { id: "py-303", name: "Autonomous Systems with OpenAI & LangChain", progress_percent: 0.0, status: "Upcoming" },
               ],
               action_url: "coding-assessment.html?mode=projects",
               action_text: "Build Python Projects",
@@ -965,15 +965,15 @@ var escapeHtml = window.escapeHtml;
               phase_num: 4,
               name: "Phase 4: Placement Ready",
               date_range: dynDates[3],
-              subtitle: "Python technical interview questions & AI mock interviews",
+              subtitle: "Python technical interview questions & mock interviews",
               progress_percent: 0.0,
               status: "Upcoming",
               is_locked: true,
               icon: "award",
-              topics_covered: ["Top 50 Python Interview Coding Challenges", "GIL, Memory Management & Deep Internals", "REST API System Design for Python Engineers", "Full-Length Proctored AI Mock Placement Interviews"],
+              topics_covered: ["Top 50 Python Interview Coding Challenges", "GIL, Memory Management & Deep Internals", "REST API System Design for Python Engineers", "Full-Length Proctored Mock Placement Interviews"],
               courses: [
                 { id: "py-401", name: "Placement Coding Patterns & GIL Deep Dive", progress_percent: 0.0, status: "Upcoming" },
-                { id: "py-402", name: "AI Proctored Python Placement Mock Interview", progress_percent: 0.0, status: "Upcoming" },
+                { id: "py-402", name: "Proctored Python Placement Mock Interview", progress_percent: 0.0, status: "Upcoming" },
               ],
               action_url: "interview.html?track=python",
               action_text: "Python Mock Interview",
@@ -1558,11 +1558,11 @@ var escapeHtml = window.escapeHtml;
         wStart = new Date(baseDate.getTime() + 80 * 86400000);
         wEnd = new Date(baseDate.getTime() + 89 * 86400000);
         daysLabel = "Days 81-90";
-        weekTitle = "Placement Sprint 2: AI Proctored Mock Interviews & Final Readiness Verification";
+        weekTitle = "Placement Sprint 2: Proctored Mock Interviews & Final Readiness Verification";
         phaseNum = 4;
         phaseName = "Phase 4: Placement Ready";
         topicsList = [
-          { id: "topic-12-1", title: "AI Proctored Technical Mock Interview with Live Audio/Video", is_completed: false, order: 1 },
+          { id: "topic-12-1", title: "Proctored Technical Mock Interview with Live Audio/Video", is_completed: false, order: 1 },
           { id: "topic-12-2", title: "HR Behavioral Interview & STAR Method Response Mastery", is_completed: false, order: 2 },
           { id: "topic-12-3", title: "ATS Resume Score Optimization & Production Portfolio Review", is_completed: false, order: 3 },
           { id: "topic-12-4", title: "Final Placement Readiness Audit & Direct Job Application Dispatch", is_completed: false, order: 4 }
@@ -2014,8 +2014,8 @@ var escapeHtml = window.escapeHtml;
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
               <div>
                 <span class="badge bg-warning text-dark fw-bold px-2.5 py-0.5 rounded-pill small mb-1">Placement Accelerator</span>
-                <h5 class="fw-bold text-white mb-1">AI Proctored Live Mock Interview Simulator</h5>
-                <p class="text-white-50 small mb-0">Practice speaking and coding in a timed, proctored campus placement round with real-time AI feedback.</p>
+                <h5 class="fw-bold text-white mb-1">Proctored Live Mock Interview Simulator</h5>
+                <p class="text-white-50 small mb-0">Practice speaking and coding in a timed, proctored campus placement round with real-time evaluation feedback.</p>
               </div>
               <a href="interview.html?track=${encodeURIComponent(courseId)}" class="btn btn-light rounded-pill px-4 py-2 fw-bold text-primary shadow-sm">
                 Launch Live Mock Interview &rarr;

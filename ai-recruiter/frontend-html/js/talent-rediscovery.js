@@ -417,7 +417,7 @@ async function openCandidateDetailModal(candId) {
       </div>
 
       <div class="p-3 bg-primary-subtle text-primary rounded-3 small">
-        <strong>💡 AI Recommendation &amp; Evidence Summary:</strong><br />
+        <strong>💡 Recommendation &amp; Evidence Summary:</strong><br />
         ${item.match_explanation || "Candidate matches requirements closely."}
       </div>
     `;

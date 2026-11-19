@@ -18,7 +18,7 @@
     if (document.getElementById("ar-chat-modal")) return;
 
     const modalHTML = `
-      <!-- AI Recruiter Chat Modal -->
+      <!-- Recruiter Platform Chat Modal -->
       <div class="modal fade" id="ar-chat-modal" tabindex="-1" aria-labelledby="arChatModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width: 1000px;">
           <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden; height: 650px;">

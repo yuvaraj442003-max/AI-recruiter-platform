@@ -1,5 +1,5 @@
 /**
- * api.js — thin fetch() wrapper for the AI Recruiter backend.
+ * api.js — thin fetch() wrapper for the Recruiter Platform backend.
  * Handles the base URL, attaching the JWT, and normalizing errors
  * so every page can call `await api.post(...)` the same way.
  */

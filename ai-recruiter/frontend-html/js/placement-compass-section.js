@@ -517,7 +517,7 @@
       duration: "Immediate Employment / Direct Placement",
       starting_salary: "₹4.5 LPA - ₹32.0 LPA",
       senior_salary: "₹18.0 LPA - ₹65.0+ LPA",
-      portal_name: "AI Recruiter Campus Hub & Placement Compass",
+      portal_name: "Campus Hub & Placement Compass",
       portal_url: "study-materials.html",
       popular_courses: [
         "Campus Placement Ready Training (Aptitude, Coding & DSA)",
@@ -538,7 +538,7 @@
           hiring_companies: ["Zoho", "Amazon", "Freshworks", "TCS Digital", "Cognizant GenC Next", "Accenture Advanced Tech"],
           key_skills: ["React / TypeScript", "Node.js / Python / Java", "Docker & Kubernetes", "CI/CD Pipelines", "System Design"],
           progression: "Associate SDE → SDE II → Lead Engineer → Director of Engineering",
-          gateway: "AI Recruiter Verified Sandbox Assessments & Campus Placement Drives",
+          gateway: "Verified Sandbox Assessments & Campus Placement Drives",
           perks: "Hybrid work flexibility, tech stock options (ESOPs), and rapid bi-annual merit appraisals."
         },
         {
@@ -553,7 +553,7 @@
           hiring_companies: ["Tiger Analytics", "LatentView", "Standard Chartered GBS", "Deloitte USI", "Mu Sigma"],
           key_skills: ["Advanced SQL", "Python / PySpark", "Snowflake / BigQuery", "Power BI / Tableau", "Data Modeling"],
           progression: "Data Analyst → Analytics Consultant → Lead Data Architect",
-          gateway: "Direct Recruitment Drives / Technical Assessment on AI Recruiter Platform",
+          gateway: "Direct Recruitment Drives / Technical Assessment on Recruiter Platform",
           perks: "High corporate visibility with direct strategic reporting to C-suite executive leaders."
         },
         {

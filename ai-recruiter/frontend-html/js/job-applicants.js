@@ -860,7 +860,7 @@
           <span class="fs-2">🤖</span>
           <div>
             <h5 class="fw-bold text-success mb-0">AI Candidate Hiring Recommendation</h5>
-            <span class="small text-muted">Powered by AI Recruiter LLM &amp; multi-dimensional ATS evaluation</span>
+            <span class="small text-muted">Powered by Recruiter Platform LLM &amp; multi-dimensional ATS evaluation</span>
           </div>
         </div>
 
@@ -1123,7 +1123,7 @@
         <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px; background: #ffffff;">
           <div class="card-body p-4">
             <h5 class="fw-bold mb-3 d-flex align-items-center gap-2 text-dark">
-              <span class="text-primary">🤖</span> AI Evaluation Summary
+              <span class="text-primary">📋</span> Evaluation Summary
             </h5>
             <div class="text-secondary" style="line-height: 1.6;">
               ${aiSummary.split('\n').map(line => `<p class="mb-1">${escapeHtml(line)}</p>`).join('')}

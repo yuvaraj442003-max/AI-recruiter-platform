@@ -316,8 +316,8 @@ const TWELFTH_GROUP_GUIDANCE = {
   computer_science: {
     group_name: "Group 1: Computer Science & Mathematics Stream",
     subjects: "Physics, Chemistry, Mathematics & Computer Science",
-    badge: "💻 Engineering, AI, Technology & Mathematics",
-    description: "Designed for analytical and problem-solving students aiming for premier engineering degrees, software architecture, artificial intelligence, robotics, semiconductor VLSI, architecture, and armed forces technical cadet schemes in Tamil Nadu.",
+    badge: "💻 Engineering, Technology & Mathematics",
+    description: "Designed for analytical and problem-solving students aiming for premier engineering degrees, software architecture, robotics, semiconductor VLSI, architecture, and armed forces technical cadet schemes in Tamil Nadu.",
     cutoff_formula: "TNEA Engineering Cutoff = Maths (100) + [Physics (100) / 2] + [Chemistry (100) / 2] = Total out of 200",
     top_degree_courses: [
       {
@@ -369,10 +369,10 @@ const TWELFTH_GROUP_GUIDANCE = {
         progression: "Junior SDE → Senior Tech Lead → Principal Software Architect"
       },
       {
-        role: "AI / Machine Learning Engineer & Data Scientist",
+        role: "Machine Learning Engineer & Data Scientist",
         starting_salary: "₹7.5 LPA - ₹28.0 LPA",
         top_hiring_zones: "Fintech, Global In-house Centers (GICs), AI Labs in Chennai",
-        progression: "Data Analyst → AI Model Engineer → Head of AI Research"
+        progression: "Data Analyst → ML Model Engineer → Head of Data Science"
       },
       {
         role: "Semiconductor VLSI Design & Embedded Systems Engineer",
@@ -2411,7 +2411,7 @@ function showPlacementToast(msg) {
 window.showPlacementToast = showPlacementToast;
 
 function applyForPlacementJob(jobTitle) {
-  showPlacementToast(`💼 Application Submitted! You have applied for "<strong>${jobTitle}</strong>". Our AI recruitment matching engine will prioritize your qualification profile.`);
+  showPlacementToast(`💼 Application Submitted! You have applied for "<strong>${jobTitle}</strong>". Our automated recruitment matching engine will prioritize your qualification profile.`);
 }
 window.applyForPlacementJob = applyForPlacementJob;
 

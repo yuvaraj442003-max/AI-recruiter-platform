@@ -1016,7 +1016,7 @@
         if (res.success) {
           resBox.className = "alert alert-success small py-2";
           resBox.innerHTML = `<strong>✅ Generated &amp; Validated:</strong><br/>"${escapeHtml(res.data.question)}"<br/><small class="text-muted">Subtopic: ${escapeHtml(res.data.subtopic)} | Difficulty: ${escapeHtml(res.data.difficulty)}</small>`;
-          showAlert("AI question generated and added to question bank!", "success");
+          showAlert("Question generated and added to question bank!", "success");
           loadWeeklyQuestions();
         } else {
           resBox.className = "alert alert-danger small py-2";
@@ -1037,7 +1037,7 @@
     jobs: "Published & Active Job Postings",
     aptitude_questions: "Psychometric & Aptitude Question Bank",
     coding_problems: "Algorithmic Challenges & Problems",
-    interview_questions: "AI Mock & Technical Interview Question Bank",
+    interview_questions: "Mock & Technical Interview Question Bank",
     learning_resources: "Campus Roadmaps & Placement Guides",
   };
 

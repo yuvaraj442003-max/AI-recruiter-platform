@@ -615,7 +615,7 @@
           </div>
 
           <div class="card border-0 bg-light p-3">
-            <h6 class="fw-bold text-dark mb-2">🤖 AI Recommendations &amp; Suggestions:</h6>
+            <h6 class="fw-bold text-dark mb-2">💡 Recommendations &amp; Suggestions:</h6>
             <ul class="small text-secondary mb-0 ps-3">
               ${suggestionsHtml}
             </ul>

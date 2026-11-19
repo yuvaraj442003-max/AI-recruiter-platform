@@ -172,7 +172,7 @@
 
       startBtn.disabled = true;
       if (statusContainer) statusContainer.classList.remove("d-none");
-      if (statusLabel) statusLabel.textContent = "Uploading & analyzing resumes via AI parser...";
+      if (statusLabel) statusLabel.textContent = "Uploading & analyzing resumes...";
       if (progressBar) progressBar.style.width = "30%";
       if (statusCount) statusCount.textContent = `0 / ${selectedFiles.length}`;
 
@@ -662,7 +662,7 @@
 
       ${suggestions.length > 0 ? `
         <div class="mt-3 p-3 bg-warning-subtle rounded-3 border border-warning">
-          <h6 class="fw-bold text-dark mb-2">💡 AI Match &amp; Profile Recommendations</h6>
+          <h6 class="fw-bold text-dark mb-2">💡 Match &amp; Profile Recommendations</h6>
           <ul class="mb-0 small ps-3">
             ${suggestions.map(sg => `<li class="mb-1">${escapeHtml(sg)}</li>`).join("")}
           </ul>

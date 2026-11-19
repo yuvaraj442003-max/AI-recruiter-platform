@@ -714,7 +714,7 @@
             <div class="fs-2 mb-2">📚</div>
             <p class="text-muted small mb-2">No study materials pre-indexed for "${escapeHtml(activeSelectedTopicFilter)}".</p>
             <button class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" onclick="openTopicGuideModal('${escapeHtml(activeSelectedTopicFilter)}')">
-              ✨ Generate AI Placement Notes for ${escapeHtml(activeSelectedTopicFilter)}
+              ✨ Generate Placement Notes for ${escapeHtml(activeSelectedTopicFilter)}
             </button>
           </div>
         `;
@@ -745,7 +745,7 @@
       if (!questions.length) {
         curatedPracticeQuestionsContainer.innerHTML = `
           <div class="text-muted small py-4 text-center bg-light rounded-3 border">
-            No sample questions for this topic yet. Click "AI Practice Quiz" above to practice!
+            No sample questions for this topic yet. Click "Practice Quiz" above to practice!
           </div>
         `;
       } else {
@@ -1045,7 +1045,7 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
               <div>
                 <h5 class="fw-bold text-dark mb-0">Milestone Checklist &amp; Learning Steps</h5>
-                <p class="text-muted small mb-0">Click any topic to practice subtopics, take 30-second timed placement quizzes, or generate fresh AI questions.</p>
+                <p class="text-muted small mb-0">Click any topic to practice subtopics, take 30-second timed placement quizzes, or generate fresh practice questions.</p>
               </div>
               <span class="badge bg-white text-muted border px-3 py-1.5 rounded-pill small">
                 Showing ${filteredMilestones.length} of ${totalCount} Milestones
@@ -1157,10 +1157,10 @@
                             <button 
                               class="btn btn-sm btn-outline-dark rounded-pill fw-bold px-2.5 d-flex align-items-center gap-1" 
                               onclick="startMilestoneQuiz('${r.slug}', '${mId}', true)"
-                              title="Generate fresh AI aptitude questions for this topic"
+                              title="Generate fresh practice questions for this topic"
                             >
                               <span>🤖</span>
-                              <span>AI Test</span>
+                              <span>Practice Test</span>
                             </button>
                           </div>
                         </div>
@@ -1256,7 +1256,7 @@
 
     if (drawerQuestionsContainer) {
       if (!questions.length) {
-        drawerQuestionsContainer.innerHTML = `<div class="text-muted py-4">No curated questions available for this topic. Use the AI Quiz button to generate new ones.</div>`;
+        drawerQuestionsContainer.innerHTML = `<div class="text-muted py-4">No curated questions available for this topic. Use the Practice Quiz button to generate new ones.</div>`;
       } else {
         drawerQuestionsContainer.innerHTML = questions.map((q, idx) => {
           const qId = q.id || `q-${idx}`;
@@ -1409,9 +1409,9 @@
       startTime: Date.now(),
     };
 
-    if (quizModalTitle) quizModalTitle.textContent = isAi ? `🤖 AI Practice: ${milestoneTitle}` : `⚡ Timed Quiz: ${milestoneTitle}`;
+    if (quizModalTitle) quizModalTitle.textContent = `⚡ Practice Quiz: ${milestoneTitle}`;
     if (quizModalBadge) {
-      quizModalBadge.textContent = isAi ? "AI Generated Test" : (m ? m.subject : "Timed Test");
+      quizModalBadge.textContent = isAi ? "Practice Test" : (m ? m.subject : "Timed Test");
       quizModalBadge.className = isAi ? "badge bg-dark text-white fw-semibold px-2.5 py-1 rounded-pill" : "badge bg-primary-subtle text-primary fw-semibold px-2.5 py-1 rounded-pill";
     }
 
@@ -1419,7 +1419,7 @@
     if (quizTakingView) quizTakingView.style.display = "none";
     if (quizResultsView) quizResultsView.style.display = "none";
 
-    if (quizLoadingTitle) quizLoadingTitle.textContent = isAi ? "Generating AI Aptitude & Reasoning Questions..." : "Loading Milestone Placement Quiz...";
+    if (quizLoadingTitle) quizLoadingTitle.textContent = isAi ? "Generating Practice Questions..." : "Loading Milestone Placement Quiz...";
     if (quizLoadingSubtext) quizLoadingSubtext.textContent = isAi ? "Synthesizing dynamic questions based on the topics you are studying..." : "Preparing 30-seconds-per-question placement exam environment...";
 
     if (quizTimerPill) {

@@ -2909,7 +2909,7 @@ const PortfolioThemesEngine = (() => {
         <!-- Top Subtle Announcement / Verification Bar -->
         <div class="nova-top-bar">
           <div class="container d-flex justify-content-between align-items-center">
-            <span>Verified Candidate Portfolio • AI Recruiter Platform</span>
+            <span>Verified Candidate Portfolio • Recruiter Platform Platform</span>
             <div class="d-none d-sm-block">
               <a href="#section-contact">Schedule Interview</a>
               <span class="mx-2">•</span>
