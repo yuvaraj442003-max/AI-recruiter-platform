@@ -285,6 +285,52 @@
       0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.4; transform: scale(0.85); }
     }
+
+    /* Placement Compass Section Styles */
+    .qualification-pill-btn {
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      border: 2px solid #e2e8f0 !important;
+      background: #ffffff !important;
+      outline: none;
+    }
+    .qualification-pill-btn:hover {
+      border-color: #6366f1 !important;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(99, 102, 241, 0.15);
+    }
+    .qualification-pill-btn.active {
+      border-color: #6366f1 !important;
+      background: #f5f3ff !important;
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.22);
+    }
+    .qualification-pill-btn.active .fw-bold {
+      color: #4f46e5 !important;
+    }
+    [data-bs-theme="dark"] .qualification-pill-btn {
+      background: rgba(30, 41, 59, 0.7) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    [data-bs-theme="dark"] .qualification-pill-btn:hover {
+      background: rgba(30, 41, 59, 0.95) !important;
+      border-color: #818cf8 !important;
+    }
+    [data-bs-theme="dark"] .qualification-pill-btn.active {
+      background: rgba(99, 102, 241, 0.2) !important;
+      border-color: #818cf8 !important;
+    }
+    [data-bs-theme="dark"] .qualification-pill-btn.active .fw-bold {
+      color: #a5b4fc !important;
+    }
+    .hover-lift {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .hover-lift:hover {
+      transform: translateY(-2px);
+    }
+    .cursor-pointer {
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -322,6 +368,9 @@
           </li>
           <li class="nav-item">
             <a class="nav-link text-secondary" href="study-materials.html" id="nav-campus-link">🎓 Campus Hub <span class="badge bg-success-subtle text-success rounded-pill ms-1 fs-9">Live</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-secondary d-flex align-items-center gap-1" href="#placement-compass-section" id="nav-compass-link">🧭 Placement Compass <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-25 rounded-pill fs-9">Careers</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link text-secondary" href="jobs.html">Browse Jobs</a>
@@ -1065,6 +1114,258 @@
       </div>
     </section>
 
+    <!-- ========================================================================= -->
+    <!-- PLACEMENT COMPASS: CAREER & JOB OPPORTUNITIES BY EDUCATIONAL QUALIFICATION -->
+    <!-- ========================================================================= -->
+    <section class="py-5 my-3 position-relative" id="placement-compass-section">
+      <div class="container">
+        
+        <!-- Section Header -->
+        <div class="text-center mb-5">
+          <div class="d-inline-flex align-items-center gap-2 bg-primary bg-opacity-10 border border-primary border-opacity-25 text-primary px-3 py-1.5 rounded-pill small fw-bold mb-3 shadow-xs">
+            <span>🧭 EDUCATION-TO-CAREER DECISION SUITE</span>
+          </div>
+          <h2 class="display-5 fw-extrabold text-dark mb-2" style="letter-spacing: -0.03em;">
+            Placement Compass by Educational Qualification
+          </h2>
+          <p class="text-secondary mx-auto mb-4" style="max-width: 840px; font-size: 1.1rem; line-height: 1.6;">
+            Select your current education stage or 12th group below. Explore tailored degree pathways, verified starting &amp; senior salary packages, and direct job opportunities matched to your qualification.
+          </p>
+          <div class="d-flex justify-content-center gap-2 flex-wrap">
+            <a href="placement-compass.html" class="btn btn-primary rounded-pill px-4 py-2.5 fw-bold shadow-sm d-inline-flex align-items-center gap-2 hover-lift">
+              <span>🚀 Open Full 5-Pillar Placement Compass</span>
+              <span>&rarr;</span>
+            </a>
+            <a href="jobs.html" class="btn btn-outline-secondary rounded-pill px-4 py-2.5 fw-semibold hover-lift">
+              💼 Browse All Verified Jobs
+            </a>
+            <a href="study-materials.html" class="btn btn-outline-warning text-dark fw-bold rounded-pill px-3 py-2.5 hover-lift">
+              🧠 Placement Practice Lab
+            </a>
+          </div>
+        </div>
+
+        <!-- Step 1: Qualification Selection Grid -->
+        <div class="card border-0 shadow-sm p-3.5 mb-4 rounded-4 bg-white border-top border-4 border-primary">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3 px-1">
+            <div>
+              <span class="badge bg-primary bg-opacity-10 text-primary fw-bold px-2.5 py-1 rounded-pill small mb-1">
+                STEP 1: SELECT YOUR CURRENT EDUCATION / STUDIED STREAM
+              </span>
+              <h6 class="fw-bold text-dark mb-0">Choose your qualification to reveal tailored careers &amp; job opportunities:</h6>
+            </div>
+            <span class="badge bg-light text-secondary border small">7 Structured Educational Stages</span>
+          </div>
+          
+          <div class="row g-2.5" id="compass-qualification-selector-row">
+            <!-- 10th Standard -->
+            <div class="col-6 col-md-4 col-lg-3">
+              <button class="w-100 text-start p-3 rounded-4 qualification-pill-btn transition-all" data-qualification-pill="sslc_10th" title="Click to view careers after 10th Standard">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <span class="fs-4">📘</span>
+                  <div class="fw-bold text-dark text-truncate" style="font-size: 0.92rem;">10th Standard (SSLC)</div>
+                </div>
+                <div class="small text-muted text-truncate">Polytechnic, ITI &amp; TN Govt Jobs</div>
+              </button>
+            </div>
+
+            <!-- 12th Computer Science -->
+            <div class="col-6 col-md-4 col-lg-3">
+              <button class="w-100 text-start p-3 rounded-4 qualification-pill-btn active transition-all" data-qualification-pill="computer_science" title="Click to view careers for Computer Science & Maths">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <span class="fs-4">💻</span>
+                  <div class="fw-bold text-dark text-truncate" style="font-size: 0.92rem;">12th Science (PCM / CS)</div>
+                </div>
+                <div class="small text-muted text-truncate">Engineering, AI, Tech &amp; Navy B.Tech</div>
+              </button>
+            </div>
+
+            <!-- 12th Biology -->
+            <div class="col-6 col-md-4 col-lg-3">
+              <button class="w-100 text-start p-3 rounded-4 qualification-pill-btn transition-all" data-qualification-pill="biology" title="Click to view careers for Biology & Medical">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <span class="fs-4">🧬</span>
+                  <div class="fw-bold text-dark text-truncate" style="font-size: 0.92rem;">12th Science (PCB / Bio)</div>
+                </div>
+                <div class="small text-muted text-truncate">MBBS, BDS, Veterinary &amp; Agri</div>
+              </button>
+            </div>
+
+            <!-- 12th Commerce -->
+            <div class="col-6 col-md-4 col-lg-3">
+              <button class="w-100 text-start p-3 rounded-4 qualification-pill-btn transition-all" data-qualification-pill="commerce" title="Click to view careers for Commerce & Accounts">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <span class="fs-4">📊</span>
+                  <div class="fw-bold text-dark text-truncate" style="font-size: 0.92rem;">12th Commerce &amp; Accounts</div>
+                </div>
+                <div class="small text-muted text-truncate">CA, CMA, CS, B.Com LL.B &amp; Finance</div>
+              </button>
+            </div>
+
+            <!-- 12th Arts -->
+            <div class="col-6 col-md-4 col-lg-4">
+              <button class="w-100 text-start p-3 rounded-4 qualification-pill-btn transition-all" data-qualification-pill="arts" title="Click to view careers for Arts & Humanities">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <span class="fs-4">📚</span>
+                  <div class="fw-bold text-dark text-truncate" style="font-size: 0.92rem;">12th Arts &amp; Humanities</div>
+                </div>
+                <div class="small text-muted text-truncate">5-Yr Law (TNDALU), UPSC (IAS/IPS), Design</div>
+              </button>
+            </div>
+
+            <!-- Polytechnic / Diploma -->
+            <div class="col-6 col-md-4 col-lg-4">
+              <button class="w-100 text-start p-3 rounded-4 qualification-pill-btn transition-all" data-qualification-pill="diploma" title="Click to view careers for Polytechnic & Diploma">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <span class="fs-4">🔧</span>
+                  <div class="fw-bold text-dark text-truncate" style="font-size: 0.92rem;">Polytechnic / Diploma (DOTE)</div>
+                </div>
+                <div class="small text-muted text-truncate">Lateral Entry B.E &amp; Technical JE Roles</div>
+              </button>
+            </div>
+
+            <!-- Undergraduate -->
+            <div class="col-12 col-md-4 col-lg-4">
+              <button class="w-100 text-start p-3 rounded-4 qualification-pill-btn transition-all" data-qualification-pill="graduate" title="Click to view careers for College Graduates">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <span class="fs-4">🎓</span>
+                  <div class="fw-bold text-dark text-truncate" style="font-size: 0.92rem;">College Graduate / Final Year</div>
+                </div>
+                <div class="small text-muted text-truncate">Full-Stack SDE, Data Lead &amp; Direct Drives</div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Dynamic Qualification Dossier & Job Opportunities Section -->
+        <div id="compass-qualification-dossier" class="card border-0 shadow-lg rounded-4 overflow-hidden mb-5" style="background: linear-gradient(180deg, #0f172a 0%, #090d16 100%); border: 1px solid rgba(99, 102, 241, 0.25) !important;">
+          
+          <!-- Hero Banner inside Dossier -->
+          <div class="p-4 p-lg-5 text-white position-relative border-bottom border-secondary border-opacity-25" style="background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.25) 0%, transparent 50%), radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.2) 0%, transparent 50%);">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-start gap-4">
+              <div style="max-width: 820px;">
+                <div class="d-inline-flex align-items-center gap-2 bg-primary bg-opacity-20 text-info border border-info border-opacity-25 px-3 py-1 rounded-pill small fw-bold mb-2.5">
+                  <span id="dossier-hero-badge">💻 Engineering, AI, Cloud &amp; Defence</span>
+                </div>
+                <h3 class="display-6 fw-extrabold text-white mb-2" id="dossier-hero-title">
+                  💻 12th Science (PCM / Computer Science)
+                </h3>
+                <p class="text-light opacity-80 mb-3" id="dossier-hero-desc" style="font-size: 1.05rem; line-height: 1.6;">
+                  Designed for analytical and problem-solving students aiming for premier engineering degrees, software architecture, artificial intelligence, semiconductor VLSI, and armed forces technical cadet schemes.
+                </p>
+
+                <!-- Subcourses Pills (Click to filter jobs) -->
+                <div class="d-flex align-items-center gap-2 flex-wrap mb-3">
+                  <span class="small text-secondary fw-bold text-uppercase">Popular Courses / Streams:</span>
+                  <div class="d-flex gap-1.5 flex-wrap" id="dossier-subcourses-pills">
+                    <!-- Populated dynamically -->
+                  </div>
+                </div>
+
+                <!-- Fast Facts Metrics -->
+                <div class="d-flex flex-wrap gap-3 small text-light opacity-90 pt-2 border-top border-secondary border-opacity-25">
+                  <div><strong>🎓 Minimum Eligibility:</strong> <span class="text-secondary ms-1" id="dossier-hero-eligibility">12th Standard Pass with PCM</span></div>
+                  <div><strong>⏳ Program Duration:</strong> <span class="text-secondary ms-1" id="dossier-hero-duration">4 Years (B.E/B.Tech)</span></div>
+                  <div><strong>💰 Salary Benchmark:</strong> <span class="text-success fw-bold ms-1" id="dossier-hero-salary">₹5.5 - ₹28 LPA (Starting)</span></div>
+                </div>
+              </div>
+
+              <!-- Action Card on the Right -->
+              <div class="p-3.5 rounded-4 bg-white bg-opacity-5 border border-white border-opacity-10 text-lg-end d-flex flex-column gap-2" style="min-width: 290px;">
+                <div class="text-uppercase small fw-bold text-warning text-start">⚡ Single-Window Portals</div>
+                <a id="dossier-hero-portal-btn" href="https://www.tneaonline.org" target="_blank" rel="noopener noreferrer" class="btn btn-warning btn-sm rounded-pill fw-bold px-3 py-2 text-start text-dark shadow-sm">
+                  <span>🏛️</span> Official Portal: TNEA (Anna University) &rarr;
+                </a>
+                <a href="placement-compass.html" class="btn btn-outline-light btn-sm rounded-pill fw-semibold px-3 py-2 text-start">
+                  <span>🗺️</span> View Full 5-Phase Admission Roadmap &rarr;
+                </a>
+                <a href="study-materials.html" class="btn btn-outline-info btn-sm rounded-pill fw-semibold px-3 py-2 text-start">
+                  <span>🚀</span> Launch Campus Placement Hub &rarr;
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section Tabs (Jobs vs Courses) -->
+          <div class="p-4 p-lg-5">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+              <div>
+                <ul class="nav nav-pills gap-2" id="compass-dossier-tabs" role="tablist">
+                  <li class="nav-item">
+                    <button class="nav-link active rounded-pill fw-bold px-4 py-2" id="tab-jobs-btn" data-bs-toggle="pill" data-bs-target="#compass-tab-jobs" type="button">
+                      💼 Related Job Opportunities &amp; Careers
+                    </button>
+                  </li>
+                  <li class="nav-item">
+                    <button class="nav-link rounded-pill fw-bold px-4 py-2" id="tab-courses-btn" data-bs-toggle="pill" data-bs-target="#compass-tab-courses" type="button">
+                      🎓 Eligible Degree &amp; Course Pathways
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Search & Filter Controls -->
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <div class="input-group input-group-sm" style="max-width: 260px;">
+                  <span class="input-group-text bg-dark border-secondary border-opacity-50 text-secondary">🔍</span>
+                  <input type="text" id="compass-job-search-input" class="form-control bg-dark border-secondary border-opacity-50 text-white placeholder-secondary" placeholder="Search roles, skills, orgs...">
+                </div>
+                <div class="btn-group btn-group-sm" role="group">
+                  <button type="button" class="btn btn-primary active rounded-start-pill" data-job-filter-btn="all">All</button>
+                  <button type="button" class="btn btn-outline-secondary" data-job-filter-btn="public">Govt / State</button>
+                  <button type="button" class="btn btn-outline-secondary" data-job-filter-btn="tech">Tech / AI</button>
+                  <button type="button" class="btn btn-outline-secondary rounded-end-pill" data-job-filter-btn="high_package">₹6+ LPA</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="compass-dossier-tab-content">
+              
+              <!-- TAB 1: JOB OPPORTUNITIES -->
+              <div class="tab-pane fade show active" id="compass-tab-jobs" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-25 px-3 py-1 rounded-pill small fw-bold" id="compass-jobs-count-badge">
+                    Verified Career Opportunities
+                  </span>
+                  <small class="text-secondary">Sorted by relevance and verified salary benchmarks in Tamil Nadu &amp; National hubs</small>
+                </div>
+                
+                <div class="row g-4" id="compass-jobs-grid">
+                  <!-- Rendered dynamically by placement-compass-section.js -->
+                </div>
+              </div>
+
+              <!-- TAB 2: ELIGIBLE COURSES -->
+              <div class="tab-pane fade" id="compass-tab-courses" role="tabpanel">
+                <div class="row g-4" id="compass-courses-grid">
+                  <!-- Rendered dynamically by placement-compass-section.js -->
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Bottom Navigation Bar to full Placement Compass Suite -->
+            <div class="mt-5 pt-4 border-top border-secondary border-opacity-25 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+              <div class="text-light opacity-90 small">
+                <span>🌟 <strong>Need deep dive comparisons?</strong> Explore top colleges, course vs course matrices, AI career matchers, and 1-click Google Calendar exam sync.</span>
+              </div>
+              <div class="d-flex gap-2 flex-wrap">
+                <a href="placement-compass.html" class="btn btn-primary rounded-pill fw-bold px-4 shadow-sm hover-lift">
+                  🧭 Explore Full Placement Compass Suite &rarr;
+                </a>
+                <a href="study-materials.html" class="btn btn-outline-warning text-dark fw-bold rounded-pill px-3 hover-lift">
+                  🚀 Launch Campus Hub
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <!-- Capabilities Grid (6 Core Engines) -->
     <div class="text-center mb-5 pt-4" id="capabilities">
       <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-2">Core Engines</span>
@@ -1755,6 +2056,8 @@
       window.location.href = `portfolio-builder.html?handle=${encodeURIComponent(handle || "my-portfolio")}`;
     }
   </script>
+  <script src="js/placement-compass-data.js"></script>
+  <script src="js/placement-compass-section.js"></script>
   <script src="js/mobile-nav.js"></script>
 </body>
 

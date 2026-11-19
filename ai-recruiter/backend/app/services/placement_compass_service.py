@@ -4521,7 +4521,7 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                    'Mudhalvan free coding kits and certifications.',
         'id': 'pos_software_engineer',
         'target_group': 'computer_science',
-        'target_groups': ['computer_science'],
+        'target_groups': ['computer_science', 'diploma', 'graduate'],
         'position_description': 'Designs, develops, tests, and deploys high-scale software applications, full-stack '
                                 'web platforms, mobile apps, and machine learning models for top technology companies '
                                 'and global delivery centres.',
@@ -4581,7 +4581,7 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                    'subsidies under Naan Mudhalvan.',
         'id': 'pos_mechanical_engineer',
         'target_group': 'computer_science',
-        'target_groups': ['computer_science'],
+        'target_groups': ['computer_science', 'vocational', 'diploma'],
         'position_description': 'Engineers and manufactures automotive systems, EV drivetrains, robotics, thermal '
                                 'machinery, and precision components across Chennai-Hosur automotive corridors.',
         'position_title': 'Mechanical & Automobile Design Engineer',
@@ -4625,7 +4625,7 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                    'special state R&D grants.',
         'id': 'pos_ece_vlsi_engineer',
         'target_group': 'computer_science',
-        'target_groups': ['computer_science'],
+        'target_groups': ['computer_science', 'diploma'],
         'position_description': 'Designs microchips, embedded IoT controllers, 5G RF hardware, and semiconductor '
                                 'circuitry for consumer electronics, telecom, and aerospace systems.',
         'position_title': 'Electronics & Communications (ECE) / VLSI Chip Designer',
@@ -4669,7 +4669,7 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                    'Govt School reservation.',
         'id': 'pos_civil_pwd_engineer',
         'target_group': 'computer_science',
-        'target_groups': ['computer_science'],
+        'target_groups': ['computer_science', 'diploma'],
         'position_description': 'Supervises structural construction, highway expressways, bridges, water supply '
                                 'systems, and public infrastructure projects across Tamil Nadu.',
         'position_title': 'Civil Engineer / PWD Assistant Engineer (AE)',
@@ -4712,7 +4712,7 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                    'Quota; Pudhumai Penn & Tamil Puthalvan ₹1,000/month.',
         'id': 'pos_junior_engineer_diploma',
         'target_group': 'sslc_10th',
-        'target_groups': ['sslc_10th'],
+        'target_groups': ['sslc_10th', 'vocational', 'diploma'],
         'position_description': 'Oversees day-to-day shopfloor manufacturing, field maintenance, CAD drafting, machine '
                                 'diagnostics, and technical quality inspection right after 3-year polytechnic diploma.',
         'position_title': 'Junior Engineer (JE) / Technical Supervisor (Diploma)',
@@ -4756,7 +4756,7 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                    'and ₹750/month Govt Stipend.',
         'id': 'pos_iti_skilled_technician',
         'target_group': 'sslc_10th',
-        'target_groups': ['sslc_10th'],
+        'target_groups': ['sslc_10th', 'vocational'],
         'position_description': 'Executes high-precision electrical wiring, CNC milling, welding, motor winding, '
                                 'refrigeration, and automotive servicing across modern factories.',
         'position_title': 'Skilled Industrial Technician & Electrician / CNC Machinist',
@@ -5072,7 +5072,7 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                    'permanent pension scheme, medical benefits, and enormous social respect.',
         'id': 'pos_village_administrative_officer',
         'target_group': 'sslc_10th',
-        'target_groups': ['sslc_10th'],
+        'target_groups': ['sslc_10th', 'commerce', 'arts', 'vocational'],
         'position_description': 'Administrative head of the revenue village in Tamil Nadu. Issues community, income, '
                                 'and nativity certificates; maintains land patta records; supervises local peace and '
                                 'revenue collection.',
@@ -5106,7 +5106,7 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                    'appointment privileges.',
         'id': 'pos_junior_assistant_typist',
         'target_group': 'sslc_10th',
-        'target_groups': ['sslc_10th'],
+        'target_groups': ['sslc_10th', 'commerce', 'arts', 'vocational'],
         'position_description': 'Executes clerical, administrative documentation, official correspondence, and public '
                                 'welfare program records across Tamil Nadu Secretariat, Collectorates, Municipalities, '
                                 'and Courts.',
@@ -5139,7 +5139,7 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                    'housing loan privileges.',
         'id': 'pos_sub_registrar_revenue_inspector',
         'target_group': 'arts',
-        'target_groups': ['arts'],
+        'target_groups': ['arts', 'commerce', 'graduate'],
         'position_description': 'Executes land and property registrations, conducts revenue inquiries, oversees '
                                 'municipal civic administration, and enforces commercial taxation across towns and '
                                 'districts.',
@@ -5175,7 +5175,7 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                    'and gateway to IAS.',
         'id': 'pos_deputy_collector_dsp',
         'target_group': 'arts',
-        'target_groups': ['arts'],
+        'target_groups': ['arts', 'graduate'],
         'position_description': 'Highest state civil service position. Heads revenue divisions, maintains district law '
                                 'and order, coordinates disaster relief, and eligible for promotion to Indian '
                                 'Administrative Service (IAS) and Indian Police Service (IPS).',
@@ -5206,7 +5206,7 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                    'police colony, and 20% departmental quota for Sub-Inspector.',
         'id': 'pos_police_constable_fireman',
         'target_group': 'sslc_10th',
-        'target_groups': ['sslc_10th'],
+        'target_groups': ['sslc_10th', 'vocational', 'arts', 'commerce'],
         'position_description': 'Maintains public safety, conducts foot and vehicle patrols, law and order '
                                 'enforcement, crime investigation assistance, and firefighting rescue across Tamil '
                                 'Nadu.',
@@ -5245,7 +5245,7 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                    'and rapid departmental promotions.',
         'id': 'pos_sub_inspector_police',
         'target_group': 'arts',
-        'target_groups': ['arts'],
+        'target_groups': ['arts', 'graduate'],
         'position_description': 'Station House Officer (SHO) commanding a police station jurisdiction. Investigates '
                                 'IPC crimes, registers FIRs, leads tactical operations, and maintains law and order.',
         'position_title': 'Sub-Inspector of Police (Taluk, Armed Reserve, TSP)',
@@ -5276,7 +5276,7 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                    '(ECHS), CSD canteen, sports facilities, and pension.',
         'id': 'pos_defence_commissioned_officer',
         'target_group': 'computer_science',
-        'target_groups': ['computer_science'],
+        'target_groups': ['computer_science', 'arts', 'graduate'],
         'position_description': 'Commands military platoons, fighter jets, naval warships, and special forces units in '
                                 'defence of the nation. Direct entry as Commissioned Lieutenant / Flying Officer / '
                                 'Sub-Lieutenant.',
@@ -5339,7 +5339,7 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                    'Prosecutor (APP) and Civil Judge.',
         'id': 'pos_advocate_legal_advisor',
         'target_group': 'arts',
-        'target_groups': ['arts'],
+        'target_groups': ['arts', 'commerce', 'graduate'],
         'position_description': 'Argues cases before Madras High Court, District Courts, and Supreme Court; drafts '
                                 'commercial contracts, patent filings, and defends human rights.',
         'position_title': 'Advocate / Corporate Legal Counsel / High Court Practitioner',
@@ -5387,7 +5387,7 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                    'supreme independence.',
         'id': 'pos_civil_judge_magistrate',
         'target_group': 'arts',
-        'target_groups': ['arts'],
+        'target_groups': ['arts', 'graduate'],
         'position_description': 'Presides over court trials, adjudicates civil and criminal disputes, delivers '
                                 'judicial judgments, and exercises state magistracy powers.',
         'position_title': 'Civil Judge / Judicial Magistrate (TN State Judicial Service)',
@@ -5453,7 +5453,7 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                    'guaranteed bi-partite wage revisions.',
         'id': 'pos_bank_probationary_officer',
         'target_group': 'commerce',
-        'target_groups': ['commerce'],
+        'target_groups': ['commerce', 'graduate'],
         'position_description': 'Manages branch credit disbursement, corporate loans, foreign exchange, treasury '
                                 'operations, and digital customer banking services.',
         'position_title': 'Bank Probationary Officer (PO) & Specialist Officer',
@@ -5618,7 +5618,7 @@ CAREER_POSITIONS_DATABASE: List[Dict[str, Any]] = [   {   'future_career_growth'
                                    'high social dignity.',
         'id': 'pos_research_scientist_professor',
         'target_group': 'computer_science',
-        'target_groups': ['computer_science'],
+        'target_groups': ['computer_science', 'arts', 'graduate'],
         'position_description': 'Delivers collegiate university lectures, mentors undergraduate students, spearheads '
                                 'funded scientific research, and publishes high-impact journals.',
         'position_title': 'College Assistant Professor / Research Scientist (CS / Arts / Science)',
