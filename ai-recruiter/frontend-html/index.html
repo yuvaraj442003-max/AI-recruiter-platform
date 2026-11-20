@@ -331,6 +331,33 @@
     .cursor-pointer {
       cursor: pointer;
     }
+    .compass-search-chip {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #cbd5e1;
+      padding: 4px 13px;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      user-select: none;
+    }
+    .compass-search-chip:hover {
+      background: rgba(99, 102, 241, 0.25);
+      border-color: #818cf8;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+    .compass-search-chip.active {
+      background: #6366f1 !important;
+      border-color: #6366f1 !important;
+      color: #ffffff !important;
+      box-shadow: 0 2px 10px rgba(99, 102, 241, 0.4);
+    }
   </style>
 </head>
 
@@ -1173,6 +1200,43 @@
           </div>
         </div>
 
+        <!-- PROMINENT SECTION SEARCH BAR (INSTANT DISCOVERY ACROSS ALL QUALIFICATIONS) -->
+        <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white border-top border-4 border-primary" id="compass-main-section-search-card">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-2">
+            <div>
+              <span class="badge bg-primary bg-opacity-10 text-primary fw-bold px-3 py-1 rounded-pill small mb-1">
+                🔍 SEARCH PLACEMENT COMPASS SECTION
+              </span>
+              <h5 class="fw-bold text-dark mb-0">Search Anything in Placement Compass:</h5>
+              <p class="text-secondary small mb-0">Search any job role, degree course, entrance exam, qualification, skill, or employer directly below:</p>
+            </div>
+            <span class="badge bg-light text-secondary border small px-3 py-1.5" id="compass-top-search-badge">
+              Instant Live Search Active
+            </span>
+          </div>
+
+          <div class="input-group input-group-lg border rounded-pill overflow-hidden bg-white shadow-xs my-2">
+            <span class="input-group-text bg-white border-0 ps-3.5 text-primary fs-5">🔍</span>
+            <input type="text" id="compass-top-search-input" class="form-control bg-white border-0 py-2.5 px-2 fs-6 text-dark" placeholder="Search whatever you need (e.g. Software, Doctor, MBBS, VAO, B.Tech, TNPSC, Police, CA, Polytechnic, Law)..." autocomplete="off">
+            <button class="btn bg-white border-0 text-secondary pe-3 d-none" type="button" id="compass-top-search-clear-btn" onclick="clearCompassSearch()" title="Clear search">
+              ✕
+            </button>
+          </div>
+
+          <!-- Quick Search Chips -->
+          <div class="d-flex align-items-center gap-1.5 flex-wrap pt-2 border-top">
+            <span class="small text-secondary fw-bold me-1" style="font-size: 0.78rem;">⚡ Quick Searches:</span>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-3 small fw-semibold" onclick="quickSearchCompass('Software')">💻 Software SDE</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-3 small fw-semibold" onclick="quickSearchCompass('Doctor')">🩺 MBBS / Doctor</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-3 small fw-semibold" onclick="quickSearchCompass('VAO')">🏛️ TNPSC Group 4 &amp; VAO</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-3 small fw-semibold" onclick="quickSearchCompass('Accountant')">📊 CA &amp; Finance</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-3 small fw-semibold" onclick="quickSearchCompass('B.Tech')">⚙️ B.Tech / BE</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-3 small fw-semibold" onclick="quickSearchCompass('Law')">⚖️ Law &amp; Judiciary</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-3 small fw-semibold" onclick="quickSearchCompass('Police')">👮 Police Constable</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-3 small fw-semibold" onclick="quickSearchCompass('Polytechnic')">🔧 Polytechnic Diploma</button>
+          </div>
+        </div>
+
         <!-- Step 1: Qualification Selection Grid -->
         <div class="card border-0 shadow-sm p-3.5 mb-4 rounded-4 bg-white border-top border-4 border-primary">
           <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3 px-1">
@@ -1316,34 +1380,67 @@
 
           <!-- Section Tabs (Jobs vs Courses) -->
           <div class="p-4 p-lg-5">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
               <div>
                 <ul class="nav nav-pills gap-2" id="compass-dossier-tabs" role="tablist">
                   <li class="nav-item">
                     <button class="nav-link active rounded-pill fw-bold px-4 py-2" id="tab-jobs-btn" data-bs-toggle="pill" data-bs-target="#compass-tab-jobs" type="button">
-                      💼 Related Job Opportunities &amp; Careers
+                      💼 Related Job Opportunities &amp; Careers <span class="badge bg-white bg-opacity-20 ms-1 px-2 py-0.5" id="tab-jobs-count-pill"></span>
                     </button>
                   </li>
                   <li class="nav-item">
                     <button class="nav-link rounded-pill fw-bold px-4 py-2" id="tab-courses-btn" data-bs-toggle="pill" data-bs-target="#compass-tab-courses" type="button">
-                      🎓 Eligible Degree &amp; Course Pathways
+                      🎓 Eligible Degree &amp; Course Pathways <span class="badge bg-white bg-opacity-20 ms-1 px-2 py-0.5" id="tab-courses-count-pill"></span>
                     </button>
                   </li>
                 </ul>
               </div>
 
-              <!-- Search & Filter Controls -->
+              <!-- Filter Controls -->
               <div class="d-flex align-items-center gap-2 flex-wrap">
-                <div class="input-group input-group-sm" style="max-width: 260px;">
-                  <span class="input-group-text bg-dark border-secondary border-opacity-50 text-secondary">🔍</span>
-                  <input type="text" id="compass-job-search-input" class="form-control bg-dark border-secondary border-opacity-50 text-white placeholder-secondary" placeholder="Search roles, skills, orgs...">
-                </div>
                 <div class="btn-group btn-group-sm" role="group">
-                  <button type="button" class="btn btn-primary active rounded-start-pill" data-job-filter-btn="all">All</button>
+                  <button type="button" class="btn btn-primary active rounded-start-pill" data-job-filter-btn="all">All Roles</button>
                   <button type="button" class="btn btn-outline-secondary" data-job-filter-btn="public">Govt / State</button>
                   <button type="button" class="btn btn-outline-secondary" data-job-filter-btn="tech">Tech / Software</button>
                   <button type="button" class="btn btn-outline-secondary rounded-end-pill" data-job-filter-btn="high_package">₹6+ LPA</button>
                 </div>
+              </div>
+            </div>
+
+            <!-- Prominent Search Bar for Placement Compass Section -->
+            <div class="p-3 rounded-4 mb-4" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1);">
+              <div class="row g-2 align-items-center">
+                <div class="col-12 col-md-8 col-lg-9">
+                  <div class="input-group input-group-lg border rounded-pill overflow-hidden bg-dark shadow-xs" style="border-color: rgba(99, 102, 241, 0.4) !important;">
+                    <span class="input-group-text bg-dark border-0 ps-3.5 text-primary fs-5">🔍</span>
+                    <input type="text" id="compass-job-search-input" class="form-control bg-dark border-0 py-2.5 px-2 fs-6 text-white placeholder-secondary" placeholder="Search roles, degrees, exams, skills, or top employers (e.g. SDE, NEET, TNEA, VAO, B.Tech, CA)..." autocomplete="off">
+                    <button class="btn bg-dark border-0 text-secondary pe-3 d-none" type="button" id="compass-search-clear-btn" onclick="clearCompassSearch()" title="Clear search">
+                      ✕
+                    </button>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4 col-lg-3 d-flex justify-content-md-end align-items-center gap-2">
+                  <span class="badge bg-primary bg-opacity-25 text-info border border-info border-opacity-25 rounded-pill px-3 py-2 fw-bold small w-100 text-center" id="compass-search-results-badge">
+                    Live Search Active
+                  </span>
+                </div>
+              </div>
+
+              <!-- Quick Search Suggested Term Chips -->
+              <div class="d-flex align-items-center gap-1.5 flex-wrap mt-2.5 pt-2 border-top border-secondary border-opacity-25" id="compass-quick-search-chips">
+                <span class="small text-secondary fw-bold me-1" style="font-size: 0.78rem;">⚡ Quick Searches:</span>
+                <button type="button" class="compass-search-chip" data-search-term="Software" onclick="quickSearchCompass('Software')">💻 Software SDE</button>
+                <button type="button" class="compass-search-chip" data-search-term="Doctor" onclick="quickSearchCompass('Doctor')">🩺 MBBS / Doctor</button>
+                <button type="button" class="compass-search-chip" data-search-term="VAO" onclick="quickSearchCompass('VAO')">🏛️ TNPSC Group 4 &amp; VAO</button>
+                <button type="button" class="compass-search-chip" data-search-term="Accountant" onclick="quickSearchCompass('Accountant')">📊 CA &amp; Finance</button>
+                <button type="button" class="compass-search-chip" data-search-term="B.Tech" onclick="quickSearchCompass('B.Tech')">⚙️ B.Tech / BE Engineering</button>
+                <button type="button" class="compass-search-chip" data-search-term="Law" onclick="quickSearchCompass('Law')">⚖️ Law &amp; Judiciary</button>
+                <button type="button" class="compass-search-chip" data-search-term="Police" onclick="quickSearchCompass('Police')">👮 Police Constable</button>
+                <button type="button" class="compass-search-chip" data-search-term="Polytechnic" onclick="quickSearchCompass('Polytechnic')">🔧 Polytechnic Diploma</button>
+              </div>
+
+              <!-- Cross-Qualification Auto-Match Alert Banner -->
+              <div id="compass-cross-qual-banner" class="alert alert-info bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-3 p-2.5 mt-2.5 mb-0 text-light small d-none">
               </div>
             </div>
 

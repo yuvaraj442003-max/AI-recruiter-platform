@@ -242,10 +242,116 @@
       background: #f0f9ff;
     }
 
-    .interest-tag-btn.selected {
+            .exam-search-box-wrapper {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 9999px;
+      padding: 6px 16px;
+      transition: all 0.2s ease;
+    }
+    .exam-search-box-wrapper:focus-within {
+      border-color: #0284c7;
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
+    }
+    .exam-search-chip {
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+      border-radius: 9999px;
+      padding: 4px 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .exam-search-chip:hover {
+      border-color: #0284c7;
+      background: #f0f9ff;
+      color: #0284c7;
+      transform: translateY(-1px);
+    }
+    .exam-search-chip.active {
+      background: #0284c7;
+      border-color: #0284c7;
+      color: #ffffff;
+    }
+
+.status-filter-btn {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 9999px;
+      padding: 5px 12px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      background: #ffffff;
+      color: #334155;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+    .status-filter-btn:hover {
+      border-color: #0284c7;
+      background: #f0f9ff;
+      color: #0284c7;
+      transform: translateY(-1px);
+    }
+    .status-filter-btn.active {
+      background: #0284c7;
+      border-color: #0284c7;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+    }
+    .status-kpi-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 10px 14px;
+      background: #ffffff;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .status-kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+      border-color: #0284c7;
+    }
+
+.interest-tag-btn.selected {
       background: #0284c7;
       color: #ffffff;
       border-color: #0284c7;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+    }
+
+    .path-search-chip {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      user-select: none;
+    }
+    .path-search-chip:hover {
+      background: #e2e8f0;
+      border-color: #0284c7;
+      color: #0284c7;
+      transform: translateY(-1px);
+    }
+    .path-search-chip.active {
+      background: #0284c7 !important;
+      border-color: #0284c7 !important;
+      color: #ffffff !important;
       box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
     }
 
@@ -572,6 +678,44 @@
             </div>
           </div>
 
+          <!-- UNIVERSAL PLACEMENT COMPASS SEARCH BAR -->
+          <div class="card border-0 shadow-sm p-3.5 mb-4 rounded-4 bg-white border-top border-4 border-primary" id="universal-placement-compass-search-container">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-2 px-1">
+              <div>
+                <span class="badge bg-primary bg-opacity-10 text-primary fw-bold px-2.5 py-1 rounded-pill small mb-1">
+                  🔍 UNIVERSAL PLACEMENT COMPASS SEARCH
+                </span>
+                <h5 class="fw-bold text-dark mb-0">Search Anything Across the Entire Placement Compass:</h5>
+                <p class="text-secondary small mb-0">Find eligible degree courses, entrance exams (2026), 28 career positions, 29+ top TN colleges, or salary packages instantly.</p>
+              </div>
+              <span class="badge bg-light text-secondary border small px-3 py-1.5" id="global-compass-search-badge">All 8 Pillars Searchable</span>
+            </div>
+            
+            <div class="input-group input-group-lg border rounded-pill overflow-hidden bg-white shadow-xs mt-2 mb-2">
+              <span class="input-group-text bg-white border-0 ps-3.5 text-primary fs-5">🔍</span>
+              <input type="text" id="global-compass-search-input" class="form-control bg-white border-0 py-2.5 px-2 fs-6" placeholder="Type to search (e.g. JEE, NEET, Software, Doctor, VAO, B.Tech, Law, PSG Tech, Anna Univ, Cutoff)..." oninput="handleGlobalCompassSearch(this.value)" autocomplete="off">
+              <button class="btn bg-white border-0 text-muted pe-3 d-none" type="button" id="clear-global-search-btn" onclick="clearGlobalCompassSearch()" title="Clear search">✕</button>
+            </div>
+
+            <!-- Instant Categorized Search Results Container -->
+            <div id="global-compass-search-results" class="d-none bg-light border rounded-4 shadow-sm p-3 mt-2 mb-2">
+              <!-- Dynamically populated via handleGlobalCompassSearch -->
+            </div>
+
+            <!-- Quick Global Search Suggestion Pills -->
+            <div class="d-flex align-items-center gap-1.5 flex-wrap pt-2 border-top">
+              <span class="small text-secondary fw-bold me-1" style="font-size: 0.78rem;">⚡ Quick Searches:</span>
+              <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2.5 small" onclick="quickGlobalCompassSearch('JEE Main')">💻 JEE Main</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2.5 small" onclick="quickGlobalCompassSearch('NEET')">🧬 NEET-UG Medical</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2.5 small" onclick="quickGlobalCompassSearch('TNEA')">🏛️ TNEA Anna University</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2.5 small" onclick="quickGlobalCompassSearch('Doctor')">🩺 Doctor / MBBS</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2.5 small" onclick="quickGlobalCompassSearch('Software')">💻 Software Engineer</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2.5 small" onclick="quickGlobalCompassSearch('VAO')">🏛️ TNPSC VAO</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2.5 small" onclick="quickGlobalCompassSearch('CLAT')">⚖️ CLAT Law</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2.5 small" onclick="quickGlobalCompassSearch('Polytechnic')">🔧 Polytechnic Diploma</button>
+            </div>
+          </div>
+
           <!-- Master Stage Selector (10th vs 12th) -->
           <div class="card border-0 shadow-sm p-3 mb-4 rounded-4 bg-white border-start border-4 border-primary">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
@@ -722,6 +866,35 @@
             <!-- Filter Pills Bar -->
             <div class="card border-0 shadow-sm p-3 mb-4 rounded-4 bg-white">
               <div class="d-flex flex-column gap-3">
+                <!-- Prominent Search Bar for Career Streams & Pathways -->
+                <div class="p-3 bg-light rounded-4 border">
+                  <div class="row g-2 align-items-center">
+                    <div class="col-12 col-lg-8">
+                      <div class="input-group input-group-lg border rounded-pill overflow-hidden bg-white shadow-xs">
+                        <span class="input-group-text bg-white border-0 ps-3.5 text-primary fs-5">🔍</span>
+                        <input type="text" id="school-path-search-input" class="form-control bg-white border-0 py-2.5 px-2 fs-6" placeholder="Search any degree pathway or career stream (e.g. Computer Science, MBBS, Law, Robotics, Agriculture, Polytechnic)..." oninput="handleSchoolPathSearch(this.value)" autocomplete="off">
+                        <button class="btn bg-white border-0 text-muted pe-3 d-none" type="button" id="clear-path-search-btn" onclick="clearSchoolPathSearch()" title="Clear search">✕</button>
+                      </div>
+                    </div>
+                    <div class="col-12 col-lg-4 d-flex justify-content-lg-end align-items-center gap-2">
+                      <span class="badge bg-primary rounded-pill px-3 py-2 fw-bold small" id="school-path-search-badge">
+                        Showing All Pathways
+                      </span>
+                    </div>
+                  </div>
+                  <!-- Quick Path Search Chips -->
+                  <div class="d-flex align-items-center gap-1.5 flex-wrap mt-2.5 pt-2 border-top">
+                    <span class="small text-secondary fw-bold me-1" style="font-size: 0.78rem;">⚡ Quick Searches:</span>
+                    <button type="button" class="path-search-chip" data-search-term="Engineering" onclick="quickSearchSchoolPath('Engineering')">⚙️ Engineering (B.E/B.Tech)</button>
+                    <button type="button" class="path-search-chip" data-search-term="Medical" onclick="quickSearchSchoolPath('Medical')">🩺 MBBS &amp; Medical</button>
+                    <button type="button" class="path-search-chip" data-search-term="Polytechnic" onclick="quickSearchSchoolPath('Polytechnic')">🔧 Polytechnic Diploma</button>
+                    <button type="button" class="path-search-chip" data-search-term="Law" onclick="quickSearchSchoolPath('Law')">⚖️ 5-Year Law</button>
+                    <button type="button" class="path-search-chip" data-search-term="Agriculture" onclick="quickSearchSchoolPath('Agriculture')">🌾 Agriculture &amp; Vet</button>
+                    <button type="button" class="path-search-chip" data-search-term="Commerce" onclick="quickSearchSchoolPath('Commerce')">📊 B.Com &amp; CA</button>
+                    <button type="button" class="path-search-chip" data-search-term="10th" onclick="quickSearchSchoolPath('10th')">📘 10th Standard</button>
+                  </div>
+                </div>
+
                 <!-- Grade Filter -->
                 <div class="d-flex align-items-center gap-2 flex-wrap">
                   <span class="small fw-bold text-secondary text-uppercase me-1">Grade Filter:</span>
@@ -1404,7 +1577,7 @@
                 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
                   <div>
                     <h5 class="fw-bold mb-1 text-dark" id="exams-section-heading">📅 Relevant Entrance Exams &amp; Single-Window Admission Portals</h5>
-                    <p class="text-secondary small mb-0" id="exams-section-subheading">Official registration windows, syllabus blueprints, and 1-click Google Calendar sync.</p>
+                    <p class="text-secondary small mb-0" id="exams-section-subheading">Track live application opening dates, closing deadlines, and official examination dates for 2026.</p>
                   </div>
                   <div class="d-flex gap-2 flex-wrap" id="exam-stage-filter-btns">
                     <button class="btn btn-sm btn-primary rounded-pill px-3 fw-bold shadow-sm" data-exam-stage="all" onclick="filterExamsByStage('all', this)">
@@ -1417,6 +1590,132 @@
                       📘 After 10th (SSLC)
                     </button>
                   </div>
+                </div>
+
+                <!-- Prominent Search Bar for Entrance Exams -->
+                <div class="p-3 bg-light rounded-4 border mb-3 mt-3">
+                  <div class="row g-2 align-items-center">
+                    <div class="col-12 col-lg-8">
+                      <div class="input-group input-group-lg border rounded-pill overflow-hidden bg-white shadow-xs" id="exam-search-box-group">
+                        <span class="input-group-text bg-white border-0 ps-3.5 text-primary fs-5">🔍</span>
+                        <input type="text" id="exam-search-input" class="form-control bg-white border-0 py-2.5 px-2 fs-6" placeholder="Search entrance exams (e.g. JEE, NEET, TNEA, Law, Police, CA, 10th Pass, NTA)..." oninput="handleExamSearch(this.value)" autocomplete="off">
+                        <button class="btn bg-white border-0 text-muted pe-3 d-none" type="button" id="clear-exam-search-btn" onclick="clearExamSearch()" title="Clear search">
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                    <div class="col-12 col-lg-4 d-flex justify-content-lg-end align-items-center gap-2">
+                      <span class="badge bg-primary rounded-pill px-3 py-2 fw-bold small" id="exam-search-results-count">
+                        Showing 25 Exams
+                      </span>
+                      <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-secondary active fw-bold" id="exam-view-cards-btn" onclick="switchExamViewMode('cards', this)" title="Card Grid View">
+                          🎴 Cards
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary fw-bold" id="exam-view-table-btn" onclick="switchExamViewMode('table', this)" title="Timeline Table View">
+                          📊 Table
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Popular Quick-Search Suggestions Chips -->
+                  <div class="d-flex align-items-center gap-1.5 flex-wrap mt-2.5 pt-2 border-top">
+                    <span class="small text-secondary fw-bold me-1" style="font-size: 0.78rem;">⚡ Quick Searches:</span>
+                    <button type="button" class="exam-search-chip" data-search-term="jee" onclick="quickSearchExam('JEE')">💻 JEE Main / Adv</button>
+                    <button type="button" class="exam-search-chip" data-search-term="neet" onclick="quickSearchExam('NEET')">🧬 NEET-UG Medical</button>
+                    <button type="button" class="exam-search-chip" data-search-term="tnea" onclick="quickSearchExam('TNEA')">🏛️ TNEA Engineering</button>
+                    <button type="button" class="exam-search-chip" data-search-term="clat" onclick="quickSearchExam('CLAT')">⚖️ CLAT Law (TNNLU)</button>
+                    <button type="button" class="exam-search-chip" data-search-term="tnpsc" onclick="quickSearchExam('TNPSC')">🎖️ TNPSC Group 4 &amp; VAO</button>
+                    <button type="button" class="exam-search-chip" data-search-term="police" onclick="quickSearchExam('Police')">👮 TNUSRB Police</button>
+                    <button type="button" class="exam-search-chip" data-search-term="ca foundation" onclick="quickSearchExam('CA Foundation')">📊 CA Foundation</button>
+                    <button type="button" class="exam-search-chip" data-search-term="bitsat" onclick="quickSearchExam('BITSAT')">⚡ BITSAT</button>
+                    <button type="button" class="exam-search-chip" data-search-term="nata" onclick="quickSearchExam('NATA')">📐 NATA Architecture</button>
+                    <button type="button" class="exam-search-chip" data-search-term="10th" onclick="quickSearchExam('10th')">📘 10th Pass Exams</button>
+                  </div>
+                </div>
+
+                <!-- 4 Live Application Summary KPI Tiles -->
+                <div class="row g-2.5 mb-3" id="exam-status-kpi-summary">
+                  <div class="col-6 col-md-3">
+                    <div class="status-kpi-card d-flex align-items-center gap-2.5" onclick="filterExamsByStatus('open', document.querySelector('[data-exam-status=open]'))">
+                      <span class="fs-4">🟢</span>
+                      <div>
+                        <div class="fs-5 fw-bold text-success lh-1" id="kpi-open-count">5</div>
+                        <div class="small fw-semibold text-secondary" style="font-size: 0.76rem;">Applications Open</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="status-kpi-card d-flex align-items-center gap-2.5 border-danger-subtle bg-danger bg-opacity-10" onclick="filterExamsByStatus('approaching', document.querySelector('[data-exam-status=approaching]'))">
+                      <span class="fs-4">⚠️</span>
+                      <div>
+                        <div class="fs-5 fw-bold text-danger lh-1" id="kpi-approaching-count">4</div>
+                        <div class="small fw-semibold text-danger" style="font-size: 0.76rem;">Closing Soon</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="status-kpi-card d-flex align-items-center gap-2.5" onclick="filterExamsByStatus('upcoming', document.querySelector('[data-exam-status=upcoming]'))">
+                      <span class="fs-4">🔵</span>
+                      <div>
+                        <div class="fs-5 fw-bold text-primary lh-1" id="kpi-upcoming-count">16</div>
+                        <div class="small fw-semibold text-secondary" style="font-size: 0.76rem;">Upcoming / Soon</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="status-kpi-card d-flex align-items-center gap-2.5" onclick="filterExamsByStatus('merit', document.querySelector('[data-exam-status=merit]'))">
+                      <span class="fs-4">📋</span>
+                      <div>
+                        <div class="fs-5 fw-bold text-info-emphasis lh-1" id="kpi-merit-count">10</div>
+                        <div class="small fw-semibold text-secondary" style="font-size: 0.76rem;">Cutoff Merit</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Status Filter Pills -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2.5 pt-3 border-top">
+                  <div class="d-flex gap-1.5 flex-wrap" id="exam-status-filter-btns">
+                    <button class="status-filter-btn active" data-exam-status="all" onclick="filterExamsByStatus('all', this)">
+                      All Status (<span id="status-count-all">25</span>)
+                    </button>
+                    <button class="status-filter-btn" data-exam-status="open" onclick="filterExamsByStatus('open', this)">
+                      <span>🟢</span> Open Now (<span id="status-count-open">5</span>)
+                    </button>
+                    <button class="status-filter-btn" data-exam-status="approaching" onclick="filterExamsByStatus('approaching', this)">
+                      <span>⚠️</span> Closing Soon (<span id="status-count-approaching">4</span>)
+                    </button>
+                    <button class="status-filter-btn" data-exam-status="upcoming" onclick="filterExamsByStatus('upcoming', this)">
+                      <span>🔵</span> Upcoming (<span id="status-count-upcoming">16</span>)
+                    </button>
+                    <button class="status-filter-btn" data-exam-status="merit" onclick="filterExamsByStatus('merit', this)">
+                      <span>📋</span> Cutoff Merit (<span id="status-count-merit">10</span>)
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Interactive Timeline Table Container -->
+              <div id="school-exams-table-container" class="card border-0 shadow-sm p-3 mb-4 rounded-4 bg-white d-none">
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle mb-0" id="school-exams-table">
+                    <thead class="table-light">
+                      <tr class="small text-uppercase text-secondary fw-bold">
+                        <th style="min-width: 220px;">Entrance Exam &amp; Stream</th>
+                        <th style="min-width: 170px;">Application Status</th>
+                        <th style="min-width: 170px;">🟢 Opening Date</th>
+                        <th style="min-width: 170px;">⏳ Closing Deadline</th>
+                        <th style="min-width: 200px;">🗓️ Examination Date</th>
+                        <th style="min-width: 180px;">🏆 Counselling</th>
+                        <th style="min-width: 130px;" class="text-end">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="school-exams-table-body">
+                      <!-- Rendered by JS -->
+                    </tbody>
+                  </table>
                 </div>
               </div>
 

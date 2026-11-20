@@ -577,6 +577,17 @@
 
   let activeQualificationKey = "computer_science";
   let activeJobFilter = "all";
+  let activeCompassSearchQuery = "";
+
+  function escapeHtml(str) {
+    if (!str) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
 
   function initPlacementCompassSection() {
     const container = document.getElementById("compass-qualification-dossier");
@@ -597,11 +608,47 @@
     const initialQual = urlParams.get("qualification") || "computer_science";
     selectQualification(initialQual);
 
-    // Setup live search / filter inputs if present
+    // Setup top live search input (Prominent section header)
+    const topSearchInput = document.getElementById("compass-top-search-input");
+    if (topSearchInput) {
+      topSearchInput.addEventListener("input", function () {
+        const bottomSearch = document.getElementById("compass-job-search-input");
+        if (bottomSearch) bottomSearch.value = this.value;
+        handleCompassSearch(this.value);
+      });
+      topSearchInput.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          clearCompassSearch();
+        }
+      });
+    }
+
+    // Setup live search input (dossier level)
     const searchInput = document.getElementById("compass-job-search-input");
     if (searchInput) {
       searchInput.addEventListener("input", function () {
-        renderJobsGrid(this.value.trim().toLowerCase());
+        const topSearch = document.getElementById("compass-top-search-input");
+        if (topSearch) topSearch.value = this.value;
+        handleCompassSearch(this.value);
+      });
+      searchInput.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          clearCompassSearch();
+        }
+      });
+    }
+
+    // Connect Tab Switchers to keep search active and counts refreshed
+    const jobsTabBtn = document.getElementById("tab-jobs-btn");
+    const coursesTabBtn = document.getElementById("tab-courses-btn");
+    if (jobsTabBtn) {
+      jobsTabBtn.addEventListener("shown.bs.tab", function () {
+        renderJobsGrid(activeCompassSearchQuery);
+      });
+    }
+    if (coursesTabBtn) {
+      coursesTabBtn.addEventListener("shown.bs.tab", function () {
+        renderCoursesGrid(activeCompassSearchQuery);
       });
     }
 
@@ -613,7 +660,7 @@
         this.classList.remove("btn-outline-secondary");
         this.classList.add("active", "btn-primary");
         activeJobFilter = this.getAttribute("data-job-filter-btn");
-        renderJobsGrid();
+        handleCompassSearch(activeCompassSearchQuery);
       });
     });
   }
@@ -640,6 +687,197 @@
 
     renderQualificationDossier();
   }
+
+  function handleCompassSearch(query) {
+    activeCompassSearchQuery = (query || "").trim().toLowerCase();
+
+    // Synchronize both search inputs if different
+    const topInput = document.getElementById("compass-top-search-input");
+    if (topInput && topInput.value !== (query || "")) {
+      topInput.value = query || "";
+    }
+    const bottomInput = document.getElementById("compass-job-search-input");
+    if (bottomInput && bottomInput.value !== (query || "")) {
+      bottomInput.value = query || "";
+    }
+
+    // Toggle clear buttons
+    const clearBtn = document.getElementById("compass-search-clear-btn");
+    const topClearBtn = document.getElementById("compass-top-search-clear-btn");
+    if (activeCompassSearchQuery.length > 0) {
+      if (clearBtn) clearBtn.classList.remove("d-none");
+      if (topClearBtn) topClearBtn.classList.remove("d-none");
+    } else {
+      if (clearBtn) clearBtn.classList.add("d-none");
+      if (topClearBtn) topClearBtn.classList.add("d-none");
+    }
+
+    // Highlight active quick search chips
+    document.querySelectorAll(".compass-search-chip").forEach((chip) => {
+      const term = (chip.getAttribute("data-search-term") || "").toLowerCase();
+      if (activeCompassSearchQuery && term && activeCompassSearchQuery.includes(term)) {
+        chip.classList.add("active");
+      } else {
+        chip.classList.remove("active");
+      }
+    });
+
+    // Re-render both grids with query
+    const matchingJobsCount = renderJobsGrid(activeCompassSearchQuery);
+    const matchingCoursesCount = renderCoursesGrid(activeCompassSearchQuery);
+
+    // Update tab counts
+    const jobsCountPill = document.getElementById("tab-jobs-count-pill");
+    if (jobsCountPill) {
+      jobsCountPill.textContent = `${matchingJobsCount}`;
+    }
+    const coursesCountPill = document.getElementById("tab-courses-count-pill");
+    if (coursesCountPill) {
+      coursesCountPill.textContent = `${matchingCoursesCount}`;
+    }
+
+    // Update results badges
+    const badge = document.getElementById("compass-search-results-badge");
+    if (badge) {
+      if (!activeCompassSearchQuery) {
+        badge.textContent = `Showing Current Qualification`;
+        badge.className = "badge bg-primary bg-opacity-25 text-info border border-info border-opacity-25 rounded-pill px-3 py-2 fw-bold small w-100 text-center";
+      } else {
+        badge.textContent = `Found ${matchingJobsCount} Roles & ${matchingCoursesCount} Pathways`;
+        badge.className = "badge bg-success bg-opacity-25 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 fw-bold small w-100 text-center";
+      }
+    }
+
+    const topBadge = document.getElementById("compass-top-search-badge");
+    if (topBadge) {
+      if (!activeCompassSearchQuery) {
+        topBadge.textContent = "Instant Live Search Active";
+        topBadge.className = "badge bg-light text-secondary border small px-3 py-1.5";
+      } else {
+        topBadge.textContent = `Found ${matchingJobsCount} Roles & ${matchingCoursesCount} Pathways`;
+        topBadge.className = "badge bg-success text-white border-0 small px-3 py-1.5 shadow-xs";
+      }
+    }
+
+    // Smart Cross-Qualification Auto-Match Check
+    checkCrossQualificationMatches(activeCompassSearchQuery, matchingJobsCount, matchingCoursesCount);
+  }
+  window.handleCompassSearch = handleCompassSearch;
+
+  function quickSearchCompass(term) {
+    const topInput = document.getElementById("compass-top-search-input");
+    if (topInput) {
+      topInput.value = term;
+      if (typeof topInput.focus === "function") topInput.focus();
+    }
+    const bottomInput = document.getElementById("compass-job-search-input");
+    if (bottomInput) {
+      bottomInput.value = term;
+    }
+    handleCompassSearch(term);
+  }
+  window.quickSearchCompass = quickSearchCompass;
+
+  function clearCompassSearch() {
+    const topInput = document.getElementById("compass-top-search-input");
+    if (topInput) {
+      topInput.value = "";
+      if (typeof topInput.focus === "function") topInput.focus();
+    }
+    const bottomInput = document.getElementById("compass-job-search-input");
+    if (bottomInput) {
+      bottomInput.value = "";
+      if (typeof bottomInput.focus === "function") bottomInput.focus();
+    }
+    handleCompassSearch("");
+  }
+  window.clearCompassSearch = clearCompassSearch;
+
+  function checkCrossQualificationMatches(query, currentJobsCount, currentCoursesCount) {
+    const banner = document.getElementById("compass-cross-qual-banner");
+    if (!banner) return;
+
+    if (!query) {
+      banner.classList.add("d-none");
+      banner.innerHTML = "";
+      return;
+    }
+
+    // If matches are found in current qualification, hide banner
+    if (currentJobsCount > 0 || currentCoursesCount > 0) {
+      banner.classList.add("d-none");
+      banner.innerHTML = "";
+      return;
+    }
+
+    // Current qualification has 0 matches for this query! Search all other qualifications
+    const otherMatches = [];
+    Object.keys(QUALIFICATION_CAREER_MAP).forEach((key) => {
+      if (key === activeQualificationKey) return;
+      const qData = QUALIFICATION_CAREER_MAP[key];
+      const matchingJobs = (qData.job_opportunities || []).filter((j) => {
+        const text = `${j.title} ${j.description} ${j.sector} ${(j.hiring_companies || []).join(" ")} ${(j.key_skills || []).join(" ")} ${j.gateway || ""}`.toLowerCase();
+        return text.includes(query);
+      });
+      const matchingCourses = (qData.popular_courses || []).filter((c) => c.toLowerCase().includes(query));
+
+      const totalMatches = matchingJobs.length + matchingCourses.length;
+      if (totalMatches > 0) {
+        otherMatches.push({
+          key,
+          title: qData.title,
+          icon: qData.icon,
+          count: totalMatches
+        });
+      }
+    });
+
+    if (otherMatches.length > 0) {
+      banner.classList.remove("d-none");
+      banner.innerHTML = `
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+          <div>
+            <span class="fw-bold text-info">💡 Found matching results in other educational stages:</span>
+            <div class="small text-light opacity-90 mt-0.5">
+              "${escapeHtml(query)}" was not found in <strong>${QUALIFICATION_CAREER_MAP[activeQualificationKey]?.title || "this group"}</strong>, but is available in:
+            </div>
+          </div>
+          <div class="d-flex gap-2 flex-wrap">
+            ${otherMatches
+              .map(
+                (m) => `
+              <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-3 py-1 fw-bold text-nowrap" onclick="switchToQualificationAndSearch('${m.key}')">
+                <span>${m.icon}</span> Switch to ${escapeHtml(m.title)} (${m.count} matches) &rarr;
+              </button>
+            `
+              )
+              .join("")}
+          </div>
+        </div>
+      `;
+    } else {
+      banner.classList.remove("d-none");
+      banner.innerHTML = `
+        <div class="d-flex align-items-center justify-content-between gap-2">
+          <div>
+            <span class="fw-bold text-warning">🔍 No matches found for "${escapeHtml(query)}"</span>
+            <div class="small text-light opacity-80 mt-0.5">Try searching terms like <strong>"Software", "Doctor", "VAO", "B.Tech", "Law", "Police", "CA", or "Polytechnic"</strong>.</div>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 text-white" onclick="clearCompassSearch()">Clear Search</button>
+        </div>
+      `;
+    }
+  }
+
+  function switchToQualificationAndSearch(qualKey) {
+    selectQualification(qualKey);
+    const input = document.getElementById("compass-job-search-input");
+    if (input && activeCompassSearchQuery) {
+      input.value = activeCompassSearchQuery;
+      handleCompassSearch(activeCompassSearchQuery);
+    }
+  }
+  window.switchToQualificationAndSearch = switchToQualificationAndSearch;
 
   function renderQualificationDossier() {
     const data = QUALIFICATION_CAREER_MAP[activeQualificationKey];
@@ -678,21 +916,18 @@
         .join(" ");
     }
 
-    // 2. Render Jobs Grid
-    renderJobsGrid();
-
-    // 3. Render Courses Tab
-    renderCoursesGrid();
+    // 2. Render both grids and update badges with active search query
+    handleCompassSearch(activeCompassSearchQuery);
   }
 
-  function renderJobsGrid(searchQuery = "") {
+  function renderJobsGrid(searchQuery = activeCompassSearchQuery) {
     const grid = document.getElementById("compass-jobs-grid");
-    if (!grid) return;
+    if (!grid) return 0;
 
     const data = QUALIFICATION_CAREER_MAP[activeQualificationKey];
     if (!data || !data.job_opportunities) {
       grid.innerHTML = `<div class="col-12 text-center text-muted py-4">No jobs mapped for this qualification.</div>`;
-      return;
+      return 0;
     }
 
     let jobs = data.job_opportunities;
@@ -711,11 +946,12 @@
       }
     }
 
-    // Filter by search query
+    // Filter by search query (Multi-term matching)
     if (searchQuery) {
+      const terms = searchQuery.split(/\s+/).filter(Boolean);
       jobs = jobs.filter((j) => {
-        const text = `${j.title} ${j.description} ${j.sector} ${(j.hiring_companies || []).join(" ")} ${(j.key_skills || []).join(" ")}`.toLowerCase();
-        return text.includes(searchQuery);
+        const text = `${j.title} ${j.description} ${j.sector} ${(j.hiring_companies || []).join(" ")} ${(j.key_skills || []).join(" ")} ${j.gateway || ""} ${j.progression || ""}`.toLowerCase();
+        return terms.every((term) => text.includes(term));
       });
     }
 
@@ -729,12 +965,15 @@
       grid.innerHTML = `
         <div class="col-12 py-5 text-center text-muted bg-dark bg-opacity-25 rounded-4 border border-secondary border-opacity-25">
           <div class="fs-2 mb-2">🔍</div>
-          <h6 class="fw-bold text-light">No job opportunities match your search filter</h6>
-          <p class="small text-secondary mb-3">Try clearing your search keyword or switch to "All Roles".</p>
-          <button class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-bold" onclick="resetJobFilters()">Reset Filters</button>
+          <h6 class="fw-bold text-light">No job opportunities match ${searchQuery ? `"${escapeHtml(searchQuery)}"` : "your search filter"}</h6>
+          <p class="small text-secondary mb-3">Try clearing your search keyword, switching to "All Roles", or explore other educational stages.</p>
+          <div class="d-flex justify-content-center gap-2 flex-wrap">
+            <button class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-bold" onclick="clearCompassSearch()">Reset Search</button>
+            <button class="btn btn-secondary btn-sm rounded-pill px-3" onclick="resetJobFilters()">Reset Filter</button>
+          </div>
         </div>
       `;
-      return;
+      return 0;
     }
 
     grid.innerHTML = jobs
@@ -822,14 +1061,16 @@
       `;
       })
       .join("");
+
+    return jobs.length;
   }
 
-  function renderCoursesGrid() {
+  function renderCoursesGrid(searchQuery = activeCompassSearchQuery) {
     const grid = document.getElementById("compass-courses-grid");
-    if (!grid) return;
+    if (!grid) return 0;
 
     const data = QUALIFICATION_CAREER_MAP[activeQualificationKey];
-    if (!data) return;
+    if (!data) return 0;
 
     // Use bundled static data paths if matching
     let matchingPaths = [];
@@ -854,8 +1095,41 @@
       });
     }
 
+    // Filter by search query (Multi-term matching)
+    if (searchQuery) {
+      const terms = searchQuery.split(/\s+/).filter(Boolean);
+      matchingPaths = matchingPaths.filter((p) => {
+        const text = `${p.title || ""} ${p.tagline || ""} ${p.category || ""} ${p.duration || ""} ${p.eligibility || ""} ${(p.top_colleges || []).join(" ")} ${(p.career_opportunities || []).join(" ")}`.toLowerCase();
+        return terms.every((term) => text.includes(term));
+      });
+    }
+
     if (matchingPaths.length === 0) {
-      grid.innerHTML = (data.popular_courses || [])
+      let popCourses = data.popular_courses || [];
+      if (searchQuery) {
+        const terms = searchQuery.split(/\s+/).filter(Boolean);
+        popCourses = popCourses.filter((c) => {
+          const text = c.toLowerCase();
+          return terms.every((term) => text.includes(term));
+        });
+      }
+
+      if (popCourses.length === 0) {
+        grid.innerHTML = `
+          <div class="col-12 py-5 text-center text-muted bg-dark bg-opacity-25 rounded-4 border border-secondary border-opacity-25">
+            <div class="fs-2 mb-2">🎓</div>
+            <h6 class="fw-bold text-light">No eligible courses match ${searchQuery ? `"${escapeHtml(searchQuery)}"` : "your search filter"}</h6>
+            <p class="small text-secondary mb-3">Try clearing your search query or explore the full Placement Compass suite.</p>
+            <div class="d-flex justify-content-center gap-2 flex-wrap">
+              <button class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-bold" onclick="clearCompassSearch()">Clear Search</button>
+              <a href="placement-compass.html" class="btn btn-primary btn-sm rounded-pill px-4 fw-bold">Open Full Compass</a>
+            </div>
+          </div>
+        `;
+        return 0;
+      }
+
+      grid.innerHTML = popCourses
         .map(
           (c) => `
         <div class="col-md-6 col-lg-4">
@@ -868,7 +1142,7 @@
       `
         )
         .join("");
-      return;
+      return popCourses.length;
     }
 
     grid.innerHTML = matchingPaths
@@ -902,15 +1176,16 @@
     `
       )
       .join("");
+
+    return matchingPaths.length;
   }
 
   function filterJobsByCourse(courseName) {
     const searchInput = document.getElementById("compass-job-search-input");
     if (searchInput) {
-      // Pick first word or major keyword
       const keyword = courseName.split(" ")[0].replace(/[^a-zA-Z]/g, "").toLowerCase();
       searchInput.value = keyword;
-      renderJobsGrid(keyword);
+      handleCompassSearch(keyword);
     }
   }
 
@@ -927,7 +1202,7 @@
         b.classList.add("btn-outline-secondary");
       }
     });
-    renderJobsGrid();
+    handleCompassSearch("");
   }
 
   // Export functions to window
@@ -935,7 +1210,10 @@
     init: initPlacementCompassSection,
     selectQualification: selectQualification,
     filterJobsByCourse: filterJobsByCourse,
-    resetJobFilters: resetJobFilters
+    resetJobFilters: resetJobFilters,
+    handleCompassSearch: handleCompassSearch,
+    quickSearchCompass: quickSearchCompass,
+    clearCompassSearch: clearCompassSearch
   };
 
   // Auto initialize on DOMContentLoaded

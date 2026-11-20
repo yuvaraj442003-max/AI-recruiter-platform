@@ -20,6 +20,9 @@ let activeGradeFilter = "all";
 let activeCatFilter = "all";
 let activeCollegeStreamFilter = "all";
 let activeExamStageFilter = "all";
+let activeExamStatusFilter = "all";
+let activeExamSearchQuery = "";
+let currentExamViewMode = "cards";
 let activeAcademicGroup = "all";
 let activePosStageFilter = "all";
 let activePosSectorFilter = "all";
@@ -64,6 +67,20 @@ function hydrateFromStaticData() {
     try { updateCutoffCalculatorInputs(); } catch (e) { console.warn(e); }
   }
 }
+
+/**
+ * Safely escape HTML characters.
+ */
+function escapeHtml(str) {
+  if (str === null || str === undefined) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+window.escapeHtml = escapeHtml;
 
 /**
  * Safely format and display entrance exam dates.
@@ -1512,6 +1529,14 @@ function filterExamsByStage(stage, btn) {
 
   renderSchoolExams();
   renderCareerPositions();
+
+  // If user clicked a group button, ensure the exams list is in view
+  if (btn) {
+    const banner = document.getElementById("active-group-alert-banner");
+    if (banner) {
+      banner.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
 }
 
 function filterPathsByGrade(grade, btn) {
@@ -1646,6 +1671,271 @@ function filterPathsByCategory(cat, btn) {
   renderSchoolPaths();
 }
 
+let activeSchoolPathSearchQuery = "";
+
+function handleSchoolPathSearch(query) {
+  activeSchoolPathSearchQuery = (query || "").trim().toLowerCase();
+  const clearBtn = document.getElementById("clear-path-search-btn");
+  if (clearBtn) {
+    if (activeSchoolPathSearchQuery.length > 0) {
+      clearBtn.classList.remove("d-none");
+    } else {
+      clearBtn.classList.add("d-none");
+    }
+  }
+  document.querySelectorAll(".path-search-chip").forEach((chip) => {
+    const term = (chip.getAttribute("data-search-term") || chip.textContent || "").toLowerCase();
+    if (activeSchoolPathSearchQuery && term && activeSchoolPathSearchQuery.includes(term.trim())) {
+      chip.classList.add("active");
+    } else {
+      chip.classList.remove("active");
+    }
+  });
+  renderSchoolPaths();
+}
+window.handleSchoolPathSearch = handleSchoolPathSearch;
+
+function quickSearchSchoolPath(term) {
+  const input = document.getElementById("school-path-search-input");
+  if (input) {
+    input.value = term;
+    handleSchoolPathSearch(term);
+    input.focus();
+  }
+}
+window.quickSearchSchoolPath = quickSearchSchoolPath;
+
+function clearSchoolPathSearch() {
+  const input = document.getElementById("school-path-search-input");
+  if (input) {
+    input.value = "";
+    handleSchoolPathSearch("");
+    input.focus();
+  }
+}
+window.clearSchoolPathSearch = clearSchoolPathSearch;
+
+// =========================================================================
+// UNIVERSAL PLACEMENT COMPASS SEARCH (SEARCH ACROSS ALL 8 PILLARS)
+// =========================================================================
+function handleGlobalCompassSearch(query) {
+  const rawQuery = (query || "").trim().toLowerCase();
+  const resultsContainer = document.getElementById("global-compass-search-results");
+  const clearBtn = document.getElementById("clear-global-search-btn");
+  const badge = document.getElementById("global-compass-search-badge");
+
+  if (clearBtn) {
+    if (rawQuery.length > 0) clearBtn.classList.remove("d-none");
+    else clearBtn.classList.add("d-none");
+  }
+
+  if (!resultsContainer) return;
+
+  if (!rawQuery) {
+    resultsContainer.classList.add("d-none");
+    resultsContainer.innerHTML = "";
+    if (badge) badge.textContent = "All 8 Pillars Searchable";
+    return;
+  }
+
+  const terms = rawQuery.split(/\s+/).filter(Boolean);
+
+  // 1. Search Entrance Exams
+  const matchingExams = (allSchoolExams || []).filter((e) => {
+    const text = [e.exam_name, e.conducting_body, (e.target_courses || []).join(" "), (e.career_positions || []).join(" "), (e.top_colleges_tn || []).join(" ")].join(" ").toLowerCase();
+    return terms.every(t => text.includes(t));
+  }).slice(0, 4);
+
+  // 2. Search Career Positions
+  const matchingPositions = (allCareerPositions || []).filter((p) => {
+    const text = [p.title, p.sector, p.salary_range, (p.target_groups || []).join(" "), (p.gateway_exams || []).join(" ")].join(" ").toLowerCase();
+    return terms.every(t => text.includes(t));
+  }).slice(0, 4);
+
+  // 3. Search Pathways
+  const matchingPaths = (allSchoolPaths || []).filter((p) => {
+    const text = [p.title, p.tagline, p.category, p.eligibility, (p.top_colleges || []).join(" ")].join(" ").toLowerCase();
+    return terms.every(t => text.includes(t));
+  }).slice(0, 4);
+
+  // 4. Search Colleges
+  const matchingColleges = (allCollegesList || []).filter((c) => {
+    const text = [c.college_name, c.location, c.stream, (c.key_courses || []).join(" ")].join(" ").toLowerCase();
+    return terms.every(t => text.includes(t));
+  }).slice(0, 4);
+
+  const totalMatches = matchingExams.length + matchingPositions.length + matchingPaths.length + matchingColleges.length;
+
+  if (badge) {
+    badge.textContent = `Found ${totalMatches} Total Matches`;
+  }
+
+  resultsContainer.classList.remove("d-none");
+
+  if (totalMatches === 0) {
+    resultsContainer.innerHTML = `
+      <div class="text-center py-3 text-muted">
+        <div class="fs-3 mb-1">🔍</div>
+        <div class="fw-bold">No results found for "${escapeHtml(rawQuery)}"</div>
+        <div class="small">Try searching broader keywords like <strong>"JEE", "NEET", "TNEA", "Doctor", "Software", "Law", "Police", "B.Tech"</strong>.</div>
+      </div>
+    `;
+    return;
+  }
+
+  let html = `<div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+    <span class="small fw-bold text-secondary text-uppercase">Top Matches Across Placement Compass for "${escapeHtml(rawQuery)}":</span>
+    <span class="badge bg-success rounded-pill px-2.5 py-1 small">${totalMatches} Matches Found</span>
+  </div><div class="row g-2">`;
+
+  if (matchingExams.length > 0) {
+    html += `
+      <div class="col-md-6 col-lg-3">
+        <div class="p-2.5 rounded-3 bg-white border h-100">
+          <div class="fw-bold text-primary small mb-1.5 d-flex align-items-center gap-1">
+            <span>📝</span> Entrance Exams (${matchingExams.length})
+          </div>
+          ${matchingExams.map(e => `
+            <div class="p-1.5 mb-1 rounded bg-light border hover-lift cursor-pointer small" onclick="jumpToExam('${escapeHtml(e.exam_name)}')">
+              <div class="fw-bold text-dark text-truncate">${escapeHtml(e.exam_name)}</div>
+              <div class="text-muted" style="font-size: 0.72rem;">${escapeHtml(e.conducting_body)} • ${escapeHtml(e.exam_date || '2026')}</div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  if (matchingPositions.length > 0) {
+    html += `
+      <div class="col-md-6 col-lg-3">
+        <div class="p-2.5 rounded-3 bg-white border h-100">
+          <div class="fw-bold text-success small mb-1.5 d-flex align-items-center gap-1">
+            <span>💼</span> Career Roles (${matchingPositions.length})
+          </div>
+          ${matchingPositions.map(p => `
+            <div class="p-1.5 mb-1 rounded bg-light border hover-lift cursor-pointer small" onclick="jumpToPosition('${escapeHtml(p.title)}')">
+              <div class="fw-bold text-dark text-truncate">${escapeHtml(p.title)}</div>
+              <div class="text-muted" style="font-size: 0.72rem;">${escapeHtml(p.starting_package || p.salary_range || '')}</div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  if (matchingPaths.length > 0) {
+    html += `
+      <div class="col-md-6 col-lg-3">
+        <div class="p-2.5 rounded-3 bg-white border h-100">
+          <div class="fw-bold text-info small mb-1.5 d-flex align-items-center gap-1">
+            <span>🎓</span> Degree Paths (${matchingPaths.length})
+          </div>
+          ${matchingPaths.map(p => `
+            <div class="p-1.5 mb-1 rounded bg-light border hover-lift cursor-pointer small" onclick="jumpToPath('${escapeHtml(p.title)}')">
+              <div class="fw-bold text-dark text-truncate">${escapeHtml(p.title)}</div>
+              <div class="text-muted" style="font-size: 0.72rem;">${escapeHtml(p.duration)} • ${escapeHtml(p.category)}</div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  if (matchingColleges.length > 0) {
+    html += `
+      <div class="col-md-6 col-lg-3">
+        <div class="p-2.5 rounded-3 bg-white border h-100">
+          <div class="fw-bold text-warning-emphasis small mb-1.5 d-flex align-items-center gap-1">
+            <span>🏛️</span> Top Colleges (${matchingColleges.length})
+          </div>
+          ${matchingColleges.map(c => `
+            <div class="p-1.5 mb-1 rounded bg-light border hover-lift cursor-pointer small" onclick="jumpToCollege('${escapeHtml(c.college_name)}')">
+              <div class="fw-bold text-dark text-truncate">${escapeHtml(c.college_name)}</div>
+              <div class="text-muted" style="font-size: 0.72rem;">${escapeHtml(c.location)} • ${escapeHtml(c.stream)}</div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  html += `</div>`;
+  resultsContainer.innerHTML = html;
+}
+window.handleGlobalCompassSearch = handleGlobalCompassSearch;
+
+function quickGlobalCompassSearch(term) {
+  const input = document.getElementById("global-compass-search-input");
+  if (input) {
+    input.value = term;
+    handleGlobalCompassSearch(term);
+    input.focus();
+  }
+}
+window.quickGlobalCompassSearch = quickGlobalCompassSearch;
+
+function clearGlobalCompassSearch() {
+  const input = document.getElementById("global-compass-search-input");
+  if (input) {
+    input.value = "";
+    handleGlobalCompassSearch("");
+    input.focus();
+  }
+}
+window.clearGlobalCompassSearch = clearGlobalCompassSearch;
+
+function jumpToExam(examName) {
+  switchSchoolTab("exams");
+  switchExamSectionView("calendars");
+  filterExamsByAcademicGroup("all", null);
+  const examInput = document.getElementById("exam-search-input");
+  if (examInput) {
+    examInput.value = examName;
+    handleExamSearch(examName);
+    examInput.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+  const resultsContainer = document.getElementById("global-compass-search-results");
+  if (resultsContainer) resultsContainer.classList.add("d-none");
+}
+window.jumpToExam = jumpToExam;
+
+function jumpToPosition(posTitle) {
+  switchSchoolTab("exams");
+  switchExamSectionView("positions");
+  const posInput = document.getElementById("position-search-input");
+  if (posInput) {
+    posInput.value = posTitle;
+    handlePositionSearch(posTitle);
+    posInput.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+  const resultsContainer = document.getElementById("global-compass-search-results");
+  if (resultsContainer) resultsContainer.classList.add("d-none");
+}
+window.jumpToPosition = jumpToPosition;
+
+function jumpToPath(pathTitle) {
+  switchSchoolTab("explorer");
+  const pathInput = document.getElementById("school-path-search-input");
+  if (pathInput) {
+    pathInput.value = pathTitle;
+    handleSchoolPathSearch(pathTitle);
+    pathInput.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+  const resultsContainer = document.getElementById("global-compass-search-results");
+  if (resultsContainer) resultsContainer.classList.add("d-none");
+}
+window.jumpToPath = jumpToPath;
+
+function jumpToCollege(collegeName) {
+  switchSchoolTab("colleges");
+  const resultsContainer = document.getElementById("global-compass-search-results");
+  if (resultsContainer) resultsContainer.classList.add("d-none");
+  const table = document.getElementById("colleges-overview-table");
+  if (table) table.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+window.jumpToCollege = jumpToCollege;
+
 function renderSchoolPaths() {
   const grid = document.getElementById("school-paths-grid");
   if (!grid) return;
@@ -1678,7 +1968,52 @@ function renderSchoolPaths() {
     filtered = filtered.filter((p) => p.category === activeCatFilter);
   }
 
+  // Filter by search query if any
+  if (activeSchoolPathSearchQuery) {
+    const terms = activeSchoolPathSearchQuery.split(/\s+/).filter(Boolean);
+    filtered = filtered.filter((p) => {
+      const text = [
+        p.title || "",
+        p.tagline || "",
+        p.description || "",
+        p.category || "",
+        p.duration || "",
+        p.eligibility || "",
+        (p.top_colleges || []).join(" "),
+        (p.career_opportunities || []).join(" "),
+        (p.entrance_exams || []).map((e) => (typeof e === "string" ? e : e.name || "")).join(" "),
+        p.starting_salary || "",
+        p.senior_salary || "",
+        p.admission_mode || "",
+      ].join(" ").toLowerCase();
+      return terms.every((t) => text.includes(t));
+    });
+  }
+
+  const pathSearchBadge = document.getElementById("school-path-search-badge");
+  if (pathSearchBadge) {
+    if (activeSchoolPathSearchQuery) {
+      pathSearchBadge.textContent = `Found ${filtered.length} of ${(allSchoolPaths || []).length} Pathways`;
+      pathSearchBadge.className = "badge bg-success rounded-pill px-3 py-2 fw-bold small";
+    } else {
+      pathSearchBadge.textContent = `Showing All ${filtered.length} Pathways`;
+      pathSearchBadge.className = "badge bg-primary rounded-pill px-3 py-2 fw-bold small";
+    }
+  }
+
   if (!filtered || filtered.length === 0) {
+    if (activeSchoolPathSearchQuery) {
+      grid.innerHTML = `
+        <div class="col-12 text-center py-5 bg-white rounded-4 border">
+          <div class="fs-1 mb-2">🔍</div>
+          <h5 class="fw-bold text-dark">No career pathways match "${escapeHtml(activeSchoolPathSearchQuery)}"</h5>
+          <p class="text-secondary small mb-3">Try clearing your search query or reset filters to explore all available streams.</p>
+          <button class="btn btn-primary btn-sm rounded-pill px-4 fw-bold" onclick="clearSchoolPathSearch()">Clear Search</button>
+        </div>
+      `;
+      return;
+    }
+
     let explanationHtml = "";
     if (activeGradeFilter === "after_12th_pcb" && activeCatFilter === "engineering") {
       explanationHtml = `
@@ -1827,6 +2162,7 @@ function renderSchoolPaths() {
     })
     .join("");
 }
+window.renderSchoolExams = renderSchoolExams;
 
 function resetSchoolFilters() {
   activeGradeFilter = "all";
@@ -1937,6 +2273,7 @@ function renderCollegesCategoryGrid() {
     )
     .join("");
 }
+window.renderSchoolExams = renderSchoolExams;
 
 function quickAddCollegeToCompare(collegeId) {
   const c1 = document.getElementById("college-select-1");
@@ -3108,10 +3445,154 @@ function renderMatcherResults(data) {
 }
 
 // -------------------------------------------------------------
-// 6. ENTRANCE EXAMS CALENDAR & 1-CLICK SYNC
+// 6. ENTRANCE EXAMS CALENDAR, STATUS TRACKER & 1-CLICK SYNC
 // -------------------------------------------------------------
+
+function getExamStatusDetails(e) {
+  const isMerit = e.admission_type && e.admission_type.includes("No Entrance Exam");
+  const rawStatus = (e.application_status || "").toLowerCase();
+
+  if (rawStatus === "approaching") {
+    return {
+      key: "approaching",
+      badgeText: "⚠️ Deadline Approaching",
+      badgeClass: "bg-danger text-white shadow-xs fw-bold",
+      accentBg: "#fff1f2",
+      highlightBorder: "border-danger border-2",
+      statusLabel: e.application_status_label || "⚠️ Registration Closing Soon — Apply Immediately!",
+      isApproaching: true,
+      isOpen: true,
+      isUpcoming: false,
+      isMerit: isMerit
+    };
+  }
+
+  if (rawStatus === "open") {
+    return {
+      key: "open",
+      badgeText: "🟢 Application Open Now",
+      badgeClass: "bg-success text-white shadow-xs fw-bold",
+      accentBg: "#f0fdf4",
+      highlightBorder: "border-success border-2",
+      statusLabel: e.application_status_label || "🟢 Online Registration Active Now",
+      isApproaching: false,
+      isOpen: true,
+      isUpcoming: false,
+      isMerit: isMerit
+    };
+  }
+
+  if (isMerit || rawStatus === "merit") {
+    return {
+      key: "merit",
+      badgeText: "📋 Direct Cutoff Merit",
+      badgeClass: "bg-info text-dark fw-bold",
+      accentBg: "#f0f9ff",
+      highlightBorder: "border-info",
+      statusLabel: e.application_status_label || "📋 Single-Window Merit Selection (No Exam)",
+      isApproaching: false,
+      isOpen: false,
+      isUpcoming: true,
+      isMerit: true
+    };
+  }
+
+  return {
+    key: "upcoming",
+    badgeText: "🔵 Applications Upcoming",
+    badgeClass: "bg-primary-subtle text-primary-emphasis border border-primary-subtle fw-semibold",
+    accentBg: "#f8fafc",
+    highlightBorder: "border-light-subtle",
+    statusLabel: e.application_status_label || "🔵 Opening Soon for 2026 Admissions",
+    isApproaching: false,
+    isOpen: false,
+    isUpcoming: true,
+    isMerit: isMerit
+  };
+}
+window.getExamStatusDetails = getExamStatusDetails;
+
+function filterExamsByStatus(status, btn) {
+  activeExamStatusFilter = status || "all";
+  document.querySelectorAll("#exam-status-filter-btns button").forEach((b) => {
+    if (b.getAttribute("data-exam-status") === activeExamStatusFilter) {
+      b.classList.add("active");
+    } else {
+      b.classList.remove("active");
+    }
+  });
+  renderSchoolExams();
+}
+window.filterExamsByStatus = filterExamsByStatus;
+
+function handleExamSearch(query) {
+  activeExamSearchQuery = (query || "").trim().toLowerCase();
+  
+  // Show or hide clear button
+  const clearBtn = document.getElementById("clear-exam-search-btn");
+  if (clearBtn) {
+    if (activeExamSearchQuery.length > 0) {
+      clearBtn.classList.remove("d-none");
+    } else {
+      clearBtn.classList.add("d-none");
+    }
+  }
+
+  // Update quick search chip active states
+  document.querySelectorAll(".exam-search-chip").forEach((chip) => {
+    const chipText = (chip.getAttribute("data-search-term") || "").toLowerCase();
+    if (activeExamSearchQuery && chipText && activeExamSearchQuery.includes(chipText)) {
+      chip.classList.add("active");
+    } else {
+      chip.classList.remove("active");
+    }
+  });
+
+  renderSchoolExams();
+}
+window.handleExamSearch = handleExamSearch;
+
+function quickSearchExam(term) {
+  const input = document.getElementById("exam-search-input");
+  if (input) {
+    input.value = term;
+    handleExamSearch(term);
+    input.focus();
+  }
+}
+window.quickSearchExam = quickSearchExam;
+
+function clearExamSearch() {
+  const input = document.getElementById("exam-search-input");
+  if (input) {
+    input.value = "";
+    handleExamSearch("");
+    input.focus();
+  }
+}
+window.clearExamSearch = clearExamSearch;
+
+function switchExamViewMode(mode, btn) {
+  currentExamViewMode = mode || "cards";
+  const cardsBtn = document.getElementById("exam-view-cards-btn");
+  const tableBtn = document.getElementById("exam-view-table-btn");
+  if (cardsBtn && tableBtn) {
+    if (currentExamViewMode === "table") {
+      tableBtn.classList.add("active");
+      cardsBtn.classList.remove("active");
+    } else {
+      cardsBtn.classList.add("active");
+      tableBtn.classList.remove("active");
+    }
+  }
+  renderSchoolExams();
+}
+window.switchExamViewMode = switchExamViewMode;
+
 function renderSchoolExams() {
   const container = document.getElementById("school-exams-list");
+  const tableContainer = document.getElementById("school-exams-table-container");
+  const tableBody = document.getElementById("school-exams-table-body");
   if (!container) return;
 
   if (!allSchoolExams || allSchoolExams.length === 0) {
@@ -3140,11 +3621,11 @@ function renderSchoolExams() {
     }
   });
 
-  let filtered = allSchoolExams || [];
+  let basePool = allSchoolExams || [];
 
   // 1. Group Filtering (Computer Science vs Biology vs Commerce vs Arts vs Vocational vs 10th)
   if (activeAcademicGroup && activeAcademicGroup !== "all") {
-    filtered = filtered.filter((e) => {
+    basePool = basePool.filter((e) => {
       const groups = (e.target_groups || []).map((g) => g.toLowerCase());
       return groups.includes(activeAcademicGroup.toLowerCase());
     });
@@ -3152,17 +3633,17 @@ function renderSchoolExams() {
 
   // 2. Stage Filtering (After 10th vs After 12th)
   if (activeAcademicGroup === "sslc_10th") {
-    filtered = filtered.filter((e) => e.target_stage === "after_10th");
+    basePool = basePool.filter((e) => e.target_stage === "after_10th");
   } else if (activeExamStageFilter === "after_10th") {
-    filtered = filtered.filter((e) => e.target_stage === "after_10th");
+    basePool = basePool.filter((e) => e.target_stage === "after_10th");
   } else if (activeExamStageFilter === "after_12th") {
-    filtered = filtered.filter((e) => e.target_stage === "after_12th");
+    basePool = basePool.filter((e) => e.target_stage === "after_12th");
   }
 
   // 3. Fallback Auto-Heal: If zero exams resulted from a stage filter mismatch with the selected group
-  if ((!filtered || filtered.length === 0) && activeAcademicGroup && activeAcademicGroup !== "all") {
+  if ((!basePool || basePool.length === 0) && activeAcademicGroup && activeAcademicGroup !== "all") {
     if (activeAcademicGroup === "sslc_10th") {
-      filtered = (allSchoolExams || []).filter((e) => {
+      basePool = (allSchoolExams || []).filter((e) => {
         const groups = (e.target_groups || []).map((g) => g.toLowerCase());
         return groups.includes("sslc_10th") || e.target_stage === "after_10th";
       });
@@ -3173,7 +3654,7 @@ function renderSchoolExams() {
         return groups.includes(activeAcademicGroup.toLowerCase());
       });
       if (groupMatches.length > 0) {
-        filtered = groupMatches;
+        basePool = groupMatches;
         activeExamStageFilter = "after_12th";
       }
     }
@@ -3188,29 +3669,249 @@ function renderSchoolExams() {
     });
   }
 
-  // Update count badge
-  const countBadge = document.getElementById("active-group-count-badge");
-  if (countBadge) {
-    countBadge.textContent = `${filtered.length} Exams Available`;
+  // Calculate live counts across the current group/stage pool
+  const countAll = basePool.length;
+  const countOpen = basePool.filter((e) => {
+    const s = getExamStatusDetails(e);
+    return s.key === "open";
+  }).length;
+  const countApproaching = basePool.filter((e) => {
+    const s = getExamStatusDetails(e);
+    return s.key === "approaching";
+  }).length;
+  const countUpcoming = basePool.filter((e) => {
+    const s = getExamStatusDetails(e);
+    return s.key === "upcoming";
+  }).length;
+  const countMerit = basePool.filter((e) => {
+    const s = getExamStatusDetails(e);
+    return s.isMerit || s.key === "merit";
+  }).length;
+
+  // Update DOM count badges
+  const kpiOpen = document.getElementById("kpi-open-count");
+  if (kpiOpen) kpiOpen.textContent = countOpen;
+  const statusOpen = document.getElementById("status-count-open");
+  if (statusOpen) statusOpen.textContent = countOpen;
+
+  const kpiApp = document.getElementById("kpi-approaching-count");
+  if (kpiApp) kpiApp.textContent = countApproaching;
+  const statusApp = document.getElementById("status-count-approaching");
+  if (statusApp) statusApp.textContent = countApproaching;
+
+  const kpiUp = document.getElementById("kpi-upcoming-count");
+  if (kpiUp) kpiUp.textContent = countUpcoming;
+  const statusUp = document.getElementById("status-count-upcoming");
+  if (statusUp) statusUp.textContent = countUpcoming;
+
+  const kpiMerit = document.getElementById("kpi-merit-count");
+  if (kpiMerit) kpiMerit.textContent = countMerit;
+  const statusMerit = document.getElementById("status-count-merit");
+  if (statusMerit) statusMerit.textContent = countMerit;
+
+  const statusAll = document.getElementById("status-count-all");
+  if (statusAll) statusAll.textContent = countAll;
+
+  // Filter pool by activeExamStatusFilter
+  let filtered = basePool;
+  if (activeExamStatusFilter === "open") {
+    filtered = filtered.filter((e) => getExamStatusDetails(e).key === "open");
+  } else if (activeExamStatusFilter === "approaching") {
+    filtered = filtered.filter((e) => getExamStatusDetails(e).key === "approaching");
+  } else if (activeExamStatusFilter === "upcoming") {
+    filtered = filtered.filter((e) => getExamStatusDetails(e).key === "upcoming");
+  } else if (activeExamStatusFilter === "merit") {
+    filtered = filtered.filter((e) => {
+      const s = getExamStatusDetails(e);
+      return s.isMerit || s.key === "merit";
+    });
   }
 
+  // Filter by search query if any (Multi-term Google-grade search)
+  if (activeExamSearchQuery) {
+    const terms = activeExamSearchQuery.split(/\s+/).filter(Boolean);
+    filtered = filtered.filter((e) => {
+      const searchableText = [
+        e.exam_name || "",
+        e.conducting_body || "",
+        (e.target_courses || []).join(" "),
+        (e.career_positions || []).join(" "),
+        (e.top_colleges_tn || []).join(" "),
+        e.syllabus_highlights || "",
+        e.eligibility_summary || "",
+        e.exam_date || "",
+        e.registration_start || "",
+        e.registration_deadline || "",
+        e.group_badge || "",
+        e.application_status_label || "",
+        e.admission_type || ""
+      ].join(" ").toLowerCase();
+
+      return terms.every(term => searchableText.includes(term));
+    });
+  }
+
+  // Smart Cross-Group Fallback: If 0 matches in current academic group, check all groups
+  let isCrossGroupSearch = false;
+  if (activeExamSearchQuery && filtered.length === 0 && activeAcademicGroup && activeAcademicGroup !== "all") {
+    const terms = activeExamSearchQuery.split(/\s+/).filter(Boolean);
+    const globalMatches = (allSchoolExams || []).filter((e) => {
+      const searchableText = [
+        e.exam_name || "",
+        e.conducting_body || "",
+        (e.target_courses || []).join(" "),
+        (e.career_positions || []).join(" "),
+        (e.top_colleges_tn || []).join(" "),
+        e.syllabus_highlights || "",
+        e.eligibility_summary || "",
+        e.exam_date || "",
+        e.registration_start || "",
+        e.registration_deadline || "",
+        e.group_badge || "",
+        e.application_status_label || "",
+        e.admission_type || ""
+      ].join(" ").toLowerCase();
+      return terms.every((term) => searchableText.includes(term));
+    });
+
+    if (globalMatches.length > 0) {
+      filtered = globalMatches;
+      isCrossGroupSearch = true;
+    }
+  }
+
+  // Update search results badge
+  const searchResultsBadge = document.getElementById("exam-search-results-count");
+  if (searchResultsBadge) {
+    if (activeExamSearchQuery) {
+      if (isCrossGroupSearch) {
+        searchResultsBadge.textContent = `Found ${filtered.length} in Other Groups`;
+        searchResultsBadge.className = "badge bg-warning text-dark rounded-pill px-3 py-2 fw-bold small";
+      } else {
+        searchResultsBadge.textContent = `Found ${filtered.length} of ${countAll} Exams`;
+        searchResultsBadge.className = "badge bg-success rounded-pill px-3 py-2 fw-bold small";
+      }
+    } else {
+      searchResultsBadge.textContent = `Showing ${filtered.length} Exams`;
+      searchResultsBadge.className = "badge bg-primary rounded-pill px-3 py-2 fw-bold small";
+    }
+  }
+
+  // Update total banner count
+  const countBadge = document.getElementById("active-group-count-badge");
+  if (countBadge) {
+    countBadge.textContent = `${filtered.length} Exams Shown`;
+  }
+
+  // Handle empty state
   if (!filtered || filtered.length === 0) {
-    container.innerHTML = `
+    const emptyHtml = `
       <div class="col-12 text-center py-5 bg-white rounded-4 border">
         <div class="fs-1 mb-2">📋</div>
-        <h6 class="fw-bold text-dark">No entrance exams found for this group.</h6>
-        <p class="text-muted small mb-0">Switch your selected academic group above to see exams.</p>
-        <button class="btn btn-sm btn-outline-primary rounded-pill px-4 mt-3 fw-bold" onclick="filterExamsByAcademicGroup('all', null)">
-          🌐 Show All Groups
+        <h6 class="fw-bold text-dark">No entrance exams match the selected filter.</h6>
+        <p class="text-muted small mb-0">Try switching your application status filter or search keyword.</p>
+        <button class="btn btn-sm btn-outline-primary rounded-pill px-4 mt-3 fw-bold" onclick="filterExamsByStatus('all', null); filterExamsByAcademicGroup('all', null); clearExamSearch();">
+          🌐 Reset All Filters
         </button>
       </div>
     `;
+    container.innerHTML = emptyHtml;
+    if (tableContainer) tableContainer.classList.add("d-none");
+    container.classList.remove("d-none");
     return;
   }
 
-  container.innerHTML = filtered
+  const crossGroupBanner = isCrossGroupSearch ? `
+    <div class="col-12 mb-3">
+      <div class="alert alert-warning border border-warning rounded-4 p-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 shadow-xs">
+        <div>
+          <span class="fw-bold">💡 Showing matches from other academic groups:</span>
+          <div class="small mt-0.5">"${escapeHtml(activeExamSearchQuery)}" is not part of the currently selected group, so displaying matches across all student groups.</div>
+        </div>
+        <button class="btn btn-sm btn-outline-dark rounded-pill px-3 py-1 fw-bold text-nowrap" onclick="filterExamsByAcademicGroup('all', null)">
+          🌐 Switch to All Groups
+        </button>
+      </div>
+    </div>
+  ` : "";
+
+  // Render Table View if currentExamViewMode === "table"
+  if (currentExamViewMode === "table" && tableContainer && tableBody) {
+    tableContainer.classList.remove("d-none");
+    container.classList.add("d-none");
+
+    tableBody.innerHTML = (isCrossGroupSearch ? `<tr><td colspan="7" class="p-0 border-0">${crossGroupBanner}</td></tr>` : "") + filtered.map((e) => {
+      const statusDetails = getExamStatusDetails(e);
+      const isMerit = e.admission_type && e.admission_type.includes("No Entrance Exam");
+      const admissionBadge = isMerit
+        ? `<span class="badge bg-success-subtle text-success-emphasis border border-success-subtle small rounded-pill px-2 py-0.5">Cutoff Merit</span>`
+        : `<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle small rounded-pill px-2 py-0.5">Entrance Exam</span>`;
+      const stageBadge = e.target_stage === "after_10th"
+        ? `<span class="badge bg-info-subtle text-info-emphasis rounded-pill small px-2 py-0.5">10th SSLC</span>`
+        : `<span class="badge bg-primary-subtle text-primary-emphasis rounded-pill small px-2 py-0.5">12th HSC</span>`;
+
+      const schedule = e.exam_schedule_breakdown || {};
+      const counsellingStr = schedule.counselling_schedule || "Announced Post-Exam";
+      const cleanDomain = e.official_url ? e.official_url.replace("https://", "").replace("http://", "").replace("www.", "").split("/")[0] : "Official Portal";
+
+      return `
+        <tr class="${statusDetails.isApproaching ? 'table-danger bg-opacity-25' : ''}">
+          <td>
+            <div class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">${escapeHtml(e.exam_name)}</div>
+            <div class="d-flex gap-1 flex-wrap align-items-center">
+              ${stageBadge}
+              ${admissionBadge}
+              <span class="badge bg-light text-secondary border small">${escapeHtml(e.conducting_body)}</span>
+            </div>
+          </td>
+          <td>
+            <span class="badge ${statusDetails.badgeClass} rounded-pill px-2.5 py-1 text-nowrap">
+              ${statusDetails.badgeText}
+            </span>
+            <div class="small text-muted mt-1" style="font-size: 0.75rem;">${escapeHtml(statusDetails.statusLabel)}</div>
+          </td>
+          <td>
+            <div class="fw-bold text-success small d-flex align-items-center gap-1">
+              <span>🟢</span> ${escapeHtml(e.registration_start || 'Announced Soon')}
+            </div>
+          </td>
+          <td>
+            <div class="fw-bold ${statusDetails.isApproaching ? 'text-danger' : 'text-dark'} small d-flex align-items-center gap-1">
+              <span>⏳</span> ${escapeHtml(e.registration_deadline || 'Announced Soon')}
+            </div>
+          </td>
+          <td>
+            <div class="fw-bold text-primary small">
+              ${formatEntranceExamDate(e.exam_date, e.is_date_confirmed)}
+            </div>
+          </td>
+          <td>
+            <div class="small text-secondary" style="font-size: 0.8rem;">
+              ${escapeHtml(counsellingStr)}
+            </div>
+          </td>
+          <td class="text-end">
+            <div class="d-flex flex-column gap-1 align-items-end">
+              <a href="${escapeHtml(e.official_url)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm rounded-pill fw-semibold py-1 px-3 text-nowrap" style="font-size: 0.78rem;">
+                Apply / Portal &rarr;
+              </a>
+              ${e.google_calendar_url ? `<a href="${escapeHtml(e.google_calendar_url)}" target="_blank" rel="noopener noreferrer" class="text-danger small fw-semibold text-decoration-none" style="font-size: 0.72rem;">📅 Sync Calendar</a>` : ''}
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+    return;
+  }
+
+  // Otherwise, Render Card Grid View
+  if (tableContainer) tableContainer.classList.add("d-none");
+  container.classList.remove("d-none");
+
+  container.innerHTML = crossGroupBanner + filtered
     .map(
       (e) => {
+        const statusDetails = getExamStatusDetails(e);
         const isMerit = e.admission_type && e.admission_type.includes("No Entrance Exam");
         const admissionBadge = isMerit
           ? `<span class="badge bg-success text-white small rounded-pill px-2.5 py-1">Direct Cutoff Merit</span>`
@@ -3220,11 +3921,11 @@ function renderSchoolExams() {
           : `<span class="badge bg-primary bg-opacity-25 text-primary-emphasis fw-bold rounded-pill small px-2.5 py-1">🎓 12th Grade (HSC)</span>`;
 
         const groupTag = e.group_badge
-          ? `<span class="badge bg-light text-primary border small rounded-pill fw-semibold">${e.group_badge}</span>`
+          ? `<span class="badge bg-light text-primary border small rounded-pill fw-semibold">${escapeHtml(e.group_badge)}</span>`
           : "";
 
         const calBtn = e.google_calendar_url
-          ? `<a href="${e.google_calendar_url}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger btn-sm rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm">
+          ? `<a href="${escapeHtml(e.google_calendar_url)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger btn-sm rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm">
               <span>📅</span> Sync to Google Calendar
             </a>`
           : `<div class="text-center small text-muted py-1 fw-semibold border rounded-pill bg-light">
@@ -3242,62 +3943,114 @@ function renderSchoolExams() {
                 <span>💼</span> Target Positions &amp; Career Opportunities:
               </div>
               <div class="d-flex flex-wrap gap-1">
-                ${positionsList.map((p) => `<span class="badge bg-white text-dark border small fw-semibold py-1 px-2 rounded-pill shadow-xs">${p}</span>`).join("")}
+                ${positionsList.map((p) => `<span class="badge bg-white text-dark border small fw-semibold py-1 px-2 rounded-pill shadow-xs">${escapeHtml(p)}</span>`).join("")}
               </div>
             </div>
           `
           : "";
 
         const salaryHtml = e.average_salary_package
-          ? `<div class="small mb-1"><strong class="text-success">💰 Avg Starting Package:</strong> <span class="fw-bold text-success">${e.average_salary_package}</span></div>`
+          ? `<div class="small mb-1"><strong class="text-success">💰 Avg Starting Package:</strong> <span class="fw-bold text-success">${escapeHtml(e.average_salary_package)}</span></div>`
           : "";
 
         const collegesHtml = (e.top_colleges_tn && e.top_colleges_tn.length > 0)
-          ? `<div class="small mb-1"><strong class="text-dark">🏛️ Top TN Campuses:</strong> <span class="text-secondary">${e.top_colleges_tn.slice(0, 3).join(", ")}</span></div>`
+          ? `<div class="small mb-1"><strong class="text-dark">🏛️ Top TN Campuses:</strong> <span class="text-secondary">${escapeHtml(e.top_colleges_tn.slice(0, 3).join(", "))}</span></div>`
           : "";
 
         const perksHtml = e.tn_quota_perks
           ? `<div class="p-2 bg-warning bg-opacity-10 border border-warning-subtle rounded-3 small mb-2 text-dark">
-              <strong>🌟 Tamil Nadu Perks &amp; Quotas:</strong> ${e.tn_quota_perks}
+              <strong>🌟 Tamil Nadu Perks &amp; Quotas:</strong> ${escapeHtml(e.tn_quota_perks)}
             </div>`
           : "";
 
         const schedule = e.exam_schedule_breakdown || {};
         const counsellingHtml = schedule.counselling_schedule
-          ? `<div class="fw-semibold text-secondary mb-1">
-              <strong>🏆 Counselling / Results:</strong> <span class="text-dark">${schedule.counselling_schedule}</span>
+          ? `<div class="d-flex align-items-start justify-content-between py-1.5 border-bottom border-light-subtle">
+              <span class="small fw-semibold text-secondary d-flex align-items-center gap-1 text-nowrap">
+                <span>🏆</span> <strong>Counselling:</strong>
+              </span>
+              <span class="small fw-semibold text-dark text-end ms-2">${escapeHtml(schedule.counselling_schedule)}</span>
             </div>`
           : "";
 
         return `
       <div class="col-md-6 col-lg-4">
-        <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100 d-flex flex-column transition-all hover-shadow">
+        <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100 d-flex flex-column transition-all hover-shadow ${statusDetails.highlightBorder}">
+          <!-- Top Row: Stage & Application Status Pill -->
           <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <div class="d-flex gap-1 flex-wrap">
+              ${stageBadge}
+              ${admissionBadge}
+            </div>
             <div>
-              <div class="d-flex gap-1 flex-wrap mb-1">${stageBadge} ${admissionBadge}</div>
-              <h5 class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">${e.exam_name}</h5>
-              <div class="mb-1">${groupTag}</div>
+              <span class="badge ${statusDetails.badgeClass} rounded-pill px-2.5 py-1 text-nowrap" style="font-size: 0.78rem;">
+                ${statusDetails.badgeText}
+              </span>
             </div>
           </div>
+
+          <h5 class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">${escapeHtml(e.exam_name)}</h5>
+          <div class="mb-2">${groupTag}</div>
 
           <div class="small text-muted mb-2">
-            <strong>🏛️ Conducting Body:</strong> <span class="text-secondary">${e.conducting_body}</span>
+            <strong>🏛️ Conducting Body:</strong> <span class="text-secondary">${escapeHtml(e.conducting_body)}</span>
           </div>
 
-          <!-- Exam Dates & Schedule Box -->
-          <div class="p-3 bg-light rounded-3 mb-2 small border">
-            <div class="fw-semibold text-secondary mb-1.5">
-              <strong class="text-dark">🎓 Degree Courses:</strong> <span class="text-dark">${e.target_courses.join(", ")}</span>
+          <!-- Live Status Alert Bar -->
+          <div class="p-2 mb-2.5 rounded-3 d-flex align-items-center gap-2" style="background: ${statusDetails.accentBg}; border: 1px solid rgba(0,0,0,0.06);">
+            <span class="fs-6">${statusDetails.isApproaching ? '🚨' : (statusDetails.isOpen ? '🚀' : (statusDetails.isMerit ? '📊' : '⏳'))}</span>
+            <div class="small fw-bold text-dark lh-sm">
+              ${escapeHtml(statusDetails.statusLabel)}
             </div>
-            <div class="fw-semibold text-danger mb-1.5">
-              <strong>⏳ Application Window:</strong> <span>${e.registration_start ? `${e.registration_start} &rarr; ${e.registration_deadline}` : `<span class="badge bg-warning-subtle text-dark border border-warning-subtle fw-semibold">Upcoming</span>`}</span>
+          </div>
+
+          <!-- Exam Dates & Schedule Matrix Box -->
+          <div class="p-3 bg-light rounded-3 mb-3 border">
+            <div class="text-uppercase text-secondary fw-bold mb-2 pb-1 border-bottom" style="font-size: 0.72rem; letter-spacing: 0.05em;">
+              📅 Official Key Dates &amp; Deadlines (2026)
             </div>
-            <div class="fw-semibold text-primary mb-1.5">
-              <strong>🗓️ Examination Date(s):</strong> <span>${formatEntranceExamDate(e.exam_date, e.is_date_confirmed)}</span>
+
+            <!-- 1. Application Opening Date -->
+            <div class="d-flex align-items-center justify-content-between py-1.5 border-bottom border-light-subtle">
+              <span class="small fw-semibold text-secondary d-flex align-items-center gap-1.5">
+                <span style="color: #16a34a;">🟢</span> <strong>Application Opens:</strong>
+              </span>
+              <span class="small fw-bold text-success text-end">
+                ${escapeHtml(e.registration_start || 'Announced Soon')}
+              </span>
             </div>
+
+            <!-- 2. Application Closing Date / Deadline -->
+            <div class="d-flex align-items-center justify-content-between py-1.5 border-bottom border-light-subtle ${statusDetails.isApproaching ? 'bg-danger bg-opacity-10 px-1 rounded' : ''}">
+              <span class="small fw-semibold text-danger d-flex align-items-center gap-1.5">
+                <span>⏳</span> <strong>Application Closes:</strong>
+              </span>
+              <span class="small fw-bold text-danger text-end">
+                ${escapeHtml(e.registration_deadline || 'Announced Soon')}
+              </span>
+            </div>
+
+            <!-- 3. Examination Date(s) -->
+            <div class="d-flex align-items-start justify-content-between py-1.5 border-bottom border-light-subtle">
+              <span class="small fw-semibold text-primary d-flex align-items-center gap-1.5 text-nowrap">
+                <span>🗓️</span> <strong>Exam Date(s):</strong>
+              </span>
+              <span class="small fw-bold text-dark text-end ms-2">
+                ${formatEntranceExamDate(e.exam_date, e.is_date_confirmed)}
+              </span>
+            </div>
+
+            <!-- 4. Counselling & Results -->
             ${counsellingHtml}
-            <div class="text-muted">
-              <strong>🎓 Eligibility:</strong> <span class="text-dark">${e.eligibility_summary}</span>
+
+            <!-- 5. Target Degrees & Eligibility -->
+            <div class="pt-2 mt-1 border-top border-light-subtle small">
+              <div class="mb-1 text-secondary">
+                <strong class="text-dark">🎓 Degree Courses:</strong> <span class="text-dark">${(e.target_courses || []).map(escapeHtml).join(", ")}</span>
+              </div>
+              <div class="text-secondary">
+                <strong class="text-dark">📋 Eligibility:</strong> <span>${escapeHtml(e.eligibility_summary)}</span>
+              </div>
             </div>
           </div>
 
@@ -3308,13 +4061,13 @@ function renderSchoolExams() {
           ${perksHtml}
 
           <p class="small text-secondary mb-3 flex-grow-1">
-            <strong>Key Process / Syllabus:</strong> ${e.syllabus_highlights}
+            <strong>Key Process / Syllabus:</strong> ${escapeHtml(e.syllabus_highlights)}
           </p>
 
           <div class="d-flex flex-column gap-2 pt-2 border-top mt-auto">
             ${calBtn}
-            <a href="${e.official_url}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm rounded-pill fw-semibold text-center shadow-sm">
-              🔗 Official Portal (${cleanDomain})
+            <a href="${escapeHtml(e.official_url)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm rounded-pill fw-semibold text-center shadow-sm d-flex align-items-center justify-content-center gap-1">
+              <span>🔗</span> Official Portal (${escapeHtml(cleanDomain)}) &rarr;
             </a>
           </div>
         </div>
@@ -3324,6 +4077,7 @@ function renderSchoolExams() {
     )
     .join("");
 }
+window.renderSchoolExams = renderSchoolExams;
 
 // -------------------------------------------------------------
 // 7. ACADEMIC GROUP FILTERING (COMPUTER SCIENCE vs BIOLOGY etc)
@@ -3461,7 +4215,16 @@ function filterExamsByAcademicGroup(group, btn) {
 
   renderSchoolExams();
   renderCareerPositions();
+
+  // If user clicked a group button, ensure the exams list is in view
+  if (btn) {
+    const banner = document.getElementById("active-group-alert-banner");
+    if (banner) {
+      banner.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
 }
+window.filterExamsByAcademicGroup = filterExamsByAcademicGroup;
 
 function filterExamsByGradeStage(stage, btn) {
   activeExamStageFilter = stage;
@@ -3728,6 +4491,7 @@ function renderCareerPositions() {
     })
     .join("");
 }
+window.renderSchoolExams = renderSchoolExams;
 
 function resetPositionFilters() {
   activePosStageFilter = "all";
@@ -3761,6 +4525,14 @@ function resetPositionFilters() {
 
   renderSchoolExams();
   renderCareerPositions();
+
+  // If user clicked a group button, ensure the exams list is in view
+  if (btn) {
+    const banner = document.getElementById("active-group-alert-banner");
+    if (banner) {
+      banner.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
 }
 
 function openPositionExamModal(posId) {
@@ -4090,6 +4862,7 @@ function renderCompanyCards(containerId, list, tier) {
     })
     .join("");
 }
+window.renderSchoolExams = renderSchoolExams;
 
 function quickAddToCompare(companyId) {
   const c1 = document.getElementById("compare-select-1");
@@ -4264,6 +5037,7 @@ function renderDrives(drives) {
     )
     .join("");
 }
+window.renderSchoolExams = renderSchoolExams;
 
 async function loadMockTrajectory() {
   try {
@@ -4382,6 +5156,7 @@ function renderDocumentVault(data) {
     )
     .join("");
 }
+window.renderSchoolExams = renderSchoolExams;
 
 async function toggleDocItem(docId, nextState) {
   try {

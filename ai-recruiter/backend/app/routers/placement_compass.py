@@ -268,9 +268,11 @@ def recommend_school_career_paths(req: CareerRecommendationRequest):
 def get_school_entrance_exams(
     group: Optional[str] = Query(None, description="Filter by student academic group (e.g. computer_science, biology, commerce, arts, vocational, sslc_10th)"),
     stage: Optional[str] = Query(None, description="Filter by qualification stage (after_10th, after_12th)"),
+    search: Optional[str] = Query(None, description="Search keyword for exam name, conducting body, degree course, or career"),
+    status: Optional[str] = Query(None, description="Filter by application status (open, approaching, upcoming, merit)"),
 ):
-    """Returns calendar of major school entrance exams with 1-click Google Calendar sync, filtered by academic group or stage."""
-    exams = placement_compass_service.get_school_entrance_exams_list(group=group, stage=stage)
+    """Returns calendar of major school entrance exams with 1-click Google Calendar sync, filtered by academic group, stage, search keyword, or application status."""
+    exams = placement_compass_service.get_school_entrance_exams_list(group=group, stage=stage, search=search, status=status)
     return APIResponse(
         success=True,
         message="School entrance exams calendar retrieved",
