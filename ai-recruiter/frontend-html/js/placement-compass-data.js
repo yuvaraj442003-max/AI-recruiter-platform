@@ -1585,1155 +1585,1155 @@ window.COMPASS_STATIC_DATA = {
   ],
   "exams": [
     {
-      "admission_type": "National Entrance Exam",
-      "average_salary_package": "₹10.5 LPA - ₹32.0 LPA (NIT Trichy CSE average is ₹27.2 LPA)",
-      "career_opportunities_summary": "Unlocks premier engineering seats across NITs, IIITs, and CFTIs. Graduates receive high-impact placements in top tech giants, semiconductor labs, and fintech multinationals.",
-      "career_positions": [
-        "Software Development Engineer (SDE)",
-        "AI & Machine Learning Specialist",
-        "Cloud Solutions Architect",
-        "VLSI / Semiconductor Engineer",
-        "Data Scientist"
-      ],
-      "conducting_body": "National Testing Agency (NTA)",
-      "eligibility_summary": "12th Standard Pass with Physics, Chemistry & Mathematics. 75% aggregate criteria in 12th Board.",
-      "exam_date": "Session 1: Jan 21 – Jan 30, 2026 | Session 2: Apr 1 – Apr 8, 2026",
-      "exam_name": "JEE Main (Joint Entrance Examination)",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "3 Days before examination date",
-        "application_window": "Session 1: Oct 28 – Nov 22, 2025 | Session 2: Jan 31 – Feb 24, 2026",
-        "counselling_schedule": "JoSAA / CSAB Centralized Counselling: June – July 2026",
-        "exam_dates": "Session 1: Jan 21 – Jan 30, 2026 | Session 2: Apr 1 – Apr 8, 2026"
-      },
-      "group_badge": "💻 Computer Science / Maths Group",
-      "id": "exam_jee_main_2027",
-    "application_status": "open",
-    "application_status_label": "⚠️ Session 1 Closes in 2 Days (Nov 22, 2026) | Session 2 Opens Jan 31, 2027",
-      "official_url": "https://jeemain.nta.nic.in",
-      "registration_deadline": "November 22, 2026 (Session 1) / February 24, 2027 (Session 2)",
-      "registration_start": "Session 1: Oct 28, 2026 | Session 2: Jan 31, 2027",
-      "stage_badge": "After 12th (PCM)",
-      "syllabus_highlights": "300 Marks (Physics 100, Chemistry 100, Mathematics 100). 75 MCQs + Numerical questions from 11th & 12th syllabus.",
-      "target_courses": [
-        "B.Tech Computer Science, AI, ECE, Mechanical at NIT Trichy & IIITDM Kancheepuram"
-      ],
-      "target_groups": [
-        "computer_science",
-        "maths_stream"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "50% Home State Quota reserved exclusively for Tamil Nadu students at NIT Trichy. Full fee concessions for SC/ST students.",
-      "top_colleges_tn": [
-        "National Institute of Technology (NIT) Tiruchirappalli",
-        "IIITDM Kancheepuram (Chennai)",
-        "NIT Puducherry (Karaikal)"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "National Entrance Exam",
+        "average_salary_package": "\u20b910.5 LPA - \u20b932.0 LPA (NIT Trichy CSE average is \u20b927.2 LPA)",
+        "career_opportunities_summary": "Unlocks premier engineering seats across NITs, IIITs, and CFTIs. Graduates receive high-impact placements in top tech giants, semiconductor labs, and fintech multinationals.",
+        "career_positions": [
+            "Software Development Engineer (SDE)",
+            "AI & Machine Learning Specialist",
+            "Cloud Solutions Architect",
+            "VLSI / Semiconductor Engineer",
+            "Data Scientist"
+        ],
+        "conducting_body": "National Testing Agency (NTA)",
+        "eligibility_summary": "12th Standard Pass with Physics, Chemistry & Mathematics. 75% aggregate criteria in 12th Board.",
+        "exam_date": "Session 1: Jan 21 \u2013 Jan 30, 2026 | Session 2: Apr 1 \u2013 Apr 8, 2026",
+        "exam_name": "JEE Main (Joint Entrance Examination)",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "3 Days before examination date",
+            "application_window": "Session 1: Oct 28 \u2013 Nov 22, 2025 | Session 2: Jan 31 \u2013 Feb 24, 2026",
+            "counselling_schedule": "JoSAA / CSAB Centralized Counselling: June \u2013 July 2026",
+            "exam_dates": "Session 1: Jan 21 \u2013 Jan 30, 2026 | Session 2: Apr 1 \u2013 Apr 8, 2026"
+        },
+        "group_badge": "\ud83d\udcbb Computer Science / Maths Group",
+        "id": "exam_jee_main_2027",
+        "application_status": "open",
+        "application_status_label": "\ud83d\udfe2 Session 1 Active | Session 2 Opens Jan 31, 2026",
+        "is_date_confirmed": true,
+        "official_url": "https://jeemain.nta.nic.in",
+        "registration_deadline": "November 22, 2025 (Session 1) / February 24, 2026 (Session 2)",
+        "registration_start": "Session 1: Oct 28, 2025 | Session 2: Jan 31, 2026",
+        "stage_badge": "After 12th (PCM)",
+        "syllabus_highlights": "300 Marks (Physics 100, Chemistry 100, Mathematics 100). 75 MCQs + Numerical questions from 11th & 12th syllabus.",
+        "target_courses": [
+            "B.Tech Computer Science, AI, ECE, Mechanical at NIT Trichy & IIITDM Kancheepuram"
+        ],
+        "target_groups": [
+            "computer_science",
+            "maths_stream"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "50% Home State Quota reserved exclusively for Tamil Nadu students at NIT Trichy. Full fee concessions for SC/ST students.",
+        "top_colleges_tn": [
+            "National Institute of Technology (NIT) Tiruchirappalli",
+            "IIITDM Kancheepuram (Chennai)",
+            "NIT Puducherry (Karaikal)"
+        ]
     },
     {
-      "admission_type": "Premier National Engineering Exam",
-      "average_salary_package": "₹18.0 LPA - ₹65.0 LPA (Global packages exceed ₹1.5 Cr)",
-      "career_opportunities_summary": "Direct entry into the 23 IITs, including IIT Madras (NIRF #1 Overall in India for 8 consecutive years). Opens doors to global tech headquarters, hedge funds, and deep-tech innovation labs.",
-      "career_positions": [
-        "Core R&D Systems Scientist",
-        "Quantitative Trader & Strategist",
-        "Autonomous Robotics Engineer",
-        "Principal AI Researcher",
-        "Chief Technology Officer (CTO)"
-      ],
-      "conducting_body": "IIT (Zonal IIT Joint Admission Board)",
-      "eligibility_summary": "Top 2,50,000 qualifiers in JEE Main with Physics, Chemistry, and Mathematics in 12th.",
-      "exam_date": "Session 1: Jan 21 – Jan 30, 2027 | Session 2: Apr 1 – Apr 8, 2027",
-      "exam_name": "JEE Advanced (IIT Madras & All IITs)",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "Mid-May 2026",
-        "application_window": "April 27 – May 7, 2026",
-        "counselling_schedule": "JoSAA / CSAB Centralized Counselling: June – July 2027",
-        "exam_dates": "May 17, 2026 (Sunday: Shift 1 & Shift 2)"
-      },
-      "group_badge": "💻 Computer Science / Maths Group",
-      "id": "exam_jee_advanced_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🔵 Opens Post-JEE Main (Late April 2027) | Exam: May 16, 2027",
-      "official_url": "https://jeeadv.ac.in",
-      "registration_deadline": "Early May 2027 (May 6, 2027)",
-      "registration_start": "Late April 2027 (April 26, 2027)",
-      "stage_badge": "After 12th (PCM)",
-      "syllabus_highlights": "Paper 1 & Paper 2 (Physics, Chemistry, Maths). Advanced problem solving, multiple choice with negative marking.",
-      "target_courses": [
-        "B.Tech CS, Data Science, Electrical, Aerospace at IIT Madras & 23 IITs"
-      ],
-      "target_groups": [
-        "computer_science",
-        "maths_stream"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "Female supernumerary reservation quota (20%) + PM Research Fellowship (PMRF) eligibility + National Talent Search waivers.",
-      "top_colleges_tn": [
-        "IIT Madras (Indian Institute of Technology Madras, Chennai)"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "Premier National Engineering Exam",
+        "average_salary_package": "\u20b918.0 LPA - \u20b965.0 LPA (Global packages exceed \u20b91.5 Cr)",
+        "career_opportunities_summary": "Direct entry into the 23 IITs, including IIT Madras (NIRF #1 Overall in India for 8 consecutive years). Opens doors to global tech headquarters, hedge funds, and deep-tech innovation labs.",
+        "career_positions": [
+            "Core R&D Systems Scientist",
+            "Quantitative Trader & Strategist",
+            "Autonomous Robotics Engineer",
+            "Principal AI Researcher",
+            "Chief Technology Officer (CTO)"
+        ],
+        "conducting_body": "IIT (Zonal IIT Joint Admission Board)",
+        "eligibility_summary": "Top 2,50,000 qualifiers in JEE Main with Physics, Chemistry, and Mathematics in 12th.",
+        "exam_date": "May 17, 2026 (Sunday: Shift 1 & Shift 2)",
+        "exam_name": "JEE Advanced (IIT Madras & All IITs)",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "Mid-May 2026",
+            "application_window": "April 27 \u2013 May 7, 2026",
+            "counselling_schedule": "JoSAA Centralized Allocation: June \u2013 July 2026",
+            "exam_dates": "May 17, 2026 (Sunday: Shift 1 & Shift 2)"
+        },
+        "group_badge": "\ud83d\udcbb Computer Science / Maths Group",
+        "id": "exam_jee_advanced_2027",
+        "application_status": "upcoming",
+        "application_status_label": "\ud83d\udd35 Registration Opens April 27, 2026",
+        "is_date_confirmed": true,
+        "official_url": "https://jeeadv.ac.in",
+        "registration_deadline": "May 7, 2026",
+        "registration_start": "April 27, 2026",
+        "stage_badge": "After 12th (PCM)",
+        "syllabus_highlights": "Paper 1 & Paper 2 (Physics, Chemistry, Maths). Advanced problem solving, multiple choice with negative marking.",
+        "target_courses": [
+            "B.Tech CS, Data Science, Electrical, Aerospace at IIT Madras & 23 IITs"
+        ],
+        "target_groups": [
+            "computer_science",
+            "maths_stream"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "Female supernumerary reservation quota (20%) + PM Research Fellowship (PMRF) eligibility + National Talent Search waivers.",
+        "top_colleges_tn": [
+            "IIT Madras (Indian Institute of Technology Madras, Chennai)"
+        ]
     },
     {
-      "admission_type": "No Entrance Exam (Cutoff out of 200: Maths 100 + Physics 50 + Chemistry 50)",
-      "average_salary_package": "₹5.5 LPA - ₹18.5 LPA (Anna Univ CEG/MIT average: ₹11.5 LPA; PSG Tech: ₹12.2 LPA)",
-      "career_opportunities_summary": "Tamil Nadu's flagship single-window admission portal for over 450 engineering institutions. Top CEG Guindy, MIT Chromepet, and PSG Tech colleges produce engineering leaders recruited by top MNCs.",
-      "career_positions": [
-        "Full Stack Software Engineer",
-        "Automotive Design & EV Engineer",
-        "Cybersecurity Analyst",
-        "Junior Systems Engineer",
-        "Robotics & Automation Specialist"
-      ],
-      "conducting_body": "Directorate of Technical Education (DOTE), Chennai, Tamil Nadu",
-      "eligibility_summary": "12th Standard Pass with Physics, Chemistry & Mathematics. 7.5% Govt School 100% Free Tuition & Hostel Quota.",
-      "exam_date": "May 16, 2027 (Sunday: Paper 1: 9 AM-12 PM | Paper 2: 2:30 PM-5:30 PM)",
-      "exam_name": "TNEA (Tamil Nadu Engineering Admissions)",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "No admit card (Direct 12th Board PCM Cutoff)",
-        "application_window": "May 6 – June 6, 2026 (Post 12th Board Results)",
-        "counselling_schedule": "JoSAA Centralized Allocation: June – July 2027",
-        "exam_dates": "Zero Entrance Exam — Admission on 12th Cutoff Merit"
-      },
-      "group_badge": "💻 Computer Science / Maths Group",
-      "id": "exam_tnea_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🔵 Single-Window Portal Opens May 6, 2027 (Cutoff Merit)",
-      "official_url": "https://www.tneaonline.org",
-      "registration_deadline": "June 6, 2027",
-      "registration_start": "May 6, 2027 (Post 12th Board Results)",
-      "stage_badge": "After 12th (HSC PCM)",
-      "syllabus_highlights": "Tamil Nadu 12th State Board / CBSE PCM curriculum. Single-window online choice filling across 4 rounds based on aggregate cutoff.",
-      "target_courses": [
-        "B.E / B.Tech across Anna University (CEG, MIT, ACT), PSG Tech, CIT, SSN & 450+ TN Engineering Colleges"
-      ],
-      "target_groups": [
-        "computer_science",
-        "maths_stream",
-        "vocational"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "7.5% Horizontal Reservation for TN Govt School students (100% Free Tuition, Hostel & Mess funded by Govt of TN) + Pudhumai Penn & Tamil Puthalvan ₹1,000/mo.",
-      "top_colleges_tn": [
-        "CEG Anna University (Guindy, Chennai)",
-        "MIT Anna University (Chromepet, Chennai)",
-        "PSG College of Technology (Coimbatore)",
-        "Coimbatore Institute of Technology (CIT)",
-        "SSN College of Engineering (Chennai)",
-        "Thiagarajar College of Engineering (Madurai)"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "No Entrance Exam (Cutoff out of 200: Maths 100 + Physics 50 + Chemistry 50)",
+        "average_salary_package": "\u20b95.5 LPA - \u20b918.5 LPA (Anna Univ CEG/MIT average: \u20b911.5 LPA; PSG Tech: \u20b912.2 LPA)",
+        "career_opportunities_summary": "Tamil Nadu's flagship single-window admission portal for over 450 engineering institutions. Top CEG Guindy, MIT Chromepet, and PSG Tech colleges produce engineering leaders recruited by top MNCs.",
+        "career_positions": [
+            "Full Stack Software Engineer",
+            "Automotive Design & EV Engineer",
+            "Cybersecurity Analyst",
+            "Junior Systems Engineer",
+            "Robotics & Automation Specialist"
+        ],
+        "conducting_body": "Directorate of Technical Education (DOTE), Chennai, Tamil Nadu",
+        "eligibility_summary": "12th Standard Pass with Physics, Chemistry & Mathematics. 7.5% Govt School 100% Free Tuition & Hostel Quota.",
+        "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+        "exam_name": "TNEA (Tamil Nadu Engineering Admissions)",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "No admit card (Direct 12th Board PCM Cutoff)",
+            "application_window": "May 6 \u2013 June 6, 2026 (Post 12th Board Results)",
+            "counselling_schedule": "Rank List: June 26, 2026 | Online Counselling: July \u2013 August 2026 (4 Rounds)",
+            "exam_dates": "Zero Entrance Exam \u2014 Admission on 12th Cutoff Merit"
+        },
+        "group_badge": "\ud83d\udcbb Computer Science / Maths Group",
+        "id": "exam_tnea_2027",
+        "application_status": "merit",
+        "application_status_label": "\ud83d\udccb Single-Window Cutoff Merit (Opens May 6, 2026)",
+        "is_date_confirmed": true,
+        "official_url": "https://www.tneaonline.org",
+        "registration_deadline": "June 6, 2026",
+        "registration_start": "May 6, 2026 (Post 12th Board Results)",
+        "stage_badge": "After 12th (HSC PCM)",
+        "syllabus_highlights": "Tamil Nadu 12th State Board / CBSE PCM curriculum. Single-window online choice filling across 4 rounds based on aggregate cutoff.",
+        "target_courses": [
+            "B.E / B.Tech across Anna University (CEG, MIT, ACT), PSG Tech, CIT, SSN & 450+ TN Engineering Colleges"
+        ],
+        "target_groups": [
+            "computer_science",
+            "maths_stream",
+            "vocational"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "7.5% Horizontal Reservation for TN Govt School students (100% Free Tuition, Hostel & Mess funded by Govt of TN) + Pudhumai Penn & Tamil Puthalvan \u20b91,000/mo.",
+        "top_colleges_tn": [
+            "CEG Anna University (Guindy, Chennai)",
+            "MIT Anna University (Chromepet, Chennai)",
+            "PSG College of Technology (Coimbatore)",
+            "Coimbatore Institute of Technology (CIT)",
+            "SSN College of Engineering (Chennai)",
+            "Thiagarajar College of Engineering (Madurai)"
+        ]
     },
     {
-      "admission_type": "Computer-Based Entrance Exam",
-      "average_salary_package": "₹14.0 LPA - ₹38.0 LPA",
-      "career_opportunities_summary": "Renowned for zero reservation and world-class faculty, BITS graduates enjoy 6-month mandatory industrial Practice School (PS-II) leading to high PPO conversion rates.",
-      "career_positions": [
-        "Product Software Engineer",
-        "FinTech Algorithm Developer",
-        "Product Manager",
-        "Hardware Systems Engineer",
-        "Startup Co-Founder"
-      ],
-      "conducting_body": "BITS Pilani",
-      "eligibility_summary": "12th Pass with min 75% aggregate in Physics, Chemistry, and Mathematics (min 60% in each).",
-      "exam_date": "No Entrance Exam (Pure 12th PCM Cutoff Merit out of 200)",
-      "exam_name": "BITSAT (Birla Institute of Technology and Science Admission Test)",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "Slot Booking opens 7 days before exams",
-        "application_window": "Jan 15 – Apr 18, 2026",
-        "counselling_schedule": "Rank List: June 26, 2027 | Online Counselling: July – August 2027 (4 Rounds)",
-        "exam_dates": "Session 1: May 25–29, 2026 | Session 2: June 22–26, 2026"
-      },
-      "group_badge": "💻 Computer Science / Maths Group",
-      "id": "exam_bitsat_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🔵 2027 Portal Opens Jan 15, 2027 (Exams: May & June 2027)",
-      "official_url": "https://www.bitsadmission.com",
-      "registration_deadline": "April 18, 2027 (Session 1) / June 10, 2027 (Session 2)",
-      "registration_start": "January 15, 2027",
-      "stage_badge": "After 12th (PCM)",
-      "syllabus_highlights": "130 Questions: Physics (30), Chemistry (30), English & Logical Reasoning (20), Mathematics (40). 3 Hours duration.",
-      "target_courses": [
-        "B.E Computer Science, Electronics, Mechanical, Chemical at BITS Pilani, Goa & Hyderabad"
-      ],
-      "target_groups": [
-        "computer_science",
-        "maths_stream"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "Merit-cum-Need (MCN) Scholarships covering up to 80% of tuition fees for deserving candidates.",
-      "top_colleges_tn": [
-        "BITS Pilani, Goa & Hyderabad Campuses (Heavily chosen by Tamil Nadu top rankers)"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "Computer-Based Entrance Exam",
+        "average_salary_package": "\u20b914.0 LPA - \u20b938.0 LPA",
+        "career_opportunities_summary": "Renowned for zero reservation and world-class faculty, BITS graduates enjoy 6-month mandatory industrial Practice School (PS-II) leading to high PPO conversion rates.",
+        "career_positions": [
+            "Product Software Engineer",
+            "FinTech Algorithm Developer",
+            "Product Manager",
+            "Hardware Systems Engineer",
+            "Startup Co-Founder"
+        ],
+        "conducting_body": "BITS Pilani",
+        "eligibility_summary": "12th Pass with min 75% aggregate in Physics, Chemistry, and Mathematics (min 60% in each).",
+        "exam_date": "Coming Soon",
+        "exam_name": "BITSAT (Birla Institute of Technology and Science Admission Test)",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "Slot Booking opens 7 days before exams",
+            "application_window": "January \u2013 April 2026",
+            "counselling_schedule": "Rank List & BITS Allotment: July 2026",
+            "exam_dates": "Coming Soon"
+        },
+        "group_badge": "\ud83d\udcbb Computer Science / Maths Group",
+        "id": "exam_bitsat_2027",
+        "application_status": "upcoming",
+        "application_status_label": "\ud83d\udd35 Applications Open January 2026",
+        "is_date_confirmed": false,
+        "official_url": "https://www.bitsadmission.com",
+        "registration_deadline": "April 2026",
+        "registration_start": "January 2026",
+        "stage_badge": "After 12th (PCM)",
+        "syllabus_highlights": "130 Questions: Physics (30), Chemistry (30), English & Logical Reasoning (20), Mathematics (40). 3 Hours duration.",
+        "target_courses": [
+            "B.E Computer Science, Electronics, Mechanical, Chemical at BITS Pilani, Goa & Hyderabad"
+        ],
+        "target_groups": [
+            "computer_science",
+            "maths_stream"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "Merit-cum-Need (MCN) Scholarships covering up to 80% of tuition fees for deserving candidates.",
+        "top_colleges_tn": [
+            "BITS Pilani, Goa & Hyderabad Campuses (Heavily chosen by Tamil Nadu top rankers)"
+        ]
     },
     {
-      "admission_type": "National Architecture Entrance Test",
-      "average_salary_package": "₹5.0 LPA - ₹15.0 LPA",
-      "career_opportunities_summary": "Mandatory national eligibility examination for 5-Year Bachelor of Architecture (B.Arch). Tamil Nadu is a major architectural hub with thriving real estate and conservation projects.",
-      "career_positions": [
-        "Council of Architecture (COA) Licensed Architect",
-        "Urban & Smart City Infrastructure Planner",
-        "BIM & 3D Computational Designer",
-        "Sustainable Green Building Specialist",
-        "Landscape & Interior Architect"
-      ],
-      "conducting_body": "Council of Architecture (CoA)",
-      "eligibility_summary": "12th Standard Pass with Physics, Chemistry & Mathematics (min 50% marks in PCM and aggregate).",
-      "exam_date": "Session 1: May 24 – May 28, 2027 | Session 2: June 21 – June 25, 2027",
-      "exam_name": "NATA (National Aptitude Test in Architecture)",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "3 Days before opted weekend slot",
-        "application_window": "March 1 – July 10, 2026",
-        "counselling_schedule": "Iterative Seat Allocation Rounds: July – August 2027",
-        "exam_dates": "April 5 – July 2026 (Weekends: 2 Shifts Daily)"
-      },
-      "group_badge": "💻 Computer Science / Maths Group",
-      "id": "exam_nata_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🔵 2027 Portal Opens March 1, 2027 (Exams: April–July 2027)",
-      "official_url": "https://www.nata.in",
-      "registration_deadline": "July 10, 2027",
-      "registration_start": "March 1, 2027",
-      "stage_badge": "After 12th (PCM)",
-      "syllabus_highlights": "200 Marks: Visual reasoning, aesthetic sensitivity, architectural history, basic mathematics, and drawing aptitude.",
-      "target_courses": [
-        "B.Arch (5-Year Architecture) at SAP Anna University Guindy & Measi Academy Chennai"
-      ],
-      "target_groups": [
-        "computer_science",
-        "maths_stream"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "Tamil Nadu Centralized B.Arch Counselling by DOTE based on 50% NATA score + 50% 12th PCM marks. 7.5% Govt School Quota applicable.",
-      "top_colleges_tn": [
-        "SAP Anna University (Chennai)",
-        "MEASI Academy of Architecture (Chennai)",
-        "Thiagarajar College of Engineering (Madurai)",
-        "PSG Care (Coimbatore)"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "National Architecture Entrance Test",
+        "average_salary_package": "\u20b95.0 LPA - \u20b915.0 LPA",
+        "career_opportunities_summary": "Mandatory national eligibility examination for 5-Year Bachelor of Architecture (B.Arch). Tamil Nadu is a major architectural hub with thriving real estate and conservation projects.",
+        "career_positions": [
+            "Council of Architecture (COA) Licensed Architect",
+            "Urban & Smart City Infrastructure Planner",
+            "BIM & 3D Computational Designer",
+            "Sustainable Green Building Specialist",
+            "Landscape & Interior Architect"
+        ],
+        "conducting_body": "Council of Architecture (CoA)",
+        "eligibility_summary": "12th Standard Pass with Physics, Chemistry & Mathematics (min 50% marks in PCM and aggregate).",
+        "exam_date": "Coming Soon",
+        "exam_name": "NATA (National Aptitude Test in Architecture)",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "3 Days before opted slot",
+            "application_window": "March \u2013 July 2026",
+            "counselling_schedule": "DOTE Tamil Nadu B.Arch Single Window: July \u2013 August 2026",
+            "exam_dates": "Coming Soon"
+        },
+        "group_badge": "\ud83d\udcbb Computer Science / Maths Group",
+        "id": "exam_nata_2027",
+        "application_status": "upcoming",
+        "application_status_label": "\ud83d\udd35 Registrations Open March 2026",
+        "is_date_confirmed": false,
+        "official_url": "https://www.nata.in",
+        "registration_deadline": "July 2026",
+        "registration_start": "March 2026",
+        "stage_badge": "After 12th (PCM)",
+        "syllabus_highlights": "200 Marks: Visual reasoning, aesthetic sensitivity, architectural history, basic mathematics, and drawing aptitude.",
+        "target_courses": [
+            "B.Arch (5-Year Architecture) at SAP Anna University Guindy & Measi Academy Chennai"
+        ],
+        "target_groups": [
+            "computer_science",
+            "maths_stream"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "Tamil Nadu Centralized B.Arch Counselling by DOTE based on 50% NATA score + 50% 12th PCM marks. 7.5% Govt School Quota applicable.",
+        "top_colleges_tn": [
+            "SAP Anna University (Chennai)",
+            "MEASI Academy of Architecture (Chennai)",
+            "Thiagarajar College of Engineering (Madurai)",
+            "PSG Care (Coimbatore)"
+        ]
     },
     {
-      "admission_type": "National Written Exam + 5-Day SSB Interview",
-      "average_salary_package": "₹14.0 LPA - ₹20.0 LPA (Level 10 Pay Matrix: ₹56,100 basic + Flying/Kit/Ration Allowances)",
-      "career_opportunities_summary": "The gateway to becoming a commissioned officer in the Indian Armed Forces. Prestigious 3-year tri-service training leading to a world-class degree and immediate leadership rank.",
-      "career_positions": [
-        "IAF Fighter Pilot",
-        "Naval Combat Commander",
-        "Indian Army Lieutenant",
-        "Air Traffic Controller",
-        "Defence Technology & Intelligence Officer"
-      ],
-      "conducting_body": "Union Public Service Commission (UPSC)",
-      "eligibility_summary": "Unmarried male/female candidates aged 16.5-19.5 yrs. 12th PCM required for Air Force & Navy wings; Any stream for Army.",
-      "exam_date": "April 4 to July 2027 (Conducted every Saturday & Sunday)",
-      "exam_name": "UPSC NDA & NA Exam (Air Force, Navy & Army Officer Cadets)",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "3 Weeks before written exam",
-        "application_window": "NDA I: Dec 10–30, 2025 | NDA II: May 27–Jun 16, 2026",
-        "counselling_schedule": "DOTE Tamil Nadu B.Arch Single Window: July – August 2027",
-        "exam_dates": "NDA I: April 19, 2026 (Sun) | NDA II: September 13, 2026 (Sun)"
-      },
-      "group_badge": "💻 CS / Maths (Air Force/Navy) & All Streams (Army)",
-      "id": "exam_nda_upsc_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🔵 NDA I 2027 Opens Dec 10, 2026 (Exam: Apr 18, 2027)",
-      "official_url": "https://www.upsc.gov.in",
-      "registration_deadline": "December 30, 2026 (NDA I) / June 15, 2027 (NDA II)",
-      "registration_start": "December 10, 2026 (NDA I) | May 26, 2027 (NDA II)",
-      "stage_badge": "After 12th (PCM / Any)",
-      "syllabus_highlights": "Mathematics (300 Marks, 120 Qs) + General Ability Test (600 Marks: English 200 + GK 400). Total 900 Marks.",
-      "target_courses": [
-        "Commissioned Officer Cadets at National Defence Academy (NDA) Khadakwasla & Indian Naval Academy (INA)"
-      ],
-      "target_groups": [
-        "computer_science",
-        "maths_stream",
-        "arts",
-        "commerce"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "Tamil Nadu State Government cash incentives and awards for candidates clearing SSB from Tamil Nadu.",
-      "top_colleges_tn": [
-        "National Defence Academy (Khadakwasla) with specialized Tamil Nadu air bases (Tambaram, Sulur, Thanjavur)"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "National Written Exam + 5-Day SSB Interview",
+        "average_salary_package": "\u20b914.0 LPA - \u20b920.0 LPA (Level 10 Pay Matrix: \u20b956,100 basic + Flying/Kit/Ration Allowances)",
+        "career_opportunities_summary": "The gateway to becoming a commissioned officer in the Indian Armed Forces. Prestigious 3-year tri-service training leading to a world-class degree and immediate leadership rank.",
+        "career_positions": [
+            "IAF Fighter Pilot",
+            "Naval Combat Commander",
+            "Indian Army Lieutenant",
+            "Air Traffic Controller",
+            "Defence Technology & Intelligence Officer"
+        ],
+        "conducting_body": "Union Public Service Commission (UPSC)",
+        "eligibility_summary": "Unmarried male/female candidates aged 16.5-19.5 yrs. 12th PCM required for Air Force & Navy wings; Any stream for Army.",
+        "exam_date": "NDA I: April 19, 2026 | NDA II: September 13, 2026",
+        "exam_name": "UPSC NDA & NA Exam (Air Force, Navy & Army Officer Cadets)",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "3 Weeks before written exam",
+            "application_window": "NDA I: Dec 10\u201330, 2025 | NDA II: May 27\u2013Jun 16, 2026",
+            "counselling_schedule": "SSB Interviews: July \u2013 September 2026 (NDA I) / Jan \u2013 Mar 2027 (NDA II)",
+            "exam_dates": "NDA I: April 19, 2026 (Sun) | NDA II: September 13, 2026 (Sun)"
+        },
+        "group_badge": "\ud83d\udcbb CS / Maths (Air Force/Navy) & All Streams (Army)",
+        "id": "exam_nda_upsc_2027",
+        "application_status": "upcoming",
+        "application_status_label": "\ud83d\udd35 NDA I Notification: Dec 2025 | NDA II: May 2026",
+        "is_date_confirmed": true,
+        "official_url": "https://www.upsc.gov.in",
+        "registration_deadline": "December 30, 2025 (NDA I) / June 16, 2026 (NDA II)",
+        "registration_start": "December 10, 2025 (NDA I) | May 27, 2026 (NDA II)",
+        "stage_badge": "After 12th (PCM / Any)",
+        "syllabus_highlights": "Mathematics (300 Marks, 120 Qs) + General Ability Test (600 Marks: English 200 + GK 400). Total 900 Marks.",
+        "target_courses": [
+            "Commissioned Officer Cadets at National Defence Academy (NDA) Khadakwasla & Indian Naval Academy (INA)"
+        ],
+        "target_groups": [
+            "computer_science",
+            "maths_stream",
+            "arts",
+            "commerce"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "Tamil Nadu State Government cash incentives and awards for candidates clearing SSB from Tamil Nadu.",
+        "top_colleges_tn": [
+            "National Defence Academy (Khadakwasla) with specialized Tamil Nadu air bases (Tambaram, Sulur, Thanjavur)"
+        ]
     },
     {
-      "admission_type": "No Written Exam (Shortlisting based on JEE Main CRL)",
-      "average_salary_package": "₹13.5 LPA - ₹18.0 LPA (Level 10 Pay: ₹56,100/mo basic + MSP ₹15,500 + Allowances)",
-      "career_opportunities_summary": "Prestigious 4-year B.Tech degree at Indian Naval Academy (INA Ezhimala) with 100% expenses borne by the Indian Navy, followed by an immediate permanent commission as Sub-Lieutenant.",
-      "career_positions": [
-        "Commissioned Sub-Lieutenant Naval Officer",
-        "Naval Weapons Specialist",
-        "Marine Propulsion Systems Engineer",
-        "Naval Combat Systems Commander"
-      ],
-      "conducting_body": "Indian Navy",
-      "eligibility_summary": "12th Standard Pass with min 70% in Physics, Chemistry & Maths + min 50% in English + Valid JEE Main CRL Rank.",
-      "exam_date": "NDA I: April 18, 2027 | NDA II: September 12, 2027",
-      "exam_name": "Indian Navy 10+2 B.Tech Cadet Scheme",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "SSB Call Letter issued 3 weeks prior",
-        "application_window": "Bi-annual: Jan – Feb and June – July",
-        "counselling_schedule": "SSB Interview (5-Day): July – Sept 2027 (NDA I) / Jan – Mar 2028 (NDA II)",
-        "exam_dates": "Zero Written Exam — Shortlisting based on JEE Main CRL"
-      },
-      "group_badge": "💻 Computer Science / Maths Group",
-      "id": "exam_navy_cadet_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🔵 Jan 2027 Course Opens Dec 2026 (SSB Call via JEE CRL)",
-      "official_url": "https://www.joinindiannavy.gov.in",
-      "registration_deadline": "January 2027 / July 2027",
-      "registration_start": "December 2026 (Jan Course) / June 2027 (Jul Course)",
-      "stage_badge": "After 12th (PCM min 70%)",
-      "syllabus_highlights": "Direct SSB Interview call for shortlisted candidates based on JEE Main rank. 100% Free funded B.Tech by Govt.",
-      "target_courses": [
-        "4-Year B.Tech Degree from JNU at Indian Naval Academy (INA) Ezhimala + Permanent Commission as Sub-Lieutenant"
-      ],
-      "target_groups": [
-        "computer_science",
-        "maths_stream"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "100% Free Tuition, Uniform, Accommodation, Medical, and Food funded entirely by the Government of India.",
-      "top_colleges_tn": [
-        "Indian Naval Academy (INA Ezhimala) with Tamil Nadu Naval command at INS Adyar / INS Rajali"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "No Written Exam (Shortlisting based on JEE Main CRL)",
+        "average_salary_package": "\u20b913.5 LPA - \u20b918.0 LPA (Level 10 Pay: \u20b956,100/mo basic + MSP \u20b915,500 + Allowances)",
+        "career_opportunities_summary": "Prestigious 4-year B.Tech degree at Indian Naval Academy (INA Ezhimala) with 100% expenses borne by the Indian Navy, followed by an immediate permanent commission as Sub-Lieutenant.",
+        "career_positions": [
+            "Commissioned Sub-Lieutenant Naval Officer",
+            "Naval Weapons Specialist",
+            "Marine Propulsion Systems Engineer",
+            "Naval Combat Systems Commander"
+        ],
+        "conducting_body": "Indian Navy",
+        "eligibility_summary": "12th Standard Pass with min 70% in Physics, Chemistry & Maths + min 50% in English + Valid JEE Main CRL Rank.",
+        "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+        "exam_name": "Indian Navy 10+2 B.Tech Cadet Scheme",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "SSB Call Letter issued 3 weeks prior",
+            "application_window": "Bi-annual: Jan \u2013 Feb and June \u2013 July 2026",
+            "counselling_schedule": "SSB Interviews at Bangalore, Bhopal, Coimbatore, Visakhapatnam",
+            "exam_dates": "Zero Written Exam \u2014 Shortlisting based on JEE Main CRL"
+        },
+        "group_badge": "\ud83d\udcbb Computer Science / Maths Group",
+        "id": "exam_navy_cadet_2027",
+        "application_status": "merit",
+        "application_status_label": "\ud83d\udccb Shortlisting via JEE Main CRL (Jan & Jun 2026)",
+        "is_date_confirmed": true,
+        "official_url": "https://www.joinindiannavy.gov.in",
+        "registration_deadline": "February 2026 / July 2026",
+        "registration_start": "January 2026 (Jan Course) / June 2026 (Jul Course)",
+        "stage_badge": "After 12th (PCM min 70%)",
+        "syllabus_highlights": "Direct SSB Interview call for shortlisted candidates based on JEE Main rank. 100% Free funded B.Tech by Govt.",
+        "target_courses": [
+            "4-Year B.Tech Degree from JNU at Indian Naval Academy (INA) Ezhimala + Permanent Commission as Sub-Lieutenant"
+        ],
+        "target_groups": [
+            "computer_science",
+            "maths_stream"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "100% Free Tuition, Uniform, Accommodation, Medical, and Food funded entirely by the Government of India.",
+        "top_colleges_tn": [
+            "Indian Naval Academy (INA Ezhimala) with Tamil Nadu Naval command at INS Adyar / INS Rajali"
+        ]
     },
     {
-      "admission_type": "National Entrance Exam + State Counselling",
-      "average_salary_package": "₹9.0 LPA - ₹22.0 LPA (Govt PG Stipend ₹48,000 - ₹55,000/mo; Private Practice packages ₹25+ LPA)",
-      "career_opportunities_summary": "Sole gateway to government and private medical colleges in Tamil Nadu. Tamil Nadu boasts 38 Government Medical Colleges with world-renowned clinical exposure.",
-      "career_positions": [
-        "Civil Assistant Surgeon (TN Public Health Service)",
-        "Resident Medical Officer (MBBS)",
-        "Dental Surgeon (BDS)",
-        "Clinical Cardiologist / Neurologist (Post-PG)",
-        "Medical Officer (TN PHC)"
-      ],
-      "conducting_body": "National Testing Agency (NTA) & Selection Committee, Directorate of Medical Education (DME) TN",
-      "eligibility_summary": "12th Pass with Physics, Chemistry & Biology + Valid NEET-UG Score. 7.5% Horizontal Reservation for TN Govt School Students with 100% Free Education.",
-      "exam_date": "Direct SSB Selection based on JEE Main 2027 Rank (March – May 2027)",
-      "exam_name": "NEET-UG & Tamil Nadu Medical Selection (85% State Quota)",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "First week of May 2026",
-        "application_window": "February 8 – March 15, 2026",
-        "counselling_schedule": "Service Selection Board (SSB): March – May 2027 & Aug – Oct 2027",
-        "exam_dates": "May 3, 2026 (Single Shift: 2:00 PM – 5:20 PM)"
-      },
-      "group_badge": "🧬 Biology Group (PCB / Bio-Maths)",
-      "id": "exam_tn_medical_neet_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🔵 2027 Portal Opens Feb 8, 2027 (Exam: May 2, 2027)",
-      "official_url": "https://www.tnmedicalselection.net",
-      "registration_deadline": "March 15, 2027",
-      "registration_start": "February 8, 2027",
-      "stage_badge": "After 12th (HSC PCB)",
-      "syllabus_highlights": "NEET-UG 720 Marks (Biology 360, Physics 180, Chemistry 180). TN State Rank list published exclusively for 85% State Quota seats.",
-      "target_courses": [
-        "MBBS & BDS across 36 Govt Medical Colleges in TN (MMC, Stanley, Kilpauk, Madurai MC)"
-      ],
-      "target_groups": [
-        "biology",
-        "pure_science"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "7.5% Horizontal Reservation for TN Govt School students (100% Free Tuition, Hostel & Mess borne by TN Govt — 600+ Govt school students become Doctors free each year!) + Pudhumai Penn.",
-      "top_colleges_tn": [
-        "Madras Medical College (MMC Chennai - Est. 1835)",
-        "Stanley Medical College (Chennai)",
-        "Kilpauk Medical College (KMC Chennai)",
-        "Madurai Medical College",
-        "Coimbatore Medical College",
-        "Tirunelveli Medical College"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "National Entrance Exam + State Counselling",
+        "average_salary_package": "\u20b99.0 LPA - \u20b922.0 LPA (Govt PG Stipend \u20b948,000 - \u20b955,000/mo; Private Practice packages \u20b925+ LPA)",
+        "career_opportunities_summary": "Sole gateway to government and private medical colleges in Tamil Nadu. Tamil Nadu boasts 38 Government Medical Colleges with world-renowned clinical exposure.",
+        "career_positions": [
+            "Civil Assistant Surgeon (TN Public Health Service)",
+            "Resident Medical Officer (MBBS)",
+            "Dental Surgeon (BDS)",
+            "Clinical Cardiologist / Neurologist (Post-PG)",
+            "Medical Officer (TN PHC)"
+        ],
+        "conducting_body": "National Testing Agency (NTA) & Selection Committee, Directorate of Medical Education (DME) TN",
+        "eligibility_summary": "12th Pass with Physics, Chemistry & Biology + Valid NEET-UG Score. 7.5% Horizontal Reservation for TN Govt School Students with 100% Free Education.",
+        "exam_date": "May 3, 2026 (Single Shift: 2:00 PM \u2013 5:20 PM)",
+        "exam_name": "NEET-UG & Tamil Nadu Medical Selection (85% State Quota)",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "May 1, 2026",
+            "application_window": "February 9 \u2013 March 16, 2026",
+            "counselling_schedule": "TN Medical Selection (DME) 85% State Quota Counselling: July \u2013 August 2026 (4 Rounds)",
+            "exam_dates": "May 3, 2026 (Single Shift: 2:00 PM \u2013 5:20 PM)"
+        },
+        "group_badge": "\ud83e\uddec Biology Group (PCB / Bio-Maths)",
+        "id": "exam_tn_medical_neet_2027",
+        "application_status": "upcoming",
+        "application_status_label": "\ud83d\udd35 Registrations Open February 9, 2026",
+        "is_date_confirmed": true,
+        "official_url": "https://www.tnmedicalselection.net",
+        "registration_deadline": "March 16, 2026",
+        "registration_start": "February 9, 2026",
+        "stage_badge": "After 12th (HSC PCB)",
+        "syllabus_highlights": "NEET-UG 720 Marks (Biology 360, Physics 180, Chemistry 180). TN State Rank list published exclusively for 85% State Quota seats.",
+        "target_courses": [
+            "MBBS & BDS across 36 Govt Medical Colleges in TN (MMC, Stanley, Kilpauk, Madurai MC)"
+        ],
+        "target_groups": [
+            "biology",
+            "pure_science"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "7.5% Horizontal Reservation for TN Govt School students (100% Free Tuition, Hostel & Mess borne by TN Govt \u2014 600+ Govt school students become Doctors free each year!) + Pudhumai Penn.",
+        "top_colleges_tn": [
+            "Madras Medical College (MMC Chennai - Est. 1835)",
+            "Stanley Medical College (Chennai)",
+            "Kilpauk Medical College (KMC Chennai)",
+            "Madurai Medical College",
+            "Coimbatore Medical College",
+            "Tirunelveli Medical College"
+        ]
     },
     {
-      "admission_type": "No Entrance Exam (Cutoff out of 200 based on 12th PCB Marks)",
-      "average_salary_package": "₹4.0 LPA - ₹10.5 LPA (UK NHS sponsorship offers ₹28 - ₹35 LPA)",
-      "career_opportunities_summary": "High-demand healthcare professions with guaranteed domestic placement across top hospitals and massive global immigration pathways to UK, Canada, Ireland, Australia, and the Gulf.",
-      "career_positions": [
-        "Staff Nurse / Nursing Superintendent",
-        "Cath Lab & Cardiac Care Technologist",
-        "Dialysis & Renal Care Specialist",
-        "Radiographer & MRI/CT Technologist",
-        "Physiotherapist (BPT)"
-      ],
-      "conducting_body": "Selection Committee, Directorate of Medical Education (DME) TN",
-      "eligibility_summary": "12th Standard Pass with Physics, Chemistry & Biology. Cutoff formula: Biology (100) + Physics (50) + Chemistry (50) = 200.",
-      "exam_date": "May 2, 2027 (Sunday: 2:00 PM – 5:20 PM)",
-      "exam_name": "Tamil Nadu Paramedical & B.Sc Nursing Single-Window Counselling",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "No admit card (Direct 12th PCB Cutoff)",
-        "application_window": "June – July 2026 (Online via tnmedicalselection.net)",
-        "counselling_schedule": "TN Medical Selection 85% State Quota: July – August 2027",
-        "exam_dates": "Zero Entrance Exam — Direct 12th Board Cutoff Merit"
-      },
-      "group_badge": "🧬 Biology Group (PCB / Bio-Maths)",
-      "id": "exam_paramedical_nursing_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🔵 2027 Portal Opens June 5, 2027 (12th PCB Cutoff)",
-      "official_url": "https://www.tnmedicalselection.net",
-      "registration_deadline": "July 5, 2027",
-      "registration_start": "June 5, 2027",
-      "stage_badge": "After 12th (PCB)",
-      "syllabus_highlights": "Single-window online seat allotment based purely on 12th PCB mark cutoff. 100% Free for 7.5% Govt School quota.",
-      "target_courses": [
-        "B.Sc Nursing, B.P.T (Physiotherapy), B.O.T, B.Sc Radiography, B.Sc MLT across Tamil Nadu Govt Medical Colleges"
-      ],
-      "target_groups": [
-        "biology",
-        "pure_science"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "Centralized Single-Window Counselling by TN DME based on 12th Board PCB marks. 7.5% Govt School reservation applies with 100% free fees.",
-      "top_colleges_tn": [
-        "Madras Medical College College of Nursing",
-        "Stanley Medical College",
-        "Chengalpattu Govt Medical College",
-        "PSG College of Nursing (Coimbatore)"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "No Entrance Exam (Direct 12th PCB Cutoff Merit)",
+        "average_salary_package": "\u20b94.0 LPA - \u20b910.5 LPA (UK NHS sponsorship offers \u20b928 - \u20b935 LPA)",
+        "career_opportunities_summary": "High-demand healthcare professions with guaranteed domestic placement across top hospitals and massive global immigration pathways to UK, Canada, Ireland, Australia, and the Gulf.",
+        "career_positions": [
+            "Staff Nurse / Nursing Superintendent",
+            "Cath Lab & Cardiac Care Technologist",
+            "Dialysis & Renal Care Specialist",
+            "Radiographer & MRI/CT Technologist",
+            "Physiotherapist (BPT)"
+        ],
+        "conducting_body": "Selection Committee, Directorate of Medical Education (DME) TN",
+        "eligibility_summary": "12th Standard Pass with Physics, Chemistry & Biology. Cutoff formula: Biology (100) + Physics (50) + Chemistry (50) = 200.",
+        "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+        "exam_name": "Tamil Nadu Paramedical & B.Sc Nursing Single-Window Counselling",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "No admit card (Direct 12th Board PCB Cutoff)",
+            "application_window": "May 15 \u2013 June 20, 2026",
+            "counselling_schedule": "Merit Rank List: July 2026 | Online Counselling: July \u2013 August 2026",
+            "exam_dates": "Zero Entrance Exam \u2014 Direct 12th Board Cutoff Merit"
+        },
+        "group_badge": "\ud83e\uddec Biology Group (PCB / Bio-Maths)",
+        "id": "exam_paramedical_nursing_2027",
+        "application_status": "merit",
+        "application_status_label": "\ud83d\udccb 100% Single-Window Cutoff Merit (Opens May 2026)",
+        "is_date_confirmed": true,
+        "official_url": "https://www.tnmedicalselection.net",
+        "registration_deadline": "June 20, 2026",
+        "registration_start": "May 15, 2026",
+        "stage_badge": "After 12th (PCB)",
+        "syllabus_highlights": "Single-window online seat allotment based purely on 12th PCB mark cutoff. 100% Free for 7.5% Govt School quota.",
+        "target_courses": [
+            "B.Sc Nursing, B.P.T (Physiotherapy), B.O.T, B.Sc Radiography, B.Sc MLT across Tamil Nadu Govt Medical Colleges"
+        ],
+        "target_groups": [
+            "biology",
+            "pure_science"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "Centralized Single-Window Counselling by TN DME based on 12th Board PCB marks. 7.5% Govt School reservation applies with 100% free fees.",
+        "top_colleges_tn": [
+            "Madras Medical College College of Nursing",
+            "Stanley Medical College",
+            "Chengalpattu Govt Medical College",
+            "PSG College of Nursing (Coimbatore)"
+        ]
     },
     {
-      "admission_type": "No Entrance Exam (Merit Cutoff based on 12th Marks)",
-      "average_salary_package": "₹7.2 LPA - ₹15.0 LPA (TNPSC VAS starting salary: ₹56,100 basic + DA + HRA)",
-      "career_opportunities_summary": "TANUVAS is India's pioneer veterinary university. Graduates are appointed directly as Gazetted Class-II Officers in the Government of Tamil Nadu Animal Husbandry Department.",
-      "career_positions": [
-        "Veterinary Assistant Surgeon (VAS - TN Animal Husbandry Dept)",
-        "Livestock Development Officer",
-        "Wildlife & Zoo Veterinarian",
-        "Companion Animal / Small Animal Surgeon",
-        "Poultry Disease Specialist"
-      ],
-      "conducting_body": "Tamil Nadu Veterinary and Animal Sciences University (TANUVAS), Chennai",
-      "eligibility_summary": "12th Pass with PCB (Cutoff out of 200). 7.5% Horizontal Reservation for TN Govt School students with 100% Free Fees.",
-      "exam_date": "No Entrance Exam (Merit Cutoff out of 200: Bio 100 + Phy 50 + Chem 50)",
-      "exam_name": "TANUVAS Veterinary Admissions (BVSc & AH / B.Tech)",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "No admit card (Online Merit List)",
-        "application_window": "June – July 2026",
-        "counselling_schedule": "Merit Rank List: July 2027 | Online Counselling: August 2027",
-        "exam_dates": "Zero Entrance Exam — Direct 12th PCB Cutoff"
-      },
-      "group_badge": "🧬 Biology Group (PCB / Bio-Maths)",
-      "id": "exam_tanuvas_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🔵 2027 Portal Opens June 8, 2027 (12th PCB Merit)",
-      "official_url": "https://tanuvas.ac.in",
-      "registration_deadline": "July 8, 2027",
-      "registration_start": "June 8, 2027",
-      "stage_badge": "After 12th (PCB Stream)",
-      "syllabus_highlights": "Admission to historic Madras Veterinary College (Chennai), VC&RI Namakkal, Tirunelveli, Orathanadu, and Salem.",
-      "target_courses": [
-        "B.V.Sc & A.H (5.5 Years) & B.Tech Food Technology / Poultry Technology"
-      ],
-      "target_groups": [
-        "biology",
-        "pure_science"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "Single-window online merit admissions by TANUVAS based purely on 12th PCB Cutoff (out of 200). 7.5% Govt School Horizontal Quota with 100% free tuition and hostel.",
-      "top_colleges_tn": [
-        "Madras Veterinary College (MVC Vepery, Chennai - Est. 1903)",
-        "Veterinary College & Research Institute (VCRI Namakkal)",
-        "VCRI Tirunelveli",
-        "VCRI Orathanadu (Thanjavur)",
-        "VCRI Salem"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "No Entrance Exam (Cutoff out of 200: Bio 100 + Phy 50 + Chem 50)",
+        "average_salary_package": "\u20b97.2 LPA - \u20b915.0 LPA (TNPSC VAS starting salary: \u20b956,100 basic + DA + HRA)",
+        "career_opportunities_summary": "TANUVAS is India's pioneer veterinary university. Graduates are appointed directly as Gazetted Class-II Officers in the Government of Tamil Nadu Animal Husbandry Department.",
+        "career_positions": [
+            "Veterinary Assistant Surgeon (VAS - TN Animal Husbandry Dept)",
+            "Livestock Development Officer",
+            "Wildlife & Zoo Veterinarian",
+            "Companion Animal / Small Animal Surgeon",
+            "Poultry Disease Specialist"
+        ],
+        "conducting_body": "Tamil Nadu Veterinary and Animal Sciences University (TANUVAS), Chennai",
+        "eligibility_summary": "12th Pass with PCB (Cutoff out of 200). 7.5% Horizontal Reservation for TN Govt School students with 100% Free Fees.",
+        "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+        "exam_name": "TANUVAS Veterinary Admissions (BVSc & AH / B.Tech)",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "No admit card",
+            "application_window": "May 20 \u2013 June 25, 2026",
+            "counselling_schedule": "Merit List: July 2026 | In-Person / Online Counselling: August 2026 at TANUVAS Chennai",
+            "exam_dates": "Zero Entrance Exam \u2014 Direct 12th PCB Cutoff"
+        },
+        "group_badge": "\ud83e\uddec Biology Group (PCB / Bio-Maths)",
+        "id": "exam_tanuvas_2027",
+        "application_status": "merit",
+        "application_status_label": "\ud83d\udccb Pure 12th PCB Merit Selection (Opens May 20, 2026)",
+        "is_date_confirmed": true,
+        "official_url": "https://tanuvas.ac.in",
+        "registration_deadline": "June 25, 2026",
+        "registration_start": "May 20, 2026",
+        "stage_badge": "After 12th (PCB Stream)",
+        "syllabus_highlights": "Admission to historic Madras Veterinary College (Chennai), VC&RI Namakkal, Tirunelveli, Orathanadu, and Salem.",
+        "target_courses": [
+            "B.V.Sc & A.H (5.5 Years) & B.Tech Food Technology / Poultry Technology"
+        ],
+        "target_groups": [
+            "biology",
+            "pure_science"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "Single-window online merit admissions by TANUVAS based purely on 12th PCB Cutoff (out of 200). 7.5% Govt School Horizontal Quota with 100% free tuition and hostel.",
+        "top_colleges_tn": [
+            "Madras Veterinary College (MVC Vepery, Chennai - Est. 1903)",
+            "Veterinary College & Research Institute (VCRI Namakkal)",
+            "VCRI Tirunelveli",
+            "VCRI Orathanadu (Thanjavur)",
+            "VCRI Salem"
+        ]
     },
     {
-      "admission_type": "No Entrance Exam (Merit Cutoff based on 12th Marks)",
-      "average_salary_package": "₹5.5 LPA - ₹14.0 LPA (AO Scale: ₹37,700 - ₹1,19,500)",
-      "career_opportunities_summary": "TNAU is ranked among India's top agricultural universities. Strong campus placements in agribusiness, fertilizer firms, banking, and fast-track recruitment into TNPSC Agricultural Services.",
-      "career_positions": [
-        "Agricultural Officer (AO - TN Dept of Agriculture)",
-        "Horticultural Officer (HO)",
-        "Bank Agricultural Field Officer (IBPS AFO)",
-        "ICAR Agri Research Scientist",
-        "Agri-Tech Solutions Consultant"
-      ],
-      "conducting_body": "Tamil Nadu Agricultural University (TNAU), Coimbatore",
-      "eligibility_summary": "12th Pass with PCB / Botany & Zoology or PCM. TNAU Cutoff calculated out of 200. 7.5% Govt School Free Quota.",
-      "exam_date": "No Entrance Exam (Pure 12th PCB Cutoff Merit out of 200)",
-      "exam_name": "TNAU Undergraduate Admissions (Agriculture & Horticulture)",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "No admit card",
-        "application_window": "May – June 2026",
-        "counselling_schedule": "Rank List: July 2027 | In-Person Counselling MVC Chennai: August 2027",
-        "exam_dates": "Zero Entrance Exam — Merit based on 12th Science Marks"
-      },
-      "group_badge": "🧬 Biology / 💻 Maths Group",
-      "id": "exam_tnau_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🔵 2027 Portal Opens May 15, 2027 (TNAU Merit Cutoff)",
-      "official_url": "https://tnau.ac.in",
-      "registration_deadline": "June 20, 2027",
-      "registration_start": "May 15, 2027",
-      "stage_badge": "After 12th (PCB / PCM)",
-      "syllabus_highlights": "Online rank list and choice filling for constituent agricultural campuses in Coimbatore, Madurai, Killikulam, Trichy.",
-      "target_courses": [
-        "B.Sc (Hons) Agriculture, B.Sc (Hons) Horticulture, B.Tech Agricultural Engineering"
-      ],
-      "target_groups": [
-        "biology",
-        "pure_science",
-        "computer_science"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "TNAU Centralized Single-Window Counselling based on 12th PCB/PCM Cutoff. 7.5% Govt School Reservation with 100% Free Tuition & Hostel.",
-      "top_colleges_tn": [
-        "Agricultural College & Research Institute (TNAU Main Campus, Coimbatore)",
-        "AC&RI Madurai",
-        "AC&RI Killikulam (Thoothukudi)",
-        "Horticultural College Periyakulam",
-        "Forest College & Research Institute Mettupalayam"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "No Entrance Exam (Pure 12th PCB Cutoff Merit out of 200)",
+        "average_salary_package": "\u20b95.5 LPA - \u20b914.0 LPA (AO Scale: \u20b937,700 - \u20b91,19,500)",
+        "career_opportunities_summary": "TNAU is ranked among India's top agricultural universities. Strong campus placements in agribusiness, fertilizer firms, banking, and fast-track recruitment into TNPSC Agricultural Services.",
+        "career_positions": [
+            "Agricultural Officer (AO - TN Dept of Agriculture)",
+            "Horticultural Officer (HO)",
+            "Bank Agricultural Field Officer (IBPS AFO)",
+            "ICAR Agri Research Scientist",
+            "Agri-Tech Solutions Consultant"
+        ],
+        "conducting_body": "Tamil Nadu Agricultural University (TNAU), Coimbatore",
+        "eligibility_summary": "12th Pass with PCB / Botany & Zoology or PCM. TNAU Cutoff calculated out of 200. 7.5% Govt School Free Quota.",
+        "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+        "exam_name": "TNAU Undergraduate Admissions (Agriculture & Horticulture)",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "No admit card",
+            "application_window": "May 12 \u2013 June 15, 2026 (via tnagfi.ucanapply.com)",
+            "counselling_schedule": "Rank List: June 2026 | Online Single-Window Counselling: July 2026 (3 Rounds)",
+            "exam_dates": "Zero Entrance Exam \u2014 Merit based on 12th Science Marks"
+        },
+        "group_badge": "\ud83e\uddec Biology / \ud83d\udcbb Maths Group",
+        "id": "exam_tnau_2027",
+        "application_status": "merit",
+        "application_status_label": "\ud83d\udccb Pure 12th Science Merit Cutoff (Opens May 12, 2026)",
+        "is_date_confirmed": true,
+        "official_url": "https://tnau.ac.in",
+        "registration_deadline": "June 15, 2026",
+        "registration_start": "May 12, 2026",
+        "stage_badge": "After 12th (PCB / PCM)",
+        "syllabus_highlights": "Online rank list and choice filling for constituent agricultural campuses in Coimbatore, Madurai, Killikulam, Trichy.",
+        "target_courses": [
+            "B.Sc (Hons) Agriculture, B.Sc (Hons) Horticulture, B.Tech Agricultural Engineering"
+        ],
+        "target_groups": [
+            "biology",
+            "pure_science",
+            "computer_science"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "TNAU Centralized Single-Window Counselling based on 12th PCB/PCM Cutoff. 7.5% Govt School Reservation with 100% Free Tuition & Hostel.",
+        "top_colleges_tn": [
+            "Agricultural College & Research Institute (TNAU Main Campus, Coimbatore)",
+            "AC&RI Madurai",
+            "AC&RI Killikulam (Thoothukudi)",
+            "Horticultural College Periyakulam",
+            "Forest College & Research Institute Mettupalayam"
+        ]
     },
     {
-      "admission_type": "No Entrance Exam (Merit Cutoff based on 12th Science Marks)",
-      "average_salary_package": "₹4.2 LPA - ₹11.0 LPA",
-      "career_opportunities_summary": "Essential healthcare sector qualifying students to formulate, manufacture, and dispense medicines, with direct recruitment into TN Medical Services Recruitment Board (MRB).",
-      "career_positions": [
-        "Drug Inspector (TN Drugs Control Administration)",
-        "Hospital & Retail Pharmacist",
-        "Pharmaceutical Formulation Scientist",
-        "Clinical Research Associate (CRO)",
-        "Quality Control & Regulatory Affairs Officer"
-      ],
-      "conducting_body": "Selection Committee, DME Tamil Nadu",
-      "eligibility_summary": "12th Standard Pass with Physics, Chemistry, and Biology or Mathematics.",
-      "exam_date": "No Entrance Exam (12th Board Cutoff Merit out of 200)",
-      "exam_name": "Tamil Nadu B.Pharm & D.Pharm Single-Window Counselling",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "No admit card",
-        "application_window": "June – July 2026",
-        "counselling_schedule": "Rank List: July 2027 | Single Window Counselling: July – August 2027",
-        "exam_dates": "Zero Entrance Exam — Direct 12th Board PCB/PCM Cutoff"
-      },
-      "group_badge": "🧬 Biology / 💻 Maths Group",
-      "id": "exam_bpharm_tn_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🔵 2027 Portal Opens June 6, 2027 (12th PCB/PCM Cutoff)",
-      "official_url": "https://www.tnmedicalselection.net",
-      "registration_deadline": "July 6, 2027",
-      "registration_start": "June 6, 2027",
-      "stage_badge": "After 12th (PCB / PCM)",
-      "syllabus_highlights": "Cutoff calculated out of 200. Merit seat allotment for Govt Medical College Pharmacy departments.",
-      "target_courses": [
-        "B.Pharm (4-Year Degree) & D.Pharm (2-Year Diploma) at Madras Medical College & Madurai Medical College"
-      ],
-      "target_groups": [
-        "biology",
-        "pure_science",
-        "computer_science"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "Centralized Single-Window Counselling by TN DME Selection Committee based on 12th marks in Physics, Chemistry & Biology/Maths.",
-      "top_colleges_tn": [
-        "Madras Medical College (Dept of Pharmacy)",
-        "Madurai Medical College",
-        "PSG College of Pharmacy (Coimbatore)",
-        "Sri Ramachandra Faculty of Pharmacy (Chennai)"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "No Entrance Exam (12th Board Cutoff Merit out of 200)",
+        "average_salary_package": "\u20b94.2 LPA - \u20b911.0 LPA",
+        "career_opportunities_summary": "Essential healthcare sector qualifying students to formulate, manufacture, and dispense medicines, with direct recruitment into TN Medical Services Recruitment Board (MRB).",
+        "career_positions": [
+            "Drug Inspector (TN Drugs Control Administration)",
+            "Hospital & Retail Pharmacist",
+            "Pharmaceutical Formulation Scientist",
+            "Clinical Research Associate (CRO)",
+            "Quality Control & Regulatory Affairs Officer"
+        ],
+        "conducting_body": "Selection Committee, DME Tamil Nadu",
+        "eligibility_summary": "12th Standard Pass with Physics, Chemistry, and Biology or Mathematics.",
+        "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+        "exam_name": "Tamil Nadu B.Pharm & D.Pharm Single-Window Counselling",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "No admit card",
+            "application_window": "May 15 \u2013 June 20, 2026",
+            "counselling_schedule": "Paramedical Rank List: July 2026 | Counselling Sessions: July \u2013 August 2026",
+            "exam_dates": "Zero Entrance Exam \u2014 Direct 12th Board PCB/PCM Cutoff"
+        },
+        "group_badge": "\ud83e\uddec Biology / \ud83d\udcbb Maths Group",
+        "id": "exam_bpharm_tn_2027",
+        "application_status": "merit",
+        "application_status_label": "\ud83d\udccb Single-Window Pharmacy Cutoff (Opens May 15, 2026)",
+        "is_date_confirmed": true,
+        "official_url": "https://www.tnmedicalselection.net",
+        "registration_deadline": "June 20, 2026",
+        "registration_start": "May 15, 2026",
+        "stage_badge": "After 12th (PCB / PCM)",
+        "syllabus_highlights": "Cutoff calculated out of 200. Merit seat allotment for Govt Medical College Pharmacy departments.",
+        "target_courses": [
+            "B.Pharm (4-Year Degree) & D.Pharm (2-Year Diploma) at Madras Medical College & Madurai Medical College"
+        ],
+        "target_groups": [
+            "biology",
+            "pure_science",
+            "computer_science"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "Centralized Single-Window Counselling by TN DME Selection Committee based on 12th marks in Physics, Chemistry & Biology/Maths.",
+        "top_colleges_tn": [
+            "Madras Medical College (Dept of Pharmacy)",
+            "Madurai Medical College",
+            "PSG College of Pharmacy (Coimbatore)",
+            "Sri Ramachandra Faculty of Pharmacy (Chennai)"
+        ]
     },
     {
-      "admission_type": "National Professional Qualification Entry",
-      "average_salary_package": "₹11.0 LPA - ₹30.0 LPA (ICAI Campus Placement average is ₹12.5 LPA)",
-      "career_opportunities_summary": "India's highest financial and accounting qualification. Chartered Accountants hold exclusive statutory auditing authority across corporate India with no upper cap on earnings.",
-      "career_positions": [
-        "Chartered Accountant (CA)",
-        "Chief Financial Officer (CFO)",
-        "Statutory & Forensic Auditor",
-        "Tax Consultant & Appellate Advocate",
-        "Investment Banker & Portfolio Manager"
-      ],
-      "conducting_body": "The Institute of Chartered Accountants of India (ICAI)",
-      "eligibility_summary": "12th Standard Pass or appearing in final exams in any stream (Commerce preferred).",
-      "exam_date": "No Entrance Exam (Merit Cutoff out of 200 based on 12th PCB/PCM)",
-      "exam_name": "ICAI CA Foundation Examination",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "14 Days before examination (Early June 2026)",
-        "application_window": "February 2 – March 25, 2026 (June Term) / July 2026 (Sept Term)",
-        "counselling_schedule": "Merit Rank List: July 2027 | Counselling: August 2027",
-        "exam_dates": "June 19, 21, 23, 25, 2026 | September 2026"
-      },
-      "group_badge": "📊 Commerce & Accountancy Group",
-      "id": "exam_ca_foundation_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🗓️ Jan 2027 Exam: Jan 16-22, 2027 | June 2027 Session Opens Feb 2027",
-      "official_url": "https://www.icai.org",
-      "registration_deadline": "March 25, 2027 (June Session)",
-      "registration_start": "February 10, 2027 (June Session)",
-      "stage_badge": "After 12th (Commerce / Any)",
-      "syllabus_highlights": "4 Papers (400 Marks): Accounting (100), Business Laws (100), Quantitative Aptitude (100), Business Economics (100).",
-      "target_courses": [
-        "Chartered Accountancy (CA) — Foundation -> Intermediate -> Articleship -> Final"
-      ],
-      "target_groups": [
-        "commerce"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "Conducted thrice a year (January, May/June, September). Students can register right after 10th and appear immediately after 12th exams.",
-      "top_colleges_tn": [
-        "ICAI Southern India Regional Council (SIRC, Chennai) & ICAI Branches in Coimbatore, Madurai, Trichy, Salem"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "National Professional Accounting Entrance Examination",
+        "average_salary_package": "\u20b911.0 LPA - \u20b930.0 LPA (ICAI Campus Placement average is \u20b912.5 LPA)",
+        "career_opportunities_summary": "India's highest financial and accounting qualification. Chartered Accountants hold exclusive statutory auditing authority across corporate India with no upper cap on earnings.",
+        "career_positions": [
+            "Chartered Accountant (CA)",
+            "Chief Financial Officer (CFO)",
+            "Statutory & Forensic Auditor",
+            "Tax Consultant & Appellate Advocate",
+            "Investment Banker & Portfolio Manager"
+        ],
+        "conducting_body": "The Institute of Chartered Accountants of India (ICAI)",
+        "eligibility_summary": "12th Standard Pass or appearing in final exams in any stream (Commerce preferred).",
+        "exam_date": "June 19, 21, 23, 25, 2026 | September 2026",
+        "exam_name": "ICAI CA Foundation Examination",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "14 Days prior to examination date",
+            "application_window": "Feb 2 \u2013 Feb 23, 2026 (June Exam) | Aug 1 \u2013 Aug 20, 2026 (Sept Exam)",
+            "counselling_schedule": "Results declared in late July 2026 -> Direct enrollment into CA Intermediate",
+            "exam_dates": "June 19, 21, 23, 25, 2026 | September 2026"
+        },
+        "group_badge": "\ud83d\udcca Commerce & Accountancy Group",
+        "id": "exam_ca_foundation_2027",
+        "application_status": "upcoming",
+        "application_status_label": "\ud83d\udd35 June Exam Registration Opens Feb 2, 2026",
+        "is_date_confirmed": true,
+        "official_url": "https://www.icai.org",
+        "registration_deadline": "February 23, 2026",
+        "registration_start": "February 2, 2026",
+        "stage_badge": "After 12th (Commerce / Any)",
+        "syllabus_highlights": "4 Papers (400 Marks): Accounting (100), Business Laws (100), Quantitative Aptitude (100), Business Economics (100).",
+        "target_courses": [
+            "Chartered Accountancy (CA) \u2014 Foundation -> Intermediate -> Articleship -> Final"
+        ],
+        "target_groups": [
+            "commerce"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "Conducted thrice a year (January, May/June, September). Students can register right after 10th and appear immediately after 12th exams.",
+        "top_colleges_tn": [
+            "ICAI Southern India Regional Council (SIRC, Chennai) & ICAI Branches in Coimbatore, Madurai, Trichy, Salem"
+        ]
     },
     {
-      "admission_type": "National Professional Certification Exam",
-      "average_salary_package": "₹8.5 LPA - ₹22.0 LPA",
-      "career_opportunities_summary": "Specialized accounting qualification focusing on cost optimization, financial planning, and operational audits. Massive demand across Chennai's automobile and industrial clusters.",
-      "career_positions": [
-        "Cost & Management Accountant",
-        "Financial Controller",
-        "Cost Auditor (Automobile & Manufacturing Corridors)",
-        "Pricing Strategist & Budget Analyst",
-        "ERP Financial Consultant"
-      ],
-      "conducting_body": "The Institute of Cost Accountants of India (ICMAI)",
-      "eligibility_summary": "12th Standard Pass in Commerce, Science, or Arts stream.",
-      "exam_date": "January 16, 18, 20, 22, 2027 (Jan Session) | June 18, 20, 22, 24, 2027 (June Session)",
-      "exam_name": "ICMAI CMA Foundation Examination",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "10 Days before exam",
-        "application_window": "Bi-annual: June and December terms",
-        "counselling_schedule": "Direct Intermediate Registration upon passing",
-        "exam_dates": "June 14, 2026 | December 13, 2026"
-      },
-      "group_badge": "📊 Commerce & Accountancy Group",
-      "id": "exam_cma_foundation_2027",
-    "application_status": "approaching",
-    "application_status_label": "🔥 Exam Scheduled: Dec 13, 2026 (June 2027 Cycle Opens Jan 2027)",
-      "official_url": "https://icmai.in",
-      "registration_deadline": "April 10, 2027 (June Term)",
-      "registration_start": "January 2027 (June 2027 Term)",
-      "stage_badge": "After 12th (Commerce)",
-      "syllabus_highlights": "Paper 1 (Fundamentals of Business Laws), Paper 2 (Financial and Cost Accounting), Paper 3 (Economics and Management), Paper 4 (Quantitative Techniques).",
-      "target_courses": [
-        "Cost and Management Accountant (CMA) Professional Course"
-      ],
-      "target_groups": [
-        "commerce"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "Conducted twice a year (June & December). Direct eligibility for students with 12th Commerce.",
-      "top_colleges_tn": [
-        "ICMAI Southern India Regional Council (Egmore, Chennai)"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "National Cost Accounting Entrance Examination",
+        "average_salary_package": "\u20b98.5 LPA - \u20b922.0 LPA",
+        "career_opportunities_summary": "Specialized accounting qualification focusing on cost optimization, financial planning, and operational audits. Massive demand across Chennai's automobile and industrial clusters.",
+        "career_positions": [
+            "Cost & Management Accountant",
+            "Financial Controller",
+            "Cost Auditor (Automobile & Manufacturing Corridors)",
+            "Pricing Strategist & Budget Analyst",
+            "ERP Financial Consultant"
+        ],
+        "conducting_body": "The Institute of Cost Accountants of India (ICMAI)",
+        "eligibility_summary": "12th Standard Pass in Commerce, Science, or Arts stream.",
+        "exam_date": "Coming Soon",
+        "exam_name": "ICMAI CMA Foundation Examination",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "10 Days before exam date",
+            "application_window": "Up to April 10, 2026 (June Term) / Up to October 10, 2026 (Dec Term)",
+            "counselling_schedule": "Result Publication: July 2026 -> Direct Promotion to CMA Intermediate",
+            "exam_dates": "Coming Soon"
+        },
+        "group_badge": "\ud83d\udcca Commerce & Accountancy Group",
+        "id": "exam_cma_foundation_2027",
+        "application_status": "upcoming",
+        "application_status_label": "\ud83d\udd35 Applications Open for June 2026 Term",
+        "is_date_confirmed": false,
+        "official_url": "https://icmai.in",
+        "registration_deadline": "April 10, 2026",
+        "registration_start": "January 2026",
+        "stage_badge": "After 12th (Commerce)",
+        "syllabus_highlights": "Paper 1 (Fundamentals of Business Laws), Paper 2 (Financial and Cost Accounting), Paper 3 (Economics and Management), Paper 4 (Quantitative Techniques).",
+        "target_courses": [
+            "Cost and Management Accountant (CMA) Professional Course"
+        ],
+        "target_groups": [
+            "commerce"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "Conducted twice a year (June & December). Direct eligibility for students with 12th Commerce.",
+        "top_colleges_tn": [
+            "ICMAI Southern India Regional Council (Egmore, Chennai)"
+        ]
     },
     {
-      "admission_type": "National Corporate Law / Governance Entrance Test",
-      "average_salary_package": "₹7.5 LPA - ₹20.0 LPA",
-      "career_opportunities_summary": "Key corporate governance officer acting as the bridge between company management, board of directors, and regulatory authorities such as SEBI and MCA.",
-      "career_positions": [
-        "Company Secretary (CS)",
-        "Chief Compliance Officer",
-        "Corporate Governance Consultant",
-        "Board Secretary & Advisory Officer",
-        "Securities & SEBI Law Specialist"
-      ],
-      "conducting_body": "The Institute of Company Secretaries of India (ICSI)",
-      "eligibility_summary": "12th Standard Pass in any stream except Fine Arts.",
-      "exam_date": "December 13, 2026 (Dec Term) | June 13, 2027 (June Term)",
-      "exam_name": "ICSI CSEET (Company Secretary Executive Entrance Test)",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "7 Days before remote test slot",
-        "application_window": "Open for May 2026, July 2026 & Nov 2026 Sessions",
-        "counselling_schedule": "Direct Admission to CMA Intermediate: January 2027",
-        "exam_dates": "May 9, 2026 | July 11, 2026 | November 7, 2026"
-      },
-      "group_badge": "📊 Commerce & Accountancy Group",
-      "id": "exam_cs_cset_2027",
-    "application_status": "open",
-    "application_status_label": "🟢 Jan 2027 Registration Active (Exam: Jan 9, 2027)",
-      "official_url": "https://www.icsi.edu",
-      "registration_deadline": "December 15, 2026 (Jan Session) / April 15, 2027 (May Session)",
-      "registration_start": "Open Portal (January 2027 Cycle)",
-      "stage_badge": "After 12th (Commerce / Any)",
-      "syllabus_highlights": "Business Communication, Legal Aptitude & Logical Reasoning, Economic & Business Environment, Current Affairs.",
-      "target_courses": [
-        "Company Secretary (CS) — Executive & Professional Programs"
-      ],
-      "target_groups": [
-        "commerce"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "Remote proctored online test with zero application barrier for 12th pass students.",
-      "top_colleges_tn": [
-        "ICSI Southern India Regional Office (T. Nagar, Chennai)"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "Remote-Proctored National Entrance Examination",
+        "average_salary_package": "\u20b97.5 LPA - \u20b920.0 LPA",
+        "career_opportunities_summary": "Key corporate governance officer acting as the bridge between company management, board of directors, and regulatory authorities such as SEBI and MCA.",
+        "career_positions": [
+            "Company Secretary (CS)",
+            "Chief Compliance Officer",
+            "Corporate Governance Consultant",
+            "Board Secretary & Advisory Officer",
+            "Securities & SEBI Law Specialist"
+        ],
+        "conducting_body": "The Institute of Company Secretaries of India (ICSI)",
+        "eligibility_summary": "12th Standard Pass in any stream except Fine Arts.",
+        "exam_date": "Coming Soon",
+        "exam_name": "ICSI CSEET (Company Secretary Executive Entrance Test)",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "10 Days prior to test date",
+            "application_window": "Quarterly: Up to Apr 15 (May Cycle) / Up to Jun 15 (Jul Cycle) / Up to Oct 15 (Nov Cycle)",
+            "counselling_schedule": "Immediate Scorecard Release -> Register for CS Executive Program",
+            "exam_dates": "Coming Soon"
+        },
+        "group_badge": "\ud83d\udcca Commerce & Accountancy Group",
+        "id": "exam_cs_cset_2027",
+        "application_status": "upcoming",
+        "application_status_label": "\ud83d\udd35 Applications Open for May 2026 Cycle",
+        "is_date_confirmed": false,
+        "official_url": "https://www.icsi.edu",
+        "registration_deadline": "April 15, 2026",
+        "registration_start": "January 2026",
+        "stage_badge": "After 12th (Commerce / Any)",
+        "syllabus_highlights": "Business Communication, Legal Aptitude & Logical Reasoning, Economic & Business Environment, Current Affairs.",
+        "target_courses": [
+            "Company Secretary (CS) \u2014 Executive & Professional Programs"
+        ],
+        "target_groups": [
+            "commerce"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "Remote proctored online test with zero application barrier for 12th pass students.",
+        "top_colleges_tn": [
+            "ICSI Southern India Regional Office (T. Nagar, Chennai)"
+        ]
     },
     {
-      "admission_type": "No Entrance Exam (Cutoff out of 400 based on 12th Marks)",
-      "average_salary_package": "₹3.5 LPA - ₹7.5 LPA (Top Loyola/MCC/Stella Maris grads reach ₹9 LPA)",
-      "career_opportunities_summary": "Subsidized and prestigious undergraduate commerce education across Tamil Nadu government and aided institutions. High campus recruitment into Big-4 assurance firms and IT giants.",
-      "career_positions": [
-        "Accountant & Bookkeeper",
-        "Tax Return Preparer",
-        "Bank Probationary Officer (IBPS / SBI)",
-        "Financial Operations Associate",
-        "Auditing Assistant"
-      ],
-      "conducting_body": "Directorate of Collegiate Education (DCE), Tamil Nadu",
-      "eligibility_summary": "12th Pass with Commerce & Accountancy. 100% Free Education under Pudhumai Penn / Tamil Puthalvan.",
-      "exam_date": "January 9, 2027 | May 8, 2027 | July 10, 2027",
-      "exam_name": "TNGASA (Tamil Nadu Govt Colleges Commerce Admissions)",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "No admit card (Online College Rank List)",
-        "application_window": "May – June 2026 (via tngasa.in portal)",
-        "counselling_schedule": "Direct registration to CS Executive program upon qualifying",
-        "exam_dates": "Zero Entrance Exam — Pure 12th Board Merit"
-      },
-      "group_badge": "📊 Commerce & Accountancy Group",
-      "id": "exam_tngasa_commerce_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🔵 2027 Portal Opens May 8, 2027 (12th Cutoff Merit)",
-      "official_url": "https://www.tngasa.in",
-      "registration_deadline": "June 10, 2027",
-      "registration_start": "May 8, 2027",
-      "stage_badge": "After 12th (Commerce / HSC)",
-      "syllabus_highlights": "Single-window centralized merit rank list for all 38 districts of Tamil Nadu. Annual tuition fees as low as ₹2,200/year.",
-      "target_courses": [
-        "B.Com (General), B.Com (Corporate Secretaryship), B.Com (Banking), BBA across 164+ TN Govt Colleges"
-      ],
-      "target_groups": [
-        "commerce"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "100% Free Tuition in Tamil Nadu Government Colleges + Pudhumai Penn & Tamil Puthalvan ₹1,000/month scholarship.",
-      "top_colleges_tn": [
-        "Presidency College Chennai (NIRF #3)",
-        "Loyola College Chennai",
-        "Madras Christian College (MCC)",
-        "PSG College of Arts and Science (Coimbatore)",
-        "The New College (Chennai)"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "No Entrance Exam (Cutoff out of 400 based on 12th Commerce)",
+        "average_salary_package": "\u20b93.5 LPA - \u20b97.5 LPA (Top Loyola/MCC/Stella Maris grads reach \u20b99 LPA)",
+        "career_opportunities_summary": "Subsidized and prestigious undergraduate commerce education across Tamil Nadu government and aided institutions. High campus recruitment into Big-4 assurance firms and IT giants.",
+        "career_positions": [
+            "Accountant & Bookkeeper",
+            "Tax Return Preparer",
+            "Bank Probationary Officer (IBPS / SBI)",
+            "Financial Operations Associate",
+            "Auditing Assistant"
+        ],
+        "conducting_body": "Directorate of Collegiate Education (DCE), Tamil Nadu",
+        "eligibility_summary": "12th Pass with Commerce & Accountancy. 100% Free Education under Pudhumai Penn / Tamil Puthalvan.",
+        "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+        "exam_name": "TNGASA (Tamil Nadu Govt Colleges Commerce Admissions)",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "No admit card (Direct 12th Board Cutoff)",
+            "application_window": "May 8 \u2013 June 10, 2026 (via tngasa.in)",
+            "counselling_schedule": "Rank List: June 2026 | In-Person / Web Counselling: June \u2013 July 2026",
+            "exam_dates": "Zero Entrance Exam \u2014 Pure 12th Board Merit"
+        },
+        "group_badge": "\ud83d\udcca Commerce & Accountancy Group",
+        "id": "exam_tngasa_commerce_2027",
+        "application_status": "merit",
+        "application_status_label": "\ud83d\udccb Pure 12th Commerce Merit (Opens May 8, 2026)",
+        "is_date_confirmed": true,
+        "official_url": "https://www.tngasa.in",
+        "registration_deadline": "June 10, 2026",
+        "registration_start": "May 8, 2026 (Post 12th Board Results)",
+        "stage_badge": "After 12th (Commerce / HSC)",
+        "syllabus_highlights": "Single-window centralized merit rank list for all 38 districts of Tamil Nadu. Annual tuition fees as low as \u20b92,200/year.",
+        "target_courses": [
+            "B.Com (General), B.Com (Corporate Secretaryship), B.Com (Banking), BBA across 164+ TN Govt Colleges"
+        ],
+        "target_groups": [
+            "commerce"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "100% Free Tuition in Tamil Nadu Government Colleges + Pudhumai Penn & Tamil Puthalvan \u20b91,000/month scholarship.",
+        "top_colleges_tn": [
+            "Presidency College Chennai (NIRF #3)",
+            "Loyola College Chennai",
+            "Madras Christian College (MCC)",
+            "PSG College of Arts and Science (Coimbatore)",
+            "The New College (Chennai)"
+        ]
     },
     {
-      "admission_type": "No Entrance Exam (Merit Cutoff based on 12th Aggregate)",
-      "average_salary_package": "₹6.5 LPA - ₹18.0 LPA (Corporate law firms offer ₹12 - ₹20 LPA)",
-      "career_opportunities_summary": "Tamil Nadu's premier university for legal education. School of Excellence in Law (SOEL) produces prominent judges, senior advocates, and legal leaders.",
-      "career_positions": [
-        "High Court / Supreme Court Advocate",
-        "Civil Judge (Junior Division via TNPSC)",
-        "Corporate Legal Counsel",
-        "Public Prosecutor",
-        "Legal Advisor & Arbitrator"
-      ],
-      "conducting_body": "Tamil Nadu Dr. Ambedkar Law University (TNDALU), Chennai",
-      "eligibility_summary": "12th Standard Pass with min 70% for SOEL (60% for SC/ST). 7.5% Govt School Horizontal Reservation applies.",
-      "exam_date": "No Entrance Exam (Cutoff out of 400 based on 12th Commerce)",
-      "exam_name": "TNDALU 5-Year Honours Law Admissions (SOEL & 14 Govt Law Colleges)",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "No admit card",
-        "application_window": "May – June 2026 (via tndalu.ac.in)",
-        "counselling_schedule": "Single-Window Web Counselling: June – July 2027",
-        "exam_dates": "Zero Entrance Exam — Direct 12th Aggregate Cutoff"
-      },
-      "group_badge": "📚 Arts / 📊 Commerce / All Groups",
-      "id": "exam_tndalu_law_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🔵 SOEL Admissions Open May 12, 2027 (Cutoff Merit)",
-      "official_url": "https://www.tndalu.ac.in",
-      "registration_deadline": "June 15, 2027",
-      "registration_start": "May 12, 2027",
-      "stage_badge": "After 12th (Any Stream)",
-      "syllabus_highlights": "Single-window online counselling for School of Excellence in Law (Chennai) and 14 Government Law Colleges across Tamil Nadu.",
-      "target_courses": [
-        "5-Year Integrated B.A. LL.B (Hons), B.Com. LL.B (Hons), B.B.A. LL.B, B.C.A. LL.B"
-      ],
-      "target_groups": [
-        "arts",
-        "commerce",
-        "computer_science",
-        "biology"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "Single-window online merit admissions based on 12th Board marks. 7.5% Govt School Horizontal Quota (100% Free Tuition & Hostel).",
-      "top_colleges_tn": [
-        "School of Excellence in Law (SOEL TNDALU, Chennai)",
-        "Chennai Dr. Ambedkar Govt Law College",
-        "Madurai Govt Law College",
-        "Tiruchirappalli Govt Law College",
-        "Coimbatore Govt Law College"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "No Entrance Exam (12th Board Aggregate Cutoff Merit)",
+        "average_salary_package": "\u20b96.5 LPA - \u20b918.0 LPA (Corporate law firms offer \u20b912 - \u20b920 LPA)",
+        "career_opportunities_summary": "Tamil Nadu's premier university for legal education. School of Excellence in Law (SOEL) produces prominent judges, senior advocates, and legal leaders.",
+        "career_positions": [
+            "High Court / Supreme Court Advocate",
+            "Civil Judge (Junior Division via TNPSC)",
+            "Corporate Legal Counsel",
+            "Public Prosecutor",
+            "Legal Advisor & Arbitrator"
+        ],
+        "conducting_body": "Tamil Nadu Dr. Ambedkar Law University (TNDALU), Chennai",
+        "eligibility_summary": "12th Standard Pass with min 70% for SOEL (60% for SC/ST). 7.5% Govt School Horizontal Reservation applies.",
+        "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+        "exam_name": "TNDALU 5-Year Honours Law Admissions (SOEL & 14 Govt Law Colleges)",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "No admit card (12th Board Merit Selection)",
+            "application_window": "May 15 \u2013 June 15, 2026 (via tndalu.ac.in)",
+            "counselling_schedule": "Cutoff Rank List: June 2026 | Online Counselling: July 2026",
+            "exam_dates": "Zero Entrance Exam \u2014 Direct 12th Aggregate Cutoff"
+        },
+        "group_badge": "\ud83d\udcda Arts / \ud83d\udcca Commerce / All Groups",
+        "id": "exam_tndalu_law_2027",
+        "application_status": "merit",
+        "application_status_label": "\ud83d\udccb SOEL & Govt Law Single Window (Opens May 15, 2026)",
+        "is_date_confirmed": true,
+        "official_url": "https://www.tndalu.ac.in",
+        "registration_deadline": "June 15, 2026",
+        "registration_start": "May 15, 2026",
+        "stage_badge": "After 12th (Any Stream)",
+        "syllabus_highlights": "Single-window online counselling for School of Excellence in Law (Chennai) and 14 Government Law Colleges across Tamil Nadu.",
+        "target_courses": [
+            "5-Year Integrated B.A. LL.B (Hons), B.Com. LL.B (Hons), B.B.A. LL.B, B.C.A. LL.B"
+        ],
+        "target_groups": [
+            "arts",
+            "commerce",
+            "computer_science",
+            "biology"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "Single-window online merit admissions based on 12th Board marks. 7.5% Govt School Horizontal Quota (100% Free Tuition & Hostel).",
+        "top_colleges_tn": [
+            "School of Excellence in Law (SOEL TNDALU, Chennai)",
+            "Chennai Dr. Ambedkar Govt Law College",
+            "Madurai Govt Law College",
+            "Tiruchirappalli Govt Law College",
+            "Coimbatore Govt Law College"
+        ]
     },
     {
-      "admission_type": "National Law Entrance Exam",
-      "average_salary_package": "₹12.0 LPA - ₹24.0 LPA",
-      "career_opportunities_summary": "National gateway to the 24 National Law Universities (NLUs). Top law firm recruiters hire fresh graduates on day zero with lucrative compensation packages.",
-      "career_positions": [
-        "Tier-1 Corporate Law Associate",
-        "International Arbitration Counsel",
-        "Judicial Clerk",
-        "Investment Banking Legal Specialist",
-        "Civil Services Legal Officer"
-      ],
-      "conducting_body": "Consortium of National Law Universities (NLUs)",
-      "eligibility_summary": "12th Pass or appearing in any stream with min 45% marks (40% for SC/ST).",
-      "exam_date": "No Entrance Exam (12th Board Aggregate Cutoff Merit)",
-      "exam_name": "CLAT (Common Law Admission Test)",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "Mid-November 2026",
-        "application_window": "July 1 – October 15, 2026",
-        "counselling_schedule": "Rank List: June 30, 2027 | Online Counselling: July – August 2027",
-        "exam_dates": "December 6, 2026 (Sunday: 2:00 PM – 4:00 PM)"
-      },
-      "group_badge": "📚 Arts / 📊 Commerce / All Streams",
-      "id": "exam_clat_2027",
-    "application_status": "approaching",
-    "application_status_label": "🔥 National Exam in 16 Days (Dec 6, 2026)",
-      "official_url": "https://consortiumofnlus.ac.in",
-      "registration_deadline": "October 15, 2026 (Registration Closed)",
-      "registration_start": "July 1, 2026",
-      "stage_badge": "After 12th (Any Stream)",
-      "syllabus_highlights": "120 MCQs (English, Current Affairs, Legal Reasoning, Logical Reasoning, Quantitative Techniques). 2 Hours duration.",
-      "target_courses": [
-        "5-Year B.A. LL.B (Hons) at Tamil Nadu National Law University (TNNLU Trichy - 50% TN Quota) & 24 NLUs"
-      ],
-      "target_groups": [
-        "arts",
-        "commerce",
-        "computer_science"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "50% Domicile Reservation for Tamil Nadu students at TNNLU Trichy + Fee concessions for reserved categories.",
-      "top_colleges_tn": [
-        "Tamil Nadu National Law University (TNNLU, Tiruchirappalli — 50% Home State Quota for TN candidates)"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "National Law Entrance Exam",
+        "average_salary_package": "\u20b912.0 LPA - \u20b924.0 LPA",
+        "career_opportunities_summary": "National gateway to the 24 National Law Universities (NLUs). Top law firm recruiters hire fresh graduates on day zero with lucrative compensation packages.",
+        "career_positions": [
+            "Tier-1 Corporate Law Associate",
+            "International Arbitration Counsel",
+            "Judicial Clerk",
+            "Investment Banking Legal Specialist",
+            "Civil Services Legal Officer"
+        ],
+        "conducting_body": "Consortium of National Law Universities (NLUs)",
+        "eligibility_summary": "12th Pass or appearing in any stream with min 45% marks (40% for SC/ST).",
+        "exam_date": "December 6, 2026 (Sunday: 2:00 PM \u2013 4:00 PM)",
+        "exam_name": "CLAT (Common Law Admission Test)",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "Mid-November 2026",
+            "application_window": "July 1 \u2013 October 15, 2026",
+            "counselling_schedule": "Centralized NLU Allotment (5 Rounds): January \u2013 May 2027",
+            "exam_dates": "December 6, 2026 (Sunday: 2:00 PM \u2013 4:00 PM)"
+        },
+        "group_badge": "\ud83d\udcda Arts / \ud83d\udcca Commerce / All Streams",
+        "id": "exam_clat_2027",
+        "application_status": "upcoming",
+        "application_status_label": "\ud83d\udd35 Registrations Open July 1, 2026",
+        "is_date_confirmed": true,
+        "official_url": "https://consortiumofnlus.ac.in",
+        "registration_deadline": "October 15, 2026",
+        "registration_start": "July 1, 2026",
+        "stage_badge": "After 12th (Any Stream)",
+        "syllabus_highlights": "120 MCQs (English, Current Affairs, Legal Reasoning, Logical Reasoning, Quantitative Techniques). 2 Hours duration.",
+        "target_courses": [
+            "5-Year B.A. LL.B (Hons) at Tamil Nadu National Law University (TNNLU Trichy - 50% TN Quota) & 24 NLUs"
+        ],
+        "target_groups": [
+            "arts",
+            "commerce",
+            "computer_science"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "50% Domicile Reservation for Tamil Nadu students at TNNLU Trichy + Fee concessions for reserved categories.",
+        "top_colleges_tn": [
+            "Tamil Nadu National Law University (TNNLU, Tiruchirappalli \u2014 50% Home State Quota for TN candidates)"
+        ]
     },
     {
-      "admission_type": "No Entrance Exam (Merit Cutoff based on 12th Marks)",
-      "average_salary_package": "₹3.2 LPA - ₹8.0 LPA",
-      "career_opportunities_summary": "Builds strong foundational analytical and linguistic competencies. Students can transition seamlessly into Civil Services, Journalism, Public Administration, and Academics.",
-      "career_positions": [
-        "Civil Services Aspirant (TNPSC Group 1 / UPSC)",
-        "Content Strategist & Copywriter",
-        "Policy Researcher",
-        "Public Relations Executive",
-        "Higher Secondary School Teacher"
-      ],
-      "conducting_body": "Directorate of Collegiate Education (DCE), Tamil Nadu",
-      "eligibility_summary": "12th Standard Pass in Arts or any stream. 100% Free Tuition for TN Govt School students.",
-      "exam_date": "December 6, 2026 (Sunday: 2:00 PM – 4:00 PM)",
-      "exam_name": "TNGASA (Tamil Nadu Govt Colleges Arts & Humanities Admissions)",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "No admit card",
-        "application_window": "May – June 2026",
-        "counselling_schedule": "Centralized NLU Allotment (5 Rounds): January – May 2027",
-        "exam_dates": "Zero Entrance Exam — Direct 12th Aggregate Merit"
-      },
-      "group_badge": "📚 Arts & Humanities Group",
-      "id": "exam_tngasa_arts_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🔵 2027 Portal Opens May 8, 2027 (12th Board Merit)",
-      "official_url": "https://www.tngasa.in",
-      "registration_deadline": "June 10, 2027",
-      "registration_start": "May 8, 2027",
-      "stage_badge": "After 12th (Arts / Any)",
-      "syllabus_highlights": "Single-window application for historic colleges like Presidency College Chennai, Govt Arts College Coimbatore, etc.",
-      "target_courses": [
-        "B.A English Literature, B.A Tamil, B.A History, B.A Economics, B.A Political Science in 164+ TN Govt Colleges"
-      ],
-      "target_groups": [
-        "arts"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "Zero tuition fees in Govt colleges + Pudhumai Penn & Tamil Puthalvan ₹1,000/mo + Free Bus Pass.",
-      "top_colleges_tn": [
-        "Presidency College Chennai",
-        "Queen Mary's College Chennai",
-        "Government Arts College Coimbatore",
-        "St. Joseph's College Tiruchirappalli"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "No Entrance Exam (12th Board Marks Merit Selection)",
+        "average_salary_package": "\u20b93.2 LPA - \u20b98.0 LPA",
+        "career_opportunities_summary": "Builds strong foundational analytical and linguistic competencies. Students can transition seamlessly into Civil Services, Journalism, Public Administration, and Academics.",
+        "career_positions": [
+            "Civil Services Aspirant (TNPSC Group 1 / UPSC)",
+            "Content Strategist & Copywriter",
+            "Policy Researcher",
+            "Public Relations Executive",
+            "Higher Secondary School Teacher"
+        ],
+        "conducting_body": "Directorate of Collegiate Education (DCE), Tamil Nadu",
+        "eligibility_summary": "12th Standard Pass in Arts or any stream. 100% Free Tuition for TN Govt School students.",
+        "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+        "exam_name": "TNGASA (Tamil Nadu Govt Colleges Arts & Humanities Admissions)",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "No admit card",
+            "application_window": "May 8 \u2013 June 10, 2026",
+            "counselling_schedule": "Single-Window Web Counselling: June \u2013 July 2026",
+            "exam_dates": "Zero Entrance Exam \u2014 Direct 12th Aggregate Merit"
+        },
+        "group_badge": "\ud83d\udcda Arts & Humanities Group",
+        "id": "exam_tngasa_arts_2027",
+        "application_status": "merit",
+        "application_status_label": "\ud83d\udccb Direct 12th Aggregate Merit (Opens May 8, 2026)",
+        "is_date_confirmed": true,
+        "official_url": "https://www.tngasa.in",
+        "registration_deadline": "June 10, 2026",
+        "registration_start": "May 8, 2026",
+        "stage_badge": "After 12th (Arts / Any)",
+        "syllabus_highlights": "Single-window application for historic colleges like Presidency College Chennai, Govt Arts College Coimbatore, etc.",
+        "target_courses": [
+            "B.A English Literature, B.A Tamil, B.A History, B.A Economics, B.A Political Science in 164+ TN Govt Colleges"
+        ],
+        "target_groups": [
+            "arts"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "Zero tuition fees in Govt colleges + Pudhumai Penn & Tamil Puthalvan \u20b91,000/mo + Free Bus Pass.",
+        "top_colleges_tn": [
+            "Presidency College Chennai",
+            "Queen Mary's College Chennai",
+            "Government Arts College Coimbatore",
+            "St. Joseph's College Tiruchirappalli"
+        ]
     },
     {
-      "admission_type": "National Design Entrance Examination",
-      "average_salary_package": "₹6.0 LPA - ₹16.0 LPA",
-      "career_opportunities_summary": "Premier institute for design, fashion, and textile technology. Tamil Nadu's Tirupur and Chennai export zones offer tremendous entrepreneurial and placement opportunities.",
-      "career_positions": [
-        "Fashion Designer",
-        "Textile & Apparel Product Developer",
-        "Fashion Stylist & Visual Merchandiser",
-        "Apparel Production Manager",
-        "Footwear & Accessories Designer"
-      ],
-      "conducting_body": "National Institute of Fashion Technology & NTA",
-      "eligibility_summary": "12th Standard Pass in any stream from recognized board.",
-      "exam_date": "No Entrance Exam (12th Board Marks Merit Selection)",
-      "exam_name": "NIFT Entrance Examination (Fashion Design & Technology)",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "February 1, 2026",
-        "application_window": "November 20, 2025 – January 5, 2026",
-        "counselling_schedule": "Rank Allotment & Document Verification: June – July 2027",
-        "exam_dates": "February 8, 2026 (Sunday: CAT & GAT)"
-      },
-      "group_badge": "📚 Arts / 🎨 Design / All Streams",
-      "id": "exam_nift_2027",
-    "application_status": "open",
-    "application_status_label": "🟢 Application Window Active Now (Opened Nov 20, 2026)",
-      "official_url": "https://www.nift.ac.in",
-      "registration_deadline": "January 5, 2027",
-      "registration_start": "November 20, 2026",
-      "stage_badge": "After 12th (Any Stream)",
-      "syllabus_highlights": "Creative Ability Test (CAT) + General Ability Test (GAT) followed by Situation Test. Drawing, design ideation, and visual thinking.",
-      "target_courses": [
-        "B.Des (Fashion Design, Textile Design, Fashion Communication) at NIFT Chennai (includes TN Domicile Quota)"
-      ],
-      "target_groups": [
-        "arts",
-        "commerce",
-        "computer_science"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "20% Domicile Supernumerary seats for Tamil Nadu state candidates at NIFT Chennai.",
-      "top_colleges_tn": [
-        "National Institute of Fashion Technology (NIFT Chennai Campus, Taramani)"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "National Design Entrance Examination",
+        "average_salary_package": "\u20b96.0 LPA - \u20b916.0 LPA",
+        "career_opportunities_summary": "Premier institute for design, fashion, and textile technology. Tamil Nadu's Tirupur and Chennai export zones offer tremendous entrepreneurial and placement opportunities.",
+        "career_positions": [
+            "Fashion Designer",
+            "Textile & Apparel Product Developer",
+            "Fashion Stylist & Visual Merchandiser",
+            "Apparel Production Manager",
+            "Footwear & Accessories Designer"
+        ],
+        "conducting_body": "National Institute of Fashion Technology & NTA",
+        "eligibility_summary": "12th Standard Pass in any stream from recognized board.",
+        "exam_date": "February 8, 2026 (Sunday: CAT & GAT)",
+        "exam_name": "NIFT Entrance Examination (Fashion Design & Technology)",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "February 1, 2026",
+            "application_window": "November 20, 2025 \u2013 January 5, 2026",
+            "counselling_schedule": "Stage 2 Situation Test: April 2026 | Counselling: May \u2013 June 2026",
+            "exam_dates": "February 8, 2026 (Sunday: CAT & GAT)"
+        },
+        "group_badge": "\ud83d\udcda Arts / \ud83c\udfa8 Design / All Streams",
+        "id": "exam_nift_2027",
+        "application_status": "upcoming",
+        "application_status_label": "\ud83d\udd35 Application Deadline: January 5, 2026",
+        "is_date_confirmed": true,
+        "official_url": "https://www.nift.ac.in",
+        "registration_deadline": "January 5, 2026",
+        "registration_start": "November 20, 2025",
+        "stage_badge": "After 12th (Any Stream)",
+        "syllabus_highlights": "Creative Ability Test (CAT) + General Ability Test (GAT) followed by Situation Test. Drawing, design ideation, and visual thinking.",
+        "target_courses": [
+            "B.Des (Fashion Design, Textile Design, Fashion Communication) at NIFT Chennai (includes TN Domicile Quota)"
+        ],
+        "target_groups": [
+            "arts",
+            "commerce",
+            "computer_science"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "20% Domicile Supernumerary seats for Tamil Nadu state candidates at NIFT Chennai.",
+        "top_colleges_tn": [
+            "National Institute of Fashion Technology (NIFT Chennai Campus, Taramani)"
+        ]
     },
     {
-      "admission_type": "No Entrance Exam (Merit Cutoff based on 12th Vocational / ITI Marks)",
-      "average_salary_package": "₹3.5 LPA - ₹7.0 LPA",
-      "career_opportunities_summary": "Direct entry into the 2nd year (3rd semester) of 3-year Polytechnic Diplomas for students with 12th Vocational or Maths/Science. Saves 1 full year.",
-      "career_positions": [
-        "Junior Quality Assurance Engineer",
-        "CNC Shop Floor Supervisor",
-        "Automotive Assembly Technician",
-        "Direct Lateral Entry B.E Engineer"
-      ],
-      "conducting_body": "Directorate of Technical Education (DOTE), Tamil Nadu",
-      "eligibility_summary": "12th Vocational Stream Pass (Engineering Trades) or 12th PCM or 2-Year ITI Pass.",
-      "exam_date": "February 7, 2027 (Sunday: Shift 1 CAT & Shift 2 GAT)",
-      "exam_name": "DOTE Tamil Nadu Lateral Entry Polytechnic Admissions",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "No admit card",
-        "application_window": "May – June 2026",
-        "counselling_schedule": "Stage 2 Situation Test: April 2027 | Counselling: May – June 2027",
-        "exam_dates": "Zero Entrance Exam — Direct Merit Admission"
-      },
-      "group_badge": "⚙️ Vocational / Technical Stream",
-      "id": "exam_dote_lateral_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🔵 2027 Portal Opens May 10, 2027 (Direct 2nd Yr Merit)",
-      "official_url": "https://www.tnpoly.in",
-      "registration_deadline": "June 15, 2027",
-      "registration_start": "May 10, 2027",
-      "stage_badge": "After 12th Vocational / PCM / ITI",
-      "syllabus_highlights": "Direct entry into 3rd Semester (2nd Year) Diploma. Saves 1 whole year! 7.5% Govt School 100% Free Quota applies.",
-      "target_courses": [
-        "Direct 2nd Year Diploma into Mechanical, Automobile, EEE, CSE, Civil across CPT Chennai, PSG Poly, Govt Poly"
-      ],
-      "target_groups": [
-        "vocational"
-      ],
-      "target_stage": "after_12th",
-      "tn_quota_perks": "100% Free Tuition, Hostel & Mess in Govt Polytechnics under 7.5% TN Govt School Quota.",
-      "top_colleges_tn": [
-        "Central Polytechnic College (CPT) Chennai",
-        "PSG Polytechnic College Coimbatore",
-        "Murugappa Polytechnic College Avadi"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "No Entrance Exam (Direct Merit on 12th Vocational / 2-Year ITI Marks)",
+        "average_salary_package": "\u20b93.5 LPA - \u20b97.0 LPA",
+        "career_opportunities_summary": "Direct entry into the 2nd year (3rd semester) of 3-year Polytechnic Diplomas for students with 12th Vocational or Maths/Science. Saves 1 full year.",
+        "career_positions": [
+            "Junior Quality Assurance Engineer",
+            "CNC Shop Floor Supervisor",
+            "Automotive Assembly Technician",
+            "Direct Lateral Entry B.E Engineer"
+        ],
+        "conducting_body": "Directorate of Technical Education (DOTE), Tamil Nadu",
+        "eligibility_summary": "12th Vocational Stream Pass (Engineering Trades) or 12th PCM or 2-Year ITI Pass.",
+        "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+        "exam_name": "DOTE Tamil Nadu Lateral Entry Polytechnic Admissions",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "No admit card",
+            "application_window": "May 10 \u2013 June 15, 2026",
+            "counselling_schedule": "Rank Allotment & Document Verification: June \u2013 July 2026",
+            "exam_dates": "Zero Entrance Exam \u2014 Direct Merit Admission"
+        },
+        "group_badge": "\u2699\ufe0f Vocational / Technical Stream",
+        "id": "exam_dote_lateral_2027",
+        "application_status": "merit",
+        "application_status_label": "\ud83d\udccb Direct 2nd Year Diploma Merit (Opens May 10, 2026)",
+        "is_date_confirmed": true,
+        "official_url": "https://www.tnpoly.in",
+        "registration_deadline": "June 15, 2026",
+        "registration_start": "May 10, 2026",
+        "stage_badge": "After 12th Vocational / PCM / ITI",
+        "syllabus_highlights": "Direct entry into 3rd Semester (2nd Year) Diploma. Saves 1 whole year! 7.5% Govt School 100% Free Quota applies.",
+        "target_courses": [
+            "Direct 2nd Year Diploma into Mechanical, Automobile, EEE, CSE, Civil across CPT Chennai, PSG Poly, Govt Poly"
+        ],
+        "target_groups": [
+            "vocational"
+        ],
+        "target_stage": "after_12th",
+        "tn_quota_perks": "100% Free Tuition, Hostel & Mess in Govt Polytechnics under 7.5% TN Govt School Quota.",
+        "top_colleges_tn": [
+            "Central Polytechnic College (CPT) Chennai",
+            "PSG Polytechnic College Coimbatore",
+            "Murugappa Polytechnic College Avadi"
+        ]
     },
     {
-      "admission_type": "No Entrance Exam (Direct 10th SSLC Merit Admission)",
-      "average_salary_package": "₹3.0 LPA - ₹6.5 LPA",
-      "career_opportunities_summary": "Centralized single-window admission into 3-year Polytechnic Diplomas across Tamil Nadu Government and Aided Polytechnic Colleges based purely on 10th SSLC marks.",
-      "career_positions": [
-        "Junior Technical Supervisor",
-        "Industrial Electrician & Wiring Specialist",
-        "CNC Machine Operator",
-        "Assistant CAD Drafter"
-      ],
-      "conducting_body": "Directorate of Technical Education (DOTE), Tamil Nadu",
-      "eligibility_summary": "10th Standard (SSLC) Pass from Tamil Nadu State Board or equivalent. Zero entrance exam required.",
-      "exam_date": "No Entrance Exam (Direct Merit on 12th Vocational / 2-Year ITI Marks)",
-      "exam_name": "DOTE Tamil Nadu Centralized Polytechnic Admissions",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "No admit card",
-        "application_window": "May – June 2026",
-        "counselling_schedule": "Merit Rank List: June 2027 | Direct 2nd Year Allotment: July 2027",
-        "exam_dates": "Zero Entrance Exam — Pure 10th Standard Board Merit"
-      },
-      "group_badge": "📘 10th Standard (General SSLC)",
-      "id": "exam_dote_polytechnic_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🔵 Opens May 10, 2027 Post-10th SSLC Results (Direct Merit)",
-      "official_url": "https://www.tnpoly.in",
-      "registration_deadline": "June 12, 2027",
-      "registration_start": "May 10, 2027 (Immediately post 10th SSLC results)",
-      "stage_badge": "After 10th (SSLC Pass)",
-      "syllabus_highlights": "Single-window online seat allocation across CPT Chennai, PSG Poly, Murugappa Poly, Coimbatore Govt Poly with 7.5% free quota.",
-      "target_courses": [
-        "Regular 3-Yr Diploma in Mechanical, Automobile, EEE, Computer Engineering, Civil across Tamil Nadu"
-      ],
-      "target_groups": [
-        "sslc_10th"
-      ],
-      "target_stage": "after_10th",
-      "tn_quota_perks": "100% Free Tuition, Hostel & Mess under 7.5% Govt School Quota + Free Laptop Scheme.",
-      "top_colleges_tn": [
-        "Central Polytechnic College (CPT) Chennai",
-        "PSG Polytechnic College Coimbatore",
-        "Murugappa Polytechnic College Avadi"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "No Entrance Exam (Direct 10th Standard SSLC Marks Admission)",
+        "average_salary_package": "\u20b93.0 LPA - \u20b96.5 LPA",
+        "career_opportunities_summary": "Centralized single-window admission into 3-year Polytechnic Diplomas across Tamil Nadu Government and Aided Polytechnic Colleges based purely on 10th SSLC marks.",
+        "career_positions": [
+            "Junior Technical Supervisor",
+            "Industrial Electrician & Wiring Specialist",
+            "CNC Machine Operator",
+            "Assistant CAD Drafter"
+        ],
+        "conducting_body": "Directorate of Technical Education (DOTE), Tamil Nadu",
+        "eligibility_summary": "10th Standard (SSLC) Pass from Tamil Nadu State Board or equivalent. Zero entrance exam required.",
+        "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+        "exam_name": "DOTE Tamil Nadu Centralized Polytechnic Admissions",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "No admit card",
+            "application_window": "May 10 \u2013 June 12, 2026",
+            "counselling_schedule": "Merit Rank List: June 2026 | Direct Allotment: July 2026",
+            "exam_dates": "Zero Entrance Exam \u2014 Pure 10th Standard Board Merit"
+        },
+        "group_badge": "\ud83d\udcd8 10th Standard (General SSLC)",
+        "id": "exam_dote_polytechnic_2027",
+        "application_status": "merit",
+        "application_status_label": "\ud83d\udccb Direct 10th SSLC Merit Admission (Opens May 10, 2026)",
+        "is_date_confirmed": true,
+        "official_url": "https://www.tnpoly.in",
+        "registration_deadline": "June 12, 2026",
+        "registration_start": "May 10, 2026 (Immediately post 10th SSLC results)",
+        "stage_badge": "After 10th (SSLC Pass)",
+        "syllabus_highlights": "Single-window online seat allocation across CPT Chennai, PSG Poly, Murugappa Poly, Coimbatore Govt Poly with 7.5% free quota.",
+        "target_courses": [
+            "Regular 3-Yr Diploma in Mechanical, Automobile, EEE, Computer Engineering, Civil across Tamil Nadu"
+        ],
+        "target_groups": [
+            "sslc_10th"
+        ],
+        "target_stage": "after_10th",
+        "tn_quota_perks": "100% Free Tuition, Hostel & Mess under 7.5% Govt School Quota + Free Laptop Scheme.",
+        "top_colleges_tn": [
+            "Central Polytechnic College (CPT) Chennai",
+            "PSG Polytechnic College Coimbatore",
+            "Murugappa Polytechnic College Avadi"
+        ]
     },
     {
-      "admission_type": "No Entrance Exam (Direct 10th SSLC Merit Admission)",
-      "average_salary_package": "₹2.8 LPA - ₹5.5 LPA",
-      "career_opportunities_summary": "Practical vocational trade training with guaranteed campus apprenticeship across Chennai, Coimbatore, and Hosur automotive clusters.",
-      "career_positions": [
-        "Certified Industrial Electrician",
-        "Precision Machinist",
-        "Fitter & Welder",
-        "Automotive Service Technician"
-      ],
-      "conducting_body": "Directorate of Employment and Training (DET), Government of Tamil Nadu",
-      "eligibility_summary": "10th Standard (SSLC) Pass. 100% Free Training + ₹750/month Govt Stipend + Free Laptop & Bus Pass.",
-      "exam_date": "No Entrance Exam (Direct 10th Standard SSLC Marks Admission)",
-      "exam_name": "Tamil Nadu DET ITI Admissions (Direct Technical Trades)",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "No admit card",
-        "application_window": "May – June 2026 (via itiadmissions.nic.in)",
-        "counselling_schedule": "Rank Publication: June 2027 | Polytechnic Seat Allotment: June – July 2027",
-        "exam_dates": "Zero Entrance Exam — Direct Merit Selection"
-      },
-      "group_badge": "📘 10th Standard (General SSLC)",
-      "id": "exam_det_iti_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🔵 2027 Portal Opens May 12, 2027 (Direct 10th Pass Merit)",
-      "official_url": "https://skilltraining.tn.gov.in",
-      "registration_deadline": "June 20, 2027",
-      "registration_start": "May 12, 2027",
-      "stage_badge": "After 10th (SSLC Pass)",
-      "syllabus_highlights": "District-wise single-window online counselling for government industrial training institutes with direct campus apprenticeship.",
-      "target_courses": [
-        "Electrician, Fitter, Wireman, Motor Mechanic, Welder across 100+ Govt ITIs in Tamil Nadu"
-      ],
-      "target_groups": [
-        "sslc_10th",
-        "vocational"
-      ],
-      "target_stage": "after_10th",
-      "tn_quota_perks": "Free training + ₹750/month Government stipend + Free Bicycle + Free Uniform and Shoes.",
-      "top_colleges_tn": [
-        "Govt ITI Guindy Chennai",
-        "Govt ITI North Chennai",
-        "Govt ITI Coimbatore"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "No Entrance Exam (Direct 8th / 10th Pass Merit Selection)",
+        "average_salary_package": "\u20b92.8 LPA - \u20b95.5 LPA",
+        "career_opportunities_summary": "Practical vocational trade training with guaranteed campus apprenticeship across Chennai, Coimbatore, and Hosur automotive clusters.",
+        "career_positions": [
+            "Certified Industrial Electrician",
+            "Precision Machinist",
+            "Fitter & Welder",
+            "Automotive Service Technician"
+        ],
+        "conducting_body": "Directorate of Employment and Training (DET), Government of Tamil Nadu",
+        "eligibility_summary": "10th Standard (SSLC) Pass. 100% Free Training + \u20b9750/month Govt Stipend + Free Laptop & Bus Pass.",
+        "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+        "exam_name": "Tamil Nadu DET ITI Admissions (Direct Technical Trades)",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "No admit card",
+            "application_window": "May 12 \u2013 June 20, 2026 (via itiadmissions.nic.in)",
+            "counselling_schedule": "Rank Publication: June 2026 | ITI Seat Allotment: June \u2013 July 2026",
+            "exam_dates": "Zero Entrance Exam \u2014 Direct Merit Selection"
+        },
+        "group_badge": "\ud83d\udcd8 10th Standard (General SSLC)",
+        "id": "exam_det_iti_2027",
+        "application_status": "merit",
+        "application_status_label": "\ud83d\udccb Direct 8th/10th Pass Merit Admission (Opens May 12, 2026)",
+        "is_date_confirmed": true,
+        "official_url": "https://skilltraining.tn.gov.in",
+        "registration_deadline": "June 20, 2026",
+        "registration_start": "May 12, 2026",
+        "stage_badge": "After 10th (SSLC Pass)",
+        "syllabus_highlights": "District-wise single-window online counselling for government industrial training institutes with direct campus apprenticeship.",
+        "target_courses": [
+            "Electrician, Fitter, Wireman, Motor Mechanic, Welder across 100+ Govt ITIs in Tamil Nadu"
+        ],
+        "target_groups": [
+            "sslc_10th",
+            "vocational"
+        ],
+        "target_stage": "after_10th",
+        "tn_quota_perks": "Free training + \u20b9750/month Government stipend + Free Bicycle + Free Uniform and Shoes.",
+        "top_colleges_tn": [
+            "Govt ITI Guindy Chennai",
+            "Govt ITI North Chennai",
+            "Govt ITI Coimbatore"
+        ]
     },
     {
-      "admission_type": "State Competitive Written Exam",
-      "average_salary_package": "₹3.6 LPA - ₹6.0 LPA (Pay Level 8: ₹19,500 - ₹71,900)",
-      "career_opportunities_summary": "Prestigious permanent Tamil Nadu State Government public service with lifetime job security, pension benefits, and promotional pathways to Deputy Tahsildar.",
-      "career_positions": [
-        "Village Administrative Officer (VAO)",
-        "Junior Assistant (Govt Departments)",
-        "Bill Collector",
-        "Typist & Steno-Typist"
-      ],
-      "conducting_body": "Tamil Nadu Public Service Commission (TNPSC), Chennai",
-      "eligibility_summary": "Minimum 10th Standard (SSLC) Pass with Tamil language. Age: 21 - 32 years (Relaxed to 42 for BC/MBC/SC/ST). Permanent TN Govt Post.",
-      "exam_date": "No Entrance Exam (Direct 8th / 10th Pass Merit Selection)",
-      "exam_name": "TNPSC Group 4 & VAO Recruitment (Direct 10th Pass)",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "10 Days before exam (July 2026)",
-        "application_window": "January 30 – February 28, 2026",
-        "counselling_schedule": "Merit List & District-Level Counselling: June – July 2027",
-        "exam_dates": "July 11, 2026 (Written Exam: 300 Marks)"
-      },
-      "group_badge": "📘 10th Pass / All Streams",
-      "id": "exam_tnpsc_group4_2027",
-    "application_status": "upcoming",
-    "application_status_label": "🔵 2027 Notification: Jan 27, 2027 | Exam: July 10, 2027",
-      "official_url": "https://www.tnpsc.gov.in",
-      "registration_deadline": "February 28, 2027",
-      "registration_start": "January 27, 2027",
-      "stage_badge": "After 10th (SSLC Pass)",
-      "syllabus_highlights": "Single paper: 200 Questions / 300 Marks (Part A General Tamil 100 Qs + Part B General Studies & Aptitude 100 Qs).",
-      "target_courses": [
-        "Village Administrative Officer (VAO), Junior Assistant, Typist, Bill Collector across TN Govt Departments"
-      ],
-      "target_groups": [
-        "sslc_10th",
-        "vocational",
-        "arts",
-        "commerce",
-        "computer_science",
-        "biology"
-      ],
-      "target_stage": "after_10th",
-      "tn_quota_perks": "20% PSTM (Persons Studied in Tamil Medium) Quota + Full concessions for Tamil Nadu state categories.",
-      "top_colleges_tn": [
-        "Direct recruitment across all 38 District Collectorates and Taluk Offices in Tamil Nadu"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "State Competitive Written Exam",
+        "average_salary_package": "\u20b93.6 LPA - \u20b96.0 LPA (Pay Level 8: \u20b919,500 - \u20b971,900)",
+        "career_opportunities_summary": "Prestigious permanent Tamil Nadu State Government public service with lifetime job security, pension benefits, and promotional pathways to Deputy Tahsildar.",
+        "career_positions": [
+            "Village Administrative Officer (VAO)",
+            "Junior Assistant (Govt Departments)",
+            "Bill Collector",
+            "Typist & Steno-Typist"
+        ],
+        "conducting_body": "Tamil Nadu Public Service Commission (TNPSC), Chennai",
+        "eligibility_summary": "Minimum 10th Standard (SSLC) Pass with Tamil language. Age: 21 - 32 years (Relaxed to 42 for BC/MBC/SC/ST). Permanent TN Govt Post.",
+        "exam_date": "July 11, 2026 (Single Shift: 9:30 AM \u2013 12:30 PM)",
+        "exam_name": "TNPSC Group 4 & VAO Recruitment (Direct 10th Pass)",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "10 Days before exam (July 2026)",
+            "application_window": "January 30 \u2013 February 28, 2026",
+            "counselling_schedule": "Certificate Verification & Onsite Counselling: Oct \u2013 Nov 2026",
+            "exam_dates": "July 11, 2026 (Single Shift: 9:30 AM \u2013 12:30 PM)"
+        },
+        "group_badge": "\ud83d\udcd8 10th Pass / All Streams",
+        "id": "exam_tnpsc_group4_2027",
+        "application_status": "upcoming",
+        "application_status_label": "\ud83d\udd35 Online Applications Open January 30, 2026",
+        "is_date_confirmed": true,
+        "official_url": "https://www.tnpsc.gov.in",
+        "registration_deadline": "February 28, 2026",
+        "registration_start": "January 30, 2026",
+        "stage_badge": "After 10th (SSLC Pass)",
+        "syllabus_highlights": "Single paper: 200 Questions / 300 Marks (Part A General Tamil 100 Qs + Part B General Studies & Aptitude 100 Qs).",
+        "target_courses": [
+            "Village Administrative Officer (VAO), Junior Assistant, Typist, Bill Collector across TN Govt Departments"
+        ],
+        "target_groups": [
+            "sslc_10th",
+            "vocational",
+            "arts",
+            "commerce",
+            "computer_science",
+            "biology"
+        ],
+        "target_stage": "after_10th",
+        "tn_quota_perks": "20% PSTM (Persons Studied in Tamil Medium) Quota + Full concessions for Tamil Nadu state categories.",
+        "top_colleges_tn": [
+            "Direct recruitment across all 38 District Collectorates and Taluk Offices in Tamil Nadu"
+        ]
     },
     {
-      "admission_type": "State Written Exam + Physical Test (PET)",
-      "average_salary_package": "₹3.8 LPA - ₹6.5 LPA (Pay Level 6: ₹18,200 - ₹67,100)",
-      "career_opportunities_summary": "Uniformed state government service in the Tamil Nadu Police, Prison, and Fire Rescue departments with rapid promotional opportunities to Sub-Inspector.",
-      "career_positions": [
-        "Grade-II Police Constable (Armed Reserve / TSP)",
-        "Jail Warder",
-        "Fireman (TN Fire and Rescue Services)"
-      ],
-      "conducting_body": "Tamil Nadu Uniformed Services Recruitment Board (TNUSRB), Chennai",
-      "eligibility_summary": "10th Standard (SSLC) Pass. Physical standards & endurance test required. Permanent TN Police Service.",
-      "exam_date": "July 10, 2027 (Single Shift: 9:30 AM – 12:30 PM)",
-      "exam_name": "TNUSRB Grade II Police Constable & Fireman (Direct 10th Pass)",
-      "exam_schedule_breakdown": {
-        "admit_card_release": "2 Weeks before written exam",
-        "application_window": "August – September 2026",
-        "counselling_schedule": "Written Exam -> State Merit Rank List: Oct 2027 -> Certificate Verification: Nov 2027",
-        "exam_dates": "November 22, 2026 (Sunday: Part A Tamil + Part B Main Exam)"
-      },
-      "group_badge": "📘 10th Pass / All Streams",
-      "id": "exam_tnusrb_constable_2027",
-    "application_status": "open",
-    "application_status_label": "🔥 Hall Tickets Released | Exam in 2 Days (Nov 22, 2026)",
-      "official_url": "https://www.tnusrb.tn.gov.in",
-      "registration_deadline": "September 15, 2026 (Registration Closed)",
-      "registration_start": "August 1, 2026",
-      "stage_badge": "After 10th (SSLC Pass)",
-      "syllabus_highlights": "Part 1 Tamil Eligibility Test (80 Marks) + Part 2 Main Written Exam (General Knowledge & Psychology 70 Marks) + PET.",
-      "target_courses": [
-        "Grade II Police Constable (Armed Reserve, TSP), Jail Warder & Fireman in Tamil Nadu"
-      ],
-      "target_groups": [
-        "sslc_10th",
-        "vocational",
-        "arts",
-        "commerce",
-        "computer_science",
-        "biology"
-      ],
-      "target_stage": "after_10th",
-      "tn_quota_perks": "20% PSTM Quota + 10% Sports Quota + 5% Ex-Servicemen Reservation.",
-      "top_colleges_tn": [
-        "Police Recruit Schools (PRS) in Vellore, Coimbatore, Madurai, Tuticorin"
-      ],
-      "is_date_confirmed": true
+        "admission_type": "State Written Exam + Physical Test (PET)",
+        "average_salary_package": "\u20b93.8 LPA - \u20b96.5 LPA (Pay Level 6: \u20b918,200 - \u20b967,100)",
+        "career_opportunities_summary": "Uniformed state government service in the Tamil Nadu Police, Prison, and Fire Rescue departments with rapid promotional opportunities to Sub-Inspector.",
+        "career_positions": [
+            "Grade-II Police Constable (Armed Reserve / TSP)",
+            "Jail Warder",
+            "Fireman (TN Fire and Rescue Services)"
+        ],
+        "conducting_body": "Tamil Nadu Uniformed Services Recruitment Board (TNUSRB), Chennai",
+        "eligibility_summary": "10th Standard (SSLC) Pass. Physical standards & endurance test required. Permanent TN Police Service.",
+        "exam_date": "Coming Soon",
+        "exam_name": "TNUSRB Grade II Police Constable & Fireman (Direct 10th Pass)",
+        "exam_schedule_breakdown": {
+            "admit_card_release": "2 Weeks before written exam",
+            "application_window": "August \u2013 September 2026",
+            "counselling_schedule": "Physical Measurement & Endurance Test: Dec 2026 \u2013 Jan 2027",
+            "exam_dates": "Coming Soon"
+        },
+        "group_badge": "\ud83d\udcd8 10th Pass / All Streams",
+        "id": "exam_tnusrb_constable_2027",
+        "application_status": "upcoming",
+        "application_status_label": "\ud83d\udd35 Official 2026 Notification Coming Soon",
+        "is_date_confirmed": false,
+        "official_url": "https://www.tnusrb.tn.gov.in",
+        "registration_deadline": "September 2026",
+        "registration_start": "August 2026",
+        "stage_badge": "After 10th (SSLC Pass)",
+        "syllabus_highlights": "Part 1 Tamil Eligibility Test (80 Marks) + Part 2 Main Written Exam (General Knowledge & Psychology 70 Marks) + PET.",
+        "target_courses": [
+            "Grade II Police Constable (Armed Reserve, TSP), Jail Warder & Fireman in Tamil Nadu"
+        ],
+        "target_groups": [
+            "sslc_10th",
+            "vocational",
+            "arts",
+            "commerce",
+            "computer_science",
+            "biology"
+        ],
+        "target_stage": "after_10th",
+        "tn_quota_perks": "20% PSTM Quota + 10% Sports Quota + 5% Ex-Servicemen Reservation.",
+        "top_colleges_tn": [
+            "Police Recruit Schools (PRS) in Vellore, Coimbatore, Madurai, Tuticorin"
+        ]
     }
-  ],
+],
   "colleges": [
     {
       "id": "iit_madras",
@@ -4854,1254 +4854,1296 @@ window.COMPASS_STATIC_DATA = {
   ],
   "positions": [
     {
-      "future_career_growth": [
-        "Junior Software Engineer -> SDE II -> Senior Software Engineer -> Technical Lead -> Engineering Manager / Solutions Architect"
-      ],
-      "government_perks_quotas": "Eligible for Tamil Nadu 7.5% Govt School 100% Free Tuition & Hostel Quota; Naan Mudhalvan free coding kits and certifications.",
-      "id": "pos_software_engineer",
-      "target_group": "computer_science",
-      "target_groups": [
-        "computer_science",
-        "diploma",
-        "graduate"
-      ],
-      "position_description": "Designs, develops, tests, and deploys high-scale software applications, full-stack web platforms, mobile apps, and machine learning models for top technology companies and global delivery centres.",
-      "position_title": "Software Engineer / Cloud & AI Developer",
-      "qualification_badge": "12th PCM / Diploma Lateral",
-      "qualification_stage": "after_12th",
-      "recruiting_organizations": [
-        "Zoho",
-        "TCS",
-        "Infosys",
-        "Cognizant",
-        "Amazon",
-        "Freshworks",
-        "Kaar Technologies",
-        "Anna University Campus Placement"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Directorate of Technical Education (DoTE), Chennai",
-          "exam_category": "State Single-Window Cutoff Counselling",
-          "exam_date": "No Entrance Exam (Cutoff Merit)",
-          "exam_name": "TNEA (Tamil Nadu Engineering Admissions)",
-          "exam_pattern": "Cutoff formula: Mathematics (100) + Physics (50) + Chemistry (50) = 200 Marks",
-          "how_to_prepare": "Score 95%+ in TN State Board or CBSE 12th Mathematics, Physics, and Chemistry.",
-          "official_portal": "https://www.tneaonline.org",
-          "registration_window": "May 6 – June 6, 2026",
-          "selection_stages": "12th Board PCM Cutoff Marks (out of 200) -> 4 Rounds of Online Single Window Seat Allotment (Anna Univ, PSG Tech, SSN, CIT)"
-        },
-        {
-          "conducting_body": "National Testing Agency (NTA)",
-          "exam_category": "National Entrance Exam",
-          "exam_date": "Session 1: Jan 21 – Jan 30, 2026 | Session 2: Apr 1 – Apr 8, 2026",
-          "exam_name": "JEE Main (Joint Entrance Examination)",
-          "exam_pattern": "300 Marks (Physics 100, Chemistry 100, Mathematics 100). 75 MCQs + Numerical.",
-          "how_to_prepare": "NCERT concepts + previous 5-year JEE Main papers with timed mock tests.",
-          "official_portal": "https://jeemain.nta.nic.in",
-          "registration_window": "Session 1: Oct 28 – Nov 22, 2025 | Session 2: Jan 31 – Feb 24, 2026",
-          "selection_stages": "Computer Based Test (CBT) -> JoSAA Counselling for NIT Trichy & IIIT Kancheepuram",
-          "is_date_confirmed": true
-        },
-        {
-          "conducting_body": "Tata Consultancy Services (TCS iON)",
-          "exam_category": "Corporate Recruitment Assessment",
-          "exam_date": "Quarterly Testing Windows",
-          "exam_name": "TCS NQT / National Qualifier Test",
-          "exam_pattern": "Numerical Ability, Verbal Ability, Reasoning Ability, and Hands-on Coding (Python/Java/C++)",
-          "how_to_prepare": "Data structures, algorithms, aptitude problems, and OOP concepts.",
-          "official_portal": "https://www.tcs.com/careers",
-          "registration_window": "Conducted 4 times a year",
-          "selection_stages": "Online Cognitive + Coding Test -> Technical Interview -> HR Interview"
-        }
-      ],
-      "salary_range": "₹4.5 - ₹18 LPA (Fresher) -> ₹25 - ₹50+ LPA (Lead / Architect)",
-      "sector": "Engineering & Technology"
+        "future_career_growth": [
+            "Junior Software Engineer -> SDE II -> Senior Software Engineer -> Technical Lead -> Engineering Manager / Solutions Architect"
+        ],
+        "government_perks_quotas": "Eligible for Tamil Nadu 7.5% Govt School 100% Free Tuition & Hostel Quota; Naan Mudhalvan free coding kits and certifications.",
+        "id": "pos_software_engineer",
+        "position_description": "Designs, develops, tests, and deploys high-scale software applications, full-stack web platforms, mobile apps, and machine learning models for top technology companies and global delivery centres.",
+        "position_title": "Software Engineer / Cloud & AI Developer",
+        "qualification_badge": "12th PCM / Diploma Lateral",
+        "qualification_stage": "after_12th",
+        "recruiting_organizations": [
+            "Zoho",
+            "TCS",
+            "Infosys",
+            "Cognizant",
+            "Amazon",
+            "Freshworks",
+            "Kaar Technologies",
+            "Anna University Campus Placement"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Directorate of Technical Education (DoTE), Chennai",
+                "exam_category": "State Single-Window Cutoff Counselling",
+                "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+                "exam_name": "TNEA (Tamil Nadu Engineering Admissions)",
+                "exam_pattern": "Cutoff formula: Mathematics (100) + Physics (50) + Chemistry (50) = 200 Marks",
+                "how_to_prepare": "Score 95%+ in TN State Board or CBSE 12th Mathematics, Physics, and Chemistry.",
+                "official_portal": "https://www.tneaonline.org",
+                "registration_window": "May 6 \u2013 June 6, 2026",
+                "selection_stages": "12th Board PCM Cutoff Marks (out of 200) -> 4 Rounds of Online Single Window Seat Allotment (Anna Univ, PSG Tech, SSN, CIT)",
+                "is_date_confirmed": true
+            },
+            {
+                "conducting_body": "National Testing Agency (NTA)",
+                "exam_category": "National Entrance Exam",
+                "exam_date": "Session 1: Jan 21 \u2013 Jan 30, 2026 | Session 2: Apr 1 \u2013 Apr 8, 2026",
+                "is_date_confirmed": true,
+                "exam_name": "JEE Main (Joint Entrance Examination)",
+                "exam_pattern": "300 Marks (Physics 100, Chemistry 100, Mathematics 100). 75 MCQs + Numerical.",
+                "how_to_prepare": "NCERT concepts + previous 5-year JEE Main papers with timed mock tests.",
+                "official_portal": "https://jeemain.nta.nic.in",
+                "registration_window": "Session 1: Nov-Dec | Session 2: Feb-Mar",
+                "selection_stages": "Computer Based Test (CBT) -> JoSAA Counselling for NIT Trichy & IIIT Kancheepuram"
+            },
+            {
+                "conducting_body": "Tata Consultancy Services (TCS iON)",
+                "exam_category": "Corporate Recruitment Assessment",
+                "exam_date": "Coming Soon",
+                "exam_name": "TCS NQT / National Qualifier Test",
+                "exam_pattern": "Numerical Ability, Verbal Ability, Reasoning Ability, and Hands-on Coding (Python/Java/C++)",
+                "how_to_prepare": "Data structures, algorithms, aptitude problems, and OOP concepts.",
+                "official_portal": "https://www.tcs.com/careers",
+                "registration_window": "Conducted 4 times a year",
+                "selection_stages": "Online Cognitive + Coding Test -> Technical Interview -> HR Interview",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b94.5 - \u20b918 LPA (Fresher) -> \u20b925 - \u20b950+ LPA (Lead / Architect)",
+        "sector": "Engineering & Technology",
+        "target_group": "computer_science",
+        "target_groups": [
+            "computer_science",
+            "diploma",
+            "graduate"
+        ]
     },
     {
-      "future_career_growth": [
-        "Graduate Engineer Trainee -> Design Engineer -> R&D Specialist -> Plant Manager / Vice President of Manufacturing"
-      ],
-      "government_perks_quotas": "Direct employment in TN SIPCOT industrial clusters; subsidized industrial training subsidies under Naan Mudhalvan.",
-      "id": "pos_mechanical_engineer",
-      "target_group": "computer_science",
-      "target_groups": [
-        "computer_science",
-        "vocational",
-        "diploma"
-      ],
-      "position_description": "Engineers and manufactures automotive systems, EV drivetrains, robotics, thermal machinery, and precision components across Chennai-Hosur automotive corridors.",
-      "position_title": "Mechanical & Automobile Design Engineer",
-      "qualification_badge": "12th PCM / 10th Polytechnic Lateral",
-      "qualification_stage": "after_12th",
-      "recruiting_organizations": [
-        "Hyundai Motor India",
-        "Ashok Leyland",
-        "TVS Motor",
-        "Renault Nissan",
-        "L&T Heavy Engineering",
-        "Royal Enfield",
-        "Tata Motors"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "DoTE Tamil Nadu / Anna University",
-          "exam_category": "State Single-Window Cutoff Counselling",
-          "exam_date": "No Entrance Exam (Cutoff Merit)",
-          "exam_name": "TNEA (Tamil Nadu Engineering Admissions)",
-          "exam_pattern": "PCM Cutoff out of 200 marks",
-          "how_to_prepare": "Strengthen mechanics, calculus, thermodynamics in 12th standard.",
-          "official_portal": "https://www.tneaonline.org",
-          "registration_window": "May 6 – June 6, 2026",
-          "selection_stages": "12th PCM Cutoff -> Single Window Choice Filling for CEG, MIT, PSG Tech, CIT Coimbatore"
-        },
-        {
-          "conducting_body": "IITs / IISc",
-          "exam_category": "National PSU & Higher Study Exam",
-          "exam_date": "February",
-          "exam_name": "GATE (Graduate Aptitude Test in Engineering - Mechanical)",
-          "exam_pattern": "65 Questions / 100 Marks (Engineering Mathematics, General Aptitude, Core Mechanical Subjects)",
-          "how_to_prepare": "Master strength of materials, fluid mechanics, thermodynamics, and manufacturing technology.",
-          "official_portal": "https://gate2026.iitr.ac.in",
-          "registration_window": "August - September",
-          "selection_stages": "Online Computer-Based Test (100 Marks) -> Direct recruitment by ONGC, BHEL Trichy, IOCL, ISRO, DRDO"
-        }
-      ],
-      "salary_range": "₹3.8 - ₹9.5 LPA (Fresher) -> ₹15 - ₹28 LPA (Senior Specialist)",
-      "sector": "Engineering & Technology"
+        "future_career_growth": [
+            "Graduate Engineer Trainee -> Design Engineer -> R&D Specialist -> Plant Manager / Vice President of Manufacturing"
+        ],
+        "government_perks_quotas": "Direct employment in TN SIPCOT industrial clusters; subsidized industrial training subsidies under Naan Mudhalvan.",
+        "id": "pos_mechanical_engineer",
+        "position_description": "Engineers and manufactures automotive systems, EV drivetrains, robotics, thermal machinery, and precision components across Chennai-Hosur automotive corridors.",
+        "position_title": "Mechanical & Automobile Design Engineer",
+        "qualification_badge": "12th PCM / 10th Polytechnic Lateral",
+        "qualification_stage": "after_12th",
+        "recruiting_organizations": [
+            "Hyundai Motor India",
+            "Ashok Leyland",
+            "TVS Motor",
+            "Renault Nissan",
+            "L&T Heavy Engineering",
+            "Royal Enfield",
+            "Tata Motors"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "DoTE Tamil Nadu / Anna University",
+                "exam_category": "State Single-Window Cutoff Counselling",
+                "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+                "exam_name": "TNEA (Tamil Nadu Engineering Admissions)",
+                "exam_pattern": "PCM Cutoff out of 200 marks",
+                "how_to_prepare": "Strengthen mechanics, calculus, thermodynamics in 12th standard.",
+                "official_portal": "https://www.tneaonline.org",
+                "registration_window": "May 6 \u2013 June 6, 2026",
+                "selection_stages": "12th PCM Cutoff -> Single Window Choice Filling for CEG, MIT, PSG Tech, CIT Coimbatore",
+                "is_date_confirmed": true
+            },
+            {
+                "conducting_body": "IITs / IISc",
+                "exam_category": "National PSU & Higher Study Exam",
+                "exam_date": "Coming Soon",
+                "exam_name": "GATE (Graduate Aptitude Test in Engineering - Mechanical)",
+                "exam_pattern": "65 Questions / 100 Marks (Engineering Mathematics, General Aptitude, Core Mechanical Subjects)",
+                "how_to_prepare": "Master strength of materials, fluid mechanics, thermodynamics, and manufacturing technology.",
+                "official_portal": "https://gate2026.iitr.ac.in",
+                "registration_window": "August - September",
+                "selection_stages": "Online Computer-Based Test (100 Marks) -> Direct recruitment by ONGC, BHEL Trichy, IOCL, ISRO, DRDO",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b93.8 - \u20b99.5 LPA (Fresher) -> \u20b915 - \u20b928 LPA (Senior Specialist)",
+        "sector": "Engineering & Technology",
+        "target_group": "computer_science",
+        "target_groups": [
+            "computer_science",
+            "vocational",
+            "diploma"
+        ]
     },
     {
-      "future_career_growth": [
-        "Silicon Design Engineer -> Senior Hardware Architect -> Director of Semiconductor Engineering"
-      ],
-      "government_perks_quotas": "Covered under Tamil Nadu Semiconductor & Advanced Electronics Policy 2024 with special state R&D grants.",
-      "id": "pos_ece_vlsi_engineer",
-      "target_group": "computer_science",
-      "target_groups": [
-        "computer_science",
-        "diploma"
-      ],
-      "position_description": "Designs microchips, embedded IoT controllers, 5G RF hardware, and semiconductor circuitry for consumer electronics, telecom, and aerospace systems.",
-      "position_title": "Electronics & Communications (ECE) / VLSI Chip Designer",
-      "qualification_badge": "12th PCM",
-      "qualification_stage": "after_12th",
-      "recruiting_organizations": [
-        "Qualcomm",
-        "Texas Instruments",
-        "Intel",
-        "ISRO",
-        "Bharat Electronics (BEL)",
-        "Foxconn Chennai",
-        "Samsung R&D"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "DoTE Tamil Nadu",
-          "exam_category": "State Single-Window Cutoff Counselling",
-          "exam_date": "No Entrance Exam (Cutoff Merit)",
-          "exam_name": "TNEA (Tamil Nadu Engineering Admissions)",
-          "exam_pattern": "PCM Cutoff out of 200 marks",
-          "how_to_prepare": "Focus on 12th physics (electromagnetism, semiconductor physics) and mathematics.",
-          "official_portal": "https://www.tneaonline.org",
-          "registration_window": "May - June",
-          "selection_stages": "12th PCM Cutoff -> Anna Univ CEG, MIT Campus, SSN, PSG Tech ECE branches"
-        },
-        {
-          "conducting_body": "ISRO / Department of Space",
-          "exam_category": "Central PSU Scientific Scientist/Engineer Exam",
-          "exam_date": "Scheduled post-notification",
-          "exam_name": "ISRO Centralised Recruitment Board (ICRB)",
-          "exam_pattern": "80 Core Electronics Questions (Signals, Digital Circuits, Microprocessors, Communication Systems)",
-          "how_to_prepare": "Master digital electronics, signal processing, and antenna wave propagation.",
-          "official_portal": "https://www.isro.gov.in",
-          "registration_window": "Announced as per vacancy",
-          "selection_stages": "Written Examination (80 MCQs) -> Technical Interview -> Scientist/Engineer 'SC' Appointment"
-        }
-      ],
-      "salary_range": "₹5.5 - ₹16 LPA (Fresher) -> ₹25 - ₹60 LPA (Semiconductor Lead)",
-      "sector": "Engineering & Technology"
+        "future_career_growth": [
+            "Silicon Design Engineer -> Senior Hardware Architect -> Director of Semiconductor Engineering"
+        ],
+        "government_perks_quotas": "Covered under Tamil Nadu Semiconductor & Advanced Electronics Policy 2024 with special state R&D grants.",
+        "id": "pos_ece_vlsi_engineer",
+        "position_description": "Designs microchips, embedded IoT controllers, 5G RF hardware, and semiconductor circuitry for consumer electronics, telecom, and aerospace systems.",
+        "position_title": "Electronics & Communications (ECE) / VLSI Chip Designer",
+        "qualification_badge": "12th PCM",
+        "qualification_stage": "after_12th",
+        "recruiting_organizations": [
+            "Qualcomm",
+            "Texas Instruments",
+            "Intel",
+            "ISRO",
+            "Bharat Electronics (BEL)",
+            "Foxconn Chennai",
+            "Samsung R&D"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "DoTE Tamil Nadu",
+                "exam_category": "State Single-Window Cutoff Counselling",
+                "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+                "exam_name": "TNEA (Tamil Nadu Engineering Admissions)",
+                "exam_pattern": "PCM Cutoff out of 200 marks",
+                "how_to_prepare": "Focus on 12th physics (electromagnetism, semiconductor physics) and mathematics.",
+                "official_portal": "https://www.tneaonline.org",
+                "registration_window": "May - June",
+                "selection_stages": "12th PCM Cutoff -> Anna Univ CEG, MIT Campus, SSN, PSG Tech ECE branches",
+                "is_date_confirmed": true
+            },
+            {
+                "conducting_body": "ISRO / Department of Space",
+                "exam_category": "Central PSU Scientific Scientist/Engineer Exam",
+                "exam_date": "Coming Soon",
+                "exam_name": "ISRO Centralised Recruitment Board (ICRB)",
+                "exam_pattern": "80 Core Electronics Questions (Signals, Digital Circuits, Microprocessors, Communication Systems)",
+                "how_to_prepare": "Master digital electronics, signal processing, and antenna wave propagation.",
+                "official_portal": "https://www.isro.gov.in",
+                "registration_window": "Announced as per vacancy",
+                "selection_stages": "Written Examination (80 MCQs) -> Technical Interview -> Scientist/Engineer 'SC' Appointment",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b95.5 - \u20b916 LPA (Fresher) -> \u20b925 - \u20b960 LPA (Semiconductor Lead)",
+        "sector": "Engineering & Technology",
+        "target_group": "computer_science",
+        "target_groups": [
+            "computer_science",
+            "diploma"
+        ]
     },
     {
-      "future_career_growth": [
-        "Assistant Engineer (AE) -> Assistant Executive Engineer (AEE) -> Executive Engineer (EE) -> Superintending Engineer (SE) -> Chief Engineer"
-      ],
-      "government_perks_quotas": "Official vehicle, govt quarters, medical insurance, pension benefits, and 7.5% Govt School reservation.",
-      "id": "pos_civil_pwd_engineer",
-      "target_group": "computer_science",
-      "target_groups": [
-        "computer_science",
-        "diploma"
-      ],
-      "position_description": "Supervises structural construction, highway expressways, bridges, water supply systems, and public infrastructure projects across Tamil Nadu.",
-      "position_title": "Civil Engineer / PWD Assistant Engineer (AE)",
-      "qualification_badge": "12th PCM",
-      "qualification_stage": "after_12th",
-      "recruiting_organizations": [
-        "Tamil Nadu PWD",
-        "Highways Department",
-        "TWAD Board",
-        "L&T Construction",
-        "Chennai Metro Rail (CMRL)",
-        "Afcons Infrastructure"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "DoTE Tamil Nadu",
-          "exam_category": "State Single-Window Cutoff Counselling",
-          "exam_date": "No Entrance Exam (Cutoff Merit)",
-          "exam_name": "TNEA (Tamil Nadu Engineering Admissions)",
-          "exam_pattern": "PCM Cutoff out of 200 marks",
-          "how_to_prepare": "Score high in 12th Maths, Physics, and Chemistry.",
-          "official_portal": "https://www.tneaonline.org",
-          "registration_window": "May - June",
-          "selection_stages": "12th Board PCM Cutoff -> Anna University CEG Guindy & Govt Engineering Colleges"
-        },
-        {
-          "conducting_body": "Tamil Nadu Public Service Commission (TNPSC)",
-          "exam_category": "Tamil Nadu State Gazetted Technical Exam",
-          "exam_date": "Scheduled post-notification",
-          "exam_name": "TNPSC Combined Engineering Services Examination (CESE)",
-          "exam_pattern": "Paper 1 Civil Engg (300 Marks, 200 Qs) + Paper 2 General Studies & Tamil (200 Marks)",
-          "how_to_prepare": "Standard civil engineering textbooks (Surveying, Building Materials, RCC Design, Soil Mechanics).",
-          "official_portal": "https://www.tnpsc.gov.in",
-          "registration_window": "Annual Notification (as per TNPSC Planner)",
-          "selection_stages": "Written Exam (Paper 1 Subject + Paper 2 Tamil Eligibility & GS) -> Certificate Verification -> Direct Appointment as Assistant Engineer"
-        }
-      ],
-      "salary_range": "₹36,700 - ₹1,16,200 / month (Level 16 TN Govt Pay Scale) or ₹4.5 - ₹12 LPA (L&T)",
-      "sector": "Engineering & Technology"
+        "future_career_growth": [
+            "Assistant Engineer (AE) -> Assistant Executive Engineer (AEE) -> Executive Engineer (EE) -> Superintending Engineer (SE) -> Chief Engineer"
+        ],
+        "government_perks_quotas": "Official vehicle, govt quarters, medical insurance, pension benefits, and 7.5% Govt School reservation.",
+        "id": "pos_civil_pwd_engineer",
+        "position_description": "Supervises structural construction, highway expressways, bridges, water supply systems, and public infrastructure projects across Tamil Nadu.",
+        "position_title": "Civil Engineer / PWD Assistant Engineer (AE)",
+        "qualification_badge": "12th PCM",
+        "qualification_stage": "after_12th",
+        "recruiting_organizations": [
+            "Tamil Nadu PWD",
+            "Highways Department",
+            "TWAD Board",
+            "L&T Construction",
+            "Chennai Metro Rail (CMRL)",
+            "Afcons Infrastructure"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "DoTE Tamil Nadu",
+                "exam_category": "State Single-Window Cutoff Counselling",
+                "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+                "exam_name": "TNEA (Tamil Nadu Engineering Admissions)",
+                "exam_pattern": "PCM Cutoff out of 200 marks",
+                "how_to_prepare": "Score high in 12th Maths, Physics, and Chemistry.",
+                "official_portal": "https://www.tneaonline.org",
+                "registration_window": "May - June",
+                "selection_stages": "12th Board PCM Cutoff -> Anna University CEG Guindy & Govt Engineering Colleges",
+                "is_date_confirmed": true
+            },
+            {
+                "conducting_body": "Tamil Nadu Public Service Commission (TNPSC)",
+                "exam_category": "Tamil Nadu State Gazetted Technical Exam",
+                "exam_date": "Coming Soon",
+                "exam_name": "TNPSC Combined Engineering Services Examination (CESE)",
+                "exam_pattern": "Paper 1 Civil Engg (300 Marks, 200 Qs) + Paper 2 General Studies & Tamil (200 Marks)",
+                "how_to_prepare": "Standard civil engineering textbooks (Surveying, Building Materials, RCC Design, Soil Mechanics).",
+                "official_portal": "https://www.tnpsc.gov.in",
+                "registration_window": "Annual Notification (as per TNPSC Planner)",
+                "selection_stages": "Written Exam (Paper 1 Subject + Paper 2 Tamil Eligibility & GS) -> Certificate Verification -> Direct Appointment as Assistant Engineer",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b936,700 - \u20b91,16,200 / month (Level 16 TN Govt Pay Scale) or \u20b94.5 - \u20b912 LPA (L&T)",
+        "sector": "Engineering & Technology",
+        "target_group": "computer_science",
+        "target_groups": [
+            "computer_science",
+            "diploma"
+        ]
     },
     {
-      "future_career_growth": [
-        "Junior Engineer -> Senior Section Engineer (SSE) -> Direct Lateral Entry into 2nd Year B.E -> Assistant Engineer"
-      ],
-      "government_perks_quotas": "100% Free Tuition, Hostel & Mess in Govt Polytechnics under 7.5% TN Govt School Quota; Pudhumai Penn & Tamil Puthalvan ₹1,000/month.",
-      "id": "pos_junior_engineer_diploma",
-      "target_group": "sslc_10th",
-      "target_groups": [
-        "sslc_10th",
-        "vocational",
-        "diploma"
-      ],
-      "position_description": "Oversees day-to-day shopfloor manufacturing, field maintenance, CAD drafting, machine diagnostics, and technical quality inspection right after 3-year polytechnic diploma.",
-      "position_title": "Junior Engineer (JE) / Technical Supervisor (Diploma)",
-      "qualification_badge": "Direct 10th (SSLC Pass)",
-      "qualification_stage": "after_10th",
-      "recruiting_organizations": [
-        "TANGEDCO",
-        "Chennai Metro",
-        "Indian Railways (RRB JE)",
-        "BHEL Trichy",
-        "Ashok Leyland",
-        "Murugappa Group"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Directorate of Technical Education (DoTE), Tamil Nadu",
-          "exam_category": "State Single-Window Cutoff Counselling",
-          "exam_date": "No Entrance Exam (10th SSLC Merit Admission)",
-          "exam_name": "DOTE Tamil Nadu Centralized Polytechnic Admissions",
-          "exam_pattern": "Total 10th Marks out of 500 (Tamil, English, Maths, Science, Social)",
-          "how_to_prepare": "Score high in 10th Science and Mathematics.",
-          "official_portal": "https://www.tnpoly.in",
-          "registration_window": "May - June (Immediately after 10th results)",
-          "selection_stages": "10th SSLC Total Marks (out of 500) -> Merit rank list -> Single-window seat allotment across CPT Chennai, PSG Poly, Murugappa Poly, Coimbatore Govt Poly"
-        },
-        {
-          "conducting_body": "Railway Recruitment Control Board (RRB)",
-          "exam_category": "Central Government Technical Recruitment",
-          "exam_date": "Scheduled via RRB Calendar",
-          "exam_name": "RRB Junior Engineer (Railway Recruitment Board)",
-          "exam_pattern": "Stage 1: 100 Qs / 90 Mins | Stage 2: 150 Qs / 120 Mins (100 Technical Domain)",
-          "how_to_prepare": "Revise 3-year polytechnic curriculum and practice basic quantitative aptitude.",
-          "official_portal": "https://www.rrbchennai.gov.in",
-          "registration_window": "Periodic Central Notification",
-          "selection_stages": "CBT Stage 1 (Maths, Reasoning, General Science) -> CBT Stage 2 (Technical Domain) -> Medical Fitness"
-        }
-      ],
-      "salary_range": "₹18,000 - ₹35,000 / month (Fresher) -> ₹45,000 - ₹80,000 / month (Senior JE)",
-      "sector": "Engineering & Technology"
+        "future_career_growth": [
+            "Junior Engineer -> Senior Section Engineer (SSE) -> Direct Lateral Entry into 2nd Year B.E -> Assistant Engineer"
+        ],
+        "government_perks_quotas": "100% Free Tuition, Hostel & Mess in Govt Polytechnics under 7.5% TN Govt School Quota; Pudhumai Penn & Tamil Puthalvan \u20b91,000/month.",
+        "id": "pos_junior_engineer_diploma",
+        "position_description": "Oversees day-to-day shopfloor manufacturing, field maintenance, CAD drafting, machine diagnostics, and technical quality inspection right after 3-year polytechnic diploma.",
+        "position_title": "Junior Engineer (JE) / Technical Supervisor (Diploma)",
+        "qualification_badge": "Direct 10th (SSLC Pass)",
+        "qualification_stage": "after_10th",
+        "recruiting_organizations": [
+            "TANGEDCO",
+            "Chennai Metro",
+            "Indian Railways (RRB JE)",
+            "BHEL Trichy",
+            "Ashok Leyland",
+            "Murugappa Group"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Directorate of Technical Education (DoTE), Tamil Nadu",
+                "exam_category": "State Single-Window Cutoff Counselling",
+                "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+                "exam_name": "DOTE Tamil Nadu Centralized Polytechnic Admissions",
+                "exam_pattern": "Total 10th Marks out of 500 (Tamil, English, Maths, Science, Social)",
+                "how_to_prepare": "Score high in 10th Science and Mathematics.",
+                "official_portal": "https://www.tnpoly.in",
+                "registration_window": "May - June (Immediately after 10th results)",
+                "selection_stages": "10th SSLC Total Marks (out of 500) -> Merit rank list -> Single-window seat allotment across CPT Chennai, PSG Poly, Murugappa Poly, Coimbatore Govt Poly",
+                "is_date_confirmed": true
+            },
+            {
+                "conducting_body": "Railway Recruitment Control Board (RRB)",
+                "exam_category": "Central Government Technical Recruitment",
+                "exam_date": "Coming Soon",
+                "exam_name": "RRB Junior Engineer (Railway Recruitment Board)",
+                "exam_pattern": "Stage 1: 100 Qs / 90 Mins | Stage 2: 150 Qs / 120 Mins (100 Technical Domain)",
+                "how_to_prepare": "Revise 3-year polytechnic curriculum and practice basic quantitative aptitude.",
+                "official_portal": "https://www.rrbchennai.gov.in",
+                "registration_window": "Periodic Central Notification",
+                "selection_stages": "CBT Stage 1 (Maths, Reasoning, General Science) -> CBT Stage 2 (Technical Domain) -> Medical Fitness",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b918,000 - \u20b935,000 / month (Fresher) -> \u20b945,000 - \u20b980,000 / month (Senior JE)",
+        "sector": "Engineering & Technology",
+        "target_group": "sslc_10th",
+        "target_groups": [
+            "sslc_10th",
+            "vocational",
+            "diploma"
+        ]
     },
     {
-      "future_career_growth": [
-        "Apprentice -> Certified Technician -> Maintenance Supervisor -> Direct 2nd Year Lateral Entry to Polytechnic Diploma"
-      ],
-      "government_perks_quotas": "100% Free Training, Free Govt Laptop, Free Bicycle, Free Bus Pass, Free Uniforms, and ₹750/month Govt Stipend.",
-      "id": "pos_iti_skilled_technician",
-      "target_group": "sslc_10th",
-      "target_groups": [
-        "sslc_10th",
-        "vocational"
-      ],
-      "position_description": "Executes high-precision electrical wiring, CNC milling, welding, motor winding, refrigeration, and automotive servicing across modern factories.",
-      "position_title": "Skilled Industrial Technician & Electrician / CNC Machinist",
-      "qualification_badge": "Direct 10th (SSLC Pass)",
-      "qualification_stage": "after_10th",
-      "recruiting_organizations": [
-        "TNSTC (Tamil Nadu State Transport)",
-        "TANGEDCO",
-        "Integral Coach Factory (ICF Chennai)",
-        "L&T Valves",
-        "TVS Lucas",
-        "Brakes India"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Directorate of Employment and Training (DET), Tamil Nadu",
-          "exam_category": "Direct State Merit Online Admissions",
-          "exam_date": "No Entrance Exam (Direct 10th SSLC Merit Admission)",
-          "exam_name": "Tamil Nadu DET ITI Admissions",
-          "exam_pattern": "Merit rank based on 10th standard SSLC marks",
-          "how_to_prepare": "Pass 10th standard board exam from recognized board.",
-          "official_portal": "https://skilltraining.tn.gov.in",
-          "registration_window": "May - June",
-          "selection_stages": "Online registration based on 10th marks -> District-wise counselling -> Direct admission into 100+ Govt ITIs with zero fees"
-        },
-        {
-          "conducting_body": "Ministry of Skill Development & DET Tamil Nadu",
-          "exam_category": "Industry Paid Practical Certification",
-          "exam_date": "Annual AITT Exam",
-          "exam_name": "Apprenticeship Training Scheme (NATS / NAPS)",
-          "exam_pattern": "Practical trade skill assessment + theory paper",
-          "how_to_prepare": "Hands-on workshop practice during ITI course.",
-          "official_portal": "https://www.apprenticeshipindia.gov.in",
-          "registration_window": "Year-round portal registration",
-          "selection_stages": "1-Year on-the-job industrial apprenticeship with monthly stipend -> All India Trade Test (AITT) -> National Apprenticeship Certificate (NAC)"
-        }
-      ],
-      "salary_range": "₹15,000 - ₹28,000 / month + ₹750/mo govt stipend during training",
-      "sector": "Engineering & Technology"
+        "future_career_growth": [
+            "Apprentice -> Certified Technician -> Maintenance Supervisor -> Direct 2nd Year Lateral Entry to Polytechnic Diploma"
+        ],
+        "government_perks_quotas": "100% Free Training, Free Govt Laptop, Free Bicycle, Free Bus Pass, Free Uniforms, and \u20b9750/month Govt Stipend.",
+        "id": "pos_iti_skilled_technician",
+        "position_description": "Executes high-precision electrical wiring, CNC milling, welding, motor winding, refrigeration, and automotive servicing across modern factories.",
+        "position_title": "Skilled Industrial Technician & Electrician / CNC Machinist",
+        "qualification_badge": "Direct 10th (SSLC Pass)",
+        "qualification_stage": "after_10th",
+        "recruiting_organizations": [
+            "TNSTC (Tamil Nadu State Transport)",
+            "TANGEDCO",
+            "Integral Coach Factory (ICF Chennai)",
+            "L&T Valves",
+            "TVS Lucas",
+            "Brakes India"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Directorate of Employment and Training (DET), Tamil Nadu",
+                "exam_category": "Direct State Merit Online Admissions",
+                "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+                "exam_name": "Tamil Nadu DET ITI Admissions",
+                "exam_pattern": "Merit rank based on 10th standard SSLC marks",
+                "how_to_prepare": "Pass 10th standard board exam from recognized board.",
+                "official_portal": "https://skilltraining.tn.gov.in",
+                "registration_window": "May - June",
+                "selection_stages": "Online registration based on 10th marks -> District-wise counselling -> Direct admission into 100+ Govt ITIs with zero fees",
+                "is_date_confirmed": true
+            },
+            {
+                "conducting_body": "Ministry of Skill Development & DET Tamil Nadu",
+                "exam_category": "Industry Paid Practical Certification",
+                "exam_date": "Coming Soon",
+                "exam_name": "Apprenticeship Training Scheme (NATS / NAPS)",
+                "exam_pattern": "Practical trade skill assessment + theory paper",
+                "how_to_prepare": "Hands-on workshop practice during ITI course.",
+                "official_portal": "https://www.apprenticeshipindia.gov.in",
+                "registration_window": "Year-round portal registration",
+                "selection_stages": "1-Year on-the-job industrial apprenticeship with monthly stipend -> All India Trade Test (AITT) -> National Apprenticeship Certificate (NAC)",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b915,000 - \u20b928,000 / month + \u20b9750/mo govt stipend during training",
+        "sector": "Engineering & Technology",
+        "target_group": "sslc_10th",
+        "target_groups": [
+            "sslc_10th",
+            "vocational"
+        ]
     },
     {
-      "future_career_growth": [
-        "MBBS (5.5 Years) -> CRMI Internship -> NEET-PG (MD / MS in Cardiology, Neurology, Ortho, Paediatrics) -> Super Speciality (DM / M.Ch)"
-      ],
-      "government_perks_quotas": "7.5% Horizontal Reservation for TN Govt School Students with 100% Free Tuition, Books & Hostel funded entirely by TN Govt.",
-      "id": "pos_medical_doctor_mbbs",
-      "target_group": "biology",
-      "target_groups": [
-        "biology"
-      ],
-      "position_description": "Diagnoses illnesses, performs medical surgeries, prescribes therapies, and administers critical healthcare in government hospitals and private multispeciality medical institutions.",
-      "position_title": "Medical Doctor / General Physician & Surgeon (MBBS)",
-      "qualification_badge": "12th PCB (Physics, Chemistry, Biology)",
-      "qualification_stage": "after_12th",
-      "recruiting_organizations": [
-        "Tamil Nadu Medical Services Corporation (TNMSC)",
-        "Directorate of Medical Services (DMS)",
-        "Apollo Hospitals",
-        "Kauvery Hospital",
-        "MIOT",
-        "Christian Medical College Vellore"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "National Testing Agency (NTA)",
-          "exam_category": "National Mandatory Medical Entrance Exam",
-          "exam_date": "First Sunday of May",
-          "exam_name": "NEET-UG (National Eligibility cum Entrance Test)",
-          "exam_pattern": "720 Marks: Biology (Botany 180 + Zoology 180 = 360), Physics (180), Chemistry (180). 180 MCQs to answer from 200.",
-          "how_to_prepare": "Thorough NCERT 11th & 12th Biology line-by-line mastery + regular physics problem solving.",
-          "official_portal": "https://neet.nta.nic.in",
-          "registration_window": "February - March",
-          "selection_stages": "National Pen-and-Paper Written Test (720 Marks) -> TN State Merit Rank List -> Selection Committee DME Counselling for 36 Govt Medical Colleges"
-        },
-        {
-          "conducting_body": "Directorate of Medical Education (DME), Kilpauk, Chennai",
-          "exam_category": "State Single-Window Medical Seat Allotment",
-          "exam_date": "Online Counselling Sessions (July - August)",
-          "exam_name": "Selection Committee DME Tamil Nadu 85% State Quota Counselling",
-          "exam_pattern": "Merit rank derived exclusively from NEET-UG score",
-          "how_to_prepare": "Keep community certificate, nativity certificate, and NEET scorecard ready.",
-          "official_portal": "https://www.tnmedicalselection.net",
-          "registration_window": "June - July (Post-NEET Results)",
-          "selection_stages": "Registration on tnmedicalselection.net -> Release of TN State Merit Rank List -> 4 Rounds of Online Seat Allotment (MMC, Stanley, Kilpauk, Madurai MC)"
-        }
-      ],
-      "salary_range": "₹55,000 - ₹95,000 / month (Intern / Medical Officer) -> ₹1.5 - ₹5+ Lakhs / month (Postgraduate MD/MS Specialist)",
-      "sector": "Medical & Healthcare"
+        "future_career_growth": [
+            "MBBS (5.5 Years) -> CRMI Internship -> NEET-PG (MD / MS in Cardiology, Neurology, Ortho, Paediatrics) -> Super Speciality (DM / M.Ch)"
+        ],
+        "government_perks_quotas": "7.5% Horizontal Reservation for TN Govt School Students with 100% Free Tuition, Books & Hostel funded entirely by TN Govt.",
+        "id": "pos_medical_doctor_mbbs",
+        "position_description": "Diagnoses illnesses, performs medical surgeries, prescribes therapies, and administers critical healthcare in government hospitals and private multispeciality medical institutions.",
+        "position_title": "Medical Doctor / General Physician & Surgeon (MBBS)",
+        "qualification_badge": "12th PCB (Physics, Chemistry, Biology)",
+        "qualification_stage": "after_12th",
+        "recruiting_organizations": [
+            "Tamil Nadu Medical Services Corporation (TNMSC)",
+            "Directorate of Medical Services (DMS)",
+            "Apollo Hospitals",
+            "Kauvery Hospital",
+            "MIOT",
+            "Christian Medical College Vellore"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "National Testing Agency (NTA)",
+                "exam_category": "National Mandatory Medical Entrance Exam",
+                "exam_date": "May 3, 2026 (Single Shift: 2:00 PM \u2013 5:20 PM)",
+                "exam_name": "NEET-UG (National Eligibility cum Entrance Test)",
+                "exam_pattern": "720 Marks: Biology (Botany 180 + Zoology 180 = 360), Physics (180), Chemistry (180). 180 MCQs to answer from 200.",
+                "how_to_prepare": "Thorough NCERT 11th & 12th Biology line-by-line mastery + regular physics problem solving.",
+                "official_portal": "https://neet.nta.nic.in",
+                "registration_window": "February - March",
+                "selection_stages": "National Pen-and-Paper Written Test (720 Marks) -> TN State Merit Rank List -> Selection Committee DME Counselling for 36 Govt Medical Colleges",
+                "is_date_confirmed": true
+            },
+            {
+                "conducting_body": "Directorate of Medical Education (DME), Kilpauk, Chennai",
+                "exam_category": "State Single-Window Medical Seat Allotment",
+                "exam_date": "Coming Soon",
+                "exam_name": "Selection Committee DME Tamil Nadu 85% State Quota Counselling",
+                "exam_pattern": "Merit rank derived exclusively from NEET-UG score",
+                "how_to_prepare": "Keep community certificate, nativity certificate, and NEET scorecard ready.",
+                "official_portal": "https://www.tnmedicalselection.net",
+                "registration_window": "June - July (Post-NEET Results)",
+                "selection_stages": "Registration on tnmedicalselection.net -> Release of TN State Merit Rank List -> 4 Rounds of Online Seat Allotment (MMC, Stanley, Kilpauk, Madurai MC)",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b955,000 - \u20b995,000 / month (Intern / Medical Officer) -> \u20b91.5 - \u20b95+ Lakhs / month (Postgraduate MD/MS Specialist)",
+        "sector": "Medical & Healthcare",
+        "target_group": "biology",
+        "target_groups": [
+            "biology"
+        ]
     },
     {
-      "future_career_growth": [
-        "BDS (5 Years) -> NEET-MDS (Master of Dental Surgery) -> Specialised Practice / Maxillofacial Surgery"
-      ],
-      "government_perks_quotas": "Covered under 7.5% Govt School Free Quota; Pudhumai Penn & Tamil Puthalvan assistance.",
-      "id": "pos_dental_surgeon_bds",
-      "target_group": "biology",
-      "target_groups": [
-        "biology"
-      ],
-      "position_description": "Treats dental disorders, performs oral surgeries, orthodontics, root canals, and cosmetic dentofacial reconstruction.",
-      "position_title": "Dental Surgeon / Oral & Maxillofacial Specialist (BDS)",
-      "qualification_badge": "12th PCB",
-      "qualification_stage": "after_12th",
-      "recruiting_organizations": [
-        "Tamil Nadu Govt Dental College Chennai",
-        "Private Dental Clinics",
-        "Clove Dental",
-        "Armed Forces Dental Corps",
-        "Research Institutes"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "National Testing Agency (NTA)",
-          "exam_category": "National Medical & Dental Entrance Exam",
-          "exam_date": "First Sunday of May",
-          "exam_name": "NEET-UG",
-          "exam_pattern": "720 Marks: Biology 360, Physics 180, Chemistry 180",
-          "how_to_prepare": "Strong fundamentals in NCERT Human Physiology and Genetics.",
-          "official_portal": "https://neet.nta.nic.in",
-          "registration_window": "February - March",
-          "selection_stages": "Written Examination (720 Marks) -> DME Counselling for Government Dental College Chennai & 20+ Self-Financing Dental Colleges"
-        },
-        {
-          "conducting_body": "Directorate of Medical Education, Chennai",
-          "exam_category": "State Single-Window Dental Admissions",
-          "exam_date": "Counselling in July - August",
-          "exam_name": "Tamil Nadu DME Dental Counselling",
-          "exam_pattern": "State NEET Rank Cutoff",
-          "how_to_prepare": "Apply on tnmedicalselection.net immediately after NEET results.",
-          "official_portal": "https://www.tnmedicalselection.net",
-          "registration_window": "July (Post-NEET Results)",
-          "selection_stages": "NEET State Rank -> Online Choice Filling -> Seat Allotment -> Certificate Verification"
-        }
-      ],
-      "salary_range": "₹35,000 - ₹75,000 / month (Govt/Clinic) -> ₹1 - ₹3 Lakhs / month (Private Practice)",
-      "sector": "Medical & Healthcare"
+        "future_career_growth": [
+            "BDS (5 Years) -> NEET-MDS (Master of Dental Surgery) -> Specialised Practice / Maxillofacial Surgery"
+        ],
+        "government_perks_quotas": "Covered under 7.5% Govt School Free Quota; Pudhumai Penn & Tamil Puthalvan assistance.",
+        "id": "pos_dental_surgeon_bds",
+        "position_description": "Treats dental disorders, performs oral surgeries, orthodontics, root canals, and cosmetic dentofacial reconstruction.",
+        "position_title": "Dental Surgeon / Oral & Maxillofacial Specialist (BDS)",
+        "qualification_badge": "12th PCB",
+        "qualification_stage": "after_12th",
+        "recruiting_organizations": [
+            "Tamil Nadu Govt Dental College Chennai",
+            "Private Dental Clinics",
+            "Clove Dental",
+            "Armed Forces Dental Corps",
+            "Research Institutes"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "National Testing Agency (NTA)",
+                "exam_category": "National Medical & Dental Entrance Exam",
+                "exam_date": "May 3, 2026 (Single Shift: 2:00 PM \u2013 5:20 PM)",
+                "exam_name": "NEET-UG",
+                "exam_pattern": "720 Marks: Biology 360, Physics 180, Chemistry 180",
+                "how_to_prepare": "Strong fundamentals in NCERT Human Physiology and Genetics.",
+                "official_portal": "https://neet.nta.nic.in",
+                "registration_window": "February - March",
+                "selection_stages": "Written Examination (720 Marks) -> DME Counselling for Government Dental College Chennai & 20+ Self-Financing Dental Colleges",
+                "is_date_confirmed": true
+            },
+            {
+                "conducting_body": "Directorate of Medical Education, Chennai",
+                "exam_category": "State Single-Window Dental Admissions",
+                "exam_date": "Coming Soon",
+                "exam_name": "Tamil Nadu DME Dental Counselling",
+                "exam_pattern": "State NEET Rank Cutoff",
+                "how_to_prepare": "Apply on tnmedicalselection.net immediately after NEET results.",
+                "official_portal": "https://www.tnmedicalselection.net",
+                "registration_window": "July (Post-NEET Results)",
+                "selection_stages": "NEET State Rank -> Online Choice Filling -> Seat Allotment -> Certificate Verification",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b935,000 - \u20b975,000 / month (Govt/Clinic) -> \u20b91 - \u20b93 Lakhs / month (Private Practice)",
+        "sector": "Medical & Healthcare",
+        "target_group": "biology",
+        "target_groups": [
+            "biology"
+        ]
     },
     {
-      "future_career_growth": [
-        "Staff Nurse -> Nursing Sister -> Assistant Nursing Superintendent -> Chief Nursing Officer (CNO) / Global Nursing Specialist"
-      ],
-      "government_perks_quotas": "High international mobility; permanent state government pension & health insurance under TN MRB.",
-      "id": "pos_registered_nurse",
-      "target_group": "biology",
-      "target_groups": [
-        "biology"
-      ],
-      "position_description": "Provides clinical nursing care, ICU patient monitoring, post-operative rehabilitation, and medication delivery in premier hospitals in India and abroad (UK, Germany, Middle East).",
-      "position_title": "Registered Staff Nurse / Nursing Officer (B.Sc Nursing)",
-      "qualification_badge": "12th PCB / Science",
-      "qualification_stage": "after_12th",
-      "recruiting_organizations": [
-        "TN MRB (Medical Services Recruitment Board)",
-        "Govt General Hospitals (GH)",
-        "AIIMS",
-        "Apollo Hospitals",
-        "NHS UK",
-        "Fortis Healthcare"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Selection Committee, DME Tamil Nadu",
-          "exam_category": "State Single-Window Merit Admissions",
-          "exam_date": "No Entrance Exam (Merit Cutoff based on 12th Marks)",
-          "exam_name": "Tamil Nadu Paramedical / B.Sc Nursing Single-Window Counselling",
-          "exam_pattern": "Cutoff calculated from Biology (100) + Physics (50) + Chemistry (50) = 200 Marks",
-          "how_to_prepare": "Aim for 170+ / 200 in 12th PCB cutoff.",
-          "official_portal": "https://www.tnmedicalselection.net",
-          "registration_window": "May - June (Post-12th Results)",
-          "selection_stages": "Online application based on 12th PCB marks -> Merit Cutoff (out of 200) -> Counselling for Madras Medical College, Stanley, MMC Vellore"
-        },
-        {
-          "conducting_body": "Medical Services Recruitment Board (MRB) Tamil Nadu",
-          "exam_category": "Tamil Nadu State Govt Permanent Job Exam",
-          "exam_date": "Scheduled via MRB Calendar",
-          "exam_name": "TN MRB Staff Nurse Recruitment Examination",
-          "exam_pattern": "100 Objective Questions on Nursing Foundations, Anatomy, Pharmacology, Community Health",
-          "how_to_prepare": "Revise 4-year B.Sc Nursing degree syllabus.",
-          "official_portal": "https://www.mrb.tn.gov.in",
-          "registration_window": "As per MRB notification",
-          "selection_stages": "Computer Based Test (100 Marks) -> Document Verification -> Appointment as Staff Nurse in TN Public Health Department"
-        }
-      ],
-      "salary_range": "₹25,000 - ₹55,000 / month (India) -> ₹2.5 - ₹4.5 Lakhs / month (NHS UK / Germany / Gulf)",
-      "sector": "Medical & Healthcare"
+        "future_career_growth": [
+            "Staff Nurse -> Nursing Sister -> Assistant Nursing Superintendent -> Chief Nursing Officer (CNO) / Global Nursing Specialist"
+        ],
+        "government_perks_quotas": "High international mobility; permanent state government pension & health insurance under TN MRB.",
+        "id": "pos_registered_nurse",
+        "position_description": "Provides clinical nursing care, ICU patient monitoring, post-operative rehabilitation, and medication delivery in premier hospitals in India and abroad (UK, Germany, Middle East).",
+        "position_title": "Registered Staff Nurse / Nursing Officer (B.Sc Nursing)",
+        "qualification_badge": "12th PCB / Science",
+        "qualification_stage": "after_12th",
+        "recruiting_organizations": [
+            "TN MRB (Medical Services Recruitment Board)",
+            "Govt General Hospitals (GH)",
+            "AIIMS",
+            "Apollo Hospitals",
+            "NHS UK",
+            "Fortis Healthcare"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Selection Committee, DME Tamil Nadu",
+                "exam_category": "State Single-Window Merit Admissions",
+                "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+                "exam_name": "Tamil Nadu Paramedical / B.Sc Nursing Single-Window Counselling",
+                "exam_pattern": "Cutoff calculated from Biology (100) + Physics (50) + Chemistry (50) = 200 Marks",
+                "how_to_prepare": "Aim for 170+ / 200 in 12th PCB cutoff.",
+                "official_portal": "https://www.tnmedicalselection.net",
+                "registration_window": "May - June (Post-12th Results)",
+                "selection_stages": "Online application based on 12th PCB marks -> Merit Cutoff (out of 200) -> Counselling for Madras Medical College, Stanley, MMC Vellore",
+                "is_date_confirmed": true
+            },
+            {
+                "conducting_body": "Medical Services Recruitment Board (MRB) Tamil Nadu",
+                "exam_category": "Tamil Nadu State Govt Permanent Job Exam",
+                "exam_date": "Coming Soon",
+                "exam_name": "TN MRB Staff Nurse Recruitment Examination",
+                "exam_pattern": "100 Objective Questions on Nursing Foundations, Anatomy, Pharmacology, Community Health",
+                "how_to_prepare": "Revise 4-year B.Sc Nursing degree syllabus.",
+                "official_portal": "https://www.mrb.tn.gov.in",
+                "registration_window": "As per MRB notification",
+                "selection_stages": "Computer Based Test (100 Marks) -> Document Verification -> Appointment as Staff Nurse in TN Public Health Department",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b925,000 - \u20b955,000 / month (India) -> \u20b92.5 - \u20b94.5 Lakhs / month (NHS UK / Germany / Gulf)",
+        "sector": "Medical & Healthcare",
+        "target_group": "biology",
+        "target_groups": [
+            "biology"
+        ]
     },
     {
-      "future_career_growth": [
-        "Pharmacist -> Drug Inspector -> Senior Drug Inspector -> Assistant Drugs Controller -> Director of Drugs Control"
-      ],
-      "government_perks_quotas": "Enormous private industrial pharma sector in Chennai & Puducherry; regulatory authority and gazetted status as Drug Inspector.",
-      "id": "pos_pharmacist_drug_inspector",
-      "target_group": "biology",
-      "target_groups": [
-        "biology"
-      ],
-      "position_description": "Formulates medicines, inspects pharmaceutical manufacturing units, dispenses clinical therapies, and regulates drug quality standards across the healthcare supply chain.",
-      "position_title": "Clinical Pharmacist / Drug Inspector (B.Pharm)",
-      "qualification_badge": "12th PCB / PCM",
-      "qualification_stage": "after_12th",
-      "recruiting_organizations": [
-        "Tamil Nadu Drugs Control Administration",
-        "TN MRB",
-        "Sun Pharma",
-        "Dr. Reddy's",
-        "Cipla",
-        "Apex Laboratories Chennai"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Selection Committee, DME Tamil Nadu",
-          "exam_category": "State Single-Window Merit Admissions",
-          "exam_date": "No Entrance Exam (12th Board Merit Cutoff)",
-          "exam_name": "Tamil Nadu Paramedical B.Pharm Single-Window Counselling",
-          "exam_pattern": "Marks in Physics, Chemistry, and Biology/Maths",
-          "how_to_prepare": "Score high in 12th science board subjects.",
-          "official_portal": "https://www.tnmedicalselection.net",
-          "registration_window": "May - June",
-          "selection_stages": "12th PCB/PCM Marks -> DME Cutoff Rank List -> Choice filling for Madras Medical College & Madurai Medical College Pharmacy departments"
-        },
-        {
-          "conducting_body": "TNPSC / Medical Services Recruitment Board",
-          "exam_category": "Tamil Nadu State Gazetted Regulatory Exam",
-          "exam_date": "Scheduled via planner",
-          "exam_name": "TNPSC / TN MRB Drug Inspector Examination",
-          "exam_pattern": "Paper 1 (Pharmacy 200 Qs / 300 Marks) + Paper 2 (General Studies & Tamil 100 Qs / 150 Marks)",
-          "how_to_prepare": "Master pharmacology, pharmaceutics, drug jurisprudence, and pharmacognosy.",
-          "official_portal": "https://www.tnpsc.gov.in",
-          "registration_window": "Periodic State Gazetted Notification",
-          "selection_stages": "Written Examination (Paper 1 Pharmacy Subject + Paper 2 General Studies) -> Oral Interview -> Appointment as Drug Inspector"
-        }
-      ],
-      "salary_range": "₹30,000 - ₹65,000 / month (or ₹37,700 - ₹1,19,500 Level 18 for Drug Inspector)",
-      "sector": "Medical & Healthcare"
+        "future_career_growth": [
+            "Pharmacist -> Drug Inspector -> Senior Drug Inspector -> Assistant Drugs Controller -> Director of Drugs Control"
+        ],
+        "government_perks_quotas": "Enormous private industrial pharma sector in Chennai & Puducherry; regulatory authority and gazetted status as Drug Inspector.",
+        "id": "pos_pharmacist_drug_inspector",
+        "position_description": "Formulates medicines, inspects pharmaceutical manufacturing units, dispenses clinical therapies, and regulates drug quality standards across the healthcare supply chain.",
+        "position_title": "Clinical Pharmacist / Drug Inspector (B.Pharm)",
+        "qualification_badge": "12th PCB / PCM",
+        "qualification_stage": "after_12th",
+        "recruiting_organizations": [
+            "Tamil Nadu Drugs Control Administration",
+            "TN MRB",
+            "Sun Pharma",
+            "Dr. Reddy's",
+            "Cipla",
+            "Apex Laboratories Chennai"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Selection Committee, DME Tamil Nadu",
+                "exam_category": "State Single-Window Merit Admissions",
+                "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+                "exam_name": "Tamil Nadu Paramedical B.Pharm Single-Window Counselling",
+                "exam_pattern": "Marks in Physics, Chemistry, and Biology/Maths",
+                "how_to_prepare": "Score high in 12th science board subjects.",
+                "official_portal": "https://www.tnmedicalselection.net",
+                "registration_window": "May - June",
+                "selection_stages": "12th PCB/PCM Marks -> DME Cutoff Rank List -> Choice filling for Madras Medical College & Madurai Medical College Pharmacy departments",
+                "is_date_confirmed": true
+            },
+            {
+                "conducting_body": "TNPSC / Medical Services Recruitment Board",
+                "exam_category": "Tamil Nadu State Gazetted Regulatory Exam",
+                "exam_date": "Coming Soon",
+                "exam_name": "TNPSC / TN MRB Drug Inspector Examination",
+                "exam_pattern": "Paper 1 (Pharmacy 200 Qs / 300 Marks) + Paper 2 (General Studies & Tamil 100 Qs / 150 Marks)",
+                "how_to_prepare": "Master pharmacology, pharmaceutics, drug jurisprudence, and pharmacognosy.",
+                "official_portal": "https://www.tnpsc.gov.in",
+                "registration_window": "Periodic State Gazetted Notification",
+                "selection_stages": "Written Examination (Paper 1 Pharmacy Subject + Paper 2 General Studies) -> Oral Interview -> Appointment as Drug Inspector",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b930,000 - \u20b965,000 / month (or \u20b937,700 - \u20b91,19,500 Level 18 for Drug Inspector)",
+        "sector": "Medical & Healthcare",
+        "target_group": "biology",
+        "target_groups": [
+            "biology"
+        ]
     },
     {
-      "future_career_growth": [
-        "Veterinary Assistant Surgeon (VAS) -> Assistant Director of Animal Husbandry -> Joint Director -> Director of Animal Husbandry"
-      ],
-      "government_perks_quotas": "Gazetted Officer Grade, 7.5% Govt School Free Quota, official quarters, NPA allowance, and prestigious status.",
-      "id": "pos_veterinary_surgeon",
-      "target_group": "biology",
-      "target_groups": [
-        "biology"
-      ],
-      "position_description": "Provides clinical medical treatment, surgery, disease prevention, and reproductive management for livestock, pets, poultry, and wildlife reserves.",
-      "position_title": "Veterinary Surgeon / Animal Husbandry Officer (B.V.Sc & AH)",
-      "qualification_badge": "12th PCB (Cutoff out of 200)",
-      "qualification_stage": "after_12th",
-      "recruiting_organizations": [
-        "Tamil Nadu Animal Husbandry Department",
-        "Aavin (Tamil Nadu Co-operative Milk)",
-        "TANUVAS Research Centres",
-        "Wildlife Sanctuaries (Mudumalai, Anamalai)",
-        "Pet Care Multispecialities"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Tamil Nadu Veterinary and Animal Sciences University (TANUVAS), Chennai",
-          "exam_category": "State Single-Window Merit Admissions",
-          "exam_date": "No Entrance Exam (Cutoff Merit out of 200)",
-          "exam_name": "TANUVAS Undergraduate Single-Window Admissions",
-          "exam_pattern": "Cutoff formula: Biology (100) + Physics (50) + Chemistry (50) = 200 Marks",
-          "how_to_prepare": "Aim for 195+ / 200 in 12th PCB cutoff.",
-          "official_portal": "https://tanuvas.ac.in",
-          "registration_window": "June - July",
-          "selection_stages": "12th Board PCB Cutoff (out of 200) -> Merit rank list -> Single-window counselling for Madras Veterinary College (MVC), VC&RI Namakkal, Tirunelveli, Orathanadu, Salem"
-        },
-        {
-          "conducting_body": "Tamil Nadu Public Service Commission (TNPSC)",
-          "exam_category": "Tamil Nadu State Gazetted Technical Exam",
-          "exam_date": "Scheduled via planner",
-          "exam_name": "TNPSC Veterinary Assistant Surgeon (VAS) Examination",
-          "exam_pattern": "Paper 1 (Veterinary Science 200 Qs / 300 Marks) + Paper 2 (General Studies 100 Qs / 150 Marks)",
-          "how_to_prepare": "Revise 5.5-year B.V.Sc curriculum.",
-          "official_portal": "https://www.tnpsc.gov.in",
-          "registration_window": "As per TNPSC annual planner",
-          "selection_stages": "Written Examination (Paper 1 Veterinary Science + Paper 2 Tamil Eligibility & GS) -> Oral Test (Interview) -> Gazetted Appointment"
-        }
-      ],
-      "salary_range": "₹56,100 - ₹1,77,500 / month (Level 22 Gazetted Officer) + Non-Practicing Allowance (NPA)",
-      "sector": "Agriculture & Veterinary"
+        "future_career_growth": [
+            "Veterinary Assistant Surgeon (VAS) -> Assistant Director of Animal Husbandry -> Joint Director -> Director of Animal Husbandry"
+        ],
+        "government_perks_quotas": "Gazetted Officer Grade, 7.5% Govt School Free Quota, official quarters, NPA allowance, and prestigious status.",
+        "id": "pos_veterinary_surgeon",
+        "position_description": "Provides clinical medical treatment, surgery, disease prevention, and reproductive management for livestock, pets, poultry, and wildlife reserves.",
+        "position_title": "Veterinary Surgeon / Animal Husbandry Officer (B.V.Sc & AH)",
+        "qualification_badge": "12th PCB (Cutoff out of 200)",
+        "qualification_stage": "after_12th",
+        "recruiting_organizations": [
+            "Tamil Nadu Animal Husbandry Department",
+            "Aavin (Tamil Nadu Co-operative Milk)",
+            "TANUVAS Research Centres",
+            "Wildlife Sanctuaries (Mudumalai, Anamalai)",
+            "Pet Care Multispecialities"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Tamil Nadu Veterinary and Animal Sciences University (TANUVAS), Chennai",
+                "exam_category": "State Single-Window Merit Admissions",
+                "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+                "exam_name": "TANUVAS Undergraduate Single-Window Admissions",
+                "exam_pattern": "Cutoff formula: Biology (100) + Physics (50) + Chemistry (50) = 200 Marks",
+                "how_to_prepare": "Aim for 195+ / 200 in 12th PCB cutoff.",
+                "official_portal": "https://tanuvas.ac.in",
+                "registration_window": "June - July",
+                "selection_stages": "12th Board PCB Cutoff (out of 200) -> Merit rank list -> Single-window counselling for Madras Veterinary College (MVC), VC&RI Namakkal, Tirunelveli, Orathanadu, Salem",
+                "is_date_confirmed": true
+            },
+            {
+                "conducting_body": "Tamil Nadu Public Service Commission (TNPSC)",
+                "exam_category": "Tamil Nadu State Gazetted Technical Exam",
+                "exam_date": "Coming Soon",
+                "exam_name": "TNPSC Veterinary Assistant Surgeon (VAS) Examination",
+                "exam_pattern": "Paper 1 (Veterinary Science 200 Qs / 300 Marks) + Paper 2 (General Studies 100 Qs / 150 Marks)",
+                "how_to_prepare": "Revise 5.5-year B.V.Sc curriculum.",
+                "official_portal": "https://www.tnpsc.gov.in",
+                "registration_window": "As per TNPSC annual planner",
+                "selection_stages": "Written Examination (Paper 1 Veterinary Science + Paper 2 Tamil Eligibility & GS) -> Oral Test (Interview) -> Gazetted Appointment",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b956,100 - \u20b91,77,500 / month (Level 22 Gazetted Officer) + Non-Practicing Allowance (NPA)",
+        "sector": "Agriculture & Veterinary",
+        "target_group": "biology",
+        "target_groups": [
+            "biology"
+        ]
     },
     {
-      "future_career_growth": [
-        "Agricultural Officer (AO) -> Assistant Director of Agriculture (ADA) -> Joint Director of Agriculture (JDA) -> Director of Agriculture"
-      ],
-      "government_perks_quotas": "Direct village administration influence; 7.5% Govt School reservation with 100% Free Tuition; high demand in banking as Agri Field Officer (AFO).",
-      "id": "pos_agricultural_officer",
-      "target_group": "biology",
-      "target_groups": [
-        "biology"
-      ],
-      "position_description": "Guides rural farmers on crop yield maximization, sustainable organic farming, soil diagnostics, fertilizer technologies, and executes state welfare schemes across Tamil Nadu blocks.",
-      "position_title": "Agricultural Officer (AO) / Farm Scientist (B.Sc Agri)",
-      "qualification_badge": "12th PCB / PCM (Cutoff out of 200)",
-      "qualification_stage": "after_12th",
-      "recruiting_organizations": [
-        "Tamil Nadu Department of Agriculture",
-        "TNAU Research Stations",
-        "National Seeds Corporation",
-        "NABARD",
-        "ITC Agri Business",
-        "Bayer Crop Science"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Tamil Nadu Agricultural University (TNAU), Coimbatore",
-          "exam_category": "State Single-Window Merit Admissions",
-          "exam_date": "No Entrance Exam (Cutoff Merit out of 200)",
-          "exam_name": "TNAU Undergraduate Single-Window Admissions",
-          "exam_pattern": "Cutoff derived from Physics, Chemistry, Biology / Maths",
-          "how_to_prepare": "Maintain high marks in 12th standard science stream.",
-          "official_portal": "https://tnau.ac.in",
-          "registration_window": "May - June (Post-12th Results)",
-          "selection_stages": "12th Marks Online Application -> TNAU Merit Cutoff Rank -> Online Choice Filling for Coimbatore Main, Madurai, Trichy, Killikulam constituent colleges"
-        },
-        {
-          "conducting_body": "Tamil Nadu Public Service Commission (TNPSC)",
-          "exam_category": "Tamil Nadu State Gazetted Technical Exam",
-          "exam_date": "Scheduled via planner",
-          "exam_name": "TNPSC Agricultural Officer (AO) Examination",
-          "exam_pattern": "Paper 1 (Agriculture Degree Level 200 Qs / 300 Marks) + Paper 2 (General Studies 100 Qs / 150 Marks)",
-          "how_to_prepare": "Master agronomy, genetics, plant pathology, agricultural economics, and soil science.",
-          "official_portal": "https://www.tnpsc.gov.in",
-          "registration_window": "As per TNPSC Annual Calendar",
-          "selection_stages": "Written Examination (Paper 1 Agriculture + Paper 2 Tamil & GS) -> Certificate Verification -> Direct Appointment as Agricultural Officer"
-        }
-      ],
-      "salary_range": "₹37,700 - ₹1,19,500 / month (Level 18 TN Govt) or ₹4.5 - ₹10 LPA (Agri-tech / Seeds)",
-      "sector": "Agriculture & Veterinary"
+        "future_career_growth": [
+            "Agricultural Officer (AO) -> Assistant Director of Agriculture (ADA) -> Joint Director of Agriculture (JDA) -> Director of Agriculture"
+        ],
+        "government_perks_quotas": "Direct village administration influence; 7.5% Govt School reservation with 100% Free Tuition; high demand in banking as Agri Field Officer (AFO).",
+        "id": "pos_agricultural_officer",
+        "position_description": "Guides rural farmers on crop yield maximization, sustainable organic farming, soil diagnostics, fertilizer technologies, and executes state welfare schemes across Tamil Nadu blocks.",
+        "position_title": "Agricultural Officer (AO) / Farm Scientist (B.Sc Agri)",
+        "qualification_badge": "12th PCB / PCM (Cutoff out of 200)",
+        "qualification_stage": "after_12th",
+        "recruiting_organizations": [
+            "Tamil Nadu Department of Agriculture",
+            "TNAU Research Stations",
+            "National Seeds Corporation",
+            "NABARD",
+            "ITC Agri Business",
+            "Bayer Crop Science"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Tamil Nadu Agricultural University (TNAU), Coimbatore",
+                "exam_category": "State Single-Window Merit Admissions",
+                "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+                "exam_name": "TNAU Undergraduate Single-Window Admissions",
+                "exam_pattern": "Cutoff derived from Physics, Chemistry, Biology / Maths",
+                "how_to_prepare": "Maintain high marks in 12th standard science stream.",
+                "official_portal": "https://tnau.ac.in",
+                "registration_window": "May - June (Post-12th Results)",
+                "selection_stages": "12th Marks Online Application -> TNAU Merit Cutoff Rank -> Online Choice Filling for Coimbatore Main, Madurai, Trichy, Killikulam constituent colleges",
+                "is_date_confirmed": true
+            },
+            {
+                "conducting_body": "Tamil Nadu Public Service Commission (TNPSC)",
+                "exam_category": "Tamil Nadu State Gazetted Technical Exam",
+                "exam_date": "Coming Soon",
+                "exam_name": "TNPSC Agricultural Officer (AO) Examination",
+                "exam_pattern": "Paper 1 (Agriculture Degree Level 200 Qs / 300 Marks) + Paper 2 (General Studies 100 Qs / 150 Marks)",
+                "how_to_prepare": "Master agronomy, genetics, plant pathology, agricultural economics, and soil science.",
+                "official_portal": "https://www.tnpsc.gov.in",
+                "registration_window": "As per TNPSC Annual Calendar",
+                "selection_stages": "Written Examination (Paper 1 Agriculture + Paper 2 Tamil & GS) -> Certificate Verification -> Direct Appointment as Agricultural Officer",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b937,700 - \u20b91,19,500 / month (Level 18 TN Govt) or \u20b94.5 - \u20b910 LPA (Agri-tech / Seeds)",
+        "sector": "Agriculture & Veterinary",
+        "target_group": "biology",
+        "target_groups": [
+            "biology"
+        ]
     },
     {
-      "future_career_growth": [
-        "Village Administrative Officer (VAO) -> Revenue Inspector (RI - after 6 years) -> Deputy Tahsildar -> Tahsildar (Taluk Magistrate) -> Revenue Divisional Officer (RDO) -> District Revenue Officer (DRO)"
-      ],
-      "government_perks_quotas": "Direct permanent Tamil Nadu government job immediately after 10th standard; permanent pension scheme, medical benefits, and enormous social respect.",
-      "id": "pos_village_administrative_officer",
-      "target_group": "sslc_10th",
-      "target_groups": [
-        "sslc_10th",
-        "commerce",
-        "arts",
-        "vocational"
-      ],
-      "position_description": "Administrative head of the revenue village in Tamil Nadu. Issues community, income, and nativity certificates; maintains land patta records; supervises local peace and revenue collection.",
-      "position_title": "Village Administrative Officer (VAO)",
-      "qualification_badge": "Direct 10th (SSLC Pass)",
-      "qualification_stage": "after_10th",
-      "recruiting_organizations": [
-        "Tamil Nadu Revenue & Disaster Management Department (Direct Government Posting in Home District)"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Tamil Nadu Public Service Commission (TNPSC), Chennai",
-          "exam_category": "State Competitive Written Examination",
-          "exam_date": "July 11, 2026 (Single Shift: 9:30 AM – 12:30 PM)",
-          "exam_name": "TNPSC Group 4 & VAO Examination",
-          "exam_pattern": "Part A: General Tamil (SSLC Standard - 100 Qs / 150 Marks) + Part B: General Studies (75 Qs) & Aptitude/Mental Ability (25 Qs) = 150 Marks. Total 300 Marks. Duration: 3 Hours.",
-          "how_to_prepare": "Master Tamil Nadu Samacheer Kalvi 6th to 10th standard Tamil textbooks, Science, Social Science, and basic school mathematics.",
-          "official_portal": "https://www.tnpsc.gov.in",
-          "registration_window": "January 30 – February 28, 2026",
-          "selection_stages": "Single-Stage Written Examination (300 Marks, 200 Questions) -> State Merit & Communal Rank List -> District-wise Certificate Verification -> Permanent Govt Appointment",
-          "is_date_confirmed": true
-        }
-      ],
-      "salary_range": "₹19,500 - ₹62,000 / month (Level 8 TN Govt Pay Scale) + DA, HRA, Medical & Travel Perks",
-      "sector": "Tamil Nadu Government & Administration"
+        "future_career_growth": [
+            "Village Administrative Officer (VAO) -> Revenue Inspector (RI - after 6 years) -> Deputy Tahsildar -> Tahsildar (Taluk Magistrate) -> Revenue Divisional Officer (RDO) -> District Revenue Officer (DRO)"
+        ],
+        "government_perks_quotas": "Direct permanent Tamil Nadu government job immediately after 10th standard; permanent pension scheme, medical benefits, and enormous social respect.",
+        "id": "pos_village_administrative_officer",
+        "position_description": "Administrative head of the revenue village in Tamil Nadu. Issues community, income, and nativity certificates; maintains land patta records; supervises local peace and revenue collection.",
+        "position_title": "Village Administrative Officer (VAO)",
+        "qualification_badge": "Direct 10th (SSLC Pass)",
+        "qualification_stage": "after_10th",
+        "recruiting_organizations": [
+            "Tamil Nadu Revenue & Disaster Management Department (Direct Government Posting in Home District)"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Tamil Nadu Public Service Commission (TNPSC), Chennai",
+                "exam_category": "State Competitive Written Examination",
+                "exam_date": "July 11, 2026 (Single Shift: 9:30 AM \u2013 12:30 PM)",
+                "exam_name": "TNPSC Group 4 & VAO Examination",
+                "exam_pattern": "Part A: General Tamil (SSLC Standard - 100 Qs / 150 Marks) + Part B: General Studies (75 Qs) & Aptitude/Mental Ability (25 Qs) = 150 Marks. Total 300 Marks. Duration: 3 Hours.",
+                "how_to_prepare": "Master Tamil Nadu Samacheer Kalvi 6th to 10th standard Tamil textbooks, Science, Social Science, and basic school mathematics.",
+                "official_portal": "https://www.tnpsc.gov.in",
+                "registration_window": "March 15 \u2013 April 15, 2026",
+                "selection_stages": "Single-Stage Written Examination (300 Marks, 200 Questions) -> State Merit & Communal Rank List -> District-wise Certificate Verification -> Permanent Govt Appointment",
+                "is_date_confirmed": true
+            }
+        ],
+        "salary_range": "\u20b919,500 - \u20b962,000 / month (Level 8 TN Govt Pay Scale) + DA, HRA, Medical & Travel Perks",
+        "sector": "Tamil Nadu Government & Administration",
+        "target_group": "sslc_10th",
+        "target_groups": [
+            "sslc_10th",
+            "commerce",
+            "arts",
+            "vocational"
+        ]
     },
     {
-      "future_career_growth": [
-        "Junior Assistant -> Assistant -> Superintendent -> Section Officer -> Under Secretary to Government (Secretariat)"
-      ],
-      "government_perks_quotas": "Job security till age 60; fixed 5-day week in Secretariat/offices; compassionate appointment privileges.",
-      "id": "pos_junior_assistant_typist",
-      "target_group": "sslc_10th",
-      "target_groups": [
-        "sslc_10th",
-        "commerce",
-        "arts",
-        "vocational"
-      ],
-      "position_description": "Executes clerical, administrative documentation, official correspondence, and public welfare program records across Tamil Nadu Secretariat, Collectorates, Municipalities, and Courts.",
-      "position_title": "Junior Assistant / Typist / Bill Collector (TN Govt)",
-      "qualification_badge": "Direct 10th (SSLC Pass)",
-      "qualification_stage": "after_10th",
-      "recruiting_organizations": [
-        "Tamil Nadu Secretariat",
-        "District Collectorates (All 38 Districts)",
-        "Judicial Courts",
-        "Commercial Taxes Department",
-        "Registration Department"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Tamil Nadu Public Service Commission (TNPSC)",
-          "exam_category": "State Competitive Written Examination",
-          "exam_date": "June",
-          "exam_name": "TNPSC Group 4 Examination",
-          "exam_pattern": "General Tamil (100 Qs) + General Studies & Mental Ability (100 Qs). No Interview.",
-          "how_to_prepare": "Practice TN Samacheer Kalvi school textbooks and previous 10 years TNPSC question papers.",
-          "official_portal": "https://www.tnpsc.gov.in",
-          "registration_window": "January - February",
-          "selection_stages": "Single Written Exam (200 Questions / 300 Marks). For typists: Technical qualification in Tamil & English Typewriting."
-        }
-      ],
-      "salary_range": "₹19,500 - ₹62,000 / month (Level 8 TN Govt Pay Matrix)",
-      "sector": "Tamil Nadu Government & Administration"
+        "future_career_growth": [
+            "Junior Assistant -> Assistant -> Superintendent -> Section Officer -> Under Secretary to Government (Secretariat)"
+        ],
+        "government_perks_quotas": "Job security till age 60; fixed 5-day week in Secretariat/offices; compassionate appointment privileges.",
+        "id": "pos_junior_assistant_typist",
+        "position_description": "Executes clerical, administrative documentation, official correspondence, and public welfare program records across Tamil Nadu Secretariat, Collectorates, Municipalities, and Courts.",
+        "position_title": "Junior Assistant / Typist / Bill Collector (TN Govt)",
+        "qualification_badge": "Direct 10th (SSLC Pass)",
+        "qualification_stage": "after_10th",
+        "recruiting_organizations": [
+            "Tamil Nadu Secretariat",
+            "District Collectorates (All 38 Districts)",
+            "Judicial Courts",
+            "Commercial Taxes Department",
+            "Registration Department"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Tamil Nadu Public Service Commission (TNPSC)",
+                "exam_category": "State Competitive Written Examination",
+                "exam_date": "July 11, 2026 (Single Shift: 9:30 AM \u2013 12:30 PM)",
+                "exam_name": "TNPSC Group 4 Examination",
+                "exam_pattern": "General Tamil (100 Qs) + General Studies & Mental Ability (100 Qs). No Interview.",
+                "how_to_prepare": "Practice TN Samacheer Kalvi school textbooks and previous 10 years TNPSC question papers.",
+                "official_portal": "https://www.tnpsc.gov.in",
+                "registration_window": "January - February",
+                "selection_stages": "Single Written Exam (200 Questions / 300 Marks). For typists: Technical qualification in Tamil & English Typewriting.",
+                "is_date_confirmed": true
+            }
+        ],
+        "salary_range": "\u20b919,500 - \u20b962,000 / month (Level 8 TN Govt Pay Matrix)",
+        "sector": "Tamil Nadu Government & Administration",
+        "target_group": "sslc_10th",
+        "target_groups": [
+            "sslc_10th",
+            "commerce",
+            "arts",
+            "vocational"
+        ]
     },
     {
-      "future_career_growth": [
-        "Sub-Registrar Grade II -> Sub-Registrar Grade I -> District Registrar -> Deputy Inspector General of Registration (DIG)"
-      ],
-      "government_perks_quotas": "Executive authority, official government seals, gazetted promotion avenues, and housing loan privileges.",
-      "id": "pos_sub_registrar_revenue_inspector",
-      "target_group": "arts",
-      "target_groups": [
-        "arts",
-        "commerce",
-        "graduate"
-      ],
-      "position_description": "Executes land and property registrations, conducts revenue inquiries, oversees municipal civic administration, and enforces commercial taxation across towns and districts.",
-      "position_title": "Sub-Registrar / Revenue Inspector / Municipal Commissioner",
-      "qualification_badge": "Any Bachelor's Degree (Direct After 12th Graduation)",
-      "qualification_stage": "diploma_graduate",
-      "recruiting_organizations": [
-        "Registration Department",
-        "Revenue Administration",
-        "Municipal Administration",
-        "Commercial Taxes",
-        "Labour Department"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Tamil Nadu Public Service Commission (TNPSC)",
-          "exam_category": "State Multi-Stage Civil Services Exam",
-          "exam_date": "Scheduled via TNPSC Calendar",
-          "exam_name": "TNPSC Group 2 & 2A Combined Civil Services Examination",
-          "exam_pattern": "Prelims: General Tamil (100 Qs) + General Studies (75 Qs) + Aptitude (25 Qs). Mains: Descriptive paper on TN socio-economic development, administration, and science/technology.",
-          "how_to_prepare": "In-depth study of Tamil Nadu history, administrative machinery, economy, and descriptive writing practice.",
-          "official_portal": "https://www.tnpsc.gov.in",
-          "registration_window": "As per TNPSC Planner",
-          "selection_stages": "Prelims Exam (Objective 300 Marks) -> Mains Written Exam (Descriptive 300 Marks) -> Interview (for Group 2 Interview Posts) / Merit Counselling (for Group 2A Non-Interview)"
-        }
-      ],
-      "salary_range": "₹36,900 - ₹1,16,600 / month (Level 18/16 TN Govt Pay Matrix)",
-      "sector": "Tamil Nadu Government & Administration"
+        "future_career_growth": [
+            "Sub-Registrar Grade II -> Sub-Registrar Grade I -> District Registrar -> Deputy Inspector General of Registration (DIG)"
+        ],
+        "government_perks_quotas": "Executive authority, official government seals, gazetted promotion avenues, and housing loan privileges.",
+        "id": "pos_sub_registrar_revenue_inspector",
+        "position_description": "Executes land and property registrations, conducts revenue inquiries, oversees municipal civic administration, and enforces commercial taxation across towns and districts.",
+        "position_title": "Sub-Registrar / Revenue Inspector / Municipal Commissioner",
+        "qualification_badge": "Any Bachelor's Degree (Direct After 12th Graduation)",
+        "qualification_stage": "diploma_graduate",
+        "recruiting_organizations": [
+            "Registration Department",
+            "Revenue Administration",
+            "Municipal Administration",
+            "Commercial Taxes",
+            "Labour Department"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Tamil Nadu Public Service Commission (TNPSC)",
+                "exam_category": "State Multi-Stage Civil Services Exam",
+                "exam_date": "Coming Soon",
+                "exam_name": "TNPSC Group 2 & 2A Combined Civil Services Examination",
+                "exam_pattern": "Prelims: General Tamil (100 Qs) + General Studies (75 Qs) + Aptitude (25 Qs). Mains: Descriptive paper on TN socio-economic development, administration, and science/technology.",
+                "how_to_prepare": "In-depth study of Tamil Nadu history, administrative machinery, economy, and descriptive writing practice.",
+                "official_portal": "https://www.tnpsc.gov.in",
+                "registration_window": "As per TNPSC Planner",
+                "selection_stages": "Prelims Exam (Objective 300 Marks) -> Mains Written Exam (Descriptive 300 Marks) -> Interview (for Group 2 Interview Posts) / Merit Counselling (for Group 2A Non-Interview)",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b936,900 - \u20b91,16,600 / month (Level 18/16 TN Govt Pay Matrix)",
+        "sector": "Tamil Nadu Government & Administration",
+        "target_group": "arts",
+        "target_groups": [
+            "arts",
+            "commerce",
+            "graduate"
+        ]
     },
     {
-      "future_career_growth": [
-        "Deputy Collector -> District Revenue Officer (DRO) -> Conferred IAS (District Collector -> Principal Secretary to Govt)"
-      ],
-      "government_perks_quotas": "Executive bungalow, official vehicle with beacon, armed security, VIP protocol, and gateway to IAS.",
-      "id": "pos_deputy_collector_dsp",
-      "target_group": "arts",
-      "target_groups": [
-        "arts",
-        "graduate"
-      ],
-      "position_description": "Highest state civil service position. Heads revenue divisions, maintains district law and order, coordinates disaster relief, and eligible for promotion to Indian Administrative Service (IAS) and Indian Police Service (IPS).",
-      "position_title": "Deputy Collector / DSP (District Superintendent of Police)",
-      "qualification_badge": "Any Bachelor's Degree",
-      "qualification_stage": "diploma_graduate",
-      "recruiting_organizations": [
-        "Government of Tamil Nadu (Revenue, Police, Commercial Taxes, Rural Development)"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Tamil Nadu Public Service Commission (TNPSC)",
-          "exam_category": "Premier State Civil Services Examination",
-          "exam_date": "Prelims in July | Mains in December",
-          "exam_name": "TNPSC Group 1 Examination",
-          "exam_pattern": "Prelims: 200 Questions (General Studies 175 + Aptitude 25). Mains: Paper 1 (Modern India & TN Culture), Paper 2 (Indian Polity & Emerging Social Issues), Paper 3 (Economy, Geography, Environment).",
-          "how_to_prepare": "Extensive reading of Indian Constitution, Tamil society and literature, current affairs, and answer writing.",
-          "official_portal": "https://www.tnpsc.gov.in",
-          "registration_window": "Annual Notification",
-          "selection_stages": "Stage 1: Preliminary Exam (300 Marks) -> Stage 2: Main Written Exam (3 Descriptive Papers = 750 Marks) -> Stage 3: Oral Interview (100 Marks)"
-        }
-      ],
-      "salary_range": "₹56,100 - ₹1,77,500 / month (Level 22 Premier Gazetted Pay Scale) + Executive Perks",
-      "sector": "Tamil Nadu Government & Administration"
+        "future_career_growth": [
+            "Deputy Collector -> District Revenue Officer (DRO) -> Conferred IAS (District Collector -> Principal Secretary to Govt)"
+        ],
+        "government_perks_quotas": "Executive bungalow, official vehicle with beacon, armed security, VIP protocol, and gateway to IAS.",
+        "id": "pos_deputy_collector_dsp",
+        "position_description": "Highest state civil service position. Heads revenue divisions, maintains district law and order, coordinates disaster relief, and eligible for promotion to Indian Administrative Service (IAS) and Indian Police Service (IPS).",
+        "position_title": "Deputy Collector / DSP (District Superintendent of Police)",
+        "qualification_badge": "Any Bachelor's Degree",
+        "qualification_stage": "diploma_graduate",
+        "recruiting_organizations": [
+            "Government of Tamil Nadu (Revenue, Police, Commercial Taxes, Rural Development)"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Tamil Nadu Public Service Commission (TNPSC)",
+                "exam_category": "Premier State Civil Services Examination",
+                "exam_date": "Coming Soon",
+                "exam_name": "TNPSC Group 1 Examination",
+                "exam_pattern": "Prelims: 200 Questions (General Studies 175 + Aptitude 25). Mains: Paper 1 (Modern India & TN Culture), Paper 2 (Indian Polity & Emerging Social Issues), Paper 3 (Economy, Geography, Environment).",
+                "how_to_prepare": "Extensive reading of Indian Constitution, Tamil society and literature, current affairs, and answer writing.",
+                "official_portal": "https://www.tnpsc.gov.in",
+                "registration_window": "Annual Notification",
+                "selection_stages": "Stage 1: Preliminary Exam (300 Marks) -> Stage 2: Main Written Exam (3 Descriptive Papers = 750 Marks) -> Stage 3: Oral Interview (100 Marks)",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b956,100 - \u20b91,77,500 / month (Level 22 Premier Gazetted Pay Scale) + Executive Perks",
+        "sector": "Tamil Nadu Government & Administration",
+        "target_group": "arts",
+        "target_groups": [
+            "arts",
+            "graduate"
+        ]
     },
     {
-      "future_career_growth": [
-        "Grade II Police Constable -> Grade I Constable (after 5 yrs) -> Head Constable -> Sub-Inspector of Police (via departmental exam)"
-      ],
-      "government_perks_quotas": "Free uniform, subsidized police canteen, family health insurance, quarters in police colony, and 20% departmental quota for Sub-Inspector.",
-      "id": "pos_police_constable_fireman",
-      "target_group": "sslc_10th",
-      "target_groups": [
-        "sslc_10th",
-        "vocational",
-        "arts",
-        "commerce"
-      ],
-      "position_description": "Maintains public safety, conducts foot and vehicle patrols, law and order enforcement, crime investigation assistance, and firefighting rescue across Tamil Nadu.",
-      "position_title": "Grade II Police Constable / Jail Warder / Fireman",
-      "qualification_badge": "Direct 10th (SSLC Pass)",
-      "qualification_stage": "after_10th",
-      "recruiting_organizations": [
-        "Tamil Nadu Police Department (Armed Reserve, Taluk, Tamil Nadu Special Police)",
-        "Prison Department",
-        "Fire and Rescue Services"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Tamil Nadu Uniformed Services Recruitment Board (TNUSRB), Chennai",
-          "exam_category": "State Uniformed Services Examination",
-          "exam_date": "November 22, 2026 (Sunday: Part A Tamil + Part B Main Exam)",
-          "exam_name": "TNUSRB Common Recruitment (Grade II PC & Fireman)",
-          "exam_pattern": "Written Exam: 70 Marks (General Knowledge 45 Marks + Psychology / Reasoning 25 Marks). Qualifying Tamil Test: 80 Marks (Min 40% required). Physical Test: 24 Marks.",
-          "how_to_prepare": "Master 6th to 10th Samacheer Kalvi GK, mental ability puzzles, and daily physical fitness running.",
-          "official_portal": "https://www.tnusrb.tn.gov.in",
-          "registration_window": "August – September 2026",
-          "selection_stages": "Stage 1: Written Examination (Part 1 Tamil Eligibility 80 Marks + Part 2 Main Exam 70 Marks) -> Stage 2: Physical Measurement Test (PMT) & Endurance Test (ET) -> Stage 3: Physical Efficiency Test (PET - Running, Rope Climbing, Long Jump) -> Medical & Police Verification",
-          "is_date_confirmed": true
-        }
-      ],
-      "salary_range": "₹18,200 - ₹57,900 / month (Level 7 TN Govt Pay Scale) + Ration Allowance, Uniform & Risk Allowances",
-      "sector": "Police & Defence Services"
+        "future_career_growth": [
+            "Grade II Police Constable -> Grade I Constable (after 5 yrs) -> Head Constable -> Sub-Inspector of Police (via departmental exam)"
+        ],
+        "government_perks_quotas": "Free uniform, subsidized police canteen, family health insurance, quarters in police colony, and 20% departmental quota for Sub-Inspector.",
+        "id": "pos_police_constable_fireman",
+        "position_description": "Maintains public safety, conducts foot and vehicle patrols, law and order enforcement, crime investigation assistance, and firefighting rescue across Tamil Nadu.",
+        "position_title": "Grade II Police Constable / Jail Warder / Fireman",
+        "qualification_badge": "Direct 10th (SSLC Pass)",
+        "qualification_stage": "after_10th",
+        "recruiting_organizations": [
+            "Tamil Nadu Police Department (Armed Reserve, Taluk, Tamil Nadu Special Police)",
+            "Prison Department",
+            "Fire and Rescue Services"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Tamil Nadu Uniformed Services Recruitment Board (TNUSRB), Chennai",
+                "exam_category": "State Uniformed Services Examination",
+                "exam_date": "Coming Soon",
+                "exam_name": "TNUSRB Common Recruitment (Grade II PC & Fireman)",
+                "exam_pattern": "Written Exam: 70 Marks (General Knowledge 45 Marks + Psychology / Reasoning 25 Marks). Qualifying Tamil Test: 80 Marks (Min 40% required). Physical Test: 24 Marks.",
+                "how_to_prepare": "Master 6th to 10th Samacheer Kalvi GK, mental ability puzzles, and daily physical fitness running.",
+                "official_portal": "https://www.tnusrb.tn.gov.in",
+                "registration_window": "July 10 \u2013 August 18, 2026",
+                "selection_stages": "Stage 1: Written Examination (Part 1 Tamil Eligibility 80 Marks + Part 2 Main Exam 70 Marks) -> Stage 2: Physical Measurement Test (PMT) & Endurance Test (ET) -> Stage 3: Physical Efficiency Test (PET - Running, Rope Climbing, Long Jump) -> Medical & Police Verification",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b918,200 - \u20b957,900 / month (Level 7 TN Govt Pay Scale) + Ration Allowance, Uniform & Risk Allowances",
+        "sector": "Police & Defence Services",
+        "target_group": "sslc_10th",
+        "target_groups": [
+            "sslc_10th",
+            "vocational",
+            "arts",
+            "commerce"
+        ]
     },
     {
-      "future_career_growth": [
-        "Sub-Inspector (SI) -> Inspector of Police (after 8-10 yrs) -> Deputy Superintendent of Police (DSP) -> Additional SP -> Superintendent of Police (IPS)"
-      ],
-      "government_perks_quotas": "Authorised service weapon, official jeep/motorcycle, station commander authority, and rapid departmental promotions.",
-      "id": "pos_sub_inspector_police",
-      "target_group": "arts",
-      "target_groups": [
-        "arts",
-        "graduate"
-      ],
-      "position_description": "Station House Officer (SHO) commanding a police station jurisdiction. Investigates IPC crimes, registers FIRs, leads tactical operations, and maintains law and order.",
-      "position_title": "Sub-Inspector of Police (Taluk, Armed Reserve, TSP)",
-      "qualification_badge": "Any Bachelor's Degree",
-      "qualification_stage": "diploma_graduate",
-      "recruiting_organizations": [
-        "Tamil Nadu Police Department (Law & Order, Crime, Traffic, CBCID, Cyber Crime)"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Tamil Nadu Uniformed Services Recruitment Board (TNUSRB)",
-          "exam_category": "State Uniformed Officer Recruitment",
-          "exam_date": "Scheduled via TNUSRB Calendar",
-          "exam_name": "TNUSRB Police Sub-Inspector (SI) Examination",
-          "exam_pattern": "General Knowledge (40 Marks) + Logical Analysis, Numerical & Communication Skills (30 Marks)",
-          "how_to_prepare": "Master Indian Penal Code basics, current events, mental reasoning, and maintain 1500m/400m running times.",
-          "official_portal": "https://www.tnusrb.tn.gov.in",
-          "registration_window": "Periodic Notification",
-          "selection_stages": "Part 1 Tamil Eligibility Test -> Part 2 Written Examination (70 Marks Open / 85 Marks Dept) -> PMT & ET -> PET (15 Marks) -> Viva-Voce Interview (10 Marks)"
-        }
-      ],
-      "salary_range": "₹36,900 - ₹1,16,600 / month (Level 18 TN Govt Pay Matrix)",
-      "sector": "Police & Defence Services"
+        "future_career_growth": [
+            "Sub-Inspector (SI) -> Inspector of Police (after 8-10 yrs) -> Deputy Superintendent of Police (DSP) -> Additional SP -> Superintendent of Police (IPS)"
+        ],
+        "government_perks_quotas": "Authorised service weapon, official jeep/motorcycle, station commander authority, and rapid departmental promotions.",
+        "id": "pos_sub_inspector_police",
+        "position_description": "Station House Officer (SHO) commanding a police station jurisdiction. Investigates IPC crimes, registers FIRs, leads tactical operations, and maintains law and order.",
+        "position_title": "Sub-Inspector of Police (Taluk, Armed Reserve, TSP)",
+        "qualification_badge": "Any Bachelor's Degree",
+        "qualification_stage": "diploma_graduate",
+        "recruiting_organizations": [
+            "Tamil Nadu Police Department (Law & Order, Crime, Traffic, CBCID, Cyber Crime)"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Tamil Nadu Uniformed Services Recruitment Board (TNUSRB)",
+                "exam_category": "State Uniformed Officer Recruitment",
+                "exam_date": "Coming Soon",
+                "exam_name": "TNUSRB Police Sub-Inspector (SI) Examination",
+                "exam_pattern": "General Knowledge (40 Marks) + Logical Analysis, Numerical & Communication Skills (30 Marks)",
+                "how_to_prepare": "Master Indian Penal Code basics, current events, mental reasoning, and maintain 1500m/400m running times.",
+                "official_portal": "https://www.tnusrb.tn.gov.in",
+                "registration_window": "Periodic Notification",
+                "selection_stages": "Part 1 Tamil Eligibility Test -> Part 2 Written Examination (70 Marks Open / 85 Marks Dept) -> PMT & ET -> PET (15 Marks) -> Viva-Voce Interview (10 Marks)",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b936,900 - \u20b91,16,600 / month (Level 18 TN Govt Pay Matrix)",
+        "sector": "Police & Defence Services",
+        "target_group": "arts",
+        "target_groups": [
+            "arts",
+            "graduate"
+        ]
     },
     {
-      "future_career_growth": [
-        "Lieutenant / Flying Officer -> Captain / Flight Lieutenant -> Major / Squadron Leader -> Lt Colonel / Wing Commander -> Colonel -> Brigadier -> Major General -> General"
-      ],
-      "government_perks_quotas": "Direct President's Commission, free military housing, defense health coverage (ECHS), CSD canteen, sports facilities, and pension.",
-      "id": "pos_defence_commissioned_officer",
-      "target_group": "computer_science",
-      "target_groups": [
-        "computer_science",
-        "arts",
-        "graduate"
-      ],
-      "position_description": "Commands military platoons, fighter jets, naval warships, and special forces units in defence of the nation. Direct entry as Commissioned Lieutenant / Flying Officer / Sub-Lieutenant.",
-      "position_title": "Defence Commissioned Officer (Army, Navy, Air Force Lieutenant)",
-      "qualification_badge": "12th Any (Army) / 12th PCM (Navy & Air Force)",
-      "qualification_stage": "after_12th",
-      "recruiting_organizations": [
-        "Indian Army",
-        "Indian Navy",
-        "Indian Air Force"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Union Public Service Commission (UPSC)",
-          "exam_category": "National Defence Commissioned Officer Exam",
-          "exam_date": "NDA I: April | NDA II: September",
-          "exam_name": "UPSC NDA & NA Examination",
-          "exam_pattern": "Paper 1: Mathematics (300 Marks, 120 Qs, 2.5 Hrs) + Paper 2: General Ability Test (600 Marks: English 200 + GK 400, 150 Qs, 2.5 Hrs).",
-          "how_to_prepare": "Thorough command over 11th & 12th algebra, trigonometry, calculus, English grammar, and daily newspapers for current defence affairs.",
-          "official_portal": "https://www.upsc.gov.in",
-          "registration_window": "NDA I: Dec - Jan | NDA II: May - June",
-          "selection_stages": "Written Examination (900 Marks) -> 5-Day Services Selection Board (SSB) Interview (Psychology, GTO, Personal Interview - 900 Marks) -> Special Medical Board -> 3-Year Tri-Services Cadet Training at NDA Khadakwasla, Pune"
-        }
-      ],
-      "salary_range": "₹56,100 - ₹1,77,500 / month (Level 10 Defence Pay Scale) + Military Service Pay (MSP ₹15,500) + Flying/High Altitude Allowances",
-      "sector": "Police & Defence Services"
+        "future_career_growth": [
+            "Lieutenant / Flying Officer -> Captain / Flight Lieutenant -> Major / Squadron Leader -> Lt Colonel / Wing Commander -> Colonel -> Brigadier -> Major General -> General"
+        ],
+        "government_perks_quotas": "Direct President's Commission, free military housing, defense health coverage (ECHS), CSD canteen, sports facilities, and pension.",
+        "id": "pos_defence_commissioned_officer",
+        "position_description": "Commands military platoons, fighter jets, naval warships, and special forces units in defence of the nation. Direct entry as Commissioned Lieutenant / Flying Officer / Sub-Lieutenant.",
+        "position_title": "Defence Commissioned Officer (Army, Navy, Air Force Lieutenant)",
+        "qualification_badge": "12th Any (Army) / 12th PCM (Navy & Air Force)",
+        "qualification_stage": "after_12th",
+        "recruiting_organizations": [
+            "Indian Army",
+            "Indian Navy",
+            "Indian Air Force"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Union Public Service Commission (UPSC)",
+                "exam_category": "National Defence Commissioned Officer Exam",
+                "exam_date": "NDA I: April 19, 2026 | NDA II: September 13, 2026",
+                "exam_name": "UPSC NDA & NA Examination",
+                "exam_pattern": "Paper 1: Mathematics (300 Marks, 120 Qs, 2.5 Hrs) + Paper 2: General Ability Test (600 Marks: English 200 + GK 400, 150 Qs, 2.5 Hrs).",
+                "how_to_prepare": "Thorough command over 11th & 12th algebra, trigonometry, calculus, English grammar, and daily newspapers for current defence affairs.",
+                "official_portal": "https://www.upsc.gov.in",
+                "registration_window": "NDA I: Dec - Jan | NDA II: May - June",
+                "selection_stages": "Written Examination (900 Marks) -> 5-Day Services Selection Board (SSB) Interview (Psychology, GTO, Personal Interview - 900 Marks) -> Special Medical Board -> 3-Year Tri-Services Cadet Training at NDA Khadakwasla, Pune",
+                "is_date_confirmed": true
+            }
+        ],
+        "salary_range": "\u20b956,100 - \u20b91,77,500 / month (Level 10 Defence Pay Scale) + Military Service Pay (MSP \u20b915,500) + Flying/High Altitude Allowances",
+        "sector": "Police & Defence Services",
+        "target_group": "computer_science",
+        "target_groups": [
+            "computer_science",
+            "arts",
+            "graduate"
+        ]
     },
     {
-      "future_career_growth": [
-        "Sub-Lieutenant -> Lieutenant -> Lieutenant Commander -> Commander -> Captain -> Commodore -> Rear Admiral -> Vice Admiral"
-      ],
-      "government_perks_quotas": "World travel, 100% free B.Tech education from Jawaharlal Nehru University (JNU), and officer lifestyle.",
-      "id": "pos_naval_executive_btech",
-      "target_group": "computer_science",
-      "target_groups": [
-        "computer_science"
-      ],
-      "position_description": "Executes surface combat operations, naval engineering propulsion, weapons systems, and navigation on destroyers, frigates, and aircraft carriers.",
-      "position_title": "Naval Executive / Technical Officer (10+2 B.Tech Entry)",
-      "qualification_badge": "12th PCM with min 70% aggregate",
-      "qualification_stage": "after_12th",
-      "recruiting_organizations": [
-        "Indian Navy (Permanent Commission / Short Service Commission)"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Indian Navy (joinindiannavy.gov.in)",
-          "exam_category": "Direct SSB Shortlisting via JEE Main",
-          "exam_date": "No separate written exam (Directly based on JEE Main Rank)",
-          "exam_name": "Indian Navy 10+2 B.Tech Cadet Entry Scheme",
-          "exam_pattern": "Valid JEE Main NTA Score in Paper 1",
-          "how_to_prepare": "Prepare for JEE Main and cultivate officer-like qualities (OLQs) for SSB.",
-          "official_portal": "https://www.joinindiannavy.gov.in",
-          "registration_window": "Twice a year (June & December)",
-          "selection_stages": "Shortlisting based on All India Common Rank List (CRL) in JEE Main -> 5-Day SSB Interview (Bangalore / Bhopal / Visakhapatnam) -> Medical Board -> 4-Year B.Tech Degree at Indian Naval Academy (INA) Ezhimala (100% Free funded by Govt)"
-        }
-      ],
-      "salary_range": "₹56,100 - ₹1,77,500 / month + MSP + Sea Duty Allowances",
-      "sector": "Police & Defence Services"
+        "future_career_growth": [
+            "Sub-Lieutenant -> Lieutenant -> Lieutenant Commander -> Commander -> Captain -> Commodore -> Rear Admiral -> Vice Admiral"
+        ],
+        "government_perks_quotas": "World travel, 100% free B.Tech education from Jawaharlal Nehru University (JNU), and officer lifestyle.",
+        "id": "pos_naval_executive_btech",
+        "position_description": "Executes surface combat operations, naval engineering propulsion, weapons systems, and navigation on destroyers, frigates, and aircraft carriers.",
+        "position_title": "Naval Executive / Technical Officer (10+2 B.Tech Entry)",
+        "qualification_badge": "12th PCM with min 70% aggregate",
+        "qualification_stage": "after_12th",
+        "recruiting_organizations": [
+            "Indian Navy (Permanent Commission / Short Service Commission)"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Indian Navy (joinindiannavy.gov.in)",
+                "exam_category": "Direct SSB Shortlisting via JEE Main",
+                "exam_date": "Coming Soon",
+                "exam_name": "Indian Navy 10+2 B.Tech Cadet Entry Scheme",
+                "exam_pattern": "Valid JEE Main NTA Score in Paper 1",
+                "how_to_prepare": "Prepare for JEE Main and cultivate officer-like qualities (OLQs) for SSB.",
+                "official_portal": "https://www.joinindiannavy.gov.in",
+                "registration_window": "Twice a year (June & December)",
+                "selection_stages": "Shortlisting based on All India Common Rank List (CRL) in JEE Main -> 5-Day SSB Interview (Bangalore / Bhopal / Visakhapatnam) -> Medical Board -> 4-Year B.Tech Degree at Indian Naval Academy (INA) Ezhimala (100% Free funded by Govt)",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b956,100 - \u20b91,77,500 / month + MSP + Sea Duty Allowances",
+        "sector": "Police & Defence Services",
+        "target_group": "computer_science",
+        "target_groups": [
+            "computer_science"
+        ]
     },
     {
-      "future_career_growth": [
-        "Advocate -> Senior Advocate (High Court) -> Legal Advisor -> Corporate Partner / Elevation as High Court Judge"
-      ],
-      "government_perks_quotas": "Enormous societal authority; eligible for direct recruitment as Assistant Public Prosecutor (APP) and Civil Judge.",
-      "id": "pos_advocate_legal_advisor",
-      "target_group": "arts",
-      "target_groups": [
-        "arts",
-        "commerce",
-        "graduate"
-      ],
-      "position_description": "Argues cases before Madras High Court, District Courts, and Supreme Court; drafts commercial contracts, patent filings, and defends human rights.",
-      "position_title": "Advocate / Corporate Legal Counsel / High Court Practitioner",
-      "qualification_badge": "12th Any Stream (Min 70% for SOEL)",
-      "qualification_stage": "after_12th",
-      "recruiting_organizations": [
-        "Madras High Court Bar",
-        "Top Corporate Law Firms (Shardul Amarchand, AZB & Partners, Trilegal)",
-        "Banks",
-        "Multinational Corporations"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "The Tamil Nadu Dr. Ambedkar Law University (TNDALU), Chennai",
-          "exam_category": "State Single-Window Merit Admissions",
-          "exam_date": "No Entrance Exam (Cutoff Merit based on 12th Aggregate)",
-          "exam_name": "TNDALU 5-Year Integrated Honours Law Admissions",
-          "exam_pattern": "Merit calculated from 12th standard four major subjects (excluding languages)",
-          "how_to_prepare": "Score 85%+ in 12th standard board exams. 7.5% Govt School reservation applies.",
-          "official_portal": "https://www.tndalu.ac.in",
-          "registration_window": "May - June (Post-12th Results)",
-          "selection_stages": "Online application based on 12th aggregate marks -> Merit Cutoff Rank -> Counselling for School of Excellence in Law (SOEL, Perungudi, Chennai) & 14 Govt Law Colleges"
-        },
-        {
-          "conducting_body": "Consortium of National Law Universities (NLUs)",
-          "exam_category": "National Law Entrance Exam",
-          "exam_date": "First Sunday of December",
-          "exam_name": "CLAT (Common Law Admission Test)",
-          "exam_pattern": "120 MCQs / 120 Marks: Reading Comprehension (English), Current Affairs & GK, Legal Reasoning, Logical Reasoning, and Quantitative Techniques.",
-          "how_to_prepare": "Daily editorial reading (The Hindu), legal principles, and critical reasoning drills.",
-          "official_portal": "https://consortiumofnlus.ac.in",
-          "registration_window": "July - November",
-          "selection_stages": "Pen-and-paper Written Examination (120 Questions) -> National Centralized Seat Allotment for Tamil Nadu National Law University (TNNLU Trichy - 50% TN Home State Quota)"
-        }
-      ],
-      "salary_range": "₹35,000 - ₹90,000 / month (Junior Counsel) -> ₹8 - ₹25+ LPA (Corporate Law Firm Associate)",
-      "sector": "Law & Judiciary"
+        "future_career_growth": [
+            "Advocate -> Senior Advocate (High Court) -> Legal Advisor -> Corporate Partner / Elevation as High Court Judge"
+        ],
+        "government_perks_quotas": "Enormous societal authority; eligible for direct recruitment as Assistant Public Prosecutor (APP) and Civil Judge.",
+        "id": "pos_advocate_legal_advisor",
+        "position_description": "Argues cases before Madras High Court, District Courts, and Supreme Court; drafts commercial contracts, patent filings, and defends human rights.",
+        "position_title": "Advocate / Corporate Legal Counsel / High Court Practitioner",
+        "qualification_badge": "12th Any Stream (Min 70% for SOEL)",
+        "qualification_stage": "after_12th",
+        "recruiting_organizations": [
+            "Madras High Court Bar",
+            "Top Corporate Law Firms (Shardul Amarchand, AZB & Partners, Trilegal)",
+            "Banks",
+            "Multinational Corporations"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "The Tamil Nadu Dr. Ambedkar Law University (TNDALU), Chennai",
+                "exam_category": "State Single-Window Merit Admissions",
+                "exam_date": "Zero Entrance Exam (Cutoff Merit)",
+                "exam_name": "TNDALU 5-Year Integrated Honours Law Admissions",
+                "exam_pattern": "Merit calculated from 12th standard four major subjects (excluding languages)",
+                "how_to_prepare": "Score 85%+ in 12th standard board exams. 7.5% Govt School reservation applies.",
+                "official_portal": "https://www.tndalu.ac.in",
+                "registration_window": "May - June (Post-12th Results)",
+                "selection_stages": "Online application based on 12th aggregate marks -> Merit Cutoff Rank -> Counselling for School of Excellence in Law (SOEL, Perungudi, Chennai) & 14 Govt Law Colleges",
+                "is_date_confirmed": true
+            },
+            {
+                "conducting_body": "Consortium of National Law Universities (NLUs)",
+                "exam_category": "National Law Entrance Exam",
+                "exam_date": "December 6, 2026 (Sunday: 2:00 PM \u2013 4:00 PM)",
+                "exam_name": "CLAT (Common Law Admission Test)",
+                "exam_pattern": "120 MCQs / 120 Marks: Reading Comprehension (English), Current Affairs & GK, Legal Reasoning, Logical Reasoning, and Quantitative Techniques.",
+                "how_to_prepare": "Daily editorial reading (The Hindu), legal principles, and critical reasoning drills.",
+                "official_portal": "https://consortiumofnlus.ac.in",
+                "registration_window": "July - November",
+                "selection_stages": "Pen-and-paper Written Examination (120 Questions) -> National Centralized Seat Allotment for Tamil Nadu National Law University (TNNLU Trichy - 50% TN Home State Quota)",
+                "is_date_confirmed": true
+            }
+        ],
+        "salary_range": "\u20b935,000 - \u20b990,000 / month (Junior Counsel) -> \u20b98 - \u20b925+ LPA (Corporate Law Firm Associate)",
+        "sector": "Law & Judiciary",
+        "target_group": "arts",
+        "target_groups": [
+            "arts",
+            "commerce",
+            "graduate"
+        ]
     },
     {
-      "future_career_growth": [
-        "Civil Judge / Judicial Magistrate -> Senior Civil Judge / Chief Judicial Magistrate (CJM) -> District & Sessions Judge -> Elevation to High Court Judge"
-      ],
-      "government_perks_quotas": "Constitutional judicial status, official court staff, security, car, bungalow, and supreme independence.",
-      "id": "pos_civil_judge_magistrate",
-      "target_group": "arts",
-      "target_groups": [
-        "arts",
-        "graduate"
-      ],
-      "position_description": "Presides over court trials, adjudicates civil and criminal disputes, delivers judicial judgments, and exercises state magistracy powers.",
-      "position_title": "Civil Judge / Judicial Magistrate (TN State Judicial Service)",
-      "qualification_badge": "LL.B Degree + Bar Council Enrollment",
-      "qualification_stage": "diploma_graduate",
-      "recruiting_organizations": [
-        "Madras High Court Registry & Tamil Nadu Judicial Service"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Tamil Nadu Public Service Commission & Madras High Court",
-          "exam_category": "State Judicial Service Examination",
-          "exam_date": "Scheduled via planner",
-          "exam_name": "TNPSC Civil Judge Examination",
-          "exam_pattern": "Law Paper I (Civil Law), Law Paper II (Criminal Law), Law Paper III (Judgement Writing), Translation Paper",
-          "how_to_prepare": "Master Code of Civil Procedure (CPC), Code of Criminal Procedure (CrPC), Indian Evidence Act, and case laws.",
-          "official_portal": "https://www.tnpsc.gov.in",
-          "registration_window": "As per High Court / TNPSC notification",
-          "selection_stages": "Preliminary Examination (Objective 100 Marks) -> Main Written Examination (4 Papers: Translation, Law I, Law II, Law III - 400 Marks) -> Viva-Voce Interview (60 Marks)"
-        }
-      ],
-      "salary_range": "₹77,840 - ₹1,36,520 / month (Junior Civil Judge) + Judicial Perks",
-      "sector": "Law & Judiciary"
+        "future_career_growth": [
+            "Civil Judge / Judicial Magistrate -> Senior Civil Judge / Chief Judicial Magistrate (CJM) -> District & Sessions Judge -> Elevation to High Court Judge"
+        ],
+        "government_perks_quotas": "Constitutional judicial status, official court staff, security, car, bungalow, and supreme independence.",
+        "id": "pos_civil_judge_magistrate",
+        "position_description": "Presides over court trials, adjudicates civil and criminal disputes, delivers judicial judgments, and exercises state magistracy powers.",
+        "position_title": "Civil Judge / Judicial Magistrate (TN State Judicial Service)",
+        "qualification_badge": "LL.B Degree + Bar Council Enrollment",
+        "qualification_stage": "diploma_graduate",
+        "recruiting_organizations": [
+            "Madras High Court Registry & Tamil Nadu Judicial Service"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Tamil Nadu Public Service Commission & Madras High Court",
+                "exam_category": "State Judicial Service Examination",
+                "exam_date": "Coming Soon",
+                "exam_name": "TNPSC Civil Judge Examination",
+                "exam_pattern": "Law Paper I (Civil Law), Law Paper II (Criminal Law), Law Paper III (Judgement Writing), Translation Paper",
+                "how_to_prepare": "Master Code of Civil Procedure (CPC), Code of Criminal Procedure (CrPC), Indian Evidence Act, and case laws.",
+                "official_portal": "https://www.tnpsc.gov.in",
+                "registration_window": "As per High Court / TNPSC notification",
+                "selection_stages": "Preliminary Examination (Objective 100 Marks) -> Main Written Examination (4 Papers: Translation, Law I, Law II, Law III - 400 Marks) -> Viva-Voce Interview (60 Marks)",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b977,840 - \u20b91,36,520 / month (Junior Civil Judge) + Judicial Perks",
+        "sector": "Law & Judiciary",
+        "target_group": "arts",
+        "target_groups": [
+            "arts",
+            "graduate"
+        ]
     },
     {
-      "future_career_growth": [
-        "Chartered Accountant -> Audit Manager -> VP of Finance -> Chief Financial Officer (CFO) / Managing Partner"
-      ],
-      "government_perks_quotas": "Exclusive legal statutory authority to sign balance sheets and audit reports under Companies Act 2013.",
-      "id": "pos_chartered_accountant",
-      "target_group": "commerce",
-      "target_groups": [
-        "commerce"
-      ],
-      "position_description": "Statutory auditor, financial strategist, corporate taxation advisor, and CFO controlling balance sheets, corporate mergers, and tax compliance.",
-      "position_title": "Chartered Accountant (CA) / Audit & Taxation Specialist",
-      "qualification_badge": "12th Commerce / Any Stream",
-      "qualification_stage": "after_12th",
-      "recruiting_organizations": [
-        "The Big 4 (Deloitte, PwC, EY, KPMG)",
-        "BDO",
-        "Grant Thornton",
-        "Indian & Global Banks",
-        "Self-Owned CA Firm"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "The Institute of Chartered Accountants of India (ICAI)",
-          "exam_category": "National Professional Qualification Entry",
-          "exam_date": "January, May, September",
-          "exam_name": "ICAI CA Foundation Examination",
-          "exam_pattern": "4 Papers (400 Marks): Paper 1 Accounting (100), Paper 2 Business Laws (100), Paper 3 Quantitative Aptitude (Maths/Stats/LR - 100), Paper 4 Business Economics (100).",
-          "how_to_prepare": "Master 11th & 12th Accountancy, Business Studies, and practice quantitative aptitude problems.",
-          "official_portal": "https://www.icai.org",
-          "registration_window": "Open year-round (Exams thrice a year in Jan, May/June, Sept)",
-          "selection_stages": "Registration post-10th/12th -> CA Foundation Written Exam -> CA Intermediate (8 Papers) -> 2-Year Articleship -> CA Final Examination -> Chartered Accountant Membership"
-        }
-      ],
-      "salary_range": "₹8 - ₹24 LPA (Fresher CA) -> ₹40 - ₹80+ LPA (Partner / Director)",
-      "sector": "Banking, Finance & Commerce"
+        "future_career_growth": [
+            "Chartered Accountant -> Audit Manager -> VP of Finance -> Chief Financial Officer (CFO) / Managing Partner"
+        ],
+        "government_perks_quotas": "Exclusive legal statutory authority to sign balance sheets and audit reports under Companies Act 2013.",
+        "id": "pos_chartered_accountant",
+        "position_description": "Statutory auditor, financial strategist, corporate taxation advisor, and CFO controlling balance sheets, corporate mergers, and tax compliance.",
+        "position_title": "Chartered Accountant (CA) / Audit & Taxation Specialist",
+        "qualification_badge": "12th Commerce / Any Stream",
+        "qualification_stage": "after_12th",
+        "recruiting_organizations": [
+            "The Big 4 (Deloitte, PwC, EY, KPMG)",
+            "BDO",
+            "Grant Thornton",
+            "Indian & Global Banks",
+            "Self-Owned CA Firm"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "The Institute of Chartered Accountants of India (ICAI)",
+                "exam_category": "National Professional Qualification Entry",
+                "exam_date": "June 19, 21, 23, 25, 2026 | September 2026",
+                "exam_name": "ICAI CA Foundation Examination",
+                "exam_pattern": "4 Papers (400 Marks): Paper 1 Accounting (100), Paper 2 Business Laws (100), Paper 3 Quantitative Aptitude (Maths/Stats/LR - 100), Paper 4 Business Economics (100).",
+                "how_to_prepare": "Master 11th & 12th Accountancy, Business Studies, and practice quantitative aptitude problems.",
+                "official_portal": "https://www.icai.org",
+                "registration_window": "Open year-round (Exams thrice a year in Jan, May/June, Sept)",
+                "selection_stages": "Registration post-10th/12th -> CA Foundation Written Exam -> CA Intermediate (8 Papers) -> 2-Year Articleship -> CA Final Examination -> Chartered Accountant Membership",
+                "is_date_confirmed": true
+            }
+        ],
+        "salary_range": "\u20b98 - \u20b924 LPA (Fresher CA) -> \u20b940 - \u20b980+ LPA (Partner / Director)",
+        "sector": "Banking, Finance & Commerce",
+        "target_group": "commerce",
+        "target_groups": [
+            "commerce"
+        ]
     },
     {
-      "future_career_growth": [
-        "Probationary Officer (Scale I) -> Branch Manager (Scale II) -> Chief Manager (Scale IV) -> Deputy General Manager (DGM) -> Executive Director -> Chairman / MD"
-      ],
-      "government_perks_quotas": "High job security, low-interest home & vehicle loans, LTC travel concessions, and guaranteed bi-partite wage revisions.",
-      "id": "pos_bank_probationary_officer",
-      "target_group": "commerce",
-      "target_groups": [
-        "commerce",
-        "graduate"
-      ],
-      "position_description": "Manages branch credit disbursement, corporate loans, foreign exchange, treasury operations, and digital customer banking services.",
-      "position_title": "Bank Probationary Officer (PO) & Specialist Officer",
-      "qualification_badge": "Any Bachelor's Degree",
-      "qualification_stage": "diploma_graduate",
-      "recruiting_organizations": [
-        "State Bank of India (SBI)",
-        "Canara Bank",
-        "Indian Bank",
-        "Indian Overseas Bank (IOB)",
-        "Punjab National Bank",
-        "Bank of Baroda"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Institute of Banking Personnel Selection (IBPS) & SBI",
-          "exam_category": "National Public Sector Bank Officer Exam",
-          "exam_date": "Prelims: October | Mains: November",
-          "exam_name": "IBPS PO / SBI PO Examination",
-          "exam_pattern": "Speed and accuracy in Data Interpretation, Reasoning Puzzles, Financial Awareness, and English comprehension.",
-          "how_to_prepare": "Daily speed math, reasoning mocks, and banking awareness.",
-          "official_portal": "https://www.ibps.in",
-          "registration_window": "August - September",
-          "selection_stages": "Stage 1: Preliminary Exam (100 Marks: English 30, Quant 35, Reasoning 35) -> Stage 2: Main Examination (200 Marks Objective + 25 Marks Descriptive Essay) -> Stage 3: Psychometric Test, Group Exercise & Personal Interview"
-        }
-      ],
-      "salary_range": "₹52,000 - ₹75,000 / month (Grade 1 Officer) + Leased Accommodation & Concessional Loans",
-      "sector": "Banking, Finance & Commerce"
+        "future_career_growth": [
+            "Probationary Officer (Scale I) -> Branch Manager (Scale II) -> Chief Manager (Scale IV) -> Deputy General Manager (DGM) -> Executive Director -> Chairman / MD"
+        ],
+        "government_perks_quotas": "High job security, low-interest home & vehicle loans, LTC travel concessions, and guaranteed bi-partite wage revisions.",
+        "id": "pos_bank_probationary_officer",
+        "position_description": "Manages branch credit disbursement, corporate loans, foreign exchange, treasury operations, and digital customer banking services.",
+        "position_title": "Bank Probationary Officer (PO) & Specialist Officer",
+        "qualification_badge": "Any Bachelor's Degree",
+        "qualification_stage": "diploma_graduate",
+        "recruiting_organizations": [
+            "State Bank of India (SBI)",
+            "Canara Bank",
+            "Indian Bank",
+            "Indian Overseas Bank (IOB)",
+            "Punjab National Bank",
+            "Bank of Baroda"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Institute of Banking Personnel Selection (IBPS) & SBI",
+                "exam_category": "National Public Sector Bank Officer Exam",
+                "exam_date": "Coming Soon",
+                "exam_name": "IBPS PO / SBI PO Examination",
+                "exam_pattern": "Speed and accuracy in Data Interpretation, Reasoning Puzzles, Financial Awareness, and English comprehension.",
+                "how_to_prepare": "Daily speed math, reasoning mocks, and banking awareness.",
+                "official_portal": "https://www.ibps.in",
+                "registration_window": "August - September",
+                "selection_stages": "Stage 1: Preliminary Exam (100 Marks: English 30, Quant 35, Reasoning 35) -> Stage 2: Main Examination (200 Marks Objective + 25 Marks Descriptive Essay) -> Stage 3: Psychometric Test, Group Exercise & Personal Interview",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b952,000 - \u20b975,000 / month (Grade 1 Officer) + Leased Accommodation & Concessional Loans",
+        "sector": "Banking, Finance & Commerce",
+        "target_group": "commerce",
+        "target_groups": [
+            "commerce",
+            "graduate"
+        ]
     },
     {
-      "future_career_growth": [
-        "Junior Architect -> Project Architect -> Associate Partner -> Principal Architect / Urban Planner"
-      ],
-      "government_perks_quotas": "Council of Architecture (CoA) licensed professional status; direct eligibility for CMDA and government town planning consultancies.",
-      "id": "pos_architect_urban_planner",
-      "target_group": "computer_science",
-      "target_groups": [
-        "computer_science"
-      ],
-      "position_description": "Conceives architectural layouts, residential skyscrapers, sustainable green campuses, airport terminals, and heritage restoration projects across urban centres.",
-      "position_title": "Architect / Urban Design Consultant (B.Arch)",
-      "qualification_badge": "12th PCM with min 50% marks",
-      "qualification_stage": "after_12th",
-      "recruiting_organizations": [
-        "School of Architecture and Planning (SAP Anna University)",
-        "L&T Architecture",
-        "Morphogenesis",
-        "HOK",
-        "CMDA (Chennai Metropolitan Development Authority)"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Council of Architecture (CoA)",
-          "exam_category": "National Mandatory Architecture Aptitude Exam",
-          "exam_date": "Multiple dates from April to July",
-          "exam_name": "NATA (National Aptitude Test in Architecture)",
-          "exam_pattern": "200 Marks: Visual Reasoning, Aesthetic Sensitivity, Architectural Awareness, Mathematics, and Freehand 2D/3D Drawing.",
-          "how_to_prepare": "Practice 2D/3D sketch rendering, perspective drawing, light & shadow, and architectural history.",
-          "official_portal": "https://www.nata.in",
-          "registration_window": "March - July (Conducted across multiple weekend cycles)",
-          "selection_stages": "Computer Based + Drawing Aptitude Test (200 Marks) -> Anna University B.Arch Single-Window Counselling"
-        },
-        {
-          "conducting_body": "Anna University, Chennai",
-          "exam_category": "State Single-Window Architecture Seat Allotment",
-          "exam_date": "No separate exam (Rank based on 12th + NATA composite cutoff)",
-          "exam_name": "Anna University B.Arch Single-Window Counselling",
-          "exam_pattern": "Cutoff formula: (12th Board Marks / 2) + (NATA Score / 2) = Out of 200",
-          "how_to_prepare": "Aim for 140+ in NATA and 90%+ in 12th PCM.",
-          "official_portal": "https://www.annauniv.edu",
-          "registration_window": "June - July",
-          "selection_stages": "Cutoff calculated: 50% weightage for 12th Board PCM + 50% weightage for NATA Score = Total 200 Marks -> Counselling for SAP Guindy & Measi Academy of Architecture"
-        }
-      ],
-      "salary_range": "₹4.5 - ₹12 LPA (Fresher) -> ₹20 - ₹50+ LPA (Consultant / Principal Architect)",
-      "sector": "Design & Architecture"
+        "future_career_growth": [
+            "Junior Architect -> Project Architect -> Associate Partner -> Principal Architect / Urban Planner"
+        ],
+        "government_perks_quotas": "Council of Architecture (CoA) licensed professional status; direct eligibility for CMDA and government town planning consultancies.",
+        "id": "pos_architect_urban_planner",
+        "position_description": "Conceives architectural layouts, residential skyscrapers, sustainable green campuses, airport terminals, and heritage restoration projects across urban centres.",
+        "position_title": "Architect / Urban Design Consultant (B.Arch)",
+        "qualification_badge": "12th PCM with min 50% marks",
+        "qualification_stage": "after_12th",
+        "recruiting_organizations": [
+            "School of Architecture and Planning (SAP Anna University)",
+            "L&T Architecture",
+            "Morphogenesis",
+            "HOK",
+            "CMDA (Chennai Metropolitan Development Authority)"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Council of Architecture (CoA)",
+                "exam_category": "National Mandatory Architecture Aptitude Exam",
+                "exam_date": "Coming Soon",
+                "exam_name": "NATA (National Aptitude Test in Architecture)",
+                "exam_pattern": "200 Marks: Visual Reasoning, Aesthetic Sensitivity, Architectural Awareness, Mathematics, and Freehand 2D/3D Drawing.",
+                "how_to_prepare": "Practice 2D/3D sketch rendering, perspective drawing, light & shadow, and architectural history.",
+                "official_portal": "https://www.nata.in",
+                "registration_window": "March - July (Conducted across multiple weekend cycles)",
+                "selection_stages": "Computer Based + Drawing Aptitude Test (200 Marks) -> Anna University B.Arch Single-Window Counselling",
+                "is_date_confirmed": false
+            },
+            {
+                "conducting_body": "Anna University, Chennai",
+                "exam_category": "State Single-Window Architecture Seat Allotment",
+                "exam_date": "Coming Soon",
+                "exam_name": "Anna University B.Arch Single-Window Counselling",
+                "exam_pattern": "Cutoff formula: (12th Board Marks / 2) + (NATA Score / 2) = Out of 200",
+                "how_to_prepare": "Aim for 140+ in NATA and 90%+ in 12th PCM.",
+                "official_portal": "https://www.annauniv.edu",
+                "registration_window": "June - July",
+                "selection_stages": "Cutoff calculated: 50% weightage for 12th Board PCM + 50% weightage for NATA Score = Total 200 Marks -> Counselling for SAP Guindy & Measi Academy of Architecture",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b94.5 - \u20b912 LPA (Fresher) -> \u20b920 - \u20b950+ LPA (Consultant / Principal Architect)",
+        "sector": "Design & Architecture",
+        "target_group": "computer_science",
+        "target_groups": [
+            "computer_science"
+        ]
     },
     {
-      "future_career_growth": [
-        "Apparel Designer -> Senior Stylist -> Design Head -> Creative Director / Independent Fashion Label Owner"
-      ],
-      "government_perks_quotas": "Direct linkage with Tamil Nadu's ₹40,000+ Crore textile & apparel export corridor; National Institute of Design (NID) & NIFT prestige.",
-      "id": "pos_fashion_designer_apparel",
-      "target_group": "arts",
-      "target_groups": [
-        "arts"
-      ],
-      "position_description": "Creates garment collections, luxury fashion lines, textile weaves, apparel graphics, and coordinates retail styling for international fashion houses and Tiruppur knitwear export clusters.",
-      "position_title": "Fashion & Apparel Designer / Textile Merchandiser (B.Des)",
-      "qualification_badge": "12th Any Stream",
-      "qualification_stage": "after_12th",
-      "recruiting_organizations": [
-        "NIFT Chennai",
-        "Aditya Birla Fashion",
-        "Raymond",
-        "Myntra",
-        "Zudio",
-        "Tiruppur Export Consortium",
-        "Celebrity Styling Studios"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "National Institute of Fashion Technology (NIFT) & NTA",
-          "exam_category": "National Premier Design Institute Exam",
-          "exam_date": "First week of February",
-          "exam_name": "NIFT Entrance Examination",
-          "exam_pattern": "CAT (Drawing & Visual Concepts 50%) + GAT (English, Quantitative, GK 30%) + Situation Test (20%)",
-          "how_to_prepare": "Practice concept sketching, innovative design ideation, and material crafting.",
-          "official_portal": "https://www.nift.ac.in",
-          "registration_window": "November - December",
-          "selection_stages": "Stage 1: Written Test (Creative Ability Test - CAT & General Ability Test - GAT) -> Stage 2: Situation Test (Hands-on Material Crafting) -> National Seat Allotment for NIFT Chennai & 18 campuses"
-        }
-      ],
-      "salary_range": "₹4.2 - ₹10 LPA (Fresher) -> ₹18 - ₹45 LPA (Creative Director)",
-      "sector": "Design & Architecture"
+        "future_career_growth": [
+            "Apparel Designer -> Senior Stylist -> Design Head -> Creative Director / Independent Fashion Label Owner"
+        ],
+        "government_perks_quotas": "Direct linkage with Tamil Nadu's \u20b940,000+ Crore textile & apparel export corridor; National Institute of Design (NID) & NIFT prestige.",
+        "id": "pos_fashion_designer_apparel",
+        "position_description": "Creates garment collections, luxury fashion lines, textile weaves, apparel graphics, and coordinates retail styling for international fashion houses and Tiruppur knitwear export clusters.",
+        "position_title": "Fashion & Apparel Designer / Textile Merchandiser (B.Des)",
+        "qualification_badge": "12th Any Stream",
+        "qualification_stage": "after_12th",
+        "recruiting_organizations": [
+            "NIFT Chennai",
+            "Aditya Birla Fashion",
+            "Raymond",
+            "Myntra",
+            "Zudio",
+            "Tiruppur Export Consortium",
+            "Celebrity Styling Studios"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "National Institute of Fashion Technology (NIFT) & NTA",
+                "exam_category": "National Premier Design Institute Exam",
+                "exam_date": "February 8, 2026 (Sunday: CAT & GAT)",
+                "exam_name": "NIFT Entrance Examination",
+                "exam_pattern": "CAT (Drawing & Visual Concepts 50%) + GAT (English, Quantitative, GK 30%) + Situation Test (20%)",
+                "how_to_prepare": "Practice concept sketching, innovative design ideation, and material crafting.",
+                "official_portal": "https://www.nift.ac.in",
+                "registration_window": "November - December",
+                "selection_stages": "Stage 1: Written Test (Creative Ability Test - CAT & General Ability Test - GAT) -> Stage 2: Situation Test (Hands-on Material Crafting) -> National Seat Allotment for NIFT Chennai & 18 campuses",
+                "is_date_confirmed": true
+            }
+        ],
+        "salary_range": "\u20b94.2 - \u20b910 LPA (Fresher) -> \u20b918 - \u20b945 LPA (Creative Director)",
+        "sector": "Design & Architecture",
+        "target_group": "arts",
+        "target_groups": [
+            "arts"
+        ]
     },
     {
-      "future_career_growth": [
-        "Junior First Officer -> Senior First Officer -> Captain (Commander) -> Designated Examiner (DE) / Chief Pilot"
-      ],
-      "government_perks_quotas": "High international prestige, global tax and travel privileges, and rapid captaincy transitions.",
-      "id": "pos_commercial_pilot",
-      "target_group": "computer_science",
-      "target_groups": [
-        "computer_science"
-      ],
-      "position_description": "Operates commercial passenger aircraft (Airbus A320, Boeing 737), executes flight navigation, weather radar analysis, and cross-border aviation protocols.",
-      "position_title": "Commercial Airline Pilot / First Officer",
-      "qualification_badge": "12th PCM with min 50% marks",
-      "qualification_stage": "after_12th",
-      "recruiting_organizations": [
-        "IndiGo Airlines",
-        "Air India",
-        "Air India Express",
-        "Akasa Air",
-        "SpiceJet",
-        "Global Cargo Fleets"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Directorate General of Civil Aviation (DGCA), India",
-          "exam_category": "National Aviation Licensing Examinations",
-          "exam_date": "Quarterly Testing Cycles",
-          "exam_name": "DGCA Pilot Ground Examinations (CPL)",
-          "exam_pattern": "Computer Based Test with 70% passing criteria in each subject",
-          "how_to_prepare": "Master 12th Physics (optics, mechanics, electronics), 12th Maths, and DGCA RK Bali aviation navigation manuals.",
-          "official_portal": "https://pariksha.dgca.gov.in",
-          "registration_window": "Conducted 4 times a year (Quarterly)",
-          "selection_stages": "Written Exams (Air Navigation, Aviation Meteorology, Air Regulation, Technical General, Technical Specific) -> 200 Flying Hours Training -> Commercial Pilot License (CPL) Issuance"
-        },
-        {
-          "conducting_body": "Indira Gandhi Rashtriya Uran Akademi (IGRUA) & Airline Cadet Programs (IndiGo/Air India)",
-          "exam_category": "National Flight Academy Entrance Test",
-          "exam_date": "June",
-          "exam_name": "IGRUA Entrance Examination & Airline Cadet Programs",
-          "exam_pattern": "100 MCQs (General English, Maths, Physics, Reasoning)",
-          "how_to_prepare": "High mental arithmetic speed, spatial awareness, and cockpit multitasking.",
-          "official_portal": "https://igrua.gov.in",
-          "registration_window": "March - May",
-          "selection_stages": "Stage 1: Online Written Test (Maths, Physics, English, General Reasoning) -> Stage 2: Pilot Aptitude Test (WOMBAT / COMPASS) -> Stage 3: Personal Interview"
-        }
-      ],
-      "salary_range": "₹1.8 - ₹3.5 Lakhs / month (Junior First Officer) -> ₹6.5 - ₹12+ Lakhs / month (Captain)",
-      "sector": "Design & Architecture"
+        "future_career_growth": [
+            "Junior First Officer -> Senior First Officer -> Captain (Commander) -> Designated Examiner (DE) / Chief Pilot"
+        ],
+        "government_perks_quotas": "High international prestige, global tax and travel privileges, and rapid captaincy transitions.",
+        "id": "pos_commercial_pilot",
+        "position_description": "Operates commercial passenger aircraft (Airbus A320, Boeing 737), executes flight navigation, weather radar analysis, and cross-border aviation protocols.",
+        "position_title": "Commercial Airline Pilot / First Officer",
+        "qualification_badge": "12th PCM with min 50% marks",
+        "qualification_stage": "after_12th",
+        "recruiting_organizations": [
+            "IndiGo Airlines",
+            "Air India",
+            "Air India Express",
+            "Akasa Air",
+            "SpiceJet",
+            "Global Cargo Fleets"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Directorate General of Civil Aviation (DGCA), India",
+                "exam_category": "National Aviation Licensing Examinations",
+                "exam_date": "Coming Soon",
+                "exam_name": "DGCA Pilot Ground Examinations (CPL)",
+                "exam_pattern": "Computer Based Test with 70% passing criteria in each subject",
+                "how_to_prepare": "Master 12th Physics (optics, mechanics, electronics), 12th Maths, and DGCA RK Bali aviation navigation manuals.",
+                "official_portal": "https://pariksha.dgca.gov.in",
+                "registration_window": "Conducted 4 times a year (Quarterly)",
+                "selection_stages": "Written Exams (Air Navigation, Aviation Meteorology, Air Regulation, Technical General, Technical Specific) -> 200 Flying Hours Training -> Commercial Pilot License (CPL) Issuance",
+                "is_date_confirmed": false
+            },
+            {
+                "conducting_body": "Indira Gandhi Rashtriya Uran Akademi (IGRUA) & Airline Cadet Programs (IndiGo/Air India)",
+                "exam_category": "National Flight Academy Entrance Test",
+                "exam_date": "Coming Soon",
+                "exam_name": "IGRUA Entrance Examination & Airline Cadet Programs",
+                "exam_pattern": "100 MCQs (General English, Maths, Physics, Reasoning)",
+                "how_to_prepare": "High mental arithmetic speed, spatial awareness, and cockpit multitasking.",
+                "official_portal": "https://igrua.gov.in",
+                "registration_window": "March - May",
+                "selection_stages": "Stage 1: Online Written Test (Maths, Physics, English, General Reasoning) -> Stage 2: Pilot Aptitude Test (WOMBAT / COMPASS) -> Stage 3: Personal Interview",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b91.8 - \u20b93.5 Lakhs / month (Junior First Officer) -> \u20b96.5 - \u20b912+ Lakhs / month (Captain)",
+        "sector": "Design & Architecture",
+        "target_group": "computer_science",
+        "target_groups": [
+            "computer_science"
+        ]
     },
     {
-      "future_career_growth": [
-        "Assistant Professor (Stage 1) -> Assistant Professor (Stage 2) -> Associate Professor -> Professor -> Dean / Vice-Chancellor"
-      ],
-      "government_perks_quotas": "UGC 7th Pay Commission scales, paid academic sabbaticals, research grants, and high social dignity.",
-      "id": "pos_research_scientist_professor",
-      "target_group": "computer_science",
-      "target_groups": [
-        "computer_science",
-        "arts",
-        "graduate"
-      ],
-      "position_description": "Delivers collegiate university lectures, mentors undergraduate students, spearheads funded scientific research, and publishes high-impact journals.",
-      "position_title": "College Assistant Professor / Research Scientist (CS / Arts / Science)",
-      "qualification_badge": "Master's Degree (M.Sc / M.A / M.E / M.Tech / Ph.D)",
-      "qualification_stage": "diploma_graduate",
-      "recruiting_organizations": [
-        "Anna University",
-        "University of Madras",
-        "Presidency College",
-        "Loyola College Chennai",
-        "PSG Tech",
-        "Govt Arts & Science Colleges"
-      ],
-      "relevant_entrance_exams": [
-        {
-          "conducting_body": "Teachers Recruitment Board (TRB), Government of Tamil Nadu",
-          "exam_category": "State Collegiate Recruitment Examination",
-          "exam_date": "Scheduled via TRB Calendar",
-          "exam_name": "Tamil Nadu Teachers Recruitment Board (TN TRB) Assistant Professor Exam",
-          "exam_pattern": "Subject Paper (200 Marks) + General Knowledge & Teaching Aptitude",
-          "how_to_prepare": "Deep mastery of Post-Graduate core subject papers.",
-          "official_portal": "https://trb.tn.gov.in",
-          "registration_window": "As per TRB Annual Planner",
-          "selection_stages": "Written Competitive Exam -> Certificate Verification -> Direct Appointment across 164+ TN Govt Arts & Science Colleges and Govt Engineering Colleges"
-        },
-        {
-          "conducting_body": "National Testing Agency (NTA) & Mother Teresa Women's University (TNSET)",
-          "exam_category": "National & State Eligibility Test for Assistant Professorship & JRF",
-          "exam_date": "June and December",
-          "exam_name": "UGC-NET / CSIR-NET / TNSET",
-          "exam_pattern": "Paper 1: 50 Questions (100 Marks) | Paper 2: 100 Questions (200 Marks)",
-          "how_to_prepare": "Research methodology, comprehension, and PG subject literature.",
-          "official_portal": "https://ugcnet.nta.ac.in",
-          "registration_window": "Twice a year (June & December cycles)",
-          "selection_stages": "Paper 1 (Teaching & Research Aptitude) + Paper 2 (Chosen Subject Domain) -> Qualify for Assistant Professorship & Junior Research Fellowship (JRF - ₹37,000/mo stipend)"
-        }
-      ],
-      "salary_range": "₹57,700 - ₹1,82,400 / month (UGC Academic Level 10) + Academic Allowances",
-      "sector": "Engineering & Technology"
+        "future_career_growth": [
+            "Assistant Professor (Stage 1) -> Assistant Professor (Stage 2) -> Associate Professor -> Professor -> Dean / Vice-Chancellor"
+        ],
+        "government_perks_quotas": "UGC 7th Pay Commission scales, paid academic sabbaticals, research grants, and high social dignity.",
+        "id": "pos_research_scientist_professor",
+        "position_description": "Delivers collegiate university lectures, mentors undergraduate students, spearheads funded scientific research, and publishes high-impact journals.",
+        "position_title": "College Assistant Professor / Research Scientist (CS / Arts / Science)",
+        "qualification_badge": "Master's Degree (M.Sc / M.A / M.E / M.Tech / Ph.D)",
+        "qualification_stage": "diploma_graduate",
+        "recruiting_organizations": [
+            "Anna University",
+            "University of Madras",
+            "Presidency College",
+            "Loyola College Chennai",
+            "PSG Tech",
+            "Govt Arts & Science Colleges"
+        ],
+        "relevant_entrance_exams": [
+            {
+                "conducting_body": "Teachers Recruitment Board (TRB), Government of Tamil Nadu",
+                "exam_category": "State Collegiate Recruitment Examination",
+                "exam_date": "Coming Soon",
+                "exam_name": "Tamil Nadu Teachers Recruitment Board (TN TRB) Assistant Professor Exam",
+                "exam_pattern": "Subject Paper (200 Marks) + General Knowledge & Teaching Aptitude",
+                "how_to_prepare": "Deep mastery of Post-Graduate core subject papers.",
+                "official_portal": "https://trb.tn.gov.in",
+                "registration_window": "As per TRB Annual Planner",
+                "selection_stages": "Written Competitive Exam -> Certificate Verification -> Direct Appointment across 164+ TN Govt Arts & Science Colleges and Govt Engineering Colleges",
+                "is_date_confirmed": false
+            },
+            {
+                "conducting_body": "National Testing Agency (NTA) & Mother Teresa Women's University (TNSET)",
+                "exam_category": "National & State Eligibility Test for Assistant Professorship & JRF",
+                "exam_date": "Coming Soon",
+                "exam_name": "UGC-NET / CSIR-NET / TNSET",
+                "exam_pattern": "Paper 1: 50 Questions (100 Marks) | Paper 2: 100 Questions (200 Marks)",
+                "how_to_prepare": "Research methodology, comprehension, and PG subject literature.",
+                "official_portal": "https://ugcnet.nta.ac.in",
+                "registration_window": "Twice a year (June & December cycles)",
+                "selection_stages": "Paper 1 (Teaching & Research Aptitude) + Paper 2 (Chosen Subject Domain) -> Qualify for Assistant Professorship & Junior Research Fellowship (JRF - \u20b937,000/mo stipend)",
+                "is_date_confirmed": false
+            }
+        ],
+        "salary_range": "\u20b957,700 - \u20b91,82,400 / month (UGC Academic Level 10) + Academic Allowances",
+        "sector": "Engineering & Technology",
+        "target_group": "computer_science",
+        "target_groups": [
+            "computer_science",
+            "arts",
+            "graduate"
+        ]
     }
-  ]
+]
 };

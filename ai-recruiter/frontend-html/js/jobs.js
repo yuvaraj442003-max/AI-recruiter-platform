@@ -111,15 +111,15 @@
     const riskBadge = (job.fraud_risk_level === "HIGH")
       ? `<span class="badge bg-danger ms-1">High Scam Risk ⚠️</span>`
       : (job.fraud_risk_level === "MEDIUM")
-      ? `<span class="badge bg-warning text-dark ms-1">Medium Risk</span>`
-      : "";
+        ? `<span class="badge bg-warning text-dark ms-1">Medium Risk</span>`
+        : "";
 
     const isApplied = appliedJobIdsSet.has(String(job.id));
     const applyBtnHtml = isApplied
       ? `<button class="btn btn-sm btn-secondary flex-grow-1" disabled>Already Applied</button>`
       : showApply
-      ? `<button class="btn btn-sm btn-primary flex-grow-1 apply-btn" data-job-id="${job.id}">Apply</button>`
-      : "";
+        ? `<button class="btn btn-sm btn-primary flex-grow-1 apply-btn" data-job-id="${job.id}">Apply</button>`
+        : "";
 
     return `
       <div class="col-md-6 col-lg-4">
@@ -209,17 +209,17 @@
     const modalApplyBtn = document.getElementById("modal-apply-btn");
 
     modalTitle.textContent = job.title;
-    
+
     // 1. Technical Skills Badges
     const techSkillsHtml = (job.required_skills || [])
       .map((s) => `<span class="badge bg-primary-subtle text-primary border border-primary-subtle me-1 mb-1 px-3 py-2 fs-6">💻 ${s}</span>`)
       .join("");
 
     // 2. Non-Technical / Soft Skills Badges
-    const nonTechSkillsList = Array.isArray(job.non_technical_skills) 
-      ? job.non_technical_skills 
+    const nonTechSkillsList = Array.isArray(job.non_technical_skills)
+      ? job.non_technical_skills
       : (typeof job.non_technical_skills === "string" && job.non_technical_skills ? job.non_technical_skills.split(",").map(s => s.trim()) : []);
-    
+
     const nonTechSkillsHtml = nonTechSkillsList
       .map((s) => `<span class="badge me-1 mb-1 px-3 py-2 fs-6" style="background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff;">🤝 ${s}</span>`)
       .join("");

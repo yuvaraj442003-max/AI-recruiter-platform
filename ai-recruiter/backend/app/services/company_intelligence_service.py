@@ -807,6 +807,7 @@ TOP_COMPANIES_INTELLIGENCE: Dict[str, Dict[str, Any]] = {
 import json
 from sqlalchemy.orm import Session
 from app.services.company_intelligence_questions import COMPANY_RECENT_QUESTIONS
+from app.services.question_balancer import balance_question_list
 
 
 def _derive_question_section(subtopic: str, topic_name: str) -> str:
@@ -1077,7 +1078,7 @@ def get_company_intelligence_detail(slug: str, db: Optional[Session] = None) -> 
             # Continue with base questions if database lookup encounters any transient exception
             pass
 
-    detail["sample_questions"] = sample_questions
+    detail["sample_questions"] = balance_question_list(sample_questions)
     detail["recent_hiring_process"] = detail.get("recent_hiring_process") or detail.get("badge_text", "Campus Placement 2026")
     detail["questions_count"] = len(sample_questions)
     return detail

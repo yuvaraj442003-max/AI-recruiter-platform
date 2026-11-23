@@ -84,40 +84,41 @@ window.escapeHtml = escapeHtml;
 
 /**
  * Safely format and display entrance exam dates.
- * Displays accurate, confirmed official dates with a verified badge.
- * If the exact date is not available or confirmed, shows 'Upcoming'.
+ * If an entrance exam date is officially confirmed, displays only the confirmed date with a verified badge.
+ * If the exam date is not yet confirmed, displays 'Coming Soon' instead of unconfirmed/tentative dates.
+ * Single-window direct admissions are clearly labeled as 'Zero Entrance Exam (Cutoff Merit)'.
  */
 function formatEntranceExamDate(examDate, isDateConfirmed, asHtml = true) {
   if (!examDate) {
     return asHtml
-      ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle fw-semibold">Upcoming</span>`
-      : "Upcoming";
+      ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle fw-semibold">Coming Soon</span>`
+      : "Coming Soon";
   }
 
   const str = String(examDate).trim();
 
   // 1. Direct admission / Zero entrance exam (cutoff merit based)
-  if (/no entrance exam|zero entrance exam|no separate exam|no written exam|cutoff merit|direct.*merit/i.test(str)) {
+  if (/no entrance exam|zero entrance exam|no separate exam|no written exam|cutoff merit|direct.*merit|pure.*merit/i.test(str)) {
     return asHtml
       ? `<span class="badge bg-success-subtle text-success border border-success-subtle fw-semibold">Zero Entrance Exam (Cutoff Merit)</span>`
       : "Zero Entrance Exam (Cutoff Merit)";
   }
 
-  // 2. Already labeled as "Upcoming" or TBA
-  if (/^upcoming$/i.test(str) || /^tba$/i.test(str) || /^tbd$/i.test(str)) {
+  // 2. Explicitly marked as "Coming Soon", "Upcoming", "TBA", "TBD", or tentative text
+  if (/^coming soon$/i.test(str) || /^upcoming$/i.test(str) || /^tba$/i.test(str) || /^tbd$/i.test(str) || /tentative|expected|announced soon/i.test(str)) {
     return asHtml
-      ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle fw-semibold">Upcoming</span>`
-      : "Upcoming";
+      ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle fw-semibold">Coming Soon</span>`
+      : "Coming Soon";
   }
 
-  // 3. If explicitly marked as not confirmed, display 'Upcoming'
-  if (isDateConfirmed === false) {
+  // 3. If explicitly marked as not confirmed (or not true), display 'Coming Soon'
+  if (isDateConfirmed === false || isDateConfirmed === null || isDateConfirmed === undefined) {
     return asHtml
-      ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle fw-semibold">Upcoming</span>`
-      : "Upcoming";
+      ? `<span class="badge bg-warning-subtle text-dark border border-warning-subtle fw-semibold">Coming Soon</span>`
+      : "Coming Soon";
   }
 
-  // 4. Official confirmed exam date
+  // 4. Official confirmed exam date — show only the confirmed exam date
   return asHtml
     ? `<span class="fw-bold text-primary">${escapeHtml(str)}</span> <span class="badge bg-success-subtle text-success border border-success-subtle ms-1" style="font-size: 0.72rem;">✓ Official Confirmed Date</span>`
     : str;
@@ -1798,7 +1799,7 @@ function handleGlobalCompassSearch(query) {
           ${matchingExams.map(e => `
             <div class="p-1.5 mb-1 rounded bg-light border hover-lift cursor-pointer small" onclick="jumpToExam('${escapeHtml(e.exam_name)}')">
               <div class="fw-bold text-dark text-truncate">${escapeHtml(e.exam_name)}</div>
-              <div class="text-muted" style="font-size: 0.72rem;">${escapeHtml(e.conducting_body)} • ${escapeHtml(e.exam_date || '2026')}</div>
+              <div class="text-muted" style="font-size: 0.72rem;">${escapeHtml(e.conducting_body)} • ${escapeHtml(formatEntranceExamDate(e.exam_date, e.is_date_confirmed, false))}</div>
             </div>
           `).join("")}
         </div>
@@ -2467,7 +2468,7 @@ function renderCollegeComparisonMatrix(colleges) {
               (c) => `
             <td class="college-data-col small text-center">
               <div><strong>Exam Date:</strong> ${formatEntranceExamDate(c.exam_schedule ? c.exam_schedule.exam_date : null, c.exam_schedule ? c.exam_schedule.is_date_confirmed : false)}</div>
-              <div class="text-success mt-1"><strong>Result:</strong> ${c.exam_schedule && c.exam_schedule.result_date && c.exam_schedule.is_date_confirmed && c.exam_schedule.result_date !== "Upcoming" ? c.exam_schedule.result_date : `<span class="badge bg-light text-secondary border">Upcoming</span>`}</div>
+              <div class="text-success mt-1"><strong>Result:</strong> ${c.exam_schedule && c.exam_schedule.result_date && c.exam_schedule.is_date_confirmed && c.exam_schedule.result_date !== "Upcoming" && c.exam_schedule.result_date !== "Coming Soon" ? c.exam_schedule.result_date : `<span class="badge bg-light text-secondary border">Coming Soon</span>`}</div>
             </td>
           `
             )
@@ -3895,7 +3896,7 @@ function renderSchoolExams() {
               <a href="${escapeHtml(e.official_url)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm rounded-pill fw-semibold py-1 px-3 text-nowrap" style="font-size: 0.78rem;">
                 Apply / Portal &rarr;
               </a>
-              ${e.google_calendar_url ? `<a href="${escapeHtml(e.google_calendar_url)}" target="_blank" rel="noopener noreferrer" class="text-danger small fw-semibold text-decoration-none" style="font-size: 0.72rem;">📅 Sync Calendar</a>` : ''}
+              ${(e.is_date_confirmed === true && !isMerit && !/zero entrance exam|no entrance exam|cutoff merit|coming soon/i.test(e.exam_date || '') && e.google_calendar_url) ? `<a href="${escapeHtml(e.google_calendar_url)}" target="_blank" rel="noopener noreferrer" class="text-danger small fw-semibold text-decoration-none" style="font-size: 0.72rem;">📅 Sync Calendar</a>` : ''}
             </div>
           </td>
         </tr>
@@ -3924,12 +3925,14 @@ function renderSchoolExams() {
           ? `<span class="badge bg-light text-primary border small rounded-pill fw-semibold">${escapeHtml(e.group_badge)}</span>`
           : "";
 
-        const calBtn = e.google_calendar_url
+        const isMeritAdmission = isMerit || /zero entrance exam|no entrance exam|cutoff merit/i.test(e.exam_date || '');
+        const isConfirmedDate = e.is_date_confirmed === true && !isMeritAdmission && !/^coming soon$/i.test(e.exam_date || '');
+        const calBtn = (isConfirmedDate && e.google_calendar_url)
           ? `<a href="${escapeHtml(e.google_calendar_url)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger btn-sm rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm">
               <span>📅</span> Sync to Google Calendar
             </a>`
           : `<div class="text-center small text-muted py-1 fw-semibold border rounded-pill bg-light">
-              <span>🔔</span> Official Dates &amp; Schedule Verified
+              <span>${isMeritAdmission ? '📊' : (isConfirmedDate ? '🔔' : '⏳')}</span> ${isMeritAdmission ? 'Direct Cutoff Merit Admission' : (isConfirmedDate ? 'Official Dates Verified' : 'Exam Date Coming Soon')}
             </div>`;
 
         const cleanDomain = e.official_url ? e.official_url.replace("https://", "").replace("http://", "").replace("www.", "").split("/")[0] : "tn.gov.in";

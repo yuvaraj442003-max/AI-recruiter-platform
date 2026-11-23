@@ -19,6 +19,10 @@ from app.services.book_curriculum_service import (
     get_book_scope_prompt,
     get_book_grounded_fallback_questions,
 )
+from app.services.question_balancer import (
+    balance_and_randomize_options,
+    balance_question_list,
+)
 
 logger = logging.getLogger("ai_recruiter.ai_aptitude")
 
@@ -560,40 +564,50 @@ def generate_fallback_questions(
     """
     Generates verified placement questions strictly grounded in the prescribed textbooks
     covering all topics from basics to advanced levels.
+    Evenly distributes correct answer options across A (0), B (1), C (2), and D (3).
     """
     results: List[AptitudeQuestionGeneratedItem] = []
+    slots: List[int] = []
+    while len(slots) < num_questions:
+        chunk = [0, 1, 2, 3]
+        random.shuffle(chunk)
+        slots.extend(chunk)
+
     for i in range(num_questions):
         target_topic = topics[i % len(topics)]
+        target_slot = slots[i]
         items = get_book_grounded_fallback_questions(
             subject=target_topic,
             count=1,
             difficulty=difficulty,
             marks_per_question=marks_per_question,
+            target_idx=target_slot,
         )
         if items:
             q = items[0]
             q.topic_name = target_topic
+            balance_and_randomize_options(q, target_idx=target_slot)
             results.append(q)
         else:
-            results.append(
-                AptitudeQuestionGeneratedItem(
-                    topic_name=target_topic,
-                    subtopic="Core Placement Concepts",
-                    question=f"Which fundamental principle is central to mastering {target_topic} in corporate recruitment assessments?",
-                    options=[
-                        "Algorithmic efficiency, solid theoretical grounding, and rigorous edge-case handling",
-                        "Rote memorization without understanding time-space trade-offs",
-                        "Bypassing standard design patterns and testing",
-                        "Relying on deprecated non-standard language constructs",
-                    ],
-                    correct_option_index=0,
-                    explanation=f"📖 [{target_topic} Prescribed Textbook — Chapter 1: Core Principles]\nAlgorithmic efficiency, asymptotic complexity analysis, and edge-case validation form the core foundation of corporate recruitment assessments.",
-                    difficulty=difficulty if difficulty != "mixed" else "medium",
-                    marks=marks_per_question,
-                )
+            fallback_item = AptitudeQuestionGeneratedItem(
+                topic_name=target_topic,
+                subtopic="Core Placement Concepts",
+                question=f"Which fundamental principle is central to mastering {target_topic} in corporate recruitment assessments?",
+                options=[
+                    "Algorithmic efficiency, solid theoretical grounding, and rigorous edge-case handling",
+                    "Rote memorization without understanding time-space trade-offs",
+                    "Bypassing standard design patterns and testing",
+                    "Relying on deprecated non-standard language constructs",
+                ],
+                correct_option_index=0,
+                explanation=f"📖 [{target_topic} Prescribed Textbook — Chapter 1: Core Principles]\nAlgorithmic efficiency, asymptotic complexity analysis, and edge-case validation form the core foundation of corporate recruitment assessments.",
+                difficulty=difficulty if difficulty != "mixed" else "medium",
+                marks=marks_per_question,
             )
+            balance_and_randomize_options(fallback_item, target_idx=target_slot)
+            results.append(fallback_item)
 
-    return results
+    return balance_question_list(results)
 
 
 def generate_aptitude_questions_ai(
@@ -606,6 +620,7 @@ def generate_aptitude_questions_ai(
     Calls Google Gemini LLM to generate placement aptitude questions across topics.
     Validates with Pydantic and returns structured question items.
     Falls back gracefully if LLM is unavailable or fails schema validation.
+    Guarantees correct answer options are balanced across A, B, C, D (~25% each).
     """
     sys_prompt, user_prompt = _build_generation_prompt(
         topics=topics,
@@ -694,16 +709,17 @@ def generate_aptitude_questions_ai(
             )
             validated_questions.extend(fallbacks)
 
-        return validated_questions[:num_questions]
+        return balance_question_list(validated_questions[:num_questions])
 
     except Exception as exc:
         logger.warning(f"AI aptitude question generation failed or fell back: {exc}. Using deterministic synthesizer.")
-        return generate_fallback_questions(
+        fallbacks = generate_fallback_questions(
             topics=topics,
             num_questions=num_questions,
             difficulty=difficulty,
             marks_per_question=marks_per_question
         )
+        return balance_question_list(fallbacks)
 
 
 def regenerate_single_question_ai(
@@ -720,4 +736,6 @@ def regenerate_single_question_ai(
         difficulty=difficulty,
         marks_per_question=effective_marks,
     )
-    return questions[0]
+    q = questions[0]
+    balance_and_randomize_options(q)
+    return q

@@ -2587,16 +2587,32 @@
         : AMAZON_VERIFIED_QUESTIONS;
 
       sessionId = `session-${targetSlug}-${Date.now()}`;
-      fetchedQuestions = sourceList.map((sq, idx) => ({
-        id: sq.id || `${sessionId}-q${idx + 1}`,
-        question: sq.question,
-        options: sq.options || ["Option A", "Option B", "Option C", "Option D"],
-        correct_option_index: (sq.correct_option_index !== undefined) ? sq.correct_option_index : 0,
-        explanation: sq.explanation || "Refer to verified corporate exam derivation.",
-        difficulty: sq.difficulty || "medium",
-        marks: 1.0,
-        topic: sq.tag || `${targetSlug.toUpperCase()} Aptitude`,
-      }));
+      fetchedQuestions = sourceList.map((sq, idx) => {
+        let rawOpts = sq.options || ["Option A", "Option B", "Option C", "Option D"];
+        let opts = Array.isArray(rawOpts) ? [...rawOpts] : ["Option A", "Option B", "Option C", "Option D"];
+        let corrIdx = (sq.correct_option_index !== undefined) ? Number(sq.correct_option_index) : 0;
+        if (corrIdx < 0 || corrIdx >= opts.length) corrIdx = 0;
+
+        // Ensure correct options are balanced across A, B, C, D instead of always Option A
+        const targetIdx = idx % opts.length;
+        if (corrIdx !== targetIdx && opts.length >= 2) {
+          const correctVal = opts[corrIdx];
+          opts.splice(corrIdx, 1);
+          opts.splice(targetIdx, 0, correctVal);
+          corrIdx = targetIdx;
+        }
+
+        return {
+          id: sq.id || `${sessionId}-q${idx + 1}`,
+          question: sq.question,
+          options: opts,
+          correct_option_index: corrIdx,
+          explanation: sq.explanation || "Refer to verified corporate exam derivation.",
+          difficulty: sq.difficulty || "medium",
+          marks: 1.0,
+          topic: sq.tag || `${targetSlug.toUpperCase()} Aptitude`,
+        };
+      });
     }
 
     // Sanitize question options so they are guaranteed Array of strings

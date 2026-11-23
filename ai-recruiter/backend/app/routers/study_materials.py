@@ -43,6 +43,10 @@ from app.schemas.student import (
     PersonalizedLearningFeedResponse,
 )
 from app.services.ai_aptitude_service import generate_aptitude_questions_ai
+from app.services.question_balancer import (
+    balance_question_list,
+    balance_and_randomize_options,
+)
 
 logger = logging.getLogger("ai_recruiter.study_materials")
 
@@ -342,17 +346,38 @@ def get_milestone_quiz(
     total_q = len(raw_questions)
     duration_mins = max(1, math.ceil(total_q * 30 / 60))
 
-    questions_out = [
-        MilestoneQuizQuestionOut(
-            id=str(q.get("id", f"{milestone_id}-q{i+1}")),
-            question=q.get("question", ""),
-            options=q.get("options", []),
-            topic=target_milestone.get("subject", "Aptitude"),
-            difficulty=q.get("difficulty", "medium"),
-            marks=float(q.get("marks", 1.0)),
+    session_id = f"milestone-session-{uuid.uuid4().hex[:12]}"
+    balanced_raw = balance_question_list(copy.deepcopy(raw_questions))
+    stored_questions = []
+    questions_out = []
+
+    for i, q in enumerate(balanced_raw):
+        qid = str(q.get("id", f"{milestone_id}-q{i+1}"))
+        stored_questions.append({
+            "id": qid,
+            "question": q.get("question", ""),
+            "options": q.get("options", []),
+            "correct_option_index": int(q.get("correct_option_index", 0)),
+            "explanation": q.get("explanation", ""),
+            "difficulty": q.get("difficulty", "medium"),
+            "marks": float(q.get("marks", 1.0)),
+        })
+        questions_out.append(
+            MilestoneQuizQuestionOut(
+                id=qid,
+                question=q.get("question", ""),
+                options=q.get("options", []),
+                topic=target_milestone.get("subject", "Aptitude"),
+                difficulty=q.get("difficulty", "medium"),
+                marks=float(q.get("marks", 1.0)),
+            )
         )
-        for i, q in enumerate(raw_questions)
-    ]
+
+    ACTIVE_AI_QUIZZES[session_id] = {
+        "milestone_id": milestone_id,
+        "questions": stored_questions,
+        "created_at": time.time(),
+    }
 
     response_data = MilestoneQuizStartResponse(
         milestone_id=milestone_id,
@@ -364,7 +389,7 @@ def get_milestone_quiz(
         total_questions=total_q,
         passing_percentage=60.0,
         questions=questions_out,
-        session_id=None,
+        session_id=session_id,
     )
     return APIResponse(success=True, message="Milestone quiz loaded", data=response_data)
 
@@ -397,6 +422,7 @@ def generate_milestone_ai_quiz(
         difficulty="medium",
         marks_per_question=1.0,
     )
+    ai_questions = balance_question_list(ai_questions)
 
     session_id = f"ai-session-{uuid.uuid4().hex[:12]}"
     stored_questions = []
@@ -1239,6 +1265,7 @@ def start_daily_assessment(
         difficulty="mixed",
         marks_per_question=1.0,
     )
+    ai_questions = balance_question_list(ai_questions)
 
     assessment_id = f"daily-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:6]}"
     session_id = f"session-daily-{uuid.uuid4().hex[:12]}"
@@ -1736,6 +1763,20 @@ def start_company_mock_test(
                 )
         except Exception as e:
             logger.warning(f"Error generating extra AI questions for {slug}: {e}")
+
+    # Ensure all questions in company mock exam are evenly distributed across A, B, C, D (0, 1, 2, 3)
+    stored_questions = balance_question_list(stored_questions)
+    questions_out = [
+        MilestoneQuizQuestionOut(
+            id=q["id"],
+            question=q["question"],
+            options=q["options"],
+            topic=q.get("topic", detail.get("name", "Company Aptitude")),
+            difficulty=q.get("difficulty", "medium"),
+            marks=float(q.get("marks", 1.0)),
+        )
+        for q in stored_questions
+    ]
 
     ACTIVE_AI_QUIZZES[session_id] = {
         "assessment_id": assessment_id,

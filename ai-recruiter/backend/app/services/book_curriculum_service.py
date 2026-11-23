@@ -34,6 +34,10 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.models.student import StudyMaterial
 from app.schemas.aptitude_generator import AptitudeQuestionGeneratedItem
+from app.services.question_balancer import (
+    balance_and_randomize_options,
+    balance_question_list,
+)
 from app.services.java_textbook_master_content import (
     JAVA_MASTER_CHAPTERS,
     COMPLETE_JAVA_TEXTBOOK_MARKDOWN,
@@ -864,6 +868,10 @@ TOPIC_QUESTION_BANKS: Dict[str, List[Dict[str, Any]]] = {
     "ai-machine-learning": AI_ML_BOOK_QUESTIONS,
 }
 
+# Automatically balance options across A, B, C, D (0, 1, 2, 3) for all static topic banks
+for _bank_topic, _bank_items in list(TOPIC_QUESTION_BANKS.items()):
+    TOPIC_QUESTION_BANKS[_bank_topic] = balance_question_list(copy.deepcopy(_bank_items))
+
 
 # =============================================================================
 # 3. BOOK DETECTION & PDF INGESTION UTILITIES
@@ -1156,6 +1164,7 @@ def get_book_grounded_fallback_questions(
     count: int = 1,
     difficulty: str = "medium",
     marks_per_question: float = 1.0,
+    target_idx: Optional[int] = None,
 ) -> List[AptitudeQuestionGeneratedItem]:
     """
     Generates verified questions directly modeled on the prescribed textbook chapters
@@ -1186,31 +1195,22 @@ def get_book_grounded_fallback_questions(
     shuffled_pool = list(pool)
     random.shuffle(shuffled_pool)
 
+    # Prepare balanced targets across A, B, C, D
+    slots = []
+    while len(slots) < count:
+        chunk = [0, 1, 2, 3]
+        random.shuffle(chunk)
+        slots.extend(chunk)
+
     for i in range(count):
         raw = copy.deepcopy(shuffled_pool[i % len(shuffled_pool)])
-
-        # Option balancing
-        target_idx = i % 4
-        orig_idx = raw["correct_option_index"]
-        if orig_idx != target_idx:
-            options = raw["options"]
-            correct_val = options[orig_idx]
-            other_vals = [opt for idx, opt in enumerate(options) if idx != orig_idx]
-            new_options = []
-            other_pointer = 0
-            for slot in range(4):
-                if slot == target_idx:
-                    new_options.append(correct_val)
-                else:
-                    new_options.append(other_vals[other_pointer])
-                    other_pointer += 1
-            raw["options"] = new_options
-            raw["correct_option_index"] = target_idx
+        chosen_target = target_idx if target_idx is not None else (slots[i] if count > 1 else random.randint(0, 3))
+        balance_and_randomize_options(raw, target_idx=chosen_target)
 
         results.append(
             AptitudeQuestionGeneratedItem(
                 topic_name=topic_display,
-                subtopic=f"Chapter {raw['chapter_num']}: {raw['chapter_title']} ({raw['subtopic']})",
+                subtopic=f"Chapter {raw.get('chapter_num', 1)}: {raw.get('chapter_title', 'Core Principles')} ({raw.get('subtopic', 'Fundamentals')})",
                 question=raw["question"],
                 options=raw["options"],
                 correct_option_index=raw["correct_option_index"],
@@ -1220,4 +1220,4 @@ def get_book_grounded_fallback_questions(
             )
         )
 
-    return results
+    return balance_question_list(results) if count > 1 else results
