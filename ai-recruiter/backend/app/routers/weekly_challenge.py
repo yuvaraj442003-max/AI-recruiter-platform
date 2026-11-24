@@ -44,6 +44,11 @@ from app.schemas.weekly_challenge import (
     WeeklyOverviewResponse,
     WeeklyScheduleStatusOut,
 )
+from app.services.question_balancer import (
+    ensure_four_options,
+    balance_and_randomize_options,
+    balance_question_list,
+)
 from app.services.coding_evaluation_service import evaluate_question_submission
 from app.services.weekly_challenge_service import (
     ensure_all_weekly_challenges,
@@ -310,7 +315,7 @@ def get_current_weekly_aptitude_test(
 
     questions_out = []
     for q in questions:
-        opts = json.loads(q.options_json) if q.options_json else []
+        opts = ensure_four_options(json.loads(q.options_json) if q.options_json else [])
         questions_out.append(
             WeeklyAptitudeQuestionOut(
                 id=q.id,
@@ -403,7 +408,7 @@ def submit_weekly_aptitude_test(
     reviews = []
 
     for q in questions:
-        opts = json.loads(q.options_json) if q.options_json else []
+        opts = ensure_four_options(json.loads(q.options_json) if q.options_json else [])
         user_choice = payload.answers.get(str(q.id))
 
         if user_choice is None:
@@ -872,7 +877,7 @@ def admin_list_questions(
                 "type": "aptitude",
                 "subtopic": q.subtopic,
                 "question": q.question,
-                "options": json.loads(q.options_json) if q.options_json else [],
+                "options": ensure_four_options(json.loads(q.options_json) if q.options_json else []),
                 "correct_option_index": q.correct_option_index,
                 "explanation": q.explanation,
                 "difficulty": q.difficulty,

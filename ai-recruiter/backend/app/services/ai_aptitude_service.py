@@ -22,6 +22,7 @@ from app.services.book_curriculum_service import (
 from app.services.question_balancer import (
     balance_and_randomize_options,
     balance_question_list,
+    ensure_four_options,
 )
 
 logger = logging.getLogger("ai_recruiter.ai_aptitude")
@@ -661,20 +662,23 @@ def generate_aptitude_questions_ai(
             if "topic_name" not in item or not item["topic_name"]:
                 item["topic_name"] = topics[idx % len(topics)]
 
-            # Clean options
-            if "options" in item and isinstance(item["options"], list):
-                # If options are dictionary objects like {"A": "text"}, convert to string list
-                cleaned_opts = []
-                for opt in item["options"]:
-                    if isinstance(opt, dict):
-                        cleaned_opts.append(list(opt.values())[0])
-                    else:
-                        cleaned_opts.append(str(opt))
-                item["options"] = cleaned_opts[:4]
+            # Clean and ensure all four options (A, B, C, and D)
+            raw_opts = item.get("options")
+            corr_idx = item.get("correct_option_index", 0)
+            corr_val = None
+            try:
+                c_int = int(corr_idx)
+                if isinstance(raw_opts, list) and 0 <= c_int < len(raw_opts):
+                    corr_val = str(raw_opts[c_int]).strip()
+            except Exception:
+                c_int = 0
 
-            # Validate index
-            if "correct_option_index" not in item:
-                item["correct_option_index"] = 0
+            cleaned_opts = ensure_four_options(raw_opts, correct_val=corr_val)
+            item["options"] = cleaned_opts
+            if corr_val and corr_val in cleaned_opts:
+                item["correct_option_index"] = cleaned_opts.index(corr_val)
+            else:
+                item["correct_option_index"] = min(max(0, c_int), 3)
 
             # Validate via Pydantic
             try:

@@ -8,12 +8,15 @@ document.addEventListener("ar:auth-ready", (event) => {
 
   const greeting = document.getElementById("user-greeting");
   if (greeting) {
-    greeting.textContent = `${user.name} · ${user.role}`;
+    greeting.textContent = user.email ? `${user.name} (${user.email})` : `${user.name} · ${user.role}`;
     greeting.classList.remove("skeleton");
   }
 
   const nameSpan = document.getElementById("user-name");
   if (nameSpan) nameSpan.textContent = user.name;
+
+  const recruiterName = document.getElementById("recruiter-name");
+  if (recruiterName) recruiterName.textContent = user.name;
 });
 
 function handleLogout() {

@@ -18,12 +18,16 @@ document.addEventListener("DOMContentLoaded", () => {
  * Handle window resize — reset sidebar state when transitioning to desktop
  */
 function handleResize() {
+  const closeBtn = document.querySelector(".mobile-sidebar-close");
   if (window.innerWidth >= 768) {
     const sidebar = document.querySelector("nav.d-none.d-md-flex, nav#unified-messages-sidebar, nav[class*='sidebar']");
     const backdrop = document.querySelector(".mobile-sidebar-backdrop");
     if (sidebar) sidebar.classList.remove("mobile-sidebar-open");
     if (backdrop) backdrop.classList.remove("show");
     document.body.classList.remove("mobile-sidebar-active");
+    if (closeBtn) closeBtn.style.setProperty("display", "none", "important");
+  } else {
+    if (closeBtn) closeBtn.style.display = "";
   }
 }
 
@@ -42,34 +46,18 @@ function initMobileSidebar() {
     document.body.appendChild(backdrop);
   }
 
-  // Add a close button inside the sidebar if missing
+  // Add a close button inside the sidebar if missing (for mobile drawer only, never mutate brand link)
   if (!sidebar.querySelector(".mobile-sidebar-close")) {
-    const closeBtn = document.createElement("button");
-    closeBtn.type = "button";
-    closeBtn.className = "btn-close d-md-none mobile-sidebar-close";
-    closeBtn.setAttribute("aria-label", "Close navigation drawer");
+    const topHeader = document.createElement("div");
+    topHeader.className = "d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom d-md-none w-100 mobile-drawer-header";
+    topHeader.innerHTML = `
+      <span class="fw-bold fs-6 text-dark">Navigation Menu</span>
+      <button type="button" class="btn btn-sm btn-light border rounded-circle mobile-sidebar-close d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 1.2rem; line-height: 1; cursor: pointer;" aria-label="Close navigation drawer">&times;</button>
+    `;
+    sidebar.insertBefore(topHeader, sidebar.firstChild);
 
-    // Find existing brand element in sidebar
-    const brand = sidebar.querySelector(".navbar-brand");
-    if (brand) {
-      // Make the brand row a flex container with close button
-      brand.classList.add("d-flex", "align-items-center", "justify-content-between", "w-100");
-      brand.style.position = "relative";
-      closeBtn.style.marginLeft = "auto";
-      brand.appendChild(closeBtn);
-    } else {
-      // Standalone drawer header
-      const topHeader = document.createElement("div");
-      topHeader.className = "d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom d-md-none w-100";
-      const menuLabel = document.createElement("span");
-      menuLabel.className = "fw-bold fs-6 text-dark";
-      menuLabel.textContent = "Navigation Menu";
-      topHeader.appendChild(menuLabel);
-      topHeader.appendChild(closeBtn);
-      sidebar.insertBefore(topHeader, sidebar.firstChild);
-    }
-
-    closeBtn.addEventListener("click", closeMobileSidebar);
+    const closeBtn = topHeader.querySelector(".mobile-sidebar-close");
+    if (closeBtn) closeBtn.addEventListener("click", closeMobileSidebar);
   }
 
   // Close sidebar when backdrop is clicked

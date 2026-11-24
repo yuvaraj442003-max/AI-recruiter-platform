@@ -258,22 +258,22 @@
 
         let statusToggleBtn = "";
         if (isPublished) {
-          statusToggleBtn = `<button class="btn btn-sm btn-outline-warning pause-job-btn me-1" data-job-id="${j.job_id}">⏸️ Pause</button>`;
+          statusToggleBtn = `<button class="btn btn-sm btn-outline-warning rounded-pill pause-job-btn me-1 px-3" data-job-id="${j.job_id}">⏸️ Pause</button>`;
         } else if (isPaused) {
-          statusToggleBtn = `<button class="btn btn-sm btn-outline-success resume-job-btn me-1" data-job-id="${j.job_id}">▶️ Resume</button>`;
+          statusToggleBtn = `<button class="btn btn-sm btn-outline-success rounded-pill resume-job-btn me-1 px-3" data-job-id="${j.job_id}">▶️ Resume</button>`;
         }
 
         return `
           <tr>
             <td class="fw-bold text-dark">${j.job_title}</td>
             <td>${statusBadgeHtml(j.status)}</td>
-            <td><span class="badge bg-light text-dark border px-2 py-1">${j.applications}</span></td>
+            <td><span class="badge bg-light text-dark border rounded-pill px-2.5 py-1">${j.applications}</span></td>
             <td>${j.avg_match_score != null ? Math.round(j.avg_match_score) + "%" : "—"}</td>
             <td>${j.interviews_completed}</td>
             <td class="text-end">
               ${statusToggleBtn}
-              <a href="job-applicants.html?job_id=${j.job_id}" class="btn btn-sm btn-outline-primary me-1">👤 Applicants</a>
-              <button class="btn btn-sm btn-outline-danger delete-job-btn" data-job-id="${j.job_id}" data-job-title="${j.job_title}">🗑️ Delete</button>
+              <a href="job-applicants.html?job_id=${j.job_id}" class="btn btn-sm btn-outline-success rounded-pill me-1 px-3">👤 Applicants</a>
+              <button class="btn btn-sm btn-outline-danger rounded-pill delete-job-btn px-3" data-job-id="${j.job_id}" data-job-title="${j.job_title}">🗑️ Delete</button>
             </td>
           </tr>
         `;
@@ -507,10 +507,10 @@
                 ${recBadge}
               </td>
               <td class="text-end">
-                <button class="btn btn-sm btn-info text-white fw-semibold view-assessment-btn me-1 shadow-sm" data-app-id="${appId}" data-candidate-name="${escapeHtml(item.candidateName)}" data-job-title="${escapeHtml(jobTitle)}">
+                <button class="btn btn-sm btn-info text-white fw-semibold rounded-pill view-assessment-btn me-1 shadow-sm px-3" data-app-id="${appId}" data-candidate-name="${escapeHtml(item.candidateName)}" data-job-title="${escapeHtml(jobTitle)}">
                   📊 Score Breakdown
                 </button>
-                <a href="job-applicants.html?job_id=${jobId}" class="btn btn-sm btn-outline-primary fw-semibold px-3">
+                <a href="job-applicants.html?job_id=${jobId}" class="btn btn-sm btn-outline-success fw-semibold rounded-pill px-3">
                   Inspect Applicants &rarr;
                 </a>
               </td>
@@ -678,7 +678,7 @@
       const roleCell = `
         <div class="d-flex flex-column align-items-start">
           <div class="d-flex align-items-center gap-1 flex-wrap">
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1.5 fs-6 fw-bold shadow-sm d-inline-flex align-items-center gap-1" title="${escapeHtml(r.best_suited_role?.explanation || 'Best suited job position identified for candidate')}">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1.5 fs-6 fw-bold shadow-sm d-inline-flex align-items-center gap-1" title="${escapeHtml(r.best_suited_role?.explanation || 'Best suited job position identified for candidate')}">
               <span>🎯</span> ${escapeHtml(matchedRole)}
             </span>
             ${activePill}
@@ -689,21 +689,21 @@
       `;
 
       // Rank Badge
-      let rankBadge = `<span class="badge bg-secondary">#${r.rank || index + 1}</span>`;
+      let rankBadge = `<span class="badge bg-secondary rounded-pill">#${r.rank || index + 1}</span>`;
       if (index === 0 && score >= 50) {
-        rankBadge = `<span class="badge bg-warning text-dark fw-bold shadow-sm">🏆 #1 Match</span>`;
+        rankBadge = `<span class="badge bg-warning text-dark fw-bold rounded-pill shadow-sm">🏆 #1 Match</span>`;
       }
 
       // Deduplication Badge
-      let dedupBadge = `<span class="badge bg-success-subtle text-success border border-success">✨ New</span>`;
+      let dedupBadge = `<span class="badge bg-success-subtle text-success border border-success rounded-pill">✨ New</span>`;
       if (r.is_duplicate) {
-        dedupBadge = `<span class="badge bg-warning-subtle text-dark border border-warning">🔄 Duplicate</span>`;
+        dedupBadge = `<span class="badge bg-warning-subtle text-dark border border-warning rounded-pill">🔄 Duplicate</span>`;
       }
 
       // Skills
       const skillsArr = Array.isArray(data.skills) ? data.skills : (data.skills ? String(data.skills).split(",") : []);
-      const topSkillsBadges = skillsArr.slice(0, 3).map(s => `<span class="badge bg-primary-subtle text-primary border border-primary-subtle me-1 mb-1">${escapeHtml(s.trim())}</span>`).join("");
-      const remainingSkillsCount = skillsArr.length > 3 ? `<span class="badge bg-light text-muted border">+${skillsArr.length - 3}</span>` : "";
+      const topSkillsBadges = skillsArr.slice(0, 3).map(s => `<span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill me-1 mb-1 px-2 py-1">${escapeHtml(s.trim())}</span>`).join("");
+      const remainingSkillsCount = skillsArr.length > 3 ? `<span class="badge bg-light text-muted border rounded-pill">+${skillsArr.length - 3}</span>` : "";
 
       // Score color
       let scoreBadgeClass = "bg-success";
@@ -744,18 +744,18 @@
           </td>
           <td>
             <div class="d-flex align-items-center gap-2">
-              <span class="badge ${scoreBadgeClass} px-2.5 py-1 fs-6">${score}%</span>
+              <span class="badge ${scoreBadgeClass} rounded-pill px-2.5 py-1 fs-6">${score}%</span>
             </div>
-            <div class="progress mt-1" style="height: 5px; min-width: 60px;">
-              <div class="progress-bar ${scoreBadgeClass}" style="width: ${score}%;"></div>
+            <div class="progress mt-1 rounded-pill" style="height: 6px; min-width: 60px;">
+              <div class="progress-bar ${scoreBadgeClass} rounded-pill" style="width: ${score}%;"></div>
             </div>
           </td>
           <td class="text-end">
             <div class="d-flex flex-column gap-1">
-              <button type="button" class="btn btn-sm btn-success py-1 px-2 fw-bold dash-view-cand-btn" data-candidate-id="${r.candidate_id}" style="font-size: 0.75rem;">👤 View Details</button>
+              <button type="button" class="btn btn-sm btn-success py-1 px-2 fw-bold rounded-pill dash-view-cand-btn" data-candidate-id="${r.candidate_id}" style="font-size: 0.75rem;">👤 View Details</button>
               <div class="d-flex gap-1 justify-content-end">
-                <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold dash-view-ats-btn" data-candidate-id="${r.candidate_id}" style="font-size: 0.72rem;">📊 ATS Match</button>
-                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 fw-semibold dash-delete-cand-btn" data-candidate-id="${r.candidate_id}" data-candidate-name="${escapeHtml(data.name || r.filename)}" style="font-size: 0.72rem;">🗑️ Delete</button>
+                <button type="button" class="btn btn-sm btn-outline-success py-0 px-2 fw-semibold rounded-pill dash-view-ats-btn" data-candidate-id="${r.candidate_id}" style="font-size: 0.72rem;">📊 ATS Match</button>
+                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 fw-semibold rounded-pill dash-delete-cand-btn" data-candidate-id="${r.candidate_id}" data-candidate-name="${escapeHtml(data.name || r.filename)}" style="font-size: 0.72rem;">🗑️ Delete</button>
               </div>
             </div>
           </td>

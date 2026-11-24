@@ -33,6 +33,11 @@ from app.services.qdrant_service import (
     upsert_batch,
     upsert_document,
 )
+from app.services.question_balancer import (
+    ensure_four_options,
+    balance_and_randomize_options,
+    balance_question_list,
+)
 
 logger = logging.getLogger("ai_recruiter.aptitude_pdf_rag")
 
@@ -359,25 +364,10 @@ Return ONLY a valid JSON array matching this exact schema:
 
 def _balance_mcq_options(item: Dict[str, Any], target_idx: int) -> Dict[str, Any]:
     """
-    Ensures correct answer is placed at target_idx (0=A, 1=B, 2=C, 3=D) while
-    preserving the exact correct answer text and all distractors.
+    Ensures question has all four options (A, B, C, D) and places correct answer
+    at target_idx (0=A, 1=B, 2=C, 3=D) while preserving the true answer and distractors.
     """
-    opts = [str(o).strip() for o in item.get("options", [])]
-    if len(opts) != 4:
-        return item
-
-    curr = int(item.get("correct_option_index", 0))
-    if curr < 0 or curr >= 4:
-        curr = 0
-
-    target = int(target_idx) % 4
-    if curr != target:
-        # Swap correct option with target slot
-        opts[curr], opts[target] = opts[target], opts[curr]
-        item["options"] = opts
-        item["correct_option_index"] = target
-
-    return item
+    return balance_and_randomize_options(item, target_idx=target_idx)
 
 
 def _synthesize_book_modeled_fallback(topic_slug: str, count: int) -> List[Dict[str, Any]]:
@@ -541,15 +531,24 @@ def generate_weekly_aptitude_questions_from_rag(
         if isinstance(data, list) and len(data) > 0:
             validated = []
             for item in data:
-                opts = item.get("options")
-                corr = item.get("correct_option_index")
+                raw_opts = item.get("options")
+                corr = item.get("correct_option_index", 0)
                 q_text = item.get("question")
-                if opts and len(opts) == 4 and corr in (0, 1, 2, 3) and q_text and len(q_text) >= 15:
+                if raw_opts and q_text and len(str(q_text).strip()) >= 15:
+                    corr_val = None
+                    try:
+                        c_i = int(corr)
+                        if isinstance(raw_opts, list) and 0 <= c_i < len(raw_opts):
+                            corr_val = str(raw_opts[c_i]).strip()
+                    except Exception:
+                        c_i = 0
+                    opts4 = ensure_four_options(raw_opts, correct_val=corr_val)
+                    c_idx = opts4.index(corr_val) if (corr_val and corr_val in opts4) else min(max(0, c_i), 3)
                     validated.append({
                         "subtopic": item.get("subtopic", subtopics[0] if subtopics else "General"),
                         "question": q_text,
-                        "options": [str(o).strip() for o in opts],
-                        "correct_option_index": int(corr),
+                        "options": opts4,
+                        "correct_option_index": c_idx,
                         "explanation": item.get("explanation", "Step-by-step reasoning verified by RS Aggarwal curriculum."),
                         "difficulty": (item.get("difficulty") or difficulty).lower(),
                     })
@@ -717,12 +716,13 @@ def update_weekly_aptitude_challenge_from_pdf(
         # Ensure balanced distribution across options A (0), B (1), C (2), D (3)
         target_slot = idx_q % 4
         try:
-            opts = json.loads(q.options_json) if isinstance(q.options_json, str) else list(q.options_json or [])
-            curr_slot = q.correct_option_index if (q.correct_option_index is not None and 0 <= q.correct_option_index < len(opts)) else 0
-            if len(opts) >= 4 and curr_slot != target_slot:
-                opts[curr_slot], opts[target_slot] = opts[target_slot], opts[curr_slot]
-                q.options_json = json.dumps(opts)
-                q.correct_option_index = target_slot
+            q_dict = {
+                "options": q.options_json,
+                "correct_option_index": q.correct_option_index,
+            }
+            balance_and_randomize_options(q_dict, target_idx=target_slot)
+            q.options_json = json.dumps(q_dict["options"])
+            q.correct_option_index = q_dict["correct_option_index"]
         except Exception:
             pass
 

@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Recruiter Dashboard — Recruiter Platform</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css?v=4.5" />
 </head>
 
 <body data-required-role="recruiter" class="bg-light">
@@ -25,7 +25,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="recruiter-dashboard.html" class="nav-link active text-nowrap d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff;">
+          <a href="recruiter-dashboard.html" class="nav-link active text-nowrap d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; border-radius: 9999px;">
             <span>📊</span> Recruiter Dashboard
           </a>
         </li>
@@ -72,15 +72,14 @@
 
     <!-- Main content -->
     <main class="flex-grow-1" style="min-width: 0; overflow-x: hidden;">
-      <header class="bg-white border-bottom p-3 d-flex justify-content-between align-items-center sticky-top" style="z-index: 10;">
+      <header class="border-bottom p-3 d-flex justify-content-between align-items-center sticky-top glass-nav" style="z-index: 10;">
         <div class="d-flex align-items-center gap-2">
-          <span class="badge bg-success-subtle text-success fw-semibold px-3 py-1 rounded-pill">Recruiter Workspace</span>
-          <h1 class="h5 mb-0 fw-bold">Recruiter Dashboard</h1>
+          <span class="badge bg-success text-white rounded-pill px-3 py-1 fw-bold" style="background-color: #10b981 !important; font-size: 0.8rem;">Recruiter Portal</span>
+          <h1 class="h5 mb-0 fw-bold text-dark">Welcome Back, <span id="recruiter-name">Yuvaraj S</span>!</h1>
         </div>
         <div class="d-flex align-items-center gap-3">
-          <a href="post-job.html" class="btn btn-sm btn-success text-white fw-bold px-3 shadow-sm hover-lift" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none;">➕ Post a Job</a>
-          <span id="user-greeting" class="text-muted-custom skeleton"
-            style="width: 140px; height: 1rem; display: inline-block;"></span>
+          <a href="post-job.html" class="btn btn-sm btn-success text-white fw-bold rounded-pill px-3 py-1 shadow-sm hover-lift" style="background: #10b981; border: none;">➕ Post a Job</a>
+          <span id="user-greeting" class="text-muted-custom small fw-semibold"></span>
           <button id="logout-btn-mobile" class="btn btn-sm btn-outline-secondary d-md-none">Log out</button>
         </div>
       </header>
@@ -102,36 +101,133 @@
           </div>
         </div>
 
-        <!-- Modern Hero Welcome Banner -->
-        <div id="overview-section" class="card border-0 mb-4 shadow-lg overflow-hidden position-relative" style="background: linear-gradient(135deg, #0d9488 0%, #10b981 50%, #0284c7 100%); color: #ffffff; border-radius: 24px;">
+        <!-- Modern Hero Welcome Banner (Modernized to match design system) -->
+        <div id="overview-section" class="card border-0 mb-4 shadow-lg overflow-hidden position-relative recruiter-portal-hero">
           <div class="card-body p-4 p-md-5 position-relative" style="z-index: 2;">
-            <span class="badge bg-white text-emerald-700 fw-bold px-3 py-2 rounded-pill mb-3 d-inline-block shadow-sm" style="color: #047857;">✨ Recruiter Platform Intelligence</span>
-            <h2 class="fw-bold mb-2 display-6" style="letter-spacing: -0.02em;">Recruiter Analytics Dashboard</h2>
-            <p class="opacity-90 mb-4 text-light" style="max-width: 720px; font-size: 1.1rem; line-height: 1.6;">
-              Track platform recruitment metrics, active hiring funnels, top candidate skill matches, and interview evaluations in real-time.
+            <div class="mb-3">
+              <div class="recruiter-hero-badge">
+                <span class="pulse-dot-emerald"></span>
+                <span class="fw-semibold text-light">✨ Recruiter Suite &amp; Talent Intelligence</span>
+                <span class="badge bg-success text-white rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">v2.5 Pro</span>
+              </div>
+            </div>
+
+            <h2 class="recruiter-hero-title">
+              Welcome to your <span style="background: linear-gradient(135deg, #6ee7b7 0%, #38bdf8 50%, #34d399 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Recruiter Dashboard</span>
+            </h2>
+
+            <p class="recruiter-hero-desc">
+              Your dedicated workspace to post job requisitions, screen candidates with semantic match scores, review candidate rankings, and evaluate interviews.
             </p>
-            <div class="d-flex flex-wrap gap-3">
-              <a href="post-job.html" class="btn btn-light fw-bold px-4 py-2.5 text-emerald-800 shadow-lg hover-lift" style="color: #065f46; border-radius: 12px;">
-                ➕ Post New Job Opening &rarr;
+
+            <div class="recruiter-hero-actions">
+              <a href="post-job.html" class="recruiter-hero-btn-primary btn-shine hover-lift">
+                <span>➕ Post New Job Opening &rarr;</span>
               </a>
-              <button class="btn btn-outline-light fw-bold px-4 py-2.5 hover-lift" data-bs-toggle="modal" data-bs-target="#bulkUploadModal" style="border-radius: 12px;">
-                📦 Bulk Upload Resumes
+              <a href="#ats-funnel-section" class="recruiter-hero-btn-hub btn-shine hover-lift">
+                <span>📊 Go to Recruiter Dashboard &rarr;</span>
+              </a>
+              <button class="candidate-hero-btn-glass hover-lift" data-bs-toggle="modal" data-bs-target="#bulkUploadModal">
+                <span>📦 Bulk Upload Resumes &rarr;</span>
               </button>
-              <a href="my-jobs.html" class="btn btn-outline-light fw-bold px-4 py-2.5 hover-lift" style="border-radius: 12px;">
-                💼 Manage Jobs &amp; Applicants &rarr;
+              <a href="my-jobs.html" class="candidate-hero-btn-glass hover-lift">
+                <span>💼 Manage Jobs &amp; Applicants &rarr;</span>
               </a>
+            </div>
+
+            <!-- Quick Intelligence Capability Highlights -->
+            <div class="candidate-hero-quickstats">
+              <div class="candidate-quickstat-item">
+                <span class="text-success fw-bold">✓</span>
+                <span>Semantic NLP Talent Rediscovery</span>
+              </div>
+              <div class="candidate-quickstat-item">
+                <span class="text-info fw-bold">✓</span>
+                <span>Automated Multi-ATS Screening</span>
+              </div>
+              <div class="candidate-quickstat-item">
+                <span class="text-warning fw-bold">✓</span>
+                <span>Proctored Coding &amp; Scorecards</span>
+              </div>
+              <div class="candidate-quickstat-item">
+                <span class="text-primary fw-bold">✓</span>
+                <span>Live Interview &amp; Anti-Cheating Analytics</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recruiter Workspace Quick Tools (The 4 Cards) -->
+        <div id="quick-tools-section">
+          <h4 class="fw-bold mb-3 text-dark">Recruiter Workspace Tools</h4>
+          <div class="row g-4 mb-4">
+            <div class="col-md-6 col-lg-3">
+              <div class="card feature-card p-4 border-0 shadow-sm hover-lift h-100 d-flex flex-column" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
+                <div class="feature-icon mb-3" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%); color: #10b981;">📊</div>
+                <h5 class="fw-bold mb-2">Recruiter Dashboard</h5>
+                <p class="text-secondary small mb-3 flex-grow-1" style="line-height: 1.6;">
+                  View platform recruitment metrics, active job funnels, and candidate match statistics.
+                </p>
+                <a href="#ats-funnel-section" class="btn btn-success text-white fw-semibold w-100 rounded-pill hover-lift shadow-sm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none;">
+                  Open Dashboard &rarr;
+                </a>
+              </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+              <div class="card feature-card p-4 border-0 shadow-sm hover-lift h-100 d-flex flex-column" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
+                <div class="feature-icon mb-3" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%); color: #10b981;">➕</div>
+                <h5 class="fw-bold mb-2">Post a New Job</h5>
+                <p class="text-secondary small mb-3 flex-grow-1" style="line-height: 1.6;">
+                  Create new job requisitions with automatic NLP skill extraction and domain keyword matching.
+                </p>
+                <a href="post-job.html" class="btn btn-outline-success fw-semibold w-100 rounded-pill hover-lift">
+                  Post Job &rarr;
+                </a>
+              </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+              <div class="card feature-card p-4 border-0 shadow-sm hover-lift h-100 d-flex flex-column" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
+                <div class="feature-icon mb-3" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%); color: #10b981;">💼</div>
+                <h5 class="fw-bold mb-2">Manage Posted Jobs</h5>
+                <p class="text-secondary small mb-3 flex-grow-1" style="line-height: 1.6;">
+                  Inspect active listings, review applicant candidate counts, and manage job requisitions.
+                </p>
+                <a href="my-jobs.html" class="btn btn-outline-success fw-semibold w-100 rounded-pill hover-lift">
+                  Manage Jobs &rarr;
+                </a>
+              </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+              <div class="card feature-card p-4 border-0 shadow-sm hover-lift h-100 d-flex flex-column" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
+                <div class="feature-icon mb-3" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%); color: #10b981;">🎯</div>
+                <h5 class="fw-bold mb-2">Screen &amp; Rank Applicants</h5>
+                <p class="text-secondary small mb-3 flex-grow-1" style="line-height: 1.6;">
+                  View ranked candidate lists with transparent match scores and interview evaluation reports.
+                </p>
+                <a href="my-jobs.html" class="btn btn-outline-success fw-semibold w-100 rounded-pill hover-lift">
+                  View Applicants &rarr;
+                </a>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Interactive Analytics & Hiring Funnel Filter Controls Bar -->
-        <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 16px; background: #ffffff;">
+        <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 20px; background: #ffffff; border: 1px solid rgba(16, 185, 129, 0.15);">
+          <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
+            <span class="fs-5">🎛️</span>
+            <h6 class="fw-bold mb-0 text-dark">Analytics &amp; Pipeline Filters</h6>
+            <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 small fw-semibold ms-auto">Real-Time Filtering</span>
+          </div>
           <div class="row g-3 align-items-center">
             <div class="col-md-4">
               <label for="analytics-job-filter" class="form-label fw-bold small text-dark mb-1">
                 🔍 Filter by Job Requisition:
               </label>
-              <select id="analytics-job-filter" class="form-select form-select-sm">
+              <select id="analytics-job-filter" class="form-select form-select-sm rounded-pill px-3">
                 <option value="all">All Posted Jobs</option>
               </select>
             </div>
@@ -140,7 +236,7 @@
               <label for="analytics-date-filter" class="form-label fw-bold small text-dark mb-1">
                 📅 Date Range:
               </label>
-              <select id="analytics-date-filter" class="form-select form-select-sm">
+              <select id="analytics-date-filter" class="form-select form-select-sm rounded-pill px-3">
                 <option value="all">All Time</option>
                 <option value="7d">Last 7 Days</option>
                 <option value="30d">Last 30 Days</option>
@@ -152,7 +248,7 @@
               <label for="analytics-status-filter" class="form-label fw-bold small text-dark mb-1">
                 📌 Application Status:
               </label>
-              <select id="analytics-status-filter" class="form-select form-select-sm">
+              <select id="analytics-status-filter" class="form-select form-select-sm rounded-pill px-3">
                 <option value="all">All Statuses</option>
                 <option value="applied">Applied</option>
                 <option value="shortlisted">Shortlisted</option>
@@ -164,130 +260,78 @@
           </div>
         </div>
 
-        <!-- Recruiter Workspace Quick Tools (The 4 Cards) -->
-        <div id="quick-tools-section">
-          <h4 class="fw-bold mb-3">Recruiter Workspace Tools</h4>
-          <div class="row g-4 mb-4">
-            <div class="col-md-6 col-lg-3">
-              <div class="card h-100 p-4 border-0 shadow-sm hover-shadow" style="border-radius: 12px; background: #ffffff;">
-                <div class="fs-1 text-success mb-3">📊</div>
-                <h5 class="fw-bold mb-2">Recruiter Dashboard</h5>
-                <p class="text-secondary small mb-3 flex-grow-1">
-                  View platform recruitment metrics, active job funnels, and candidate match stats.
-                </p>
-                <a href="recruiter-dashboard.html" class="btn btn-success text-white btn-sm fw-semibold w-100">
-                  Open Dashboard &rarr;
-                </a>
-              </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-              <div class="card h-100 p-4 border-0 shadow-sm hover-shadow" style="border-radius: 12px; background: #ffffff;">
-                <div class="fs-1 text-success mb-3">➕</div>
-                <h5 class="fw-bold mb-2">Post a New Job</h5>
-                <p class="text-secondary small mb-3 flex-grow-1">
-                  Create new job requisitions with automatic NLP skill extraction and domain keyword matching.
-                </p>
-                <a href="post-job.html" class="btn btn-outline-success btn-sm fw-semibold w-100">
-                  Post Job &rarr;
-                </a>
-              </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-              <div class="card h-100 p-4 border-0 shadow-sm hover-shadow" style="border-radius: 12px; background: #ffffff;">
-                <div class="fs-1 text-success mb-3">💼</div>
-                <h5 class="fw-bold mb-2">Manage Posted Jobs</h5>
-                <p class="text-secondary small mb-3 flex-grow-1">
-                  Inspect active and draft jobs, review candidate applicant counts, and manage listings.
-                </p>
-                <a href="my-jobs.html" class="btn btn-outline-success btn-sm fw-semibold w-100">
-                  Manage Jobs &rarr;
-                </a>
-              </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-              <div class="card h-100 p-4 border-0 shadow-sm hover-shadow" style="border-radius: 12px; background: #ffffff;">
-                <div class="fs-1 text-success mb-3">🎯</div>
-                <h5 class="fw-bold mb-2">Screen &amp; Rank Applicants</h5>
-                <p class="text-secondary small mb-3 flex-grow-1">
-                  View ranked candidate lists with transparent TF-IDF match scores and interview reports.
-                </p>
-                <a href="my-jobs.html" class="btn btn-outline-success btn-sm fw-semibold w-100">
-                  View Applicants &rarr;
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <!-- Applicant Screening Summary (ATS System) -->
-        <div id="ats-funnel-section">
-          <div class="d-flex align-items-center justify-content-between mb-3 mt-4">
-            <h4 class="fw-bold mb-0">🎯 Applicant Screening &amp; ATS Funnel</h4>
+        <div id="ats-funnel-section" class="mb-4">
+          <div class="d-flex align-items-center justify-content-between mb-3 mt-4 flex-wrap gap-2">
+            <div>
+              <h4 class="fw-bold mb-1 text-dark">🎯 Applicant Screening &amp; ATS Funnel</h4>
+              <p class="text-muted small mb-0">Live screening metrics evaluated with multi-profession semantic ATS matching.</p>
+            </div>
             <div class="d-flex align-items-center gap-2">
-              <span class="badge bg-primary-subtle text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill fw-semibold">
+              <span class="badge bg-success-subtle text-success border border-success border-opacity-25 px-3 py-2 rounded-pill fw-semibold">
                 Default ATS Threshold: <span id="stat-ats-threshold">60%</span>
               </span>
-              <a href="my-jobs.html" class="btn btn-sm btn-outline-success fw-semibold">View Eligible Candidates &rarr;</a>
+              <a href="my-jobs.html" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-semibold hover-lift">View Eligible Candidates &rarr;</a>
             </div>
           </div>
 
-        <div class="row g-3 mb-4">
-          <div class="col-6 col-md">
-            <div class="card border-0 shadow-sm metric-card-indigo p-3 h-100 rounded-4 hover-lift">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <span class="fs-4">👥</span>
-                <span class="text-secondary fw-medium small">Total Applicants</span>
+          <div class="row g-3 mb-4">
+            <div class="col-6 col-md">
+              <div class="card border-0 shadow-sm p-3 h-100 hover-lift" style="border-radius: 18px; border: 1px solid rgba(99, 102, 241, 0.18) !important; background: linear-gradient(180deg, rgba(99, 102, 241, 0.05) 0%, #ffffff 100%);">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="p-2 rounded-circle" style="background: rgba(99, 102, 241, 0.12);">👥</span>
+                  <span class="text-secondary fw-semibold small">Total Applicants</span>
+                </div>
+                <div class="stat-value text-dark fw-bold fs-2" id="ats-stat-total">0</div>
               </div>
-              <div class="stat-value text-dark fw-bold" id="ats-stat-total">0</div>
             </div>
-          </div>
-          <div class="col-6 col-md">
-            <div class="card border-0 shadow-sm metric-card-emerald p-3 h-100 rounded-4 hover-lift">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <span class="fs-4">✅</span>
-                <span class="text-success fw-medium small">Eligible (ATS &ge; 60%)</span>
+            <div class="col-6 col-md">
+              <div class="card border-0 shadow-sm p-3 h-100 hover-lift" style="border-radius: 18px; border: 1px solid rgba(16, 185, 129, 0.25) !important; background: linear-gradient(180deg, rgba(16, 185, 129, 0.06) 0%, #ffffff 100%);">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="p-2 rounded-circle" style="background: rgba(16, 185, 129, 0.15);">✅</span>
+                  <span class="text-success fw-semibold small">Eligible (&ge; 60%)</span>
+                </div>
+                <div class="stat-value text-success fw-bold fs-2" id="ats-stat-eligible">0</div>
               </div>
-              <div class="stat-value text-success fw-bold" id="ats-stat-eligible">0</div>
             </div>
-          </div>
-          <div class="col-6 col-md">
-            <div class="card border-0 shadow-sm metric-card-purple p-3 h-100 rounded-4 hover-lift">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <span class="fs-4">⭐</span>
-                <span class="text-info fw-medium small">Shortlisted</span>
+            <div class="col-6 col-md">
+              <div class="card border-0 shadow-sm p-3 h-100 hover-lift" style="border-radius: 18px; border: 1px solid rgba(6, 182, 212, 0.25) !important; background: linear-gradient(180deg, rgba(6, 182, 212, 0.06) 0%, #ffffff 100%);">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="p-2 rounded-circle" style="background: rgba(6, 182, 212, 0.15);">⭐</span>
+                  <span class="text-info fw-semibold small">Shortlisted</span>
+                </div>
+                <div class="stat-value text-info fw-bold fs-2" id="ats-stat-shortlisted">0</div>
               </div>
-              <div class="stat-value text-info fw-bold" id="ats-stat-shortlisted">0</div>
             </div>
-          </div>
-          <div class="col-6 col-md">
-            <div class="card border-0 shadow-sm metric-card-amber p-3 h-100 rounded-4 hover-lift">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <span class="fs-4">⏳</span>
-                <span class="text-warning fw-medium small">Under Review</span>
+            <div class="col-6 col-md">
+              <div class="card border-0 shadow-sm p-3 h-100 hover-lift" style="border-radius: 18px; border: 1px solid rgba(245, 158, 11, 0.25) !important; background: linear-gradient(180deg, rgba(245, 158, 11, 0.06) 0%, #ffffff 100%);">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="p-2 rounded-circle" style="background: rgba(245, 158, 11, 0.15);">⏳</span>
+                  <span class="text-warning fw-semibold small">Under Review</span>
+                </div>
+                <div class="stat-value text-warning fw-bold fs-2" id="ats-stat-review">0</div>
               </div>
-              <div class="stat-value text-warning fw-bold" id="ats-stat-review">0</div>
             </div>
-          </div>
-          <div class="col-6 col-md">
-            <div class="card border-0 shadow-sm p-3 h-100 rounded-4 hover-lift" style="background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.18);">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <span class="fs-4">⚠️</span>
-                <span class="text-danger fw-medium small">Not Recommended</span>
+            <div class="col-6 col-md">
+              <div class="card border-0 shadow-sm p-3 h-100 hover-lift" style="border-radius: 18px; border: 1px solid rgba(239, 68, 68, 0.22) !important; background: linear-gradient(180deg, rgba(239, 68, 68, 0.06) 0%, #ffffff 100%);">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="p-2 rounded-circle" style="background: rgba(239, 68, 68, 0.15);">⚠️</span>
+                  <span class="text-danger fw-semibold small">Not Recommended</span>
+                </div>
+                <div class="stat-value text-danger fw-bold fs-2" id="ats-stat-not-recommended">0</div>
               </div>
-              <div class="stat-value text-danger fw-bold" id="ats-stat-not-recommended">0</div>
             </div>
           </div>
         </div>
-      </div>
 
         <!-- Top Candidates Widget -->
-        <div id="top-candidates-section" class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 12px; background: #ffffff;">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h6 class="fw-bold mb-0">🏆 Top Ranked Candidates across Jobs</h6>
-            <a href="my-jobs.html" class="btn btn-sm btn-link text-success p-0 fw-semibold">View All Applicants &rarr;</a>
+        <div id="top-candidates-section" class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 20px; background: #ffffff; border: 1px solid rgba(0,0,0,0.06);">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+              <h5 class="fw-bold mb-1 text-dark">🏆 Top Ranked Candidates across Jobs</h5>
+              <p class="text-muted small mb-0">Highest scoring candidates evaluated through semantic keyword matching and proctored evaluations.</p>
+            </div>
+            <a href="my-jobs.html" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-semibold hover-lift">View All Applicants &rarr;</a>
           </div>
           <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
@@ -305,7 +349,10 @@
               </thead>
               <tbody id="top-candidates-body">
                 <tr>
-                  <td colspan="8" class="text-center py-3 text-muted">Loading top ranked candidates…</td>
+                  <td colspan="8" class="text-center py-4 text-muted">
+                    <div class="spinner-border spinner-border-sm text-success me-2" role="status"></div>
+                    Loading top ranked candidates…
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -313,38 +360,38 @@
         </div>
 
         <!-- Bulk Uploaded Resumes & Matched Job Roles Section -->
-        <div id="bulk-uploaded-resumes-section" class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 16px; background: #ffffff;">
+        <div id="bulk-uploaded-resumes-section" class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 20px; background: #ffffff; border: 1px solid rgba(0,0,0,0.06);">
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
             <div>
               <div class="d-flex align-items-center gap-2">
                 <span class="fs-4">📁</span>
                 <h5 class="fw-bold mb-0 text-dark">Bulk Uploaded Resumes &amp; Matched Job Roles</h5>
-                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1.5 rounded-pill fs-7 fw-bold" id="bulk-table-count-badge">0 Resumes</span>
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1.5 rounded-pill fs-7 fw-bold" id="bulk-table-count-badge">0 Resumes</span>
               </div>
               <p class="text-muted small mb-0 mt-1">
                 Each uploaded resume is automatically analyzed by the system to identify the best matching job role(s), skill alignments, and talent potential.
               </p>
             </div>
             <div class="d-flex gap-2">
-              <button class="btn btn-sm btn-success fw-bold px-3 py-1.5 shadow-sm d-inline-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#bulkUploadModal" style="border-radius: 8px;">
+              <button class="btn btn-sm btn-success fw-bold px-3 py-1.5 shadow-sm rounded-pill d-inline-flex align-items-center gap-1 hover-lift" data-bs-toggle="modal" data-bs-target="#bulkUploadModal" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none;">
                 <span>📤</span> Bulk Upload Resumes
               </button>
-              <a href="upload.html" class="btn btn-sm btn-outline-secondary fw-semibold px-3 py-1.5" style="border-radius: 8px;">
+              <a href="upload.html" class="btn btn-sm btn-outline-secondary rounded-pill fw-semibold px-3 py-1.5 hover-lift">
                 Candidate Intelligence &rarr;
               </a>
             </div>
           </div>
 
           <!-- Filter & Search Toolbar -->
-          <div class="row g-2 align-items-center mb-3 p-2 bg-light rounded-3">
+          <div class="row g-2 align-items-center mb-3 p-3 bg-light rounded-4 border">
             <div class="col-md-7 col-lg-8">
               <div class="input-group input-group-sm">
-                <span class="input-group-text bg-white border-end-0 text-muted">🔍</span>
-                <input type="text" id="dashboard-bulk-search" class="form-control bg-white border-start-0" placeholder="Search uploaded candidate by name, matched role, skills, or location..." />
+                <span class="input-group-text bg-white border-end-0 text-muted rounded-start-pill">🔍</span>
+                <input type="text" id="dashboard-bulk-search" class="form-control bg-white border-start-0 rounded-end-pill" placeholder="Search uploaded candidate by name, matched role, skills, or location..." />
               </div>
             </div>
             <div class="col-md-5 col-lg-4">
-              <select id="dashboard-bulk-role-filter" class="form-select form-select-sm bg-white">
+              <select id="dashboard-bulk-role-filter" class="form-select form-select-sm bg-white rounded-pill px-3">
                 <option value="all">All Matched Job Roles</option>
               </select>
             </div>
@@ -366,7 +413,7 @@
               <tbody id="bulk-uploaded-resumes-body">
                 <tr>
                   <td colspan="7" class="text-center py-4 text-muted">
-                    <div class="spinner-border spinner-border-sm text-primary me-1" role="status"></div>
+                    <div class="spinner-border spinner-border-sm text-success me-1" role="status"></div>
                     Analyzing and loading uploaded candidate resumes...
                   </td>
                 </tr>
@@ -376,71 +423,71 @@
         </div>
 
         <!-- Platform Performance Metrics & Useful Analytics Summary -->
-        <div id="metrics-section">
-          <h4 class="fw-bold mb-3">Platform Performance &amp; Recruitment Metrics</h4>
+        <div id="metrics-section" class="mb-4">
+          <h4 class="fw-bold mb-3 text-dark">Platform Performance &amp; Recruitment Metrics</h4>
           <div class="row g-3 mb-4">
             <div class="col-6 col-lg-3">
-              <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
+              <div class="card border-0 shadow-sm p-3 h-100 hover-lift" style="border-radius: 18px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
                 <div class="d-flex align-items-center gap-2 mb-2">
                   <span class="fs-4">📄</span>
                   <span class="text-secondary fw-medium small">Total Applications</span>
                 </div>
-                <div class="stat-value text-primary fw-bold" id="stat-applications">0</div>
+                <div class="stat-value text-primary fw-bold fs-2" id="stat-applications">0</div>
               </div>
             </div>
             <div class="col-6 col-lg-3">
-              <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
+              <div class="card border-0 shadow-sm p-3 h-100 hover-lift" style="border-radius: 18px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
                 <div class="d-flex align-items-center gap-2 mb-2">
                   <span class="fs-4">⭐</span>
                   <span class="text-secondary fw-medium small">Total Shortlisted</span>
                 </div>
-                <div class="stat-value text-info fw-bold" id="stat-shortlisted">0</div>
+                <div class="stat-value text-info fw-bold fs-2" id="stat-shortlisted">0</div>
               </div>
             </div>
             <div class="col-6 col-lg-3">
-              <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
+              <div class="card border-0 shadow-sm p-3 h-100 hover-lift" style="border-radius: 18px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
                 <div class="d-flex align-items-center gap-2 mb-2">
                   <span class="fs-4">🎙️</span>
                   <span class="text-secondary fw-medium small">Total Interviews</span>
                 </div>
-                <div class="stat-value text-warning fw-bold" id="stat-interviews">0</div>
+                <div class="stat-value text-warning fw-bold fs-2" id="stat-interviews">0</div>
               </div>
             </div>
             <div class="col-6 col-lg-3">
-              <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
+              <div class="card border-0 shadow-sm p-3 h-100 hover-lift" style="border-radius: 18px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
                 <div class="d-flex align-items-center gap-2 mb-2">
                   <span class="fs-4">✅</span>
                   <span class="text-secondary fw-medium small">Total Hired / Selected</span>
                 </div>
-                <div class="stat-value text-success fw-bold" id="stat-selected">0</div>
+                <div class="stat-value text-success fw-bold fs-2" id="stat-selected">0</div>
               </div>
             </div>
             <div class="col-6 col-lg-4">
-              <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
+              <div class="card border-0 shadow-sm p-3 h-100 hover-lift" style="border-radius: 18px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
                 <div class="d-flex align-items-center gap-2 mb-2">
                   <span class="fs-4">📈</span>
                   <span class="text-secondary fw-medium small">Hiring Conversion Rate</span>
                 </div>
-                <div class="stat-value text-success fw-bold" id="stat-conversion-rate">0%</div>
+                <div class="stat-value text-success fw-bold fs-2" id="stat-conversion-rate">0%</div>
                 <div class="text-muted small mt-1">(Hired / Applied &times; 100)</div>
               </div>
             </div>
             <div class="col-6 col-lg-4">
-              <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
+              <div class="card border-0 shadow-sm p-3 h-100 hover-lift" style="border-radius: 18px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
                 <div class="d-flex align-items-center gap-2 mb-2">
                   <span class="fs-4">🎯</span>
                   <span class="text-secondary fw-medium small">Average Candidate Match Score</span>
                 </div>
-                <div class="stat-value text-primary fw-bold" id="stat-avg-match-score">—</div>
+                <div class="stat-value text-primary fw-bold fs-2" id="stat-avg-match-score">—</div>
               </div>
             </div>
             <div class="col-6 col-lg-4">
-              <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px;">
+              <div class="card border-0 shadow-sm p-3 h-100 hover-lift" style="border-radius: 18px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
                 <div class="d-flex align-items-center gap-2 mb-2">
                   <span class="fs-4">🏆</span>
                   <span class="text-secondary fw-medium small">Average Interview Score</span>
                 </div>
-                <div class="stat-value text-warning fw-bold" id="stat-avg-interview-score">—</div>
+                <div class="stat-value text-warning fw-bold fs-2" id="stat-avg-interview-score">—</div>
               </div>
             </div>
           </div>
@@ -448,18 +495,18 @@
           <!-- Interactive Analytics Charts Section -->
           <div class="row g-3 mb-4">
             <div class="col-lg-6">
-              <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 12px;">
+              <div class="card border-0 shadow-sm p-4 h-100 hover-lift" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                  <h6 class="fw-bold mb-0">📊 Candidate Hiring Funnel</h6>
-                  <span class="badge bg-success-subtle text-success border px-2 py-1 small">Applied &rarr; Shortlisted &rarr; Interviewed &rarr; Hired</span>
+                  <h6 class="fw-bold mb-0 text-dark">📊 Candidate Hiring Funnel</h6>
+                  <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 small">Applied &rarr; Shortlisted &rarr; Interviewed &rarr; Hired</span>
                 </div>
                 <canvas id="chart-hiring-funnel" height="220"></canvas>
                 <div id="chart-hiring-funnel-empty" class="text-muted-custom small d-none py-5 text-center">No funnel applications yet for selected filters.</div>
               </div>
             </div>
             <div class="col-lg-6">
-              <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 12px;">
-                <h6 class="fw-bold mb-3">🎯 Match Score Distribution</h6>
+              <div class="card border-0 shadow-sm p-4 h-100 hover-lift" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
+                <h6 class="fw-bold mb-3 text-dark">🎯 Match Score Distribution</h6>
                 <canvas id="chart-match-distribution" height="220"></canvas>
                 <div id="chart-match-distribution-empty" class="text-muted-custom small d-none py-5 text-center">No match scores available for selected filters.</div>
               </div>
@@ -468,15 +515,15 @@
 
           <div class="row g-3 mb-4">
             <div class="col-lg-6">
-              <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 12px;">
-                <h6 class="fw-bold mb-3">⚠️ Top Missing Skills Analysis</h6>
+              <div class="card border-0 shadow-sm p-4 h-100 hover-lift" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
+                <h6 class="fw-bold mb-3 text-dark">⚠️ Top Missing Skills Analysis</h6>
                 <canvas id="chart-missing-skills" height="220"></canvas>
                 <div id="chart-missing-skills-empty" class="text-muted-custom small d-none py-5 text-center">No missing skills detected among applicant resumes 🎉</div>
               </div>
             </div>
             <div class="col-lg-6">
-              <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 12px;">
-                <h6 class="fw-bold mb-3">💡 Top Candidate Skills</h6>
+              <div class="card border-0 shadow-sm p-4 h-100 hover-lift" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
+                <h6 class="fw-bold mb-3 text-dark">💡 Top Candidate Skills</h6>
                 <canvas id="chart-top-skills" height="220"></canvas>
                 <div id="chart-top-skills-empty" class="text-muted-custom small d-none py-5 text-center">No applicants yet.</div>
               </div>
@@ -485,15 +532,15 @@
 
           <div class="row g-3 mb-4">
             <div class="col-lg-6">
-              <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 12px;">
-                <h6 class="fw-bold mb-3">💼 Applications by Job Requisition</h6>
+              <div class="card border-0 shadow-sm p-4 h-100 hover-lift" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
+                <h6 class="fw-bold mb-3 text-dark">💼 Applications by Job Requisition</h6>
                 <canvas id="chart-applications-by-job" height="220"></canvas>
                 <div id="chart-applications-by-job-empty" class="text-muted-custom small d-none py-5 text-center">No applications yet.</div>
               </div>
             </div>
             <div class="col-lg-6">
-              <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 12px;">
-                <h6 class="fw-bold mb-3">🎙️ Completed Interview Scores</h6>
+              <div class="card border-0 shadow-sm p-4 h-100 hover-lift" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
+                <h6 class="fw-bold mb-3 text-dark">🎙️ Completed Interview Scores</h6>
                 <canvas id="chart-interview-scores" height="220"></canvas>
                 <div id="chart-interview-scores-empty" class="text-muted-custom small d-none py-5 text-center">No completed interviews yet.</div>
               </div>
@@ -502,15 +549,15 @@
         </div>
 
         <!-- Job Performance Table -->
-        <div id="job-performance-section" class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 12px;">
-          <h6 class="fw-bold mb-3">Job Performance</h6>
+        <div id="job-performance-section" class="card border-0 shadow-sm p-4 mb-4 hover-lift" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
+          <h5 class="fw-bold mb-3 text-dark">💼 Job Requisition Performance</h5>
           <div id="job-performance-table">
             <div class="text-muted-custom small">Loading…</div>
           </div>
         </div>
 
         <!-- Student Career Guidance & Learning Activity Monitor Section -->
-        <div id="candidate-learning-section" class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 16px; background: #ffffff;">
+        <div id="candidate-learning-section" class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 20px; background: #ffffff; border: 1px solid rgba(16, 185, 129, 0.2);">
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 border-bottom pb-3">
             <div>
               <div class="d-flex align-items-center gap-2 mb-1">
@@ -537,40 +584,40 @@
           <!-- Summary KPI Cards -->
           <div class="row g-3 mb-4" id="student-monitor-kpis">
             <div class="col-sm-6 col-lg-3">
-              <div class="p-3 rounded-4 border bg-light h-100 shadow-sm">
+              <div class="p-3 hover-lift shadow-sm h-100" style="border-radius: 18px; background: linear-gradient(180deg, rgba(59, 130, 246, 0.06) 0%, #ffffff 100%); border: 1px solid rgba(59, 130, 246, 0.2);">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                  <span class="small text-muted fw-semibold">Total Students</span>
-                  <span class="badge bg-primary-subtle text-primary rounded-pill">Enrolled</span>
+                  <span class="small text-secondary fw-semibold">Total Students</span>
+                  <span class="badge bg-primary text-white rounded-pill px-2.5 py-1">Enrolled</span>
                 </div>
-                <h3 class="fw-bold mb-0 text-dark" id="sm-kpi-total-students">0</h3>
+                <h3 class="fw-bold mb-0 text-dark fs-2" id="sm-kpi-total-students">0</h3>
                 <small class="text-muted" id="sm-kpi-active-learners">0 active learners</small>
               </div>
             </div>
             <div class="col-sm-6 col-lg-3">
-              <div class="p-3 rounded-4 border bg-light h-100 shadow-sm">
+              <div class="p-3 hover-lift shadow-sm h-100" style="border-radius: 18px; background: linear-gradient(180deg, rgba(16, 185, 129, 0.06) 0%, #ffffff 100%); border: 1px solid rgba(16, 185, 129, 0.25);">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                  <span class="small text-muted fw-semibold">Avg Aptitude Score</span>
-                  <span class="badge bg-success-subtle text-success rounded-pill">Assessments</span>
+                  <span class="small text-secondary fw-semibold">Avg Aptitude Score</span>
+                  <span class="badge bg-success text-white rounded-pill px-2.5 py-1">Assessments</span>
                 </div>
-                <h3 class="fw-bold mb-0 text-success" id="sm-kpi-avg-score">0%</h3>
+                <h3 class="fw-bold mb-0 text-success fs-2" id="sm-kpi-avg-score">0%</h3>
                 <small class="text-muted" id="sm-kpi-tests-count">0 tests evaluated</small>
               </div>
             </div>
             <div class="col-sm-6 col-lg-3">
-              <div class="p-3 rounded-4 border bg-light h-100 shadow-sm">
+              <div class="p-3 hover-lift shadow-sm h-100" style="border-radius: 18px; background: linear-gradient(180deg, rgba(6, 182, 212, 0.06) 0%, #ffffff 100%); border: 1px solid rgba(6, 182, 212, 0.25);">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                  <span class="small text-muted fw-semibold">Avg Roadmap Progress</span>
-                  <span class="badge bg-info-subtle text-info rounded-pill">Career Paths</span>
+                  <span class="small text-secondary fw-semibold">Avg Roadmap Progress</span>
+                  <span class="badge bg-info text-white rounded-pill px-2.5 py-1">Career Paths</span>
                 </div>
-                <h3 class="fw-bold mb-0 text-info" id="sm-kpi-avg-roadmap">0%</h3>
+                <h3 class="fw-bold mb-0 text-info fs-2" id="sm-kpi-avg-roadmap">0%</h3>
                 <small class="text-muted">Curriculum milestones</small>
               </div>
             </div>
             <div class="col-sm-6 col-lg-3">
-              <div class="p-3 rounded-4 border bg-light h-100 shadow-sm">
+              <div class="p-3 hover-lift shadow-sm h-100" style="border-radius: 18px; background: linear-gradient(180deg, rgba(245, 158, 11, 0.06) 0%, #ffffff 100%); border: 1px solid rgba(245, 158, 11, 0.25);">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                  <span class="small text-muted fw-semibold">Performance Health</span>
-                  <span class="badge bg-dark-subtle text-dark rounded-pill">Status</span>
+                  <span class="small text-secondary fw-semibold">Performance Health</span>
+                  <span class="badge bg-dark text-white rounded-pill px-2.5 py-1">Status</span>
                 </div>
                 <div class="d-flex align-items-center gap-2 mt-1">
                   <span class="badge bg-success text-white px-2 py-1 rounded-pill" id="sm-kpi-well-badge" title="Performing Well">0 Well</span>
@@ -583,16 +630,16 @@
           </div>
 
           <!-- Filter & Search Controls -->
-          <div class="bg-light p-3 rounded-3 mb-3 border">
+          <div class="bg-light p-3 rounded-4 mb-3 border">
             <div class="row g-2 align-items-center">
               <div class="col-md-5">
                 <div class="input-group input-group-sm">
-                  <span class="input-group-text bg-white border-end-0">🔍</span>
-                  <input type="text" id="sm-filter-search" class="form-control form-control-sm border-start-0" placeholder="Search student by name, college, email, or topic..." />
+                  <span class="input-group-text bg-white border-end-0 rounded-start-pill">🔍</span>
+                  <input type="text" id="sm-filter-search" class="form-control form-control-sm border-start-0 rounded-end-pill" placeholder="Search student by name, college, email, or topic..." />
                 </div>
               </div>
               <div class="col-md-3">
-                <select id="sm-filter-performance" class="form-select form-select-sm">
+                <select id="sm-filter-performance" class="form-select form-select-sm rounded-pill px-3">
                   <option value="all">🎯 All Performance Statuses</option>
                   <option value="well">✅ Performing Well (>= 70%)</option>
                   <option value="moderate">⚠️ Moderate Progress (45% - 69%)</option>
@@ -600,7 +647,7 @@
                 </select>
               </div>
               <div class="col-md-3">
-                <select id="sm-filter-trend" class="form-select form-select-sm">
+                <select id="sm-filter-trend" class="form-select form-select-sm rounded-pill px-3">
                   <option value="all">📈 All Trends (Improving / Declining)</option>
                   <option value="improving">↗ Improving Performance</option>
                   <option value="steady">➔ Steady Performance</option>
@@ -608,9 +655,12 @@
                 </select>
               </div>
               <div class="col-md-1 text-end">
-                <button id="sm-filter-reset-btn" class="btn btn-sm btn-outline-secondary w-100" title="Reset Filters">
+                <button id="sm-filter-reset-btn" class="btn btn-sm btn-outline-secondary rounded-pill w-100 fw-semibold" title="Reset Filters">
                   Reset
                 </button>
+              </div>
+            </div>
+          </div>
               </div>
             </div>
           </div>
@@ -650,8 +700,8 @@
   <!-- Bulk Resume Upload & ATS Match Modal -->
   <div class="modal fade" id="bulkUploadModal" tabindex="-1" aria-labelledby="bulkUploadModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
-        <div class="modal-header bg-success text-white p-3 border-0">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; overflow: hidden;">
+        <div class="modal-header text-white p-3 border-0" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
           <div class="d-flex align-items-center gap-2">
             <span class="fs-4">📦</span>
             <div>
@@ -853,6 +903,20 @@
   <script src="js/bulk-upload.js"></script>
   <script src="js/chat.js"></script>
   <script src="js/mobile-nav.js"></script>
+  <script>
+    (function () {
+      const user = Session.getUser();
+      if (user) {
+        const rName = document.getElementById("recruiter-name");
+        if (rName) rName.textContent = user.name || "Recruiter";
+        const uGreet = document.getElementById("user-greeting");
+        if (uGreet) {
+          uGreet.textContent = user.email ? `${user.name} (${user.email})` : user.name;
+          uGreet.classList.remove("skeleton");
+        }
+      }
+    })();
+  </script>
 </body>
 
 </html>

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Recruiter Portal — Recruiter Platform</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css?v=4.5" />
 </head>
 <body data-required-role="recruiter" class="bg-light">
 
@@ -18,7 +18,7 @@
       </a>
       <ul class="nav nav-pills flex-column gap-2">
         <li class="nav-item">
-          <a href="recruiter-portal.html" class="nav-link active text-nowrap d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff;">
+          <a href="recruiter-portal.html" class="nav-link active text-nowrap d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; border-radius: 9999px;">
             <span>🏠</span> Portal Home
           </a>
         </li>
@@ -70,37 +70,71 @@
 
     <!-- Main Content -->
     <main class="flex-grow-1" style="min-width: 0; overflow-x: hidden;">
-      <header class="bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+      <header class="border-bottom p-3 d-flex justify-content-between align-items-center sticky-top glass-nav" style="z-index: 10;">
         <div class="d-flex align-items-center gap-2">
-          <span class="badge bg-success text-white">Recruiter Portal</span>
-          <h1 class="h5 mb-0 fw-bold">Welcome Back, <span id="recruiter-name">Recruiter</span>!</h1>
+          <span class="badge bg-success text-white rounded-pill px-3 py-1 fw-bold" style="background-color: #10b981 !important; font-size: 0.8rem;">Recruiter Portal</span>
+          <h1 class="h5 mb-0 fw-bold text-dark">Welcome Back, <span id="recruiter-name">Recruiter</span>!</h1>
         </div>
         <div class="d-flex align-items-center gap-3">
-          <a href="post-job.html" class="btn btn-sm btn-success text-white fw-semibold">➕ Post a Job</a>
-          <span id="user-greeting" class="text-muted-custom small"></span>
+          <a href="post-job.html" class="btn btn-sm btn-success text-white fw-bold rounded-pill px-3 py-1 shadow-sm hover-lift" style="background: #10b981; border: none;">➕ Post a Job</a>
+          <span id="user-greeting" class="text-muted-custom small fw-semibold"></span>
           <button id="logout-btn-mobile" class="btn btn-sm btn-outline-secondary d-md-none">Log out</button>
         </div>
       </header>
 
       <div class="container-fluid p-4">
-        <!-- Modern Hero Welcome Banner -->
-        <div class="card border-0 mb-4 shadow-lg overflow-hidden position-relative" style="background: linear-gradient(135deg, #0d9488 0%, #10b981 50%, #0284c7 100%); color: #ffffff; border-radius: 24px;">
+        <!-- Modern Hero Welcome Banner (Modernized to match design system) -->
+        <div class="card border-0 mb-4 shadow-lg overflow-hidden position-relative recruiter-portal-hero">
           <div class="card-body p-4 p-md-5 position-relative" style="z-index: 2;">
-            <span class="badge bg-white text-emerald-700 fw-bold px-3 py-2 rounded-pill mb-3 d-inline-block shadow-sm" style="color: #047857;">✨ Recruiter Platform Enterprise</span>
-            <h2 class="fw-bold mb-2 display-6" style="letter-spacing: -0.02em;">Welcome to your Recruiter Portal</h2>
-            <p class="opacity-90 mb-4 text-light" style="max-width: 720px; font-size: 1.1rem; line-height: 1.6;">
+            <div class="mb-3">
+              <div class="recruiter-hero-badge">
+                <span class="pulse-dot-emerald"></span>
+                <span class="fw-semibold text-light">✨ Recruiter Suite &amp; Talent Intelligence</span>
+                <span class="badge bg-success text-white rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">v2.5 Pro</span>
+              </div>
+            </div>
+
+            <h2 class="recruiter-hero-title">
+              Welcome to your <span style="background: linear-gradient(135deg, #6ee7b7 0%, #38bdf8 50%, #34d399 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Recruiter Portal</span>
+            </h2>
+
+            <p class="recruiter-hero-desc">
               Your dedicated workspace to post job requisitions, screen candidates with semantic match scores, review candidate rankings, and evaluate interviews.
             </p>
-            <div class="d-flex flex-wrap gap-3">
-              <a href="recruiter-dashboard.html" class="btn btn-light fw-bold px-4 py-2.5 shadow-lg hover-lift" style="color: #065f46; border-radius: 12px;">
-                📊 Go to Recruiter Dashboard &rarr;
+
+            <div class="recruiter-hero-actions">
+              <a href="post-job.html" class="recruiter-hero-btn-primary btn-shine hover-lift">
+                <span>➕ Post New Job Opening &rarr;</span>
               </a>
-              <a href="post-job.html" class="btn btn-outline-light fw-bold px-4 py-2.5 hover-lift" style="border-radius: 12px;">
-                ➕ Post New Job Opening &rarr;
+              <a href="recruiter-dashboard.html" class="recruiter-hero-btn-hub btn-shine hover-lift">
+                <span>📊 Go to Recruiter Dashboard &rarr;</span>
               </a>
-              <a href="my-jobs.html" class="btn btn-outline-light fw-bold px-4 py-2.5 hover-lift" style="border-radius: 12px;">
-                💼 Manage Jobs &amp; Applicants &rarr;
+              <a href="upload.html" class="candidate-hero-btn-glass hover-lift">
+                <span>📦 Bulk Upload Resumes &rarr;</span>
               </a>
+              <a href="my-jobs.html" class="candidate-hero-btn-glass hover-lift">
+                <span>💼 Manage Jobs &amp; Applicants &rarr;</span>
+              </a>
+            </div>
+
+            <!-- Quick Intelligence Capability Highlights -->
+            <div class="candidate-hero-quickstats">
+              <div class="candidate-quickstat-item">
+                <span class="text-success fw-bold">✓</span>
+                <span>Semantic NLP Talent Rediscovery</span>
+              </div>
+              <div class="candidate-quickstat-item">
+                <span class="text-info fw-bold">✓</span>
+                <span>Automated Multi-ATS Screening</span>
+              </div>
+              <div class="candidate-quickstat-item">
+                <span class="text-warning fw-bold">✓</span>
+                <span>Proctored Coding &amp; Scorecards</span>
+              </div>
+              <div class="candidate-quickstat-item">
+                <span class="text-primary fw-bold">✓</span>
+                <span>Live Interview &amp; Anti-Cheating Analytics</span>
+              </div>
             </div>
           </div>
         </div>
@@ -110,52 +144,52 @@
         <div class="row g-4 mb-4">
 
           <div class="col-md-6 col-lg-3">
-            <div class="card feature-card p-4 border-0 shadow-sm hover-lift" style="border-radius: 20px;">
+            <div class="card feature-card p-4 border-0 shadow-sm hover-lift h-100 d-flex flex-column" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
               <div class="feature-icon mb-3" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%); color: #10b981;">📊</div>
               <h5 class="fw-bold mb-2">Recruiter Dashboard</h5>
               <p class="text-secondary small mb-3 flex-grow-1" style="line-height: 1.6;">
                 View platform recruitment metrics, active job funnels, and candidate match statistics.
               </p>
-              <a href="recruiter-dashboard.html" class="btn btn-success text-white fw-semibold w-100 hover-lift" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none;">
+              <a href="recruiter-dashboard.html" class="btn btn-success text-white fw-semibold w-100 rounded-pill hover-lift shadow-sm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none;">
                 Open Dashboard &rarr;
               </a>
             </div>
           </div>
 
           <div class="col-md-6 col-lg-3">
-            <div class="card feature-card p-4 border-0 shadow-sm hover-lift" style="border-radius: 20px;">
+            <div class="card feature-card p-4 border-0 shadow-sm hover-lift h-100 d-flex flex-column" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
               <div class="feature-icon mb-3" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%); color: #10b981;">➕</div>
               <h5 class="fw-bold mb-2">Post a New Job</h5>
               <p class="text-secondary small mb-3 flex-grow-1" style="line-height: 1.6;">
                 Create new job requisitions with automatic NLP skill extraction and domain keyword matching.
               </p>
-              <a href="post-job.html" class="btn btn-outline-success fw-semibold w-100 hover-lift">
+              <a href="post-job.html" class="btn btn-outline-success fw-semibold w-100 rounded-pill hover-lift">
                 Post Job &rarr;
               </a>
             </div>
           </div>
 
           <div class="col-md-6 col-lg-3">
-            <div class="card feature-card p-4 border-0 shadow-sm hover-lift" style="border-radius: 20px;">
+            <div class="card feature-card p-4 border-0 shadow-sm hover-lift h-100 d-flex flex-column" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
               <div class="feature-icon mb-3" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%); color: #10b981;">💼</div>
               <h5 class="fw-bold mb-2">Manage Posted Jobs</h5>
               <p class="text-secondary small mb-3 flex-grow-1" style="line-height: 1.6;">
                 Inspect active listings, review applicant candidate counts, and manage job requisitions.
               </p>
-              <a href="my-jobs.html" class="btn btn-outline-success fw-semibold w-100 hover-lift">
+              <a href="my-jobs.html" class="btn btn-outline-success fw-semibold w-100 rounded-pill hover-lift">
                 Manage Jobs &rarr;
               </a>
             </div>
           </div>
 
           <div class="col-md-6 col-lg-3">
-            <div class="card feature-card p-4 border-0 shadow-sm hover-lift" style="border-radius: 20px;">
+            <div class="card feature-card p-4 border-0 shadow-sm hover-lift h-100 d-flex flex-column" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
               <div class="feature-icon mb-3" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%); color: #10b981;">🎯</div>
               <h5 class="fw-bold mb-2">Screen &amp; Rank Applicants</h5>
               <p class="text-secondary small mb-3 flex-grow-1" style="line-height: 1.6;">
                 View ranked candidate lists with transparent match scores and interview evaluation reports.
               </p>
-              <a href="my-jobs.html" class="btn btn-outline-success fw-semibold w-100 hover-lift">
+              <a href="my-jobs.html" class="btn btn-outline-success fw-semibold w-100 rounded-pill hover-lift">
                 View Applicants &rarr;
               </a>
             </div>

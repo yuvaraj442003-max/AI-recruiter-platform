@@ -535,9 +535,26 @@
     companyTag.textContent = q.company_tag || "General Pattern";
     qText.textContent = q.question || "";
 
-    // Render Options
+    // Render Options - Enforce all 4 Options (A, B, C, D)
     const qId = q.id != null ? q.id : `q-${currentIndex}`;
-    optionsContainer.innerHTML = (q.options || []).map((opt, optIdx) => {
+    let opts = [];
+    if (Array.isArray(q.options)) {
+      opts = q.options.map(o => (typeof o === "object" && o !== null) ? (o.option_text || o.text || "") : String(o));
+    }
+    const defaultPads = [
+      "Cannot be determined from the given information",
+      "None of the above",
+      "Both (A) and (B)",
+      "Data insufficient"
+    ];
+    while (opts.length < 4) {
+      opts.push(defaultPads[opts.length] || `Option ${String.fromCharCode(65 + opts.length)}`);
+    }
+    if (opts.length > 4) {
+      opts = opts.slice(0, 4);
+    }
+
+    optionsContainer.innerHTML = opts.map((opt, optIdx) => {
       const isSelected = answers[qId] === optIdx;
       return `
         <div class="test-option-card ${isSelected ? 'selected' : ''}" onclick="selectOption('${qId}', ${optIdx})">
@@ -766,6 +783,30 @@
     alertBox.classList.remove("d-none");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
+
+  // Keyboard shortcuts for options A, B, C, D (and 1, 2, 3, 4)
+  window.addEventListener("keydown", (e) => {
+    if (!runnerView || runnerView.classList.contains("d-none")) return;
+    if (["input", "textarea", "select"].includes(document.activeElement?.tagName?.toLowerCase())) return;
+
+    const key = e.key.toUpperCase();
+    const q = questions[currentIndex];
+    const qId = q?.id != null ? q.id : `q-${currentIndex}`;
+
+    if (key === "A" || key === "1") {
+      selectOption(qId, 0);
+    } else if (key === "B" || key === "2") {
+      selectOption(qId, 1);
+    } else if (key === "C" || key === "3") {
+      selectOption(qId, 2);
+    } else if (key === "D" || key === "4") {
+      selectOption(qId, 3);
+    } else if (key === "ARROWLEFT" && currentIndex > 0) {
+      navigateQuestion(currentIndex - 1);
+    } else if (key === "ARROWRIGHT" && currentIndex < questions.length - 1) {
+      navigateQuestion(currentIndex + 1);
+    }
+  });
 
   function escapeHtml(str) {
     if (!str) return "";

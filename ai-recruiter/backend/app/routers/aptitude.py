@@ -60,6 +60,11 @@ from app.services.ai_aptitude_service import (
     generate_aptitude_questions_ai,
     regenerate_single_question_ai,
 )
+from app.services.question_balancer import (
+    ensure_four_options,
+    balance_and_randomize_options,
+    balance_question_list,
+)
 from app.services.sprint_question_service import (
     generate_dynamic_sprint_question,
     get_non_repeating_daily_sprint_questions,
@@ -96,33 +101,27 @@ def _serialize_test_detail(test: AptitudeTest, db: Session) -> AptitudeTestDetai
     questions_out: List[AptitudeQuestionDetail] = []
     for q in test.questions:
         options_out: List[AptitudeOptionOut] = []
+        raw_list = []
         if q.options:
-            for opt in q.options:
-                options_out.append(
-                    AptitudeOptionOut(
-                        id=opt.id,
-                        option_letter=opt.option_letter,
-                        option_text=opt.option_text,
-                        is_correct=opt.is_correct,
-                        order_index=opt.order_index,
-                    )
-                )
+            raw_list = [opt.option_text for opt in sorted(q.options, key=lambda o: o.order_index)]
         elif q.options_json:
             try:
-                raw_opts = json.loads(q.options_json)
-                letters = ["A", "B", "C", "D"]
-                for idx, opt_str in enumerate(raw_opts):
-                    options_out.append(
-                        AptitudeOptionOut(
-                            id=None,
-                            option_letter=letters[idx] if idx < 4 else f"Opt {idx+1}",
-                            option_text=str(opt_str),
-                            is_correct=(idx == q.correct_option_index),
-                            order_index=idx,
-                        )
-                    )
+                raw_list = json.loads(q.options_json)
             except Exception:
-                options_out = []
+                raw_list = []
+        # Enforce all 4 options (A, B, C, D)
+        opts4 = ensure_four_options(raw_list)
+        letters = ["A", "B", "C", "D"]
+        for idx, opt_str in enumerate(opts4):
+            options_out.append(
+                AptitudeOptionOut(
+                    id=None,
+                    option_letter=letters[idx],
+                    option_text=str(opt_str),
+                    is_correct=(idx == q.correct_option_index),
+                    order_index=idx,
+                )
+            )
 
         questions_out.append(
             AptitudeQuestionDetail(
@@ -852,28 +851,24 @@ def start_candidate_test_attempt(
     taking_questions: List[CandidateTakingQuestion] = []
     for idx, q in enumerate(questions, start=1):
         taking_options: List[CandidateTakingOption] = []
+        raw_list = []
         if q.options:
-            for opt in sorted(q.options, key=lambda o: o.order_index):
-                taking_options.append(
-                    CandidateTakingOption(
-                        id=opt.id,
-                        option_letter=opt.option_letter,
-                        option_text=opt.option_text,
-                    )
-                )
+            raw_list = [opt.option_text for opt in sorted(q.options, key=lambda o: o.order_index)]
         elif q.options_json:
             try:
-                raw_opts = json.loads(q.options_json)
-                for opt_idx, opt_str in enumerate(raw_opts):
-                    taking_options.append(
-                        CandidateTakingOption(
-                            id=q.id,
-                            option_letter=letters[opt_idx],
-                            option_text=opt_str,
-                        )
-                    )
+                raw_list = json.loads(q.options_json)
             except Exception:
-                pass
+                raw_list = []
+        # Enforce all 4 options (A, B, C, D)
+        opts4 = ensure_four_options(raw_list)
+        for opt_idx, opt_str in enumerate(opts4):
+            taking_options.append(
+                CandidateTakingOption(
+                    id=q.id,
+                    option_letter=letters[opt_idx],
+                    option_text=opt_str,
+                )
+            )
 
         taking_questions.append(
             CandidateTakingQuestion(

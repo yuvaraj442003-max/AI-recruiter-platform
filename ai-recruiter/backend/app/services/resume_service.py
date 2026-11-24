@@ -177,6 +177,7 @@ def process_resume(
             user_obj.name = clean_name
             db.add(user_obj)
 
+    extracted_certs = fields.get("certifications")
     if autofill.get("certifications"):
         profile.certifications = autofill.get("certifications")
     elif extracted_certs:

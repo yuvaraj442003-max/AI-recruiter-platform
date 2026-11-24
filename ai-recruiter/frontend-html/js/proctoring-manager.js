@@ -217,8 +217,8 @@ class ProctoringManager {
           // Initialize Face Detector for Pre-Check Preview
           faceBadge.style.display = "block";
           const preCheckFaceDetector = new ProctorCameraDetector(videoEl, {
-            intervalMs: 600,
-            multiFaceDebounceCount: 2,
+            intervalMs: 500,
+            multiFaceDebounceCount: 1,
             onFaceUpdate: (f) => {
               const faceIcon = modalWrapper.querySelector("#chk-face-icon");
               const faceStatus = modalWrapper.querySelector("#chk-face-status");
@@ -352,8 +352,8 @@ class ProctoringManager {
     const activeVid = this.videoElement || document.querySelector("video");
     if (activeVid) {
       this.cameraDetector = new ProctorCameraDetector(activeVid, {
-        intervalMs: 1000,
-        multiFaceDebounceCount: 2,
+        intervalMs: 500,
+        multiFaceDebounceCount: 1,
         noFaceDebounceMs: 5000,
         onFaceUpdate: (f) => this.updateHudFaceStatus(f),
         onNoFaceFlagged: (ev) => {

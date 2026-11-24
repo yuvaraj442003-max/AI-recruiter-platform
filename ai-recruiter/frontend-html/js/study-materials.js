@@ -1387,6 +1387,30 @@
         }
       };
     }
+
+    // Keyboard shortcuts for options A, B, C, D (and 1, 2, 3, 4) in active quiz
+    window.addEventListener("keydown", (e) => {
+      if (!quizTakingView || quizTakingView.style.display === "none") return;
+      if (["input", "textarea", "select"].includes(document.activeElement?.tagName?.toLowerCase())) return;
+
+      const key = e.key.toUpperCase();
+      const q = activeQuiz.questions && activeQuiz.questions[activeQuiz.currentIndex];
+      if (!q) return;
+
+      if (key === "A" || key === "1") {
+        selectQuizOption(q.id, 0);
+      } else if (key === "B" || key === "2") {
+        selectQuizOption(q.id, 1);
+      } else if (key === "C" || key === "3") {
+        selectQuizOption(q.id, 2);
+      } else if (key === "D" || key === "4") {
+        selectQuizOption(q.id, 3);
+      } else if (key === "ARROWLEFT" && activeQuiz.currentIndex > 0) {
+        prevQuizQuestion();
+      } else if (key === "ARROWRIGHT" && activeQuiz.currentIndex < activeQuiz.questions.length - 1) {
+        nextQuizQuestion();
+      }
+    });
   }
 
   window.startMilestoneQuiz = async function (roadmapSlug, milestoneId, isAi = false) {
@@ -1517,6 +1541,20 @@
       }
       if (!Array.isArray(options) || !options.length) {
         options = ["Option A", "Option B", "Option C", "Option D"];
+      }
+      // Guarantee exactly 4 options with letters A, B, C, D
+      options = options.map(opt => (typeof opt === "object" && opt !== null) ? (opt.option_text || opt.text || "") : String(opt));
+      const padDistractors = [
+        "Cannot be determined from the given information",
+        "None of the above",
+        "Both (A) and (B)",
+        "Data insufficient"
+      ];
+      while (options.length < 4) {
+        options.push(padDistractors[options.length] || `Option ${String.fromCharCode(65 + options.length)}`);
+      }
+      if (options.length > 4) {
+        options = options.slice(0, 4);
       }
       const currentSelected = activeQuiz.answers[q.id];
 
@@ -2590,12 +2628,24 @@
       fetchedQuestions = sourceList.map((sq, idx) => {
         let rawOpts = sq.options || ["Option A", "Option B", "Option C", "Option D"];
         let opts = Array.isArray(rawOpts) ? [...rawOpts] : ["Option A", "Option B", "Option C", "Option D"];
-        let corrIdx = (sq.correct_option_index !== undefined) ? Number(sq.correct_option_index) : 0;
-        if (corrIdx < 0 || corrIdx >= opts.length) corrIdx = 0;
+        opts = opts.map(o => (typeof o === "object" && o !== null) ? (o.option_text || o.text || "") : String(o));
+        const padDistractors = [
+          "Cannot be determined from the given information",
+          "None of the above",
+          "Both (A) and (B)",
+          "Data insufficient"
+        ];
+        while (opts.length < 4) {
+          opts.push(padDistractors[opts.length] || `Option ${String.fromCharCode(65 + opts.length)}`);
+        }
+        if (opts.length > 4) opts = opts.slice(0, 4);
 
-        // Ensure correct options are balanced across A, B, C, D instead of always Option A
-        const targetIdx = idx % opts.length;
-        if (corrIdx !== targetIdx && opts.length >= 2) {
+        let corrIdx = (sq.correct_option_index !== undefined) ? Number(sq.correct_option_index) : 0;
+        if (corrIdx < 0 || corrIdx >= 4) corrIdx = 0;
+
+        // Ensure correct options are balanced across all four options A, B, C, D (0, 1, 2, 3)
+        const targetIdx = idx % 4;
+        if (corrIdx !== targetIdx) {
           const correctVal = opts[corrIdx];
           opts.splice(corrIdx, 1);
           opts.splice(targetIdx, 0, correctVal);

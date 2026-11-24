@@ -25,6 +25,7 @@ from app.models.student import (
     CandidateTestAttempt,
 )
 from app.models.weekly_challenge import WeeklyAptitudeAttempt, WeeklyAptitudeSet
+from app.services.question_balancer import ensure_four_options
 
 logger = logging.getLogger("ai_recruiter.sprint_question_service")
 
@@ -264,11 +265,14 @@ CRITICAL RULES:
         clean_json = clean_json.strip()
 
         data = json.loads(clean_json)
-        opts = [str(o) for o in data.get("options", [])][:4]
-        corr_idx = int(data.get("correct_option_index", 0))
+        raw_opts = data.get("options", [])
+        raw_corr_idx = int(data.get("correct_option_index", 0))
+        corr_val = raw_opts[raw_corr_idx] if (0 <= raw_corr_idx < len(raw_opts)) else None
+        opts = ensure_four_options(raw_opts, correct_val=corr_val, context_hint=data.get("question", ""))
+        corr_idx = opts.index(corr_val) if (corr_val and corr_val in opts) else 0
 
-        if len(opts) == 4 and 0 <= corr_idx <= 3 and data.get("question"):
-            # Ensure random option distribution
+        if data.get("question"):
+            # Ensure random option distribution across all 4 slots (A, B, C, D)
             target_slot = random.randint(0, 3)
             if target_slot != corr_idx:
                 opts[corr_idx], opts[target_slot] = opts[target_slot], opts[corr_idx]
@@ -455,10 +459,10 @@ def _synthesize_parameterized_question(
         question_text = f"A cloud service provider generated revenue of ${rev1} million in Q1 and ${rev2} million in Q4. What was the percentage growth in quarterly revenue?"
         explanation = f"Growth = ((Q4 Revenue - Q1 Revenue) / Q1 Revenue) * 100 = (({rev2} - {rev1}) / {rev1}) * 100 = {pct_growth}%."
 
-    # Assemble and randomize options
-    options = [ans_str] + distractors[:3]
+    # Assemble and randomize options across strictly 4 options (A, B, C, D)
+    options = ensure_four_options([ans_str] + distractors[:3], correct_val=ans_str, context_hint=question_text)
     random.shuffle(options)
-    correct_idx = options.index(ans_str)
+    correct_idx = options.index(ans_str) if ans_str in options else 0
 
     q = AptitudeQuestion(
         topic_id=topic.id if topic else None,

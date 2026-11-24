@@ -6,20 +6,21 @@
 
 /* Main Card Containers */
 .journey-card {
-  background: #ffffff;
-  border: 1px solid #f1f5f9;
+  background: var(--ar-card-bg, #ffffff);
+  border: 1px solid var(--ar-card-border, #f1f5f9);
   border-radius: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 10px 15px -5px rgba(0, 0, 0, 0.02);
   padding: 24px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .journey-card:hover {
-  border-color: #e2e8f0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: var(--ar-shadow-hover, 0 8px 30px rgba(0, 0, 0, 0.08));
+  transform: translateY(-2px);
 }
 
 .journey-card-header {
@@ -32,7 +33,7 @@
 .journey-card-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--ar-text, #1e293b);
   margin-bottom: 0;
   letter-spacing: -0.01em;
 }
@@ -521,4 +522,43 @@
 
 #courseTrackOptionsList::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* ==========================================================================
+   Dark Theme Support for Learning Journey
+   ========================================================================== */
+[data-bs-theme="dark"] .journey-card {
+  background: var(--ar-card-bg, #111827);
+  border-color: var(--ar-card-border, rgba(255, 255, 255, 0.08));
+}
+
+[data-bs-theme="dark"] .journey-card-title {
+  color: var(--ar-text, #f8fafc);
+}
+
+[data-bs-theme="dark"] .roadmap-step:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-bs-theme="dark"] .roadmap-timeline::before {
+  background: #334155;
+}
+
+[data-bs-theme="dark"] .roadmap-node {
+  background: var(--ar-card-bg, #111827);
+  border-color: #475569;
+}
+
+[data-bs-theme="dark"] .course-track-item .course-title {
+  color: var(--ar-text, #f8fafc);
+}
+
+[data-bs-theme="dark"] .course-track-item .course-subtitle {
+  color: var(--ar-text-muted, #94a3b8);
+}
+
+[data-bs-theme="dark"] #searchCourseTrackInput {
+  background: var(--ar-card-bg, #111827) !important;
+  color: var(--ar-text, #f8fafc) !important;
+  border-color: var(--ar-card-border, rgba(255, 255, 255, 0.15)) !important;
 }

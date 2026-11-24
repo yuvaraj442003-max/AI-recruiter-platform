@@ -46,6 +46,7 @@ from app.services.ai_aptitude_service import generate_aptitude_questions_ai
 from app.services.question_balancer import (
     balance_question_list,
     balance_and_randomize_options,
+    ensure_four_options,
 )
 
 logger = logging.getLogger("ai_recruiter.study_materials")
@@ -1686,17 +1687,19 @@ def start_company_mock_test(
     for idx, sq in enumerate(sample_questions):
         qid = f"{session_id}-q{idx+1}"
         raw_options = sq.get("options")
-        if isinstance(raw_options, list) and len(raw_options) >= 2:
-            opts = [str(o) for o in raw_options]
-        else:
-            opts = ["Option A", "Option B", "Option C", "Option D"]
-
         try:
             corr_idx = int(sq.get("correct_option_index", 0))
-            if corr_idx < 0 or corr_idx >= len(opts):
-                corr_idx = 0
         except (ValueError, TypeError):
             corr_idx = 0
+        corr_val = None
+        if isinstance(raw_options, list) and 0 <= corr_idx < len(raw_options):
+            corr_val = str(raw_options[corr_idx]).strip()
+
+        opts = ensure_four_options(raw_options, correct_val=corr_val)
+        if corr_val and corr_val in opts:
+            corr_idx = opts.index(corr_val)
+        else:
+            corr_idx = min(max(0, corr_idx), 3)
 
         q_item = {
             "id": qid,
@@ -1740,7 +1743,7 @@ def start_company_mock_test(
             )
             for idx, eq in enumerate(extra_qs):
                 qid = f"{session_id}-q{len(questions_out)+1}"
-                eq_opts = [str(o) for o in eq.options] if isinstance(eq.options, list) and len(eq.options) >= 2 else ["Option A", "Option B", "Option C", "Option D"]
+                eq_opts = ensure_four_options(eq.options)
                 stored_questions.append({
                     "id": qid,
                     "question": str(eq.question),

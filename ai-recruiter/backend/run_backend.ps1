@@ -33,8 +33,7 @@ if (-not $pgActive) {
     if ($pgActiveNow) {
         Write-Host "[+] PostgreSQL Primary Database started successfully on port 5432!" -ForegroundColor Green
     } else {
-        Write-Host "[!] Error: PostgreSQL failed to start on port 5432. Please ensure PostgreSQL 17 is running." -ForegroundColor Red
-        Exit 1
+        Write-Host "[!] Warning: PostgreSQL is not responding on port 5432. Proceeding with database fallback..." -ForegroundColor Yellow
     }
 } else {
     Write-Host "[+] PostgreSQL Primary Database is already running on port 5432." -ForegroundColor Green

@@ -975,14 +975,17 @@ CURATED_WEEKLY_APTITUDE = [
 
 def _distribute_curated_options(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Distributes correct answer across options 0=A, 1=B, 2=C, 3=D evenly (~25% each)."""
+    from app.services.question_balancer import ensure_four_options
     for i, item in enumerate(items):
         target = i % 4
-        opts = list(item.get("options", []))
+        opts = ensure_four_options(item.get("options", []), context_hint=item.get("question", ""))
         curr = item.get("correct", 0)
-        if len(opts) == 4 and curr != target:
+        if curr < 0 or curr >= 4:
+            curr = 0
+        if curr != target:
             opts[curr], opts[target] = opts[target], opts[curr]
-            item["options"] = opts
-            item["correct"] = target
+        item["options"] = opts
+        item["correct"] = target
     return items
 
 _distribute_curated_options(CURATED_WEEKLY_APTITUDE)
@@ -1596,17 +1599,21 @@ def ensure_weekly_aptitude_set(
 
     # Tag selected questions with this week's code to prevent repeats
     # and guarantee correct answers are evenly balanced across A (0), B (1), C (2), D (3)
+    from app.services.question_balancer import ensure_four_options
     for q_idx, q in enumerate(selected):
         q.week_assigned = target_week
         target_idx = q_idx % 4
         if q.options_json:
             try:
-                opts = json.loads(q.options_json)
+                raw_opts = json.loads(q.options_json)
                 curr = int(q.correct_option_index)
-                if len(opts) == 4 and curr != target_idx:
+                corr_val = raw_opts[curr] if (0 <= curr < len(raw_opts)) else None
+                opts = ensure_four_options(raw_opts, correct_val=corr_val, context_hint=q.question)
+                curr = opts.index(corr_val) if (corr_val and corr_val in opts) else 0
+                if curr != target_idx:
                     opts[curr], opts[target_idx] = opts[target_idx], opts[curr]
-                    q.options_json = json.dumps(opts)
-                    q.correct_option_index = target_idx
+                q.options_json = json.dumps(opts)
+                q.correct_option_index = target_idx
             except Exception:
                 pass
 
@@ -1996,19 +2003,25 @@ Ensure the JSON is strictly parseable, no markdown backticks, no trailing commas
         data = json.loads(clean_json)
         data["difficulty"] = difficulty
 
+        import random
+        from app.services.question_balancer import ensure_four_options
+        raw_corr = int(data.get("correct_option_index", 0))
+        raw_opts = list(data.get("options", []))
+        corr_val = raw_opts[raw_corr] if (0 <= raw_corr < len(raw_opts)) else None
+        opts = ensure_four_options(raw_opts, correct_val=corr_val, context_hint=data.get("question", ""))
+        curr_corr = opts.index(corr_val) if (corr_val and corr_val in opts) else 0
+
+        # Ensure random option distribution across all four options A, B, C, D
+        target_slot = random.randint(0, 3)
+        if target_slot != curr_corr:
+            opts[curr_corr], opts[target_slot] = opts[target_slot], opts[curr_corr]
+            curr_corr = target_slot
+        data["options"] = opts
+        data["correct_option_index"] = curr_corr
+
         valid, err = validate_aptitude_question_payload(data)
         if not valid:
             raise ValueError(f"AI response failed schema validation: {err}")
-
-        # Ensure correct option is distributed if model defaulted to 0
-        import random
-        opts = list(data["options"])
-        curr_corr = int(data.get("correct_option_index", 0))
-        target_slot = random.randint(0, 3)
-        if curr_corr == 0 and len(opts) == 4 and target_slot != 0:
-            opts[curr_corr], opts[target_slot] = opts[target_slot], opts[curr_corr]
-            data["options"] = opts
-            data["correct_option_index"] = target_slot
 
         q = AptitudeQuestion(
             topic_id=topic.id if topic else uuid.uuid4(),
@@ -2323,6 +2336,7 @@ def get_topic_aptitude_questions(
         ]
 
     result = []
+    from app.services.question_balancer import ensure_four_options
     for q in questions:
         opts = []
         if q.options_json:
@@ -2330,6 +2344,7 @@ def get_topic_aptitude_questions(
                 opts = json.loads(q.options_json)
             except Exception:
                 opts = []
+        opts = ensure_four_options(opts, context_hint=q.question)
         result.append({
             "id": str(q.id),
             "subtopic": q.subtopic,

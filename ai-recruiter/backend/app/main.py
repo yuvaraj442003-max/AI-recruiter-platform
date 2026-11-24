@@ -465,6 +465,12 @@ app.mount("/uploads", StaticFiles(directory=str(_uploads_dir)), name="uploads")
 
 @app.get("/", tags=["Root"])
 def root():
+    index_file = _frontend_dir / "index.html"
+    if index_file.exists():
+        return FileResponse(
+            str(index_file),
+            headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"}
+        )
     return {
         "success": True,
         "message": f"{settings.APP_NAME} API is running live",

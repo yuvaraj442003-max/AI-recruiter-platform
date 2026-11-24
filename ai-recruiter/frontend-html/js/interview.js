@@ -188,18 +188,26 @@
     if (window.ProctorCameraDetector && proctorVideo) {
       if (cameraDetector) cameraDetector.stop();
       cameraDetector = new window.ProctorCameraDetector(proctorVideo, {
-        intervalMs: 1000,
-        multiFaceDebounceCount: 2,
+        intervalMs: 500,
+        multiFaceDebounceCount: 1, // Immediate alert upon second face
         onFaceUpdate: ({ count, state }) => {
           const antiCheatingBadge = document.getElementById("anti-cheating-badge");
+          const camWrapper = document.getElementById("proctor-cam-wrapper");
+          const multiFaceOverlay = document.getElementById("multi-face-overlay-alert");
+
           if (state === "MULTIPLE_FACES") {
-            camBadge.className = "badge bg-warning text-dark";
+            if (camWrapper) camWrapper.style.borderColor = "#ef4444";
+            if (multiFaceOverlay) multiFaceOverlay.classList.remove("d-none");
+            camBadge.className = "badge bg-danger text-white";
             camBadge.textContent = `⚠️ Multiple Faces (${count})`;
             if (antiCheatingBadge) {
-              antiCheatingBadge.className = "badge bg-warning text-dark px-3 py-2 fw-bold";
+              antiCheatingBadge.className = "badge bg-danger text-white px-3 py-2 fw-bold";
               antiCheatingBadge.textContent = `⚠️ Multiple Persons (${count})`;
             }
+            showAlert(`⚠️ Multiple faces (${count}) detected in camera view! Please ensure only you are visible.`, "danger");
           } else if (state === "NO_FACE") {
+            if (camWrapper) camWrapper.style.borderColor = "#ea580c";
+            if (multiFaceOverlay) multiFaceOverlay.classList.add("d-none");
             camBadge.className = "badge bg-warning text-dark";
             camBadge.textContent = "⚠️ Face Not Detected";
             if (antiCheatingBadge) {
@@ -207,6 +215,8 @@
               antiCheatingBadge.textContent = "⚠️ Candidate Not Visible";
             }
           } else {
+            if (camWrapper) camWrapper.style.borderColor = "#cbd5e1";
+            if (multiFaceOverlay) multiFaceOverlay.classList.add("d-none");
             camBadge.className = "badge bg-success";
             camBadge.textContent = "Camera Active ✓";
             if (antiCheatingBadge) {
@@ -216,7 +226,7 @@
           }
         },
         onMultipleFaces: (ev) => {
-          showAlert(`⚠️ Multiple faces (${ev.count}) detected. Please ensure that only you are visible in the camera.`, "warning");
+          showAlert(`⚠️ Multiple faces (${ev.count}) detected. Please ensure that only you are visible in the camera.`, "danger");
           if (window.proctoringAPI && interviewId) {
             window.proctoringAPI.recordEvent(interviewId, {
               event_type: "MULTIPLE_FACES_DETECTED",
@@ -228,6 +238,11 @@
         },
         onMultipleFacesCleared: (ev) => {
           showAlert("✓ Multiple persons cleared: Only single candidate detected.", "info");
+          setTimeout(() => {
+            if (alertBox && alertBox.textContent.includes("cleared")) {
+              alertBox.classList.add("d-none");
+            }
+          }, 4000);
         },
         onNoFaceFlagged: (ev) => {
           showAlert("⚠️ Face absence detected: Candidate not visible in camera frame.", "warning");
