@@ -1491,14 +1491,13 @@ nav.sticky-top {
    =================================================== */
 .candidate-portal-hero {
   position: relative;
-  background: radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.52) 0%, transparent 50%),
-              radial-gradient(circle at 88% 28%, rgba(2, 132, 199, 0.45) 0%, transparent 48%),
-              radial-gradient(circle at 50% 115%, rgba(139, 92, 246, 0.38) 0%, transparent 52%),
-              radial-gradient(circle at 75% 85%, rgba(59, 130, 246, 0.32) 0%, transparent 46%),
-              linear-gradient(135deg, #0b1329 0%, #172554 40%, #1e1b4b 70%, #1e3a8a 100%) !important;
-  border: 1px solid rgba(147, 197, 253, 0.32) !important;
+  background: radial-gradient(circle at 14% 24%, rgba(99, 102, 241, 0.42) 0%, transparent 45%),
+              radial-gradient(circle at 86% 75%, rgba(56, 189, 248, 0.35) 0%, transparent 45%),
+              radial-gradient(circle at 50% 120%, rgba(139, 92, 246, 0.32) 0%, transparent 50%),
+              linear-gradient(135deg, #070a14 0%, #0c1224 50%, #12183a 100%) !important;
+  border: 1px solid rgba(129, 140, 248, 0.28) !important;
   border-radius: 28px !important;
-  box-shadow: 0 25px 60px -12px rgba(15, 23, 42, 0.45), 0 0 35px rgba(79, 70, 229, 0.22) !important;
+  box-shadow: 0 25px 60px -12px rgba(6, 10, 24, 0.65), 0 0 35px rgba(99, 102, 241, 0.18) !important;
   overflow: hidden;
   color: #ffffff;
   margin-bottom: 2rem;
@@ -1509,11 +1508,11 @@ nav.sticky-top {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
   background-size: 36px 36px;
-  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 60%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 60%, transparent 100%);
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 40%, #000 60%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 40%, #000 60%, transparent 100%);
   pointer-events: none;
   z-index: 1;
 }
@@ -1523,10 +1522,10 @@ nav.sticky-top {
   position: absolute;
   top: -60px;
   right: -40px;
-  width: 320px;
-  height: 320px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, rgba(2, 132, 199, 0.2) 50%, transparent 70%);
-  filter: blur(48px);
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, rgba(14, 165, 233, 0.15) 50%, transparent 70%);
+  filter: blur(40px);
   pointer-events: none;
   z-index: 1;
 }
@@ -1655,15 +1654,31 @@ nav.sticky-top {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   padding: 0.35rem 0.95rem;
   border-radius: 9999px;
   font-size: 0.8rem;
-  color: #e2e8f0;
+  color: #cbd5e1;
   font-weight: 500;
+}
+
+.candidate-quickstat-item .check-emerald {
+  color: #34d399 !important;
+}
+
+.candidate-quickstat-item .check-cyan {
+  color: #38bdf8 !important;
+}
+
+.candidate-quickstat-item .check-amber {
+  color: #fbbf24 !important;
+}
+
+.candidate-quickstat-item .check-violet {
+  color: #a78bfa !important;
 }
 
 /* ===================================================
