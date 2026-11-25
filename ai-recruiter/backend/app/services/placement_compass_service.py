@@ -825,7 +825,7 @@ def compare_companies(company_ids: List[str]) -> List[Dict[str, Any]]:
     comp_map = {c["id"]: c for c in BENCHMARK_COMPANIES}
 
     for cid in company_ids[:3]:
-        comp = comp_map.get(cid)
+        comp = comp_map.get(cid) or comp_map.get(cid.replace("comp_", "") if isinstance(cid, str) else cid)
         if comp:
             results.append({
                 "id": comp["id"],
@@ -1000,7 +1000,8 @@ def toggle_candidate_document_status(candidate_id: str, doc_id: str, is_ready: b
 
 def get_company_review_insights(company_id: str) -> Dict[str, Any]:
     """Returns segregated Reddit vs Glassdoor reviews for a company."""
-    comp = next((c for c in BENCHMARK_COMPANIES if c["id"] == company_id), None)
+    clean_id = company_id.replace("comp_", "") if isinstance(company_id, str) else company_id
+    comp = next((c for c in BENCHMARK_COMPANIES if c["id"] == company_id or c["id"] == clean_id), None)
     if not comp:
         comp = BENCHMARK_COMPANIES[0]
 
@@ -3383,9 +3384,9 @@ def generate_school_exam_calendar_url(exam_dict: Dict[str, Any]) -> str:
 def list_school_career_paths(category: Optional[str] = None, grade_level: Optional[str] = None) -> List[Dict[str, Any]]:
     """Returns curated directory of career paths in Tamil Nadu, optionally filtered."""
     results = SCHOOL_CAREER_PATHS
-    if category and category != "all":
+    if isinstance(category, str) and category != "all":
         results = [p for p in results if p.get("category") == category]
-    if grade_level and grade_level != "all":
+    if isinstance(grade_level, str) and grade_level != "all":
         if grade_level == "after_10th":
             results = [p for p in results if p.get("grade_level") == "after_10th" or p.get("grade_level") == "after_10th_or_12th" or (p.get("eligible_grades") and "after_10th" in p.get("eligible_grades"))]
         elif grade_level == "after_12th":
@@ -3397,7 +3398,13 @@ def list_school_career_paths(category: Optional[str] = None, grade_level: Option
 
 def get_school_career_path(path_id: str) -> Optional[Dict[str, Any]]:
     """Returns details for a single career path."""
-    return next((p for p in SCHOOL_CAREER_PATHS if p["id"] == path_id), None)
+    if not path_id or not isinstance(path_id, str):
+        return None
+    pid = path_id.strip().lower()
+    match = next((p for p in SCHOOL_CAREER_PATHS if p["id"] == path_id or p["id"].lower() == pid), None)
+    if not match:
+        match = next((p for p in SCHOOL_CAREER_PATHS if pid in p["id"].lower() or p["id"].lower() in pid), None)
+    return match
 
 
 def compare_school_career_paths(path_ids: List[str]) -> List[Dict[str, Any]]:
@@ -3512,13 +3519,13 @@ def get_school_entrance_exams_list(
     """Returns upcoming school entrance exams with Google Calendar sync URLs, filtered by academic group, stage, search keyword, or application status."""
     results = []
     for exam in SCHOOL_ENTRANCE_EXAMS:
-        if group and group.lower() != "all":
+        if group and isinstance(group, str) and group.lower() != "all":
             t_groups = [g.lower() for g in exam.get("target_groups", [])]
             if group.lower() not in t_groups:
                 continue
-        if stage and stage.lower() != "all":
+        if stage and isinstance(stage, str) and stage.lower() != "all":
             # If student selected 10th Standard (General SSLC), they are strictly in the after-10th stage
-            if group and group.lower() == "sslc_10th":
+            if group and isinstance(group, str) and group.lower() == "sslc_10th":
                 if exam.get("target_stage") != "after_10th":
                     continue
             else:
@@ -3526,7 +3533,7 @@ def get_school_entrance_exams_list(
                     continue
                 if stage == "after_12th" and exam.get("target_stage") != "after_12th":
                     continue
-        if status and status.lower() != "all":
+        if status and isinstance(status, str) and status.lower() != "all":
             exam_status = (exam.get("application_status") or "").lower()
             is_merit = "no entrance exam" in str(exam.get("admission_type", "")).lower()
             if status.lower() == "open" and exam_status != "open":
@@ -3537,7 +3544,7 @@ def get_school_entrance_exams_list(
                 continue
             elif status.lower() == "merit" and not is_merit and exam_status != "merit":
                 continue
-        if search and search.strip():
+        if search and isinstance(search, str) and search.strip():
             terms = [t.lower() for t in search.strip().split() if t.strip()]
             searchable_text = " ".join([
                 str(exam.get("exam_name", "")),
@@ -5022,20 +5029,31 @@ COURSE_COMPARISON_REPOSITORY: List[Dict[str, Any]] = [
 
 def list_top_colleges(category: Optional[str] = None) -> List[Dict[str, Any]]:
     """Returns top colleges directory (100% Tamil Nadu next-steps), optionally filtered by category."""
-    if category and category != "all":
-        return [c for c in TOP_COLLEGES_DATABASE if c["category"] == category]
+    if isinstance(category, str) and category != "all":
+        cat_lower = category.lower()
+        return [c for c in TOP_COLLEGES_DATABASE if c["category"].lower() == cat_lower or cat_lower in c["category"].lower()]
     return TOP_COLLEGES_DATABASE
 
 
 def get_top_college(college_id: str) -> Optional[Dict[str, Any]]:
     """Returns single college profile."""
-    return next((c for c in TOP_COLLEGES_DATABASE if c["id"] == college_id), None)
+    if not college_id or not isinstance(college_id, str):
+        return None
+    cid = college_id.strip().lower()
+    clean_id = cid.replace("col_", "")
+    return next((c for c in TOP_COLLEGES_DATABASE if c["id"] == college_id or c["id"].lower() == cid or c["id"].lower() == clean_id), None)
 
 
 def compare_top_colleges(college_ids: List[str]) -> List[Dict[str, Any]]:
     """Returns up to 3 colleges for side-by-side comparison."""
     c_map = {c["id"]: c for c in TOP_COLLEGES_DATABASE}
-    return [c_map[cid] for cid in college_ids[:3] if cid in c_map]
+    res = []
+    for cid in college_ids[:3]:
+        clean_id = cid.replace("col_", "") if isinstance(cid, str) else cid
+        match = c_map.get(cid) or c_map.get(clean_id)
+        if match and match not in res:
+            res.append(match)
+    return res
 
 
 def list_comparable_courses() -> List[Dict[str, Any]]:
@@ -6355,12 +6373,12 @@ def get_all_career_positions(
 ) -> List[Dict[str, Any]]:
     """Returns all career positions filtered by sector, stage, academic group, or search term."""
     results = list(CAREER_POSITIONS_DATABASE)
-    if group and group.lower() != "all":
+    if group and isinstance(group, str) and group.lower() != "all":
         g = group.lower()
         results = [p for p in results if p.get("target_group") == g or g in p.get("target_groups", [])]
-    if sector and sector.lower() != "all":
+    if sector and isinstance(sector, str) and sector.lower() != "all":
         results = [p for p in results if p.get("sector", "").lower() == sector.lower()]
-    if stage and stage.lower() != "all":
+    if stage and isinstance(stage, str) and stage.lower() != "all":
         if stage == "after_10th":
             results = [p for p in results if p.get("qualification_stage") in ["after_10th", "after_10th_12th"]]
         elif stage == "after_12th":
@@ -6369,7 +6387,7 @@ def get_all_career_positions(
             results = [p for p in results if p.get("qualification_stage") in ["diploma_graduate"]]
         else:
             results = [p for p in results if p.get("qualification_stage") == stage]
-    if search:
+    if search and isinstance(search, str):
         s = search.lower().strip()
         filtered = []
         for p in results:

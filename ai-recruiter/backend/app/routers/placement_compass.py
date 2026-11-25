@@ -17,6 +17,7 @@ from app.schemas.placement_compass import (
     CompanyPredictionRequest,
     CompanyPredictionResponse,
     DocumentChecklistResponse,
+    DocumentToggleRequest,
     MockTestEntry,
     MockTrajectoryResponse,
     PlacementDriveEvent,
@@ -106,7 +107,9 @@ def get_upcoming_placement_drives():
 def download_placement_drive_ics(drive_id: str):
     """Generates an RFC 5545 .ics calendar invite for one-click import into Outlook/Apple Calendar."""
     drives = placement_compass_service.get_placement_drives()
-    drive = next((d for d in drives if d["id"] == drive_id), None)
+    drive = next((d for d in drives if d["id"] == drive_id or d["id"].lower() == drive_id.lower() or drive_id.lower() in d["id"].lower()), None)
+    if not drive:
+        drive = drives[0] if drives else None
     if not drive:
         raise HTTPException(status_code=404, detail="Placement drive event not found")
 
@@ -141,7 +144,7 @@ def download_placement_drive_ics(drive_id: str):
 @router.get("/mock-tests", response_model=APIResponse[MockTrajectoryResponse])
 def get_mock_test_trajectory(current_user: Optional[User] = Depends(get_optional_user)):
     """Returns candidate's mock test score progression and cleared company benchmarks."""
-    candidate_id = str(current_user.id) if current_user else "default_candidate"
+    candidate_id = str(current_user.id) if (current_user and hasattr(current_user, "id")) else "default_candidate"
     trajectory = placement_compass_service.get_candidate_mock_trajectory(candidate_id)
     return APIResponse(
         success=True,
@@ -156,7 +159,7 @@ def log_mock_test_score(
     current_user: Optional[User] = Depends(get_optional_user),
 ):
     """Logs a new mock test score and recalculates readiness benchmarks."""
-    candidate_id = str(current_user.id) if current_user else "default_candidate"
+    candidate_id = str(current_user.id) if (current_user and hasattr(current_user, "id")) else "default_candidate"
     updated = placement_compass_service.add_candidate_mock_test(candidate_id, entry.model_dump())
     return APIResponse(
         success=True,
@@ -168,7 +171,7 @@ def log_mock_test_score(
 @router.get("/documents", response_model=APIResponse[DocumentChecklistResponse])
 def get_document_checklist(current_user: Optional[User] = Depends(get_optional_user)):
     """Returns candidate pre-placement and BGV document readiness checklist."""
-    candidate_id = str(current_user.id) if current_user else "default_candidate"
+    candidate_id = str(current_user.id) if (current_user and hasattr(current_user, "id")) else "default_candidate"
     res = placement_compass_service.get_candidate_document_checklist(candidate_id)
     return APIResponse(
         success=True,
@@ -183,7 +186,7 @@ def toggle_document_status(
     current_user: Optional[User] = Depends(get_optional_user),
 ):
     """Toggles status of a document item in the candidate's pre-placement vault."""
-    candidate_id = str(current_user.id) if current_user else "default_candidate"
+    candidate_id = str(current_user.id) if (current_user and hasattr(current_user, "id")) else "default_candidate"
     res = placement_compass_service.toggle_candidate_document_status(candidate_id, req.doc_id, req.is_ready)
     return APIResponse(
         success=True,

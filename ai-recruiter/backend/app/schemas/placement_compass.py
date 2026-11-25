@@ -131,6 +131,11 @@ class DocumentChecklistResponse(BaseModel):
     checklist: List[DocumentChecklistItem]
 
 
+class DocumentToggleRequest(BaseModel):
+    doc_id: str
+    is_ready: bool
+
+
 # =====================================================================
 # SCHOOL STUDENT CAREER GUIDANCE SCHEMAS (AFTER 10TH & 12TH)
 # =====================================================================

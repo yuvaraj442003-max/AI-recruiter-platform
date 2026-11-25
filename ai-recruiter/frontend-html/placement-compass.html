@@ -667,8 +667,16 @@
           </div>
         </div>
         <div class="d-flex align-items-center gap-3">
+          <div class="d-inline-flex align-items-center bg-white p-1 rounded-pill border shadow-xs" role="group">
+            <button id="btn-mode-school" type="button" class="btn btn-sm rounded-pill px-3 fw-bold active" onclick="setCompassMode('school', true)">
+              🏫 School Career Guide (10th &amp; 12th)
+            </button>
+            <button id="btn-mode-college" type="button" class="btn btn-sm rounded-pill px-3 fw-bold text-secondary" onclick="setCompassMode('college', true)">
+              🎓 Campus Placement &amp; Predictor
+            </button>
+          </div>
           <span id="user-greeting" class="text-muted small"></span>
-          <a href="candidate-dashboard.html" class="btn btn-sm btn-outline-secondary">Back to Dashboard</a>
+          <a href="candidate-dashboard.html" class="btn btn-sm btn-outline-secondary rounded-pill">Back to Dashboard</a>
         </div>
       </header>
 
@@ -700,6 +708,9 @@
                     </button>
                     <button class="btn btn-light text-primary btn-sm fw-bold px-3 py-1.5 rounded-pill shadow-sm text-nowrap flex-grow-1" onclick="switchSchoolTab('exams')">
                       🎯 Entrance Exams &amp; Positions
+                    </button>
+                    <button class="btn btn-primary btn-sm fw-bold px-3 py-1.5 rounded-pill shadow-sm text-nowrap flex-grow-1" onclick="setCompassMode('college', true)">
+                      🎓 Campus Placement &amp; Predictor &rarr;
                     </button>
                   </div>
                 </div>
@@ -1378,7 +1389,7 @@
             </div>
 
             <!-- College Directory Cards Grid in active stream -->
-            <div class="card border-0 shadow-sm p-4 rounded-4 bg-white mb-4">
+            <div class="card border-0 shadow-sm p-4 rounded-4 bg-white mb-4" id="colleges-overview-table">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6 class="fw-bold mb-0 text-dark">🏛️ Premier Colleges Directory in Selected Stream</h6>
                 <small class="text-muted" id="colleges-count-indicator">Showing 10+ colleges</small>
@@ -1916,12 +1927,15 @@
               <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
                 <div class="d-inline-flex flex-column gap-2 bg-white bg-opacity-10 p-3 rounded-4 border border-white border-opacity-15 text-start">
                   <div class="text-white-50 small fw-semibold">QUICK ACTIONS</div>
-                  <div class="d-flex gap-2">
+                  <div class="d-flex gap-2 flex-wrap">
                     <button class="btn btn-warning btn-sm fw-bold px-3 rounded-pill" onclick="switchCollegeTab('predictor')">
                       🎯 Predict Matches
                     </button>
                     <button class="btn btn-outline-light btn-sm fw-semibold px-3 rounded-pill" onclick="switchCollegeTab('comparator')">
                       ⚖️ 3-Way Compare
+                    </button>
+                    <button class="btn btn-light text-dark btn-sm fw-bold px-3 rounded-pill shadow-xs" onclick="setCompassMode('school', true)">
+                      🏫 School Career Guide (10th/12th) &rarr;
                     </button>
                   </div>
                 </div>

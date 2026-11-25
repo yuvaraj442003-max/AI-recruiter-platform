@@ -6145,5 +6145,211 @@ window.COMPASS_STATIC_DATA = {
             "graduate"
         ]
     }
+],
+    "companies": [
+    {
+        "id": "google",
+        "name": "Google",
+        "category": "dream",
+        "logo_emoji": "\ud83c\udf10",
+        "industry": "Search, Cloud & AI Systems",
+        "ctc_range": "36 - 55 LPA",
+        "difficulty": "High",
+        "min_cgpa": 8.0,
+        "min_aptitude": 85.0,
+        "locations": [
+            "Bangalore",
+            "Hyderabad",
+            "Pune",
+            "Gurgaon"
+        ]
+    },
+    {
+        "id": "amazon",
+        "name": "Amazon",
+        "category": "dream",
+        "logo_emoji": "\ud83d\udce6",
+        "industry": "E-Commerce & AWS Cloud",
+        "ctc_range": "32 - 45 LPA",
+        "difficulty": "High",
+        "min_cgpa": 7.5,
+        "min_aptitude": 80.0,
+        "locations": [
+            "Bangalore",
+            "Hyderabad",
+            "Chennai",
+            "Delhi NCR"
+        ]
+    },
+    {
+        "id": "microsoft",
+        "name": "Microsoft",
+        "category": "dream",
+        "logo_emoji": "\ud83d\udcbb",
+        "industry": "Enterprise Software & Azure Cloud",
+        "ctc_range": "35 - 50 LPA",
+        "difficulty": "High",
+        "min_cgpa": 7.5,
+        "min_aptitude": 82.0,
+        "locations": [
+            "Hyderabad",
+            "Bangalore",
+            "Noida"
+        ]
+    },
+    {
+        "id": "atlassian",
+        "name": "Atlassian",
+        "category": "dream",
+        "logo_emoji": "\ud83d\udd37",
+        "industry": "Developer Productivity Software (Jira, Confluence)",
+        "ctc_range": "30 - 42 LPA",
+        "difficulty": "High",
+        "min_cgpa": 7.0,
+        "min_aptitude": 80.0,
+        "locations": [
+            "Bangalore",
+            "Remote First (Anywhere in India)"
+        ]
+    },
+    {
+        "id": "zoho",
+        "name": "Zoho Corporation",
+        "category": "target",
+        "logo_emoji": "\ud83e\udd8e",
+        "industry": "SaaS & Cloud Business Suite",
+        "ctc_range": "8.5 - 14 LPA",
+        "difficulty": "Medium",
+        "min_cgpa": 6.5,
+        "min_aptitude": 70.0,
+        "locations": [
+            "Chennai",
+            "Tenkasi",
+            "Salem",
+            "Coimbatore"
+        ]
+    },
+    {
+        "id": "thoughtworks",
+        "name": "Thoughtworks",
+        "category": "target",
+        "logo_emoji": "\ud83d\udca1",
+        "industry": "High-End Technology & Consulting",
+        "ctc_range": "9.5 - 13 LPA",
+        "difficulty": "Medium",
+        "min_cgpa": 7.0,
+        "min_aptitude": 72.0,
+        "locations": [
+            "Bangalore",
+            "Pune",
+            "Chennai",
+            "Hyderabad",
+            "Gurgaon"
+        ]
+    },
+    {
+        "id": "juspay",
+        "name": "Juspay",
+        "category": "target",
+        "logo_emoji": "\u26a1",
+        "industry": "FinTech Payments Infrastructure",
+        "ctc_range": "15 - 27 LPA",
+        "difficulty": "High",
+        "min_cgpa": 7.0,
+        "min_aptitude": 78.0,
+        "locations": [
+            "Bangalore"
+        ]
+    },
+    {
+        "id": "persistent",
+        "name": "Persistent Systems",
+        "category": "target",
+        "logo_emoji": "\u2699\ufe0f",
+        "industry": "Digital Engineering & Cloud Modernization",
+        "ctc_range": "7.5 - 9.5 LPA",
+        "difficulty": "Medium",
+        "min_cgpa": 6.8,
+        "min_aptitude": 68.0,
+        "locations": [
+            "Pune",
+            "Hyderabad",
+            "Goa",
+            "Bangalore"
+        ]
+    },
+    {
+        "id": "tcs",
+        "name": "Tata Consultancy Services (TCS)",
+        "category": "safe",
+        "logo_emoji": "\ud83c\udfe2",
+        "industry": "Global IT Services & Consulting",
+        "ctc_range": "3.6 - 9.0 LPA (Ninja / Digital / Prime)",
+        "difficulty": "Moderate",
+        "min_cgpa": 6.0,
+        "min_aptitude": 60.0,
+        "locations": [
+            "Chennai",
+            "Bangalore",
+            "Mumbai",
+            "Hyderabad",
+            "Kolkata",
+            "Delhi NCR"
+        ]
+    },
+    {
+        "id": "infosys",
+        "name": "Infosys",
+        "category": "safe",
+        "logo_emoji": "\ud83c\udfe2",
+        "industry": "Global Next-Gen Digital Services",
+        "ctc_range": "3.6 - 9.5 LPA (SE / DSE / Specialist)",
+        "difficulty": "Moderate",
+        "min_cgpa": 6.0,
+        "min_aptitude": 60.0,
+        "locations": [
+            "Bangalore",
+            "Mysore",
+            "Pune",
+            "Chennai",
+            "Hyderabad"
+        ]
+    },
+    {
+        "id": "accenture",
+        "name": "Accenture",
+        "category": "safe",
+        "logo_emoji": "\ud83c\udf10",
+        "industry": "Strategy, Consulting & Cloud Solutions",
+        "ctc_range": "4.5 - 6.5 LPA (ASE / Advanced ASE)",
+        "difficulty": "Moderate",
+        "min_cgpa": 6.5,
+        "min_aptitude": 62.0,
+        "locations": [
+            "Bangalore",
+            "Hyderabad",
+            "Pune",
+            "Chennai",
+            "Gurgaon"
+        ]
+    },
+    {
+        "id": "cognizant",
+        "name": "Cognizant",
+        "category": "safe",
+        "logo_emoji": "\ud83d\udcbc",
+        "industry": "Digital Business & Enterprise Systems",
+        "ctc_range": "4.0 - 6.75 LPA (GenC / GenC Elevate / Next)",
+        "difficulty": "Moderate",
+        "min_cgpa": 6.0,
+        "min_aptitude": 60.0,
+        "locations": [
+            "Chennai",
+            "Coimbatore",
+            "Bangalore",
+            "Kolkata",
+            "Hyderabad"
+        ]
+    }
 ]
 };
