@@ -30,7 +30,8 @@
       position: sticky;
       top: 0;
       z-index: 1030;
-      padding: 1.5rem 2.25rem !important;
+      padding: 2rem 2.5rem !important;
+      min-height: 104px;
     }
     .learning-navbar-inner {
       display: flex;
@@ -38,30 +39,30 @@
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 1.5rem;
-      row-gap: 1.35rem;
+      row-gap: 1.6rem;
     }
     .learning-nav-main {
       display: flex;
       align-items: center;
-      gap: 1.25rem;
+      gap: 1.4rem;
       flex-wrap: wrap;
     }
     .learning-nav-title-group {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 1.25rem;
     }
     .learning-course-heading {
-      font-size: 1.32rem;
+      font-size: 1.35rem;
       font-weight: 700;
       letter-spacing: -0.015em;
-      line-height: 1.35;
+      line-height: 1.4;
       color: #ffffff;
     }
     .learning-nav-actions {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 1.25rem;
       flex-wrap: wrap;
     }
     .stage-badge-pill {
@@ -301,7 +302,7 @@
     <div class="learning-navbar-inner">
       <!-- Left: Back & Course Title -->
       <div class="learning-nav-main">
-        <a href="candidate-dashboard.html" class="btn btn-outline-light btn-sm rounded-pill px-3.5 py-2 fw-semibold d-flex align-items-center gap-2 shadow-sm hover-lift" title="Return to Candidate Dashboard">
+        <a href="candidate-dashboard.html" class="btn btn-outline-light btn-sm rounded-pill px-4 py-2.5 fw-semibold d-flex align-items-center gap-2 shadow-sm hover-lift" title="Return to Candidate Dashboard">
           <i class="bi bi-arrow-left"></i>
           <span>Dashboard</span>
         </a>
@@ -309,7 +310,7 @@
         <div class="learning-nav-title-group">
           <span class="fs-3 rounded-3 d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 52px; height: 52px; min-width: 52px; min-height: 52px; background: #ffffff !important; border: 2px solid rgba(255, 255, 255, 0.6) !important; border-radius: 14px !important; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;" id="page-course-icon">🐍</span>
           <div>
-            <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+            <div class="d-flex align-items-center gap-2 flex-wrap mb-2.5">
               <span class="badge bg-warning text-dark px-3 py-1 rounded-pill small fw-bold" id="page-stage-badge">Target Track</span>
               <span class="badge rounded-pill px-3 py-1 small fw-semibold" id="page-module-badge" style="background: rgba(255,255,255,0.18); color: #ffffff; border: 1px solid rgba(255,255,255,0.25);">Loading...</span>
               <span class="badge bg-success text-white rounded-pill px-2.5 py-1 small fw-semibold" id="page-topic-status-badge">In Progress</span>
@@ -323,7 +324,7 @@
       <div class="learning-nav-actions">
         <!-- Switch Track Dropdown -->
         <div class="dropdown">
-          <button class="btn btn-sm btn-light fw-bold px-3.5 py-2 rounded-pill shadow-sm dropdown-toggle d-flex align-items-center gap-2 hover-lift" type="button" id="courseTrackDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <button class="btn btn-sm btn-light fw-bold px-4 py-2.5 rounded-pill shadow-sm dropdown-toggle d-flex align-items-center gap-2 hover-lift" type="button" id="courseTrackDropdown" data-bs-toggle="dropdown" aria-expanded="false">
             <span>📚 Switch Course</span>
           </button>
           <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2" id="courseTrackDropdownList" style="width: 320px; max-height: 440px; overflow-y: auto;">
@@ -332,7 +333,7 @@
         </div>
 
         <!-- Overall Progress Pill -->
-        <div class="d-none d-md-flex align-items-center gap-2.5 bg-white bg-opacity-10 px-3.5 py-2 rounded-pill border border-white border-opacity-15 shadow-sm">
+        <div class="d-none d-md-flex align-items-center gap-2.5 bg-white bg-opacity-10 px-4 py-2.5 rounded-pill border border-white border-opacity-15 shadow-sm">
           <span class="small text-white-50 fw-semibold">Progress:</span>
           <div class="progress" style="width: 120px; height: 8px; background: rgba(255,255,255,0.2);">
             <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" id="top-progress-bar" role="progressbar" style="width: 0%;"></div>
@@ -341,7 +342,7 @@
         </div>
 
         <!-- Textbook Link -->
-        <a href="study-materials.html" id="link-course-textbook" class="btn btn-sm btn-outline-light rounded-pill px-3.5 py-2 fw-semibold d-flex align-items-center gap-2 shadow-sm hover-lift" title="Read Prescribed Master Study Textbook">
+        <a href="study-materials.html" id="link-course-textbook" class="btn btn-sm btn-outline-light rounded-pill px-4 py-2.5 fw-semibold d-flex align-items-center gap-2 shadow-sm hover-lift" title="Read Prescribed Master Study Textbook">
           <span>📖</span>
           <span class="d-none d-sm-inline">Textbook</span>
         </a>

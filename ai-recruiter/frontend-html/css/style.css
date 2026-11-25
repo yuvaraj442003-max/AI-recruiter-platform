@@ -2824,7 +2824,8 @@ body.mobile-sidebar-active {
 .learning-navbar {
   background: linear-gradient(135deg, #0b1329 0%, #172554 50%, #1e3a8a 100%);
   color: #ffffff;
-  padding: 1.5rem 2.25rem !important;
+  padding: 2rem 2.5rem !important;
+  min-height: 104px;
   position: sticky;
   top: 0;
   z-index: 1030;
@@ -2837,42 +2838,42 @@ body.mobile-sidebar-active {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 1.5rem;
-  row-gap: 1.35rem;
+  row-gap: 1.6rem;
 }
 
 .learning-nav-main {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  gap: 1.4rem;
   flex-wrap: wrap;
 }
 
 .learning-nav-title-group {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .learning-course-heading {
-  font-size: 1.32rem;
+  font-size: 1.35rem;
   font-weight: 700;
   letter-spacing: -0.015em;
-  line-height: 1.35;
+  line-height: 1.4;
   color: #ffffff;
 }
 
 .learning-nav-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
   flex-wrap: wrap;
 }
 
 .pedagogical-section {
   background: #0f172a !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 1.25rem 2.25rem !important;
-  min-height: 72px;
+  padding: 1.5rem 2.5rem !important;
+  min-height: 84px;
 }
 
 .nav-brand-icon {
@@ -2907,15 +2908,15 @@ body.mobile-sidebar-active {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 9999px;
-  padding: 8px 18px;
-  font-size: 0.82rem;
+  padding: 9px 20px;
+  font-size: 0.84rem;
   font-weight: 600;
   color: #e2e8f0;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   white-space: nowrap;
 }
 
