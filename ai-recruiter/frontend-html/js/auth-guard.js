@@ -24,8 +24,10 @@
       const isRecruiterRole = (requiredRole === "recruiter" && (user.role === "recruiter" || user.role === "company_admin"));
       const isCandidateRole = (requiredRole === "candidate" && user.role === "candidate");
       const isAdminRole = (requiredRole === "admin" && (user.role === "admin" || user.role === "superadmin"));
+      const urlParams = new URLSearchParams(window.location.search);
+      const isRecruiterPreview = (requiredRole === "candidate" && (user.role === "recruiter" || user.role === "company_admin" || user.role === "admin") && (urlParams.get("preview") === "1" || urlParams.get("recruiter_view") === "1"));
 
-      if (!isRecruiterRole && !isCandidateRole && !isAdminRole && user.role !== requiredRole) {
+      if (!isRecruiterRole && !isCandidateRole && !isAdminRole && !isRecruiterPreview && user.role !== requiredRole) {
         window.location.href = dashboardUrlForRole(user.role);
         return;
       }

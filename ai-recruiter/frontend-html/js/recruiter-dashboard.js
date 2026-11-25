@@ -1970,6 +1970,32 @@
     });
   }
 
+  window.openCandidateFeatureModal = function (featureKey) {
+    const modalEl = document.getElementById("candidateDashboardTourModal");
+    if (!modalEl) return;
+
+    const tabMap = {
+      placement_compass: "tab-btn-compass",
+      course_tracks: "tab-btn-courses",
+      roadmap_tracker: "tab-btn-roadmap",
+      aptitude_coding: "tab-btn-aptitude",
+      mock_interviews: "tab-btn-interviews",
+      ats_portfolio: "tab-btn-ats",
+    };
+
+    const tabBtnId = tabMap[featureKey] || "tab-btn-compass";
+    const tabBtn = document.getElementById(tabBtnId);
+    if (tabBtn && window.bootstrap) {
+      const tabInstance = bootstrap.Tab.getOrCreateInstance(tabBtn);
+      tabInstance.show();
+    }
+
+    if (window.bootstrap) {
+      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+      modal.show();
+    }
+  };
+
   // If auth is already initialized by auth-guard.js, run immediately
   if (window.__AR_AUTH_READY) {
     initRecruiterDashboard();

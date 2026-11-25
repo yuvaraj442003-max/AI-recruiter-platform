@@ -30,6 +30,11 @@
           </a>
         </li>
         <li class="nav-item">
+          <a href="#candidate-dashboard-guide-section" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
+            <span>🎯</span> Candidate Dashboard Guide
+          </a>
+        </li>
+        <li class="nav-item">
           <a href="#candidate-learning-section" class="nav-link text-dark fw-medium text-nowrap d-flex align-items-center gap-2">
             <span>🎓</span> Student Learning Monitor
           </a>
@@ -92,6 +97,7 @@
           <div class="d-flex align-items-center gap-2 overflow-auto text-nowrap pb-1">
             <span class="fw-bold small text-muted me-2">⚡ Quick Jump:</span>
             <a href="#overview-section" class="btn btn-sm btn-success rounded-pill fw-semibold shadow-sm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none;">📊 Overview</a>
+            <a href="#candidate-dashboard-guide-section" class="btn btn-sm btn-outline-success rounded-pill fw-semibold">🎯 Candidate Dashboard Guide</a>
             <a href="#quick-tools-section" class="btn btn-sm btn-outline-secondary rounded-pill fw-semibold">🛠️ Workspace Tools</a>
             <a href="#ats-funnel-section" class="btn btn-sm btn-outline-secondary rounded-pill fw-semibold">🎯 ATS Screening Funnel</a>
             <a href="#top-candidates-section" class="btn btn-sm btn-outline-secondary rounded-pill fw-semibold">🏆 Top Candidates</a>
@@ -126,6 +132,9 @@
               </a>
               <a href="#ats-funnel-section" class="recruiter-hero-btn-hub btn-shine hover-lift">
                 <span>📊 Go to Recruiter Dashboard &rarr;</span>
+              </a>
+              <a href="#candidate-dashboard-guide-section" class="candidate-hero-btn-glass hover-lift" style="border: 1px solid rgba(52, 211, 153, 0.45); background: rgba(16, 185, 129, 0.18); color: #fff;">
+                <span>🎯 Candidate Dashboard Guide &rarr;</span>
               </a>
               <button class="candidate-hero-btn-glass hover-lift" data-bs-toggle="modal" data-bs-target="#bulkUploadModal">
                 <span>📦 Bulk Upload Resumes &rarr;</span>
@@ -556,6 +565,303 @@
           </div>
         </div>
 
+        <!-- Job Performance Table -->
+        <div id="job-performance-section" class="card border-0 shadow-sm p-4 mb-4 hover-lift" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.06); background: #ffffff;">
+          <h5 class="fw-bold mb-3 text-dark">💼 Job Requisition Performance</h5>
+          <div id="job-performance-table">
+            <div class="text-muted-custom small">Loading…</div>
+          </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- CANDIDATE DASHBOARD FEATURES & RECRUITER VISIBILITY HUB -->
+        <!-- ========================================================================= -->
+        <div id="candidate-dashboard-guide-section" class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 24px; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); border: 1px solid rgba(16, 185, 129, 0.25);">
+          <!-- Section Header -->
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 border-bottom pb-3">
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                <span class="fs-4">🎯</span>
+                <h4 class="fw-bold mb-0 text-dark">Candidate Dashboard Features &amp; Recruiter Visibility Hub</h4>
+                <span class="badge bg-success text-white px-2.5 py-1 rounded-pill small fw-bold">Live Feature Directory &amp; Guidance</span>
+                <span class="badge bg-primary-subtle text-primary border rounded-pill small px-2 py-0.5">360° Candidate Intelligence</span>
+              </div>
+              <p class="text-muted small mb-0" style="max-width: 950px;">
+                Gain complete transparency into all candidate tools, learning roadmaps, Placement Compass company predictions, proctored assessments, and ATS scoring. Understand what candidates experience and how to interpret their verified telemetry.
+              </p>
+            </div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <button class="btn btn-sm btn-success rounded-pill px-3.5 py-2 fw-bold shadow-sm d-flex align-items-center gap-1.5 hover-lift" data-bs-toggle="modal" data-bs-target="#candidateDashboardTourModal" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none;">
+                <span>👁️</span> Launch Interactive Feature Tour
+              </button>
+              <a href="candidate-dashboard.html?preview=1" target="_blank" class="btn btn-sm btn-outline-success rounded-pill px-3 py-2 fw-semibold d-flex align-items-center gap-1.5 hover-lift" title="Open live Candidate Dashboard in read-only preview mode">
+                <span>🚀</span> Live Candidate Dashboard Preview &rarr;
+              </a>
+            </div>
+          </div>
+
+          <!-- Feature Cards Grid (6 Core Pillars of Candidate Experience) -->
+          <div class="row g-3 mb-4">
+
+            <!-- Pillar 1: Placement Compass -->
+            <div class="col-md-6 col-xl-4">
+              <div class="card h-100 p-3.5 border-0 shadow-sm hover-lift d-flex flex-column" style="border-radius: 18px; background: #ffffff; border: 1px solid rgba(59, 130, 246, 0.2);">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fs-3 p-2 rounded-3 bg-primary-subtle text-primary" style="line-height: 1;">🧭</span>
+                    <div>
+                      <h6 class="fw-bold mb-0 text-dark">Placement Compass</h6>
+                      <small class="text-muted">Corporate Predictor &amp; Cutoffs</small>
+                    </div>
+                  </div>
+                  <span class="badge bg-primary-subtle text-primary rounded-pill small px-2 py-0.5">Pillar 1</span>
+                </div>
+                <div class="d-flex flex-wrap gap-1 mb-2">
+                  <span class="badge bg-light text-dark border small" style="font-size: 0.68rem;">Safe/Target/Dream Tiers</span>
+                  <span class="badge bg-light text-dark border small" style="font-size: 0.68rem;">3-Way Company Matrix</span>
+                  <span class="badge bg-light text-dark border small" style="font-size: 0.68rem;">Google &amp; .ICS Calendar</span>
+                </div>
+                <div class="small text-secondary mb-3 flex-grow-1" style="line-height: 1.55;">
+                  <strong class="text-dark d-block mb-1">Candidate Experience:</strong>
+                  Candidates calculate admission &amp; placement chances across Safe, Target, and Dream company tiers based on CGPA and aptitude cutoffs, compare corporate CTC/ESOPs/culture side-by-side, and sync drive dates.
+                  <div class="mt-2 p-2 bg-light rounded-3 border-start border-3 border-primary small">
+                    <strong class="text-primary">Recruiter Intelligence:</strong> See if your company is considered a "Target" or "Dream" role for applicants, verify cutoff eligibility, and check candidate document vault readiness.
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-outline-primary rounded-pill w-100 fw-semibold" onclick="openCandidateFeatureModal('placement_compass')">
+                  Explore Placement Compass &rarr;
+                </button>
+              </div>
+            </div>
+
+            <!-- Pillar 2: 14 Course Tracks & Stage-Gate Roadmaps -->
+            <div class="col-md-6 col-xl-4">
+              <div class="card h-100 p-3.5 border-0 shadow-sm hover-lift d-flex flex-column" style="border-radius: 18px; background: #ffffff; border: 1px solid rgba(16, 185, 129, 0.25);">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fs-3 p-2 rounded-3 bg-success-subtle text-success" style="line-height: 1;">📚</span>
+                    <div>
+                      <h6 class="fw-bold mb-0 text-dark">14 Course Tracks</h6>
+                      <small class="text-muted">Placement-Ready Curricula</small>
+                    </div>
+                  </div>
+                  <span class="badge bg-success-subtle text-success rounded-pill small px-2 py-0.5">Pillar 2</span>
+                </div>
+                <div class="d-flex flex-wrap gap-1 mb-2">
+                  <span class="badge bg-light text-dark border small" style="font-size: 0.68rem;">Python &amp; Java</span>
+                  <span class="badge bg-light text-dark border small" style="font-size: 0.68rem;">DSA Mastery</span>
+                  <span class="badge bg-light text-dark border small" style="font-size: 0.68rem;">4-Phase Stage-Gates</span>
+                </div>
+                <div class="small text-secondary mb-3 flex-grow-1" style="line-height: 1.55;">
+                  <strong class="text-dark d-block mb-1">Candidate Experience:</strong>
+                  Students pursue 14 structured tracks (Python, Java, DSA, Web Dev, Cloud, AWS, DevOps, ML/Data Science, GenAI, Cybersecurity, Testing). Progression flows through 4 rigorous phases from Foundations to Technical Placement Prep.
+                  <div class="mt-2 p-2 bg-light rounded-3 border-start border-3 border-success small">
+                    <strong class="text-success">Recruiter Intelligence:</strong> Audit candidate curriculum depth, check completed syllabus chapters, and identify candidates who built Phase 3 microservices and practical projects.
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-outline-success rounded-pill w-100 fw-semibold" onclick="openCandidateFeatureModal('course_tracks')">
+                  Explore Course Tracks &rarr;
+                </button>
+              </div>
+            </div>
+
+            <!-- Pillar 3: 90-Day Roadmap & Habit Tracker -->
+            <div class="col-md-6 col-xl-4">
+              <div class="card h-100 p-3.5 border-0 shadow-sm hover-lift d-flex flex-column" style="border-radius: 18px; background: #ffffff; border: 1px solid rgba(245, 158, 11, 0.25);">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fs-3 p-2 rounded-3 bg-warning-subtle text-warning" style="line-height: 1;">🚀</span>
+                    <div>
+                      <h6 class="fw-bold mb-0 text-dark">90-Day Roadmap &amp; Habit Tracker</h6>
+                      <small class="text-muted">Daily Discipline &amp; Streaks</small>
+                    </div>
+                  </div>
+                  <span class="badge bg-warning-subtle text-dark rounded-pill small px-2 py-0.5">Pillar 3</span>
+                </div>
+                <div class="d-flex flex-wrap gap-1 mb-2">
+                  <span class="badge bg-light text-dark border small" style="font-size: 0.68rem;">🔥 Daily Streak</span>
+                  <span class="badge bg-light text-dark border small" style="font-size: 0.68rem;">Today's Study Plan</span>
+                  <span class="badge bg-light text-dark border small" style="font-size: 0.68rem;">AI Task Recommendations</span>
+                </div>
+                <div class="small text-secondary mb-3 flex-grow-1" style="line-height: 1.55;">
+                  <strong class="text-dark d-block mb-1">Candidate Experience:</strong>
+                  Candidates manage day-by-day learning milestones, personalized recommendations, today's study plan checklist, and active streaks (🔥 active days) to build permanent study consistency.
+                  <div class="mt-2 p-2 bg-light rounded-3 border-start border-3 border-warning small">
+                    <strong class="text-warning text-dark">Recruiter Intelligence:</strong> Active daily streaks (7+ days) indicate grit, self-motivation, and reliability. High streak candidates ramp up 2.5x faster in corporate onboarding.
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-outline-warning text-dark rounded-pill w-100 fw-semibold" onclick="openCandidateFeatureModal('roadmap_tracker')">
+                  Explore Roadmap &amp; Streaks &rarr;
+                </button>
+              </div>
+            </div>
+
+            <!-- Pillar 4: Proctored Aptitude & Coding Lab -->
+            <div class="col-md-6 col-xl-4">
+              <div class="card h-100 p-3.5 border-0 shadow-sm hover-lift d-flex flex-column" style="border-radius: 18px; background: #ffffff; border: 1px solid rgba(139, 92, 246, 0.25);">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fs-3 p-2 rounded-3 bg-purple-subtle text-primary" style="line-height: 1; background: #ede9fe; color: #7c3aed;">🧠</span>
+                    <div>
+                      <h6 class="fw-bold mb-0 text-dark">Aptitude &amp; Coding Lab (DSA)</h6>
+                      <small class="text-muted">Proctored Technical Evaluations</small>
+                    </div>
+                  </div>
+                  <span class="badge bg-primary-subtle text-primary rounded-pill small px-2 py-0.5">Pillar 4</span>
+                </div>
+                <div class="d-flex flex-wrap gap-1 mb-2">
+                  <span class="badge bg-light text-dark border small" style="font-size: 0.68rem;">Quant, Logical &amp; Verbal</span>
+                  <span class="badge bg-light text-dark border small" style="font-size: 0.68rem;">Live Code Runner</span>
+                  <span class="badge bg-light text-dark border small" style="font-size: 0.68rem;">Anti-Cheating Proctored</span>
+                </div>
+                <div class="small text-secondary mb-3 flex-grow-1" style="line-height: 1.55;">
+                  <strong class="text-dark d-block mb-1">Candidate Experience:</strong>
+                  Candidates solve timed aptitude tests with full section-wise score analytics, and solve Data Structures &amp; Algorithms challenges inside an interactive code editor with live test case verification.
+                  <div class="mt-2 p-2 bg-light rounded-3 border-start border-3 border-primary small" style="border-color: #7c3aed !important;">
+                    <strong style="color: #7c3aed;">Recruiter Intelligence:</strong> Evaluate objective percentiles, code submission efficiency, and test cases passed rather than subjective resume bullet points.
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-outline-secondary rounded-pill w-100 fw-semibold" onclick="openCandidateFeatureModal('aptitude_coding')">
+                  Explore Aptitude &amp; DSA Lab &rarr;
+                </button>
+              </div>
+            </div>
+
+            <!-- Pillar 5: AI Mock Interviews -->
+            <div class="col-md-6 col-xl-4">
+              <div class="card h-100 p-3.5 border-0 shadow-sm hover-lift d-flex flex-column" style="border-radius: 18px; background: #ffffff; border: 1px solid rgba(236, 72, 153, 0.25);">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fs-3 p-2 rounded-3 text-danger" style="line-height: 1; background: #fce7f3; color: #db2777;">🎙️</span>
+                    <div>
+                      <h6 class="fw-bold mb-0 text-dark">AI Mock Interview Studio</h6>
+                      <small class="text-muted">Speech Analytics &amp; Scoring</small>
+                    </div>
+                  </div>
+                  <span class="badge bg-danger-subtle text-danger rounded-pill small px-2 py-0.5">Pillar 5</span>
+                </div>
+                <div class="d-flex flex-wrap gap-1 mb-2">
+                  <span class="badge bg-light text-dark border small" style="font-size: 0.68rem;">Voice AI Questions</span>
+                  <span class="badge bg-light text-dark border small" style="font-size: 0.68rem;">Speech-to-Text Rubrics</span>
+                  <span class="badge bg-light text-dark border small" style="font-size: 0.68rem;">Communication Feedback</span>
+                </div>
+                <div class="small text-secondary mb-3 flex-grow-1" style="line-height: 1.55;">
+                  <strong class="text-dark d-block mb-1">Candidate Experience:</strong>
+                  Candidates take automated technical and behavioral mock interviews. Voice questions are delivered via speech synthesis; speech responses are transcribed and evaluated against scoring rubrics.
+                  <div class="mt-2 p-2 bg-light rounded-3 border-start border-3 border-danger small">
+                    <strong class="text-danger">Recruiter Intelligence:</strong> Access pre-screened AI scorecards covering Technical Skills (30%), Communication Quality (20%), and Experience Match (20%) before human interview rounds.
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-outline-danger rounded-pill w-100 fw-semibold" onclick="openCandidateFeatureModal('mock_interviews')">
+                  Explore Mock Interviews &rarr;
+                </button>
+              </div>
+            </div>
+
+            <!-- Pillar 6: ATS Diagnostics & Digital Portfolio -->
+            <div class="col-md-6 col-xl-4">
+              <div class="card h-100 p-3.5 border-0 shadow-sm hover-lift d-flex flex-column" style="border-radius: 18px; background: #ffffff; border: 1px solid rgba(6, 182, 212, 0.25);">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fs-3 p-2 rounded-3 text-info" style="line-height: 1; background: #cffafe; color: #0891b2;">📄</span>
+                    <div>
+                      <h6 class="fw-bold mb-0 text-dark">ATS Diagnostics &amp; Portfolio</h6>
+                      <small class="text-muted">Resume Parser &amp; Live Projects</small>
+                    </div>
+                  </div>
+                  <span class="badge bg-info-subtle text-info rounded-pill small px-2 py-0.5">Pillar 6</span>
+                </div>
+                <div class="d-flex flex-wrap gap-1 mb-2">
+                  <span class="badge bg-light text-dark border small" style="font-size: 0.68rem;">Multi-Profession ATS</span>
+                  <span class="badge bg-light text-dark border small" style="font-size: 0.68rem;">Keyword Gap Alerts</span>
+                  <span class="badge bg-light text-dark border small" style="font-size: 0.68rem;">GitHub &amp; Live Demos</span>
+                </div>
+                <div class="small text-secondary mb-3 flex-grow-1" style="line-height: 1.55;">
+                  <strong class="text-dark d-block mb-1">Candidate Experience:</strong>
+                  Candidates upload resumes for instant multi-profession ATS evaluation (Top 3 role scores), view missing keyword gaps, format advice, and assemble digital portfolios with live URLs and GitHub repositories.
+                  <div class="mt-2 p-2 bg-light rounded-3 border-start border-3 border-info small">
+                    <strong class="text-info">Recruiter Intelligence:</strong> Instantly check ATS match relevance against your posted job requisition, view missing mandatory skills, and test candidate live project demo URLs.
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-outline-info rounded-pill w-100 fw-semibold" onclick="openCandidateFeatureModal('ats_portfolio')">
+                  Explore ATS &amp; Portfolio &rarr;
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Recruiter Evaluation Playbook & Decision Matrix -->
+          <div class="card border-0 bg-light p-3.5 rounded-4 border">
+            <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+              <div class="d-flex align-items-center gap-2">
+                <span class="fs-5">📋</span>
+                <h6 class="fw-bold mb-0 text-dark">Recruiter Candidate Evaluation Matrix &amp; Hiring Playbook</h6>
+              </div>
+              <span class="badge bg-white text-secondary border small">Telemetry Assessment Guidelines</span>
+            </div>
+            <p class="small text-secondary mb-3">
+              Use this framework to calibrate candidate readiness when reviewing applicants in <strong>Manage Jobs</strong> or searching the <strong>Talent Rediscovery</strong> pool:
+            </p>
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered bg-white align-middle mb-0 small">
+                <thead class="table-light">
+                  <tr>
+                    <th style="min-width: 170px;">Candidate Signal / Feature</th>
+                    <th style="min-width: 200px;">How It Is Measured on Candidate Dashboard</th>
+                    <th style="min-width: 170px;">Recommended Benchmark</th>
+                    <th style="min-width: 160px;">Recruiter Decision / Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Placement Compass Tier</strong></td>
+                    <td>CGPA, branch criteria, and benchmark cutoffs calculated for your company</td>
+                    <td><span class="badge bg-success text-white">Safe</span> or <span class="badge bg-primary text-white">Target</span> Match</td>
+                    <td>Eligible for direct placement drive shortlist; high probability of accepting offer.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>14 Course Tracks Progress</strong></td>
+                    <td>Completed chapters, syllabus milestones, and Phase 3 microservices</td>
+                    <td><span class="badge bg-info text-white">&ge; 60% Progress</span> (Phase 2+)</td>
+                    <td>Validates hands-on knowledge in Python, Java, DSA, or Cloud architectures.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>90-Day Learning Streak</strong></td>
+                    <td>Daily study habit tracker &amp; consecutive active days (🔥)</td>
+                    <td><span class="badge bg-warning text-dark">&ge; 7 Days Active</span></td>
+                    <td>High indicator of self-direction, rapid learning curve, and workplace discipline.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Proctored Aptitude Percentile</strong></td>
+                    <td>Quantitative, Logical Reasoning, and Verbal tests with anti-cheating timers</td>
+                    <td><span class="badge bg-success text-white">&ge; 70% Average</span></td>
+                    <td>Skip preliminary phone screening; advance directly to technical assessment.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Coding Lab (DSA) Score</strong></td>
+                    <td>Code editor tests passed across algorithmic challenges</td>
+                    <td><span class="badge bg-primary text-white">&ge; 70% Passed</span></td>
+                    <td>Demonstrates algorithmic complexity awareness and clean coding practices.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>AI Mock Interview Score</strong></td>
+                    <td>Automated rubric score across Technical, Experience &amp; Communication</td>
+                    <td><span class="badge bg-success text-white">&ge; 75/100 Composite</span></td>
+                    <td>Candidate is interview-ready; listen to audio responses or schedule final panel.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Multi-Profession ATS Score</strong></td>
+                    <td>Semantic NLP match between resume text and your target Job Description</td>
+                    <td><span class="badge bg-success text-white">&ge; 80% Match</span></td>
+                    <td>Strong keyword alignment; candidate possesses required core frameworks &amp; tools.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
         <!-- Student Career Guidance & Learning Activity Monitor Section -->
         <div id="candidate-learning-section" class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 20px; background: #ffffff; border: 1px solid rgba(16, 185, 129, 0.2);">
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 border-bottom pb-3">
@@ -658,9 +964,6 @@
                 <button id="sm-filter-reset-btn" class="btn btn-sm btn-outline-secondary rounded-pill w-100 fw-semibold" title="Reset Filters">
                   Reset
                 </button>
-              </div>
-            </div>
-          </div>
               </div>
             </div>
           </div>
@@ -894,6 +1197,497 @@
     </div>
   </div>
 
+  <!-- Candidate Dashboard Feature Tour & Interactive Explorer Modal -->
+  <div class="modal fade" id="candidateDashboardTourModal" tabindex="-1" aria-labelledby="candidateDashboardTourModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; overflow: hidden;">
+        <div class="modal-header text-white p-3.5 border-0" style="background: linear-gradient(135deg, #10b981 0%, #047857 100%);">
+          <div class="d-flex align-items-center gap-2.5">
+            <span class="fs-3 p-2 rounded-3 bg-white bg-opacity-20">🎯</span>
+            <div>
+              <h5 class="modal-title fw-bold mb-0" id="candidateDashboardTourModalLabel">Candidate Dashboard Feature Tour &amp; Recruiter Explorer</h5>
+              <span class="small opacity-75">Interactive visual breakdown of tools, curricula, predictors, and assessments candidates use on the platform</span>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4 bg-light">
+          <!-- Navigation Tabs -->
+          <ul class="nav nav-pills nav-fill gap-2 bg-white p-2 rounded-4 shadow-sm mb-4 border" id="candidateTourTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active rounded-pill fw-bold small py-2 px-3 text-nowrap" id="tab-btn-compass" data-bs-toggle="pill" data-bs-target="#tour-pane-compass" type="button" role="tab">
+                🧭 Placement Compass
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link rounded-pill fw-bold small py-2 px-3 text-nowrap" id="tab-btn-courses" data-bs-toggle="pill" data-bs-target="#tour-pane-courses" type="button" role="tab">
+                📚 14 Course Tracks
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link rounded-pill fw-bold small py-2 px-3 text-nowrap" id="tab-btn-roadmap" data-bs-toggle="pill" data-bs-target="#tour-pane-roadmap" type="button" role="tab">
+                🚀 90-Day Roadmap &amp; Streaks
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link rounded-pill fw-bold small py-2 px-3 text-nowrap" id="tab-btn-aptitude" data-bs-toggle="pill" data-bs-target="#tour-pane-aptitude" type="button" role="tab">
+                🧠 Aptitude &amp; DSA Lab
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link rounded-pill fw-bold small py-2 px-3 text-nowrap" id="tab-btn-interviews" data-bs-toggle="pill" data-bs-target="#tour-pane-interviews" type="button" role="tab">
+                🎙️ AI Mock Interviews
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link rounded-pill fw-bold small py-2 px-3 text-nowrap" id="tab-btn-ats" data-bs-toggle="pill" data-bs-target="#tour-pane-ats" type="button" role="tab">
+                📄 ATS Resume &amp; Portfolio
+              </button>
+            </li>
+          </ul>
+
+          <!-- Tab Content Panes -->
+          <div class="tab-content" id="candidateTourTabContent">
+
+            <!-- PANE 1: Placement Compass -->
+            <div class="tab-pane fade show active" id="tour-pane-compass" role="tabpanel">
+              <div class="card border-0 shadow-sm p-4 rounded-4 bg-white mb-3">
+                <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fs-4">🧭</span>
+                    <h5 class="fw-bold mb-0 text-dark">Placement Compass: Predict Your Dream, Target &amp; Safe Companies</h5>
+                  </div>
+                  <span class="badge bg-primary text-white rounded-pill px-3 py-1">College &amp; School Guidance Hub</span>
+                </div>
+
+                <!-- Mockup Preview Card -->
+                <div class="p-3 mb-3 rounded-4" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #1e3a8a 100%); color: #ffffff;">
+                  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                    <span class="badge bg-warning text-dark fw-bold rounded-pill">Candidate Live View</span>
+                    <div class="d-flex gap-2">
+                      <span class="badge bg-white bg-opacity-20 text-white rounded-pill">Safe Tier (3 Matches)</span>
+                      <span class="badge bg-white bg-opacity-20 text-white rounded-pill">Target Tier (4 Matches)</span>
+                      <span class="badge bg-white bg-opacity-20 text-white rounded-pill">Dream Tier (2 Matches)</span>
+                    </div>
+                  </div>
+                  <h6 class="fw-bold text-white mb-1">Company Match Predictor &amp; 3-Way Benchmark Matrix</h6>
+                  <p class="small text-white-50 mb-3">Calculates cutoff match percentage using student CGPA (8.4), aptitude percentile (82%), and coding problem-solving level.</p>
+                  
+                  <div class="row g-2">
+                    <div class="col-md-4">
+                      <div class="p-2.5 rounded-3 bg-white bg-opacity-10 border border-white border-opacity-10 text-center">
+                        <div class="fs-4 mb-0.5">🟢</div>
+                        <div class="fw-bold small text-white">Safe Companies</div>
+                        <small class="text-white-50">TCS, Infosys, Wipro (85-95% Match)</small>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="p-2.5 rounded-3 bg-white bg-opacity-10 border border-white border-opacity-10 text-center">
+                        <div class="fs-4 mb-0.5">🎯</div>
+                        <div class="fw-bold small text-white">Target Companies</div>
+                        <small class="text-white-50">Zoho, Thoughtworks, Cisco (70-80% Match)</small>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="p-2.5 rounded-3 bg-white bg-opacity-10 border border-white border-opacity-10 text-center">
+                        <div class="fs-4 mb-0.5">⭐</div>
+                        <div class="fw-bold small text-white">Dream Companies</div>
+                        <small class="text-white-50">Google, Microsoft, Amazon (55-65% Match)</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Recruiter Guidance Points -->
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-3 h-100 border">
+                      <h6 class="fw-bold text-dark mb-2">📌 Candidate Capabilities</h6>
+                      <ul class="ps-3 small text-secondary mb-0">
+                        <li>Evaluates CGPA cutoffs &amp; aptitude threshold match.</li>
+                        <li>Compares 3 benchmark companies side-by-side on Base CTC vs ESOPs vs Culture.</li>
+                        <li>Syncs upcoming campus drives to Google Calendar or downloads .ICS files.</li>
+                        <li>Pre-placement document vault checklists (Resume, Transcripts, ID proofs).</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="p-3 rounded-3 h-100 border border-success border-opacity-25" style="background: rgba(16, 185, 129, 0.04);">
+                      <h6 class="fw-bold text-success mb-2">💡 Recruiter Guidance &amp; Action</h6>
+                      <ul class="ps-3 small text-secondary mb-0">
+                        <li><strong>Offer Acceptance Likelihood:</strong> Candidates categorizing your firm as "Target" or "Safe" have 3x higher offer acceptance rates.</li>
+                        <li><strong>Pre-Screening Cutoffs:</strong> Review if candidates satisfy your historical CGPA requirements before inviting them to test.</li>
+                        <li><strong>Document Readiness:</strong> Check if applicant checklist is at 100% to expedite offer letter onboarding.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PANE 2: Course Tracks -->
+            <div class="tab-pane fade" id="tour-pane-courses" role="tabpanel">
+              <div class="card border-0 shadow-sm p-4 rounded-4 bg-white mb-3">
+                <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fs-4">📚</span>
+                    <h5 class="fw-bold mb-0 text-dark">14 Placement-Ready Target Course Tracks &amp; Stage-Gates</h5>
+                  </div>
+                  <span class="badge bg-success text-white rounded-pill px-3 py-1">Comprehensive Curricula</span>
+                </div>
+
+                <!-- Mockup Preview Card -->
+                <div class="p-3 mb-3 rounded-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
+                  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                    <span class="badge bg-success text-white fw-bold rounded-pill">14 Placement Tracks Available</span>
+                    <span class="text-white-50 small">Python • Java • DSA • Full-Stack • ML • Cloud • DevOps • GenAI</span>
+                  </div>
+                  <h6 class="fw-bold text-white mb-1">Target Course: Python Programming (Beginner &rarr; Placement Ready)</h6>
+                  <p class="small text-white-50 mb-3">10 Chapters • Interactive Exercises • FastAPI Microservices • Async Programming &amp; Interview Prep</p>
+                  
+                  <div class="row g-2">
+                    <div class="col-6 col-md-3">
+                      <div class="p-2 rounded-3 bg-white bg-opacity-10 text-center">
+                        <span class="badge bg-primary text-white rounded-pill small mb-1">Phase 1</span>
+                        <div class="fw-bold small text-white">Foundations</div>
+                        <small class="text-white-50">Syntax, Data Types, Control Flow</small>
+                      </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                      <div class="p-2 rounded-3 bg-white bg-opacity-10 text-center">
+                        <span class="badge bg-info text-white rounded-pill small mb-1">Phase 2</span>
+                        <div class="fw-bold small text-white">Core Skills</div>
+                        <small class="text-white-50">OOP, File I/O, Generators, Regex</small>
+                      </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                      <div class="p-2 rounded-3 bg-white bg-opacity-10 text-center">
+                        <span class="badge bg-warning text-dark rounded-pill small mb-1">Phase 3</span>
+                        <div class="fw-bold small text-white">Practical Projects</div>
+                        <small class="text-white-50">FastAPI, Microservices, SQLite</small>
+                      </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                      <div class="p-2 rounded-3 bg-white bg-opacity-10 text-center">
+                        <span class="badge bg-success text-white rounded-pill small mb-1">Phase 4</span>
+                        <div class="fw-bold small text-white">Interview Prep</div>
+                        <small class="text-white-50">Mock Tests, Code Optimization</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-3 h-100 border">
+                      <h6 class="fw-bold text-dark mb-2">📌 Candidate Capabilities</h6>
+                      <ul class="ps-3 small text-secondary mb-0">
+                        <li>Switch across 14 dedicated course tracks at any time.</li>
+                        <li>Practice 10+ chapters per track with code examples and study notes.</li>
+                        <li>Build production-grade projects (FastAPI microservices, Docker, React apps).</li>
+                        <li>Unlock stage-gates by proving competence in preceding foundations.</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="p-3 rounded-3 h-100 border border-success border-opacity-25" style="background: rgba(16, 185, 129, 0.04);">
+                      <h6 class="fw-bold text-success mb-2">💡 Recruiter Guidance &amp; Action</h6>
+                      <ul class="ps-3 small text-secondary mb-0">
+                        <li><strong>Track Relevance:</strong> Inspect whether applicant's active course track matches your opening (e.g. Python Backend vs Java Spring vs DevOps).</li>
+                        <li><strong>Milestone Depth:</strong> Candidates at Phase 3 or Phase 4 are immediately ready for technical coding rounds.</li>
+                        <li><strong>Practical Project Evaluation:</strong> Ask candidates about their Phase 3 architectural choices during interviews.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PANE 3: 90-Day Roadmap -->
+            <div class="tab-pane fade" id="tour-pane-roadmap" role="tabpanel">
+              <div class="card border-0 shadow-sm p-4 rounded-4 bg-white mb-3">
+                <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fs-4">🚀</span>
+                    <h5 class="fw-bold mb-0 text-dark">90-Day Learning Roadmap &amp; Daily Habit Tracker</h5>
+                  </div>
+                  <span class="badge bg-warning text-dark rounded-pill px-3 py-1">Discipline &amp; Consistency</span>
+                </div>
+
+                <!-- Mockup Preview Card -->
+                <div class="p-3 mb-3 rounded-4 bg-light border">
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <div class="p-3 rounded-3 bg-white border shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                          <span class="small text-secondary fw-semibold">90-Day Roadmap</span>
+                          <span class="badge bg-primary-subtle text-primary rounded-pill small">45% Total</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 6px;">
+                          <div class="progress-bar bg-primary" style="width: 45%;"></div>
+                        </div>
+                        <small class="text-muted">45 of 100 curriculum milestones completed</small>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="p-3 rounded-3 bg-white border shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                          <span class="small text-secondary fw-semibold">Daily Streak</span>
+                          <span class="badge bg-danger-subtle text-danger rounded-pill small">🔥 Active</span>
+                        </div>
+                        <h4 class="fw-bold text-dark mb-0">12 Days</h4>
+                        <small class="text-muted">Consistent daily study commitment</small>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="p-3 rounded-3 bg-white border shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                          <span class="small text-secondary fw-semibold">Today's Plan</span>
+                          <span class="badge bg-success-subtle text-success rounded-pill small">80% Done</span>
+                        </div>
+                        <h4 class="fw-bold text-success mb-0">4 / 5 Tasks</h4>
+                        <small class="text-muted">FastAPI Dependency Injection &amp; Pytest</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-3 h-100 border">
+                      <h6 class="fw-bold text-dark mb-2">📌 Candidate Capabilities</h6>
+                      <ul class="ps-3 small text-secondary mb-0">
+                        <li>Follows structured timeline broken down by days and weeks.</li>
+                        <li>Receives AI-curated top daily recommendations based on weakest topics.</li>
+                        <li>Marks tasks as completed in real time to update habit streak counter.</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="p-3 rounded-3 h-100 border border-success border-opacity-25" style="background: rgba(16, 185, 129, 0.04);">
+                      <h6 class="fw-bold text-success mb-2">💡 Recruiter Guidance &amp; Action</h6>
+                      <ul class="ps-3 small text-secondary mb-0">
+                        <li><strong>Habit Strength:</strong> Candidates with 10+ day streaks consistently outperform peers in problem-solving velocity.</li>
+                        <li><strong>Self-Paced Reliability:</strong> Check if candidate is ahead of schedule on their 90-day plan.</li>
+                        <li><strong>Shortlisting Signal:</strong> Use the <em>Student Learning Monitor</em> table below to filter candidates by "Active Daily Streak".</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PANE 4: Aptitude & Coding Lab -->
+            <div class="tab-pane fade" id="tour-pane-aptitude" role="tabpanel">
+              <div class="card border-0 shadow-sm p-4 rounded-4 bg-white mb-3">
+                <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fs-4">🧠</span>
+                    <h5 class="fw-bold mb-0 text-dark">Proctored Aptitude Assessments &amp; Coding Lab (DSA)</h5>
+                  </div>
+                  <span class="badge bg-primary text-white rounded-pill px-3 py-1">Technical Rigor</span>
+                </div>
+
+                <!-- Mockup Preview Card -->
+                <div class="p-3 mb-3 rounded-4 bg-light border">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <div class="p-3 rounded-3 bg-white border shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                          <h6 class="fw-bold text-dark mb-0">🧠 Proctored Aptitude Test</h6>
+                          <span class="badge bg-success text-white rounded-pill">Score: 84%</span>
+                        </div>
+                        <div class="d-flex flex-column gap-1.5 small text-secondary">
+                          <div class="d-flex justify-content-between"><span>Quantitative Ability:</span> <strong class="text-dark">85%</strong></div>
+                          <div class="d-flex justify-content-between"><span>Logical Reasoning:</span> <strong class="text-dark">88%</strong></div>
+                          <div class="d-flex justify-content-between"><span>Verbal Ability:</span> <strong class="text-dark">80%</strong></div>
+                          <div class="d-flex justify-content-between"><span>Anti-Cheating Integrity:</span> <strong class="text-success">Clean (0 Violations)</strong></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="p-3 rounded-3 bg-white border shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                          <h6 class="fw-bold text-dark mb-0">💻 Coding Lab (DSA)</h6>
+                          <span class="badge bg-primary text-white rounded-pill">18 Problems Solved</span>
+                        </div>
+                        <div class="d-flex flex-column gap-1.5 small text-secondary">
+                          <div class="d-flex justify-content-between"><span>Primary Language:</span> <strong class="text-dark">Python 3 / Java</strong></div>
+                          <div class="d-flex justify-content-between"><span>Test Case Success Rate:</span> <strong class="text-success">92.5% Passed</strong></div>
+                          <div class="d-flex justify-content-between"><span>Avg Execution Time:</span> <strong class="text-dark">42ms</strong></div>
+                          <div class="d-flex justify-content-between"><span>Complexity Awareness:</span> <strong class="text-primary">O(N log N) Optimal</strong></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-3 h-100 border">
+                      <h6 class="fw-bold text-dark mb-2">📌 Candidate Capabilities</h6>
+                      <ul class="ps-3 small text-secondary mb-0">
+                        <li>Takes timed tests in proctored test windows with webcam face-check.</li>
+                        <li>Executes real code against automated edge cases and hidden tests.</li>
+                        <li>Builds competitive problem-solving proficiency across data structures.</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="p-3 rounded-3 h-100 border border-success border-opacity-25" style="background: rgba(16, 185, 129, 0.04);">
+                      <h6 class="fw-bold text-success mb-2">💡 Recruiter Guidance &amp; Action</h6>
+                      <ul class="ps-3 small text-secondary mb-0">
+                        <li><strong>Hard Data vs Self-Report:</strong> Rely on system-verified test percentages rather than resume skill keywords.</li>
+                        <li><strong>Fast-Track Pipeline:</strong> Candidates with &ge; 80% aptitude and &ge; 75% coding score can bypass initial screening calls.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PANE 5: AI Mock Interviews -->
+            <div class="tab-pane fade" id="tour-pane-interviews" role="tabpanel">
+              <div class="card border-0 shadow-sm p-4 rounded-4 bg-white mb-3">
+                <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fs-4">🎙️</span>
+                    <h5 class="fw-bold mb-0 text-dark">AI Mock Interview Studio &amp; Speech Analytics</h5>
+                  </div>
+                  <span class="badge bg-danger text-white rounded-pill px-3 py-1">Automated Evaluation</span>
+                </div>
+
+                <!-- Mockup Preview Card -->
+                <div class="p-3 mb-3 rounded-4 bg-light border">
+                  <div class="p-3 rounded-3 bg-white border shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                      <h6 class="fw-bold text-dark mb-0">🎙️ AI Interview Scorecard (Software Engineer - Python)</h6>
+                      <span class="badge bg-success-subtle text-success border border-success px-3 py-1 rounded-pill fw-bold">Overall: 86 / 100</span>
+                    </div>
+                    <div class="row g-2 small text-secondary">
+                      <div class="col-md-4">
+                        <div class="p-2 rounded bg-light border">
+                          <span class="d-block text-muted">Technical Competency (30%):</span>
+                          <strong class="text-dark fs-6">88%</strong>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="p-2 rounded bg-light border">
+                          <span class="d-block text-muted">Communication Quality (20%):</span>
+                          <strong class="text-dark fs-6">84%</strong>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="p-2 rounded bg-light border">
+                          <span class="d-block text-muted">Experience &amp; Problem Solving (20%):</span>
+                          <strong class="text-dark fs-6">85%</strong>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-3 h-100 border">
+                      <h6 class="fw-bold text-dark mb-2">📌 Candidate Capabilities</h6>
+                      <ul class="ps-3 small text-secondary mb-0">
+                        <li>Answers spoken AI interviewer questions with microphone audio.</li>
+                        <li>Receives instant transcriptions, filler-word counts, and sentiment feedback.</li>
+                        <li>Practices targeted domain questions (Algorithms, Databases, System Design).</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="p-3 rounded-3 h-100 border border-success border-opacity-25" style="background: rgba(16, 185, 129, 0.04);">
+                      <h6 class="fw-bold text-success mb-2">💡 Recruiter Guidance &amp; Action</h6>
+                      <ul class="ps-3 small text-secondary mb-0">
+                        <li><strong>Save Interview Hours:</strong> Pre-screen candidate soft skills and technical depth without scheduling engineer time.</li>
+                        <li><strong>Scorecard Access:</strong> View full AI interview scorecards directly from the candidate profile in <em>Manage Jobs</em>.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PANE 6: ATS Resume & Portfolio -->
+            <div class="tab-pane fade" id="tour-pane-ats" role="tabpanel">
+              <div class="card border-0 shadow-sm p-4 rounded-4 bg-white mb-3">
+                <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fs-4">📄</span>
+                    <h5 class="fw-bold mb-0 text-dark">Multi-Profession ATS Diagnostics &amp; Digital Portfolio</h5>
+                  </div>
+                  <span class="badge bg-info text-white rounded-pill px-3 py-1">Resume &amp; Project Showcase</span>
+                </div>
+
+                <!-- Mockup Preview Card -->
+                <div class="p-3 mb-3 rounded-4 bg-light border">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <div class="p-3 rounded-3 bg-white border shadow-sm">
+                        <h6 class="fw-bold text-dark mb-2">📄 Multi-Profession ATS Parsing</h6>
+                        <div class="d-flex flex-column gap-1.5 small">
+                          <div class="d-flex justify-content-between"><span>Software Engineer Match:</span> <strong class="text-success">92% Match</strong></div>
+                          <div class="d-flex justify-content-between"><span>Full Stack Developer Match:</span> <strong class="text-primary">87% Match</strong></div>
+                          <div class="d-flex justify-content-between"><span>Data Scientist Match:</span> <strong class="text-secondary">64% Match</strong></div>
+                          <div class="d-flex justify-content-between"><span>Formatting Score:</span> <strong class="text-success">96% ATS Clean</strong></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="p-3 rounded-3 bg-white border shadow-sm">
+                        <h6 class="fw-bold text-dark mb-2">✨ Verified Digital Portfolio</h6>
+                        <div class="d-flex flex-column gap-1.5 small">
+                          <div class="d-flex justify-content-between"><span>GitHub Profile:</span> <span class="badge bg-dark text-white">Verified</span></div>
+                          <div class="d-flex justify-content-between"><span>Live Deployed Web Demos:</span> <span class="badge bg-success text-white">2 Live URLs</span></div>
+                          <div class="d-flex justify-content-between"><span>LinkedIn &amp; Certifications:</span> <span class="badge bg-primary text-white">Connected</span></div>
+                          <div class="d-flex justify-content-between"><span>Featured Project:</span> <strong class="text-dark">AI Recruiter Microservice</strong></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-3 h-100 border">
+                      <h6 class="fw-bold text-dark mb-2">📌 Candidate Capabilities</h6>
+                      <ul class="ps-3 small text-secondary mb-0">
+                        <li>Uploads resume to receive multi-profession ATS compatibility ratings.</li>
+                        <li>Diagnoses missing keywords required for target tech stacks.</li>
+                        <li>Creates a public digital portfolio with live project demos and GitHub repos.</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="p-3 rounded-3 h-100 border border-success border-opacity-25" style="background: rgba(16, 185, 129, 0.04);">
+                      <h6 class="fw-bold text-success mb-2">💡 Recruiter Guidance &amp; Action</h6>
+                      <ul class="ps-3 small text-secondary mb-0">
+                        <li><strong>Match Relevance:</strong> Check which role the candidate's resume naturally scores highest for.</li>
+                        <li><strong>Live Verification:</strong> Click candidate live demo links to interact with functioning frontend &amp; API deployments.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="modal-footer border-top bg-white p-3 d-flex justify-content-between align-items-center">
+          <a href="candidate-dashboard.html?preview=1" target="_blank" class="btn btn-outline-success rounded-pill fw-semibold shadow-sm">
+            🚀 Open Live Candidate Dashboard (Recruiter Preview) &rarr;
+          </a>
+          <button type="button" class="btn btn-secondary px-4 fw-semibold rounded-pill" data-bs-dismiss="modal">Close Tour</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script src="js/api.js"></script>
@@ -915,6 +1709,32 @@
           uGreet.classList.remove("skeleton");
         }
       }
+
+      window.openCandidateFeatureModal = function (featureKey) {
+        const modalEl = document.getElementById("candidateDashboardTourModal");
+        if (!modalEl) return;
+
+        const tabMap = {
+          placement_compass: "tab-btn-compass",
+          course_tracks: "tab-btn-courses",
+          roadmap_tracker: "tab-btn-roadmap",
+          aptitude_coding: "tab-btn-aptitude",
+          mock_interviews: "tab-btn-interviews",
+          ats_portfolio: "tab-btn-ats",
+        };
+
+        const tabBtnId = tabMap[featureKey] || "tab-btn-compass";
+        const tabBtn = document.getElementById(tabBtnId);
+        if (tabBtn && window.bootstrap) {
+          const tabInstance = bootstrap.Tab.getOrCreateInstance(tabBtn);
+          tabInstance.show();
+        }
+
+        if (window.bootstrap) {
+          const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+          modal.show();
+        }
+      };
     })();
   </script>
 </body>

@@ -727,8 +727,14 @@ function dashboardUrlForRole(role) {
         window.location.href = "candidate-dashboard.html?onboarding=1";
       }
     } else if (reqRole === "candidate" && userRole !== "candidate") {
-      alert("Access Denied: This area is restricted to Candidate accounts. Redirecting to your Recruiter Portal...");
-      window.location.href = dashboardUrlForRole(userRole);
+      const urlParams = new URLSearchParams(window.location.search);
+      const isPreview = urlParams.get("preview") === "1" || urlParams.get("recruiter_view") === "1";
+      if (isPreview && (userRole === "recruiter" || userRole === "company_admin" || userRole === "admin")) {
+        // Allow recruiters and admins read-only preview of candidate dashboard
+      } else {
+        alert("Access Denied: This area is restricted to Candidate accounts. Redirecting to your Recruiter Portal...");
+        window.location.href = dashboardUrlForRole(userRole);
+      }
     } else if (reqRole === "recruiter" && (userRole === "recruiter" || userRole === "company_admin")) {
       const rawFile = (window.location.pathname.split("/").pop() || "").toLowerCase();
       const currentClean = rawFile.replace(/\.html$/, "");
