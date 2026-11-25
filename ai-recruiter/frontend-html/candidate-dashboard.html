@@ -171,35 +171,35 @@
         <!-- ========================================================================= -->
         <div id="candidate-learning-journey-container" class="mb-5">
           <!-- TARGET COURSE SELECTION & CAREER TRACK SELECTOR -->
-          <div class="card border-0 shadow-sm p-3.5 px-4 mb-4 rounded-4" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #1e3a8a 100%); color: #ffffff;">
-            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
-              <div class="d-flex align-items-center gap-3">
-                <div class="rounded-circle p-2.5 text-white shadow-sm d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.15); font-size: 1.6rem; width: 54px; height: 54px; flex-shrink: 0;">
+          <div class="card border-0 shadow-sm candidate-target-track-card">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-4">
+              <div class="d-flex align-items-start gap-3.5">
+                <div class="candidate-track-icon-badge mt-1 shadow-sm">
                   <span id="active-course-icon">☕</span>
                 </div>
                 <div>
-                  <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
-                    <span class="badge bg-warning text-dark fw-bold px-2.5 py-0.5 rounded-pill small">Target Course Track</span>
-                    <span class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-10 py-0.5 px-2 rounded-pill small" id="active-course-role-badge">Python Backend Engineer & System Developer</span>
-                    <span class="badge bg-success-subtle text-success border border-success-subtle py-0.5 px-2 rounded-pill small fw-semibold">Beginner &rarr; Placement Ready</span>
+                  <div class="candidate-track-badges-group">
+                    <span class="badge bg-warning text-dark fw-bold px-3 py-1 rounded-pill small">Target Course Track</span>
+                    <span class="badge bg-white bg-opacity-10 text-white-50 border border-white border-opacity-15 py-1 px-3 rounded-pill small fw-medium" id="active-course-role-badge">Python Backend Engineer & System Developer</span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle py-1 px-3 rounded-pill small fw-semibold">Beginner &rarr; Placement Ready</span>
                   </div>
-                  <h5 class="fw-bold mb-0 text-white" id="active-course-title">Python Programming: Beginner to Placement Ready</h5>
-                  <p class="text-white-50 small mb-0 mt-1" id="active-course-desc" style="max-width: 780px;">
+                  <h4 class="candidate-track-heading" id="active-course-title">Python Programming: Beginner to Placement Ready</h4>
+                  <p class="candidate-track-description" id="active-course-desc">
                     Complete Python journey from fundamental syntax and data structures to FastAPI microservices, asynchronous programming, intelligent agent architecture, and technical interviews.
                   </p>
                 </div>
               </div>
 
-              <div class="d-flex align-items-center gap-2 flex-wrap flex-shrink-0">
+              <div class="candidate-track-actions">
                 <!-- Clearly Visible Start Course Button -->
-                <a href="python-course-learning.html" class="btn btn-warning text-dark fw-bold px-3.5 py-2 rounded-pill shadow-sm d-flex align-items-center gap-2" id="btn-header-start-course" onclick="startCurrentCourse(event)" style="font-size: 0.92rem; box-shadow: 0 4px 14px rgba(234, 179, 8, 0.4); text-decoration: none;">
+                <a href="python-course-learning.html" class="btn btn-warning text-dark fw-bold px-4 py-2.5 rounded-pill shadow-sm d-flex align-items-center gap-2 hover-lift" id="btn-header-start-course" onclick="startCurrentCourse(event)" style="font-size: 0.92rem; box-shadow: 0 4px 14px rgba(234, 179, 8, 0.4); text-decoration: none;">
                   <span id="btn-header-start-icon">▶️</span>
                   <span id="btn-header-start-text">Start Course</span>
                 </a>
 
                 <!-- Course Selector Dropdown -->
                 <div class="dropdown">
-                  <button class="btn btn-light fw-bold px-3 py-2 rounded-pill shadow-sm dropdown-toggle d-flex align-items-center gap-2" type="button" id="courseTrackDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <button class="btn btn-light fw-bold px-4 py-2.5 rounded-pill shadow-sm dropdown-toggle d-flex align-items-center gap-2 hover-lift" type="button" id="courseTrackDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.92rem;">
                     <span>📚 Switch Course</span>
                   </button>
                                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2 rounded-3" id="courseTrackDropdownList" aria-labelledby="courseTrackDropdown" style="min-width: 320px; max-width: 380px;">
@@ -233,25 +233,37 @@
                   </ul>
                 </div>
 
-                <a href="course-learning.html?course=python" class="btn btn-outline-light rounded-pill px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-1.5" id="btn-header-syllabus-link" style="text-decoration: none;">
+                <a href="course-learning.html?course=python" class="btn btn-outline-light rounded-pill px-4 py-2.5 fw-semibold shadow-sm d-flex align-items-center gap-2 hover-lift" id="btn-header-syllabus-link" style="font-size: 0.92rem; text-decoration: none;">
                   <span>📖 Full Syllabus &amp; Topics</span>
                 </a>
               </div>
             </div>
 
             <!-- Course Track Highlights Bar -->
-            <div class="row g-2 mt-2 pt-2 border-top border-white border-opacity-10 text-white-50 small">
-              <div class="col-6 col-md-3 d-flex align-items-center gap-2">
-                <span>📘</span> <span class="text-white-50"><strong class="text-white">10 Chapters</strong> &amp; Study Notes</span>
+            <div class="row g-3 candidate-track-highlights">
+              <div class="col-6 col-md-3">
+                <div class="candidate-track-highlight-item">
+                  <span class="highlight-icon">📘</span>
+                  <span><strong class="text-white">10 Chapters</strong> &amp; Study Notes</span>
+                </div>
               </div>
-              <div class="col-6 col-md-3 d-flex align-items-center gap-2">
-                <span>💻</span> <span class="text-white-50"><strong class="text-white">Practical Coding</strong> Exercises</span>
+              <div class="col-6 col-md-3">
+                <div class="candidate-track-highlight-item">
+                  <span class="highlight-icon">💻</span>
+                  <span><strong class="text-white">Practical Coding</strong> Exercises</span>
+                </div>
               </div>
-              <div class="col-6 col-md-3 d-flex align-items-center gap-2">
-                <span>🚀</span> <span class="text-white-50"><strong class="text-white">Real-World Projects</strong> <span id="active-course-projects-badge">(FastAPI &amp; Microservices)</span></span>
+              <div class="col-6 col-md-3">
+                <div class="candidate-track-highlight-item">
+                  <span class="highlight-icon">🚀</span>
+                  <span><strong class="text-white">Real-World Projects</strong> <span id="active-course-projects-badge">(FastAPI &amp; Microservices)</span></span>
+                </div>
               </div>
-              <div class="col-6 col-md-3 d-flex align-items-center gap-2">
-                <span>🎯</span> <span class="text-white-50"><strong class="text-white">Campus Placement</strong> Training</span>
+              <div class="col-6 col-md-3">
+                <div class="candidate-track-highlight-item">
+                  <span class="highlight-icon">🎯</span>
+                  <span><strong class="text-white">Campus Placement</strong> Training</span>
+                </div>
               </div>
             </div>
           </div>
