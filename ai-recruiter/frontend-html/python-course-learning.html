@@ -18,11 +18,49 @@
     .learning-navbar {
       background: linear-gradient(135deg, #0b1329 0%, #172554 50%, #1e3a8a 100%);
       color: #ffffff;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.22);
       position: sticky;
       top: 0;
       z-index: 1030;
-      padding: 1.25rem 2rem !important;
+      padding: 1.5rem 2.25rem !important;
+    }
+    .learning-navbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      row-gap: 1.35rem;
+    }
+    .learning-nav-main {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .learning-nav-title-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .learning-course-heading {
+      font-size: 1.32rem;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.35;
+      color: #ffffff;
+    }
+    .learning-nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .pedagogical-section {
+      background: #0f172a !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1.25rem 2.25rem !important;
+      min-height: 72px;
     }
     .nav-brand-icon {
       width: 52px;
@@ -296,15 +334,15 @@
 
   <!-- TOP LEARNING NAVBAR -->
   <nav class="learning-navbar">
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-4 row-gap-3.5">
-      <!-- Left: Back & Course Title -->
-      <div class="d-flex align-items-center gap-3.5 flex-wrap">
+    <div class="learning-navbar-inner">
+      <!-- Left: Back, Logo, Badges & Course Title -->
+      <div class="learning-nav-main">
         <a href="candidate-dashboard.html" class="btn btn-outline-light btn-sm rounded-pill px-3.5 py-2 fw-semibold d-flex align-items-center gap-2 shadow-sm hover-lift" title="Return to Candidate Dashboard">
           <i class="bi bi-arrow-left"></i>
           <span>Dashboard</span>
         </a>
 
-        <div class="d-flex align-items-center gap-3">
+        <div class="learning-nav-title-group">
           <div class="nav-brand-icon" title="Python Full-Stack Track">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="36" height="36" class="python-brand-svg" aria-label="Python Logo">
               <path fill="url(#python-grad-a)" d="M63.7 4.1c-27.1 0-25.5 11.7-25.5 11.7l.03 12.1h26v3.5H28.6s-16.4 1.8-16.4 25.3c0 23.4 14.3 22.7 14.3 22.7h8.5v-12s-.5-14.4 14.1-14.4h24.2s13.5.2 13.5-13.3V17.7s1.6-13.6-23.1-13.6zm-13.8 7.5c2.3 0 4.2 1.9 4.2 4.2s-1.9 4.2-4.2 4.2-4.2-1.9-4.2-4.2 1.9-4.2 4.2-4.2z"/>
@@ -329,13 +367,13 @@
               <span class="badge rounded-pill px-3 py-1 small fw-semibold" id="page-stage-badge" style="background: rgba(255,255,255,0.18); color: #ffffff; border: 1px solid rgba(255,255,255,0.25);">Stage 1: Fundamentals</span>
               <span class="badge bg-success text-white rounded-pill px-2.5 py-1 small fw-semibold" id="page-status-badge">Placement Ready</span>
             </div>
-            <h5 class="fw-bold text-white mb-0" id="page-course-title" style="letter-spacing: -0.015em; font-size: 1.25rem; line-height: 1.35;">Python Programming: Beginner to Placement Ready</h5>
+            <h4 class="fw-bold text-white mb-0 learning-course-heading" id="page-course-title">Python Programming: Beginner to Placement Ready</h4>
           </div>
         </div>
       </div>
 
       <!-- Right: Course Track Selector & Progress -->
-      <div class="d-flex align-items-center gap-3 flex-wrap">
+      <div class="learning-nav-actions">
         <!-- Progress Bar -->
         <div class="d-none d-md-flex align-items-center gap-2.5 bg-white bg-opacity-10 px-3.5 py-2 rounded-pill border border-white border-opacity-15 shadow-sm">
           <span class="small text-white-50 fw-semibold">Progress:</span>
@@ -370,11 +408,11 @@
   </nav>
 
   <!-- 4-STAGE PEDAGOGICAL LADDER -->
-  <section class="bg-dark text-white border-bottom border-secondary border-opacity-25" style="background: #0f172a !important; padding: 1.15rem 2rem !important;">
+  <section class="pedagogical-section text-white">
     <div class="container-fluid px-0">
-      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3.5 row-gap-3">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-4 row-gap-3">
         <div class="d-flex align-items-center gap-2">
-          <span class="badge rounded-pill px-3 py-1.5 text-uppercase fw-bold" style="letter-spacing: 0.7px; font-size: 0.74rem; background: rgba(59, 130, 246, 0.16); border: 1px solid rgba(96, 165, 250, 0.3); color: #93c5fd;">
+          <span class="badge rounded-pill px-3 py-1.5 text-uppercase fw-bold shadow-sm" style="letter-spacing: 0.7px; font-size: 0.76rem; background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(96, 165, 250, 0.35); color: #93c5fd;">
             🎯 Pedagogical Progression
           </span>
         </div>

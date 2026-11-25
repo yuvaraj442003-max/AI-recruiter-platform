@@ -2822,12 +2822,57 @@ body.mobile-sidebar-active {
    COURSE LEARNING STUDIOS (Learning Navbar & Brand Icon)
    =================================================== */
 .learning-navbar {
-  padding: 1.25rem 2rem !important;
+  background: linear-gradient(135deg, #0b1329 0%, #172554 50%, #1e3a8a 100%);
+  color: #ffffff;
+  padding: 1.5rem 2.25rem !important;
   position: sticky;
   top: 0;
   z-index: 1030;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
-  min-height: 84px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.22);
+}
+
+.learning-navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  row-gap: 1.35rem;
+}
+
+.learning-nav-main {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.learning-nav-title-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.learning-course-heading {
+  font-size: 1.32rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+  color: #ffffff;
+}
+
+.learning-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pedagogical-section {
+  background: #0f172a !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.25rem 2.25rem !important;
+  min-height: 72px;
 }
 
 .nav-brand-icon {
@@ -2891,6 +2936,9 @@ body.mobile-sidebar-active {
 
 @media (max-width: 768px) {
   .learning-navbar {
+    padding: 1.15rem 1.25rem !important;
+  }
+  .pedagogical-section {
     padding: 1rem 1.25rem !important;
   }
 }

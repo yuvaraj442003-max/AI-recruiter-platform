@@ -26,11 +26,43 @@
     .learning-navbar {
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #ffffff;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.22);
       position: sticky;
       top: 0;
       z-index: 1030;
-      padding: 1.25rem 2rem !important;
+      padding: 1.5rem 2.25rem !important;
+    }
+    .learning-navbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      row-gap: 1.35rem;
+    }
+    .learning-nav-main {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .learning-nav-title-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .learning-course-heading {
+      font-size: 1.32rem;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.35;
+      color: #ffffff;
+    }
+    .learning-nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
     }
     .stage-badge-pill {
       font-size: 0.72rem;
@@ -266,15 +298,15 @@
 
   <!-- TOP LEARNING NAVBAR -->
   <nav class="learning-navbar">
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-4 row-gap-3.5">
+    <div class="learning-navbar-inner">
       <!-- Left: Back & Course Title -->
-      <div class="d-flex align-items-center gap-3.5 flex-wrap">
+      <div class="learning-nav-main">
         <a href="candidate-dashboard.html" class="btn btn-outline-light btn-sm rounded-pill px-3.5 py-2 fw-semibold d-flex align-items-center gap-2 shadow-sm hover-lift" title="Return to Candidate Dashboard">
           <i class="bi bi-arrow-left"></i>
           <span>Dashboard</span>
         </a>
 
-        <div class="d-flex align-items-center gap-3">
+        <div class="learning-nav-title-group">
           <span class="fs-3 rounded-3 d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 52px; height: 52px; min-width: 52px; min-height: 52px; background: #ffffff !important; border: 2px solid rgba(255, 255, 255, 0.6) !important; border-radius: 14px !important; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;" id="page-course-icon">🐍</span>
           <div>
             <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
@@ -282,13 +314,13 @@
               <span class="badge rounded-pill px-3 py-1 small fw-semibold" id="page-module-badge" style="background: rgba(255,255,255,0.18); color: #ffffff; border: 1px solid rgba(255,255,255,0.25);">Loading...</span>
               <span class="badge bg-success text-white rounded-pill px-2.5 py-1 small fw-semibold" id="page-topic-status-badge">In Progress</span>
             </div>
-            <h5 class="fw-bold text-white mb-0" id="page-course-title" style="letter-spacing: -0.015em; font-size: 1.25rem; line-height: 1.35;">Python Programming: Beginner to Placement Ready</h5>
+            <h4 class="fw-bold text-white mb-0 learning-course-heading" id="page-course-title">Python Programming: Beginner to Placement Ready</h4>
           </div>
         </div>
       </div>
 
       <!-- Right: Course Track Selector & Progress -->
-      <div class="d-flex align-items-center gap-3 flex-wrap">
+      <div class="learning-nav-actions">
         <!-- Switch Track Dropdown -->
         <div class="dropdown">
           <button class="btn btn-sm btn-light fw-bold px-3.5 py-2 rounded-pill shadow-sm dropdown-toggle d-flex align-items-center gap-2 hover-lift" type="button" id="courseTrackDropdown" data-bs-toggle="dropdown" aria-expanded="false">
