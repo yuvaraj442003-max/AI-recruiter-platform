@@ -1677,6 +1677,10 @@ nav.sticky-top {
   color: #fbbf24 !important;
 }
 
+.candidate-quickstat-item .check-mint {
+  color: #2dd4bf !important;
+}
+
 .candidate-quickstat-item .check-violet {
   color: #a78bfa !important;
 }
@@ -1788,13 +1792,13 @@ nav.sticky-top {
    =================================================== */
 .recruiter-portal-hero {
   position: relative;
-  background: radial-gradient(circle at 12% 25%, rgba(16, 185, 129, 0.42) 0%, transparent 45%),
-              radial-gradient(circle at 88% 75%, rgba(6, 182, 212, 0.35) 0%, transparent 45%),
-              radial-gradient(circle at 50% 120%, rgba(5, 150, 105, 0.35) 0%, transparent 50%),
-              linear-gradient(135deg, #061814 0%, #0f172a 55%, #064e3b 100%) !important;
-  border: 1px solid rgba(52, 211, 153, 0.32) !important;
+  background: radial-gradient(circle at 14% 24%, rgba(16, 185, 129, 0.38) 0%, transparent 46%),
+              radial-gradient(circle at 86% 75%, rgba(6, 182, 212, 0.32) 0%, transparent 46%),
+              radial-gradient(circle at 50% 120%, rgba(13, 148, 136, 0.3) 0%, transparent 50%),
+              linear-gradient(135deg, #071015 0%, #0a1921 45%, #082928 100%) !important;
+  border: 1px solid rgba(52, 211, 153, 0.28) !important;
   border-radius: 28px !important;
-  box-shadow: 0 25px 60px -12px rgba(6, 78, 59, 0.45), 0 0 35px rgba(16, 185, 129, 0.2) !important;
+  box-shadow: 0 25px 60px -12px rgba(4, 18, 20, 0.65), 0 0 35px rgba(16, 185, 129, 0.18) !important;
   overflow: hidden;
   color: #ffffff;
   margin-bottom: 2rem;
@@ -1805,11 +1809,11 @@ nav.sticky-top {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 36px 36px;
-  mask-image: radial-gradient(ellipse 75% 65% at 50% 40%, #000 60%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 40%, #000 60%, transparent 100%);
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 55%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 55%, transparent 100%);
   pointer-events: none;
   z-index: 1;
 }
@@ -1821,8 +1825,8 @@ nav.sticky-top {
   right: -40px;
   width: 280px;
   height: 280px;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.35) 0%, rgba(6, 182, 212, 0.15) 50%, transparent 70%);
-  filter: blur(40px);
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.32) 0%, rgba(6, 182, 212, 0.15) 50%, transparent 70%);
+  filter: blur(44px);
   pointer-events: none;
   z-index: 1;
 }
@@ -1832,12 +1836,12 @@ nav.sticky-top {
   align-items: center;
   gap: 0.55rem;
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(52, 211, 153, 0.3);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   padding: 0.42rem 1.1rem;
   border-radius: 9999px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   font-size: 0.82rem;
   font-weight: 600;
   color: #e2e8f0;
@@ -1872,7 +1876,7 @@ nav.sticky-top {
 .recruiter-hero-btn-primary {
   background: linear-gradient(135deg, #10b981 0%, #059669 50%, #0d9488 100%) !important;
   color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
   box-shadow: 0 8px 24px -4px rgba(16, 185, 129, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
   border-radius: 9999px !important;
   padding: 0.62rem 1.35rem !important;
@@ -1893,10 +1897,10 @@ nav.sticky-top {
 }
 
 .recruiter-hero-btn-hub {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  background: linear-gradient(135deg, #0d9488 0%, #0891b2 50%, #0284c7 100%) !important;
   color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  box-shadow: 0 8px 24px -4px rgba(245, 158, 11, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  box-shadow: 0 8px 24px -4px rgba(13, 148, 136, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
   border-radius: 9999px !important;
   padding: 0.62rem 1.35rem !important;
   font-weight: 700 !important;
@@ -1911,16 +1915,16 @@ nav.sticky-top {
 
 .recruiter-hero-btn-hub:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px -4px rgba(245, 158, 11, 0.6) !important;
+  box-shadow: 0 12px 30px -4px rgba(13, 148, 136, 0.7), 0 0 20px rgba(6, 182, 212, 0.4) !important;
   color: #ffffff !important;
 }
 
 .recruiter-hero-btn-glass {
-  background: rgba(255, 255, 255, 0.09) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
   color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
   border-radius: 9999px !important;
   padding: 0.62rem 1.25rem !important;
@@ -1935,11 +1939,11 @@ nav.sticky-top {
 }
 
 .recruiter-hero-btn-glass:hover {
-  background: rgba(255, 255, 255, 0.18) !important;
-  border-color: rgba(52, 211, 153, 0.5) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(52, 211, 153, 0.55) !important;
   color: #ffffff !important;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.25) !important;
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.28) !important;
 }
 
 .pulse-dot-emerald {
