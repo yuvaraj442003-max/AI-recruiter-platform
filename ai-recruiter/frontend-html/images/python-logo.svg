@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <path fill="url(#python-grad-a)" d="M63.7 4.1c-27.1 0-25.5 11.7-25.5 11.7l.03 12.1h26v3.5H28.6s-16.4 1.8-16.4 25.3c0 23.4 14.3 22.7 14.3 22.7h8.5v-12s-.5-14.4 14.1-14.4h24.2s13.5.2 13.5-13.3V17.7s1.6-13.6-23.1-13.6zm-13.8 7.5c2.3 0 4.2 1.9 4.2 4.2s-1.9 4.2-4.2 4.2-4.2-1.9-4.2-4.2 1.9-4.2 4.2-4.2z"/>
+  <path fill="url(#python-grad-b)" d="M64.3 123.9c27.1 0 25.5-11.7 25.5-11.7l-.03-12.1h-26v-3.5h35.6s16.4-1.8 16.4-25.3c0-23.4-14.3-22.7-14.3-22.7h-8.5v12s.5 14.4-14.1 14.4H49.2s-13.5-.2-13.5 13.3v22.8s-1.6 13.6 23.1 13.6zm13.8-7.5c-2.3 0-4.2-1.9-4.2-4.2s1.9-4.2 4.2-4.2 4.2 1.9 4.2 4.2-1.9 4.2-4.2 4.2z"/>
+  <circle cx="49.9" cy="15.8" r="2.8" fill="#ffffff"/>
+  <circle cx="78.1" cy="112.2" r="2.8" fill="#ffffff"/>
+  <defs>
+    <linearGradient id="python-grad-a" x1="16.9" y1="4.1" x2="80.6" y2="67.8" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#387eb8"/>
+      <stop offset="100%" stop-color="#366994"/>
+    </linearGradient>
+    <linearGradient id="python-grad-b" x1="113.8" y1="123.9" x2="50.1" y2="60.2" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffe873"/>
+      <stop offset="100%" stop-color="#ffd43b"/>
+    </linearGradient>
+  </defs>
+</svg>

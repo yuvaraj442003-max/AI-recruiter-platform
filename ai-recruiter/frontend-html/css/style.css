@@ -2831,21 +2831,31 @@ body.mobile-sidebar-active {
 }
 
 .nav-brand-icon {
-  width: 48px;
-  height: 48px;
-  min-width: 48px;
-  min-height: 48px;
+  width: 50px;
+  height: 50px;
+  min-width: 50px;
+  min-height: 50px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 12px;
-  font-size: 1.65rem;
-  line-height: 1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: #ffffff !important;
+  border: 2px solid rgba(255, 255, 255, 0.6) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 0 16px rgba(56, 126, 184, 0.4) !important;
   flex-shrink: 0;
-  overflow: visible;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-brand-icon:hover {
+  transform: scale(1.06);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 212, 59, 0.5) !important;
+}
+
+.python-brand-svg {
+  display: block;
+  width: 34px;
+  height: 34px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
 }
 
 @media (max-width: 768px) {
