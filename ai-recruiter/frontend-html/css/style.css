@@ -515,19 +515,19 @@ nav.sticky-top {
 }
 
 .recruiter-sidebar .nav-link:hover:not(.active) {
-  background-color: rgba(16, 185, 129, 0.08) !important;
-  color: #10b981 !important;
+  background-color: rgba(37, 99, 235, 0.08) !important;
+  color: #2563eb !important;
   transform: translateX(3px) !important;
   border-radius: 9999px !important;
 }
 
 .recruiter-sidebar .nav-link.active {
-  background: #10b981 !important;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  background: #2563eb !important;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
   color: #ffffff !important;
   font-weight: 600 !important;
   border-radius: 9999px !important;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35) !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
 }
 
 .nav-pills .nav-link {
@@ -553,9 +553,9 @@ nav.sticky-top {
 }
 
 .nav-pills .nav-link.active-recruiter {
-  background: linear-gradient(135deg, #10b981 0%, #047857 100%) !important;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
   color: #ffffff !important;
-  box-shadow: 0 8px 20px -4px rgba(16, 185, 129, 0.4) !important;
+  box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.4) !important;
 }
 
 /* Feature Cards & Stat Cards */
@@ -960,9 +960,9 @@ nav.sticky-top {
 
 /* Recruiter Specific Styling Accents */
 .theme-recruiter {
-  --ar-primary: #10b981;
-  --ar-primary-hover: #059669;
-  --ar-gradient-brand: linear-gradient(135deg, #10b981 0%, #059669 50%, #0d9488 100%);
+  --ar-primary: #2563eb;
+  --ar-primary-hover: #1d4ed8;
+  --ar-gradient-brand: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
 }
 
 .btn-candidate {
@@ -981,18 +981,18 @@ nav.sticky-top {
 }
 
 .btn-recruiter {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   color: #ffffff;
   border: none;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
   transition: all 0.22s ease;
 }
 
 .btn-recruiter:hover {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
   color: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.4);
 }
 
 /* Score Pills & Badges */
@@ -1792,13 +1792,13 @@ nav.sticky-top {
    =================================================== */
 .recruiter-portal-hero {
   position: relative;
-  background: radial-gradient(circle at 14% 24%, rgba(16, 185, 129, 0.38) 0%, transparent 46%),
-              radial-gradient(circle at 86% 75%, rgba(6, 182, 212, 0.32) 0%, transparent 46%),
-              radial-gradient(circle at 50% 120%, rgba(13, 148, 136, 0.3) 0%, transparent 50%),
-              linear-gradient(135deg, #071015 0%, #0a1921 45%, #082928 100%) !important;
-  border: 1px solid rgba(52, 211, 153, 0.28) !important;
+  background: radial-gradient(circle at 14% 24%, rgba(37, 99, 235, 0.42) 0%, transparent 46%),
+              radial-gradient(circle at 86% 75%, rgba(14, 165, 233, 0.35) 0%, transparent 46%),
+              radial-gradient(circle at 50% 120%, rgba(99, 102, 241, 0.3) 0%, transparent 50%),
+              linear-gradient(135deg, #070d1e 0%, #0b1836 45%, #0f2452 100%) !important;
+  border: 1px solid rgba(96, 165, 250, 0.32) !important;
   border-radius: 28px !important;
-  box-shadow: 0 25px 60px -12px rgba(4, 18, 20, 0.65), 0 0 35px rgba(16, 185, 129, 0.18) !important;
+  box-shadow: 0 25px 60px -12px rgba(2, 6, 23, 0.75), 0 0 35px rgba(37, 99, 235, 0.22) !important;
   overflow: hidden;
   color: #ffffff;
   margin-bottom: 2rem;
@@ -1825,7 +1825,7 @@ nav.sticky-top {
   right: -40px;
   width: 280px;
   height: 280px;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.32) 0%, rgba(6, 182, 212, 0.15) 50%, transparent 70%);
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.32) 0%, rgba(14, 165, 233, 0.15) 50%, transparent 70%);
   filter: blur(44px);
   pointer-events: none;
   z-index: 1;
@@ -1836,7 +1836,7 @@ nav.sticky-top {
   align-items: center;
   gap: 0.55rem;
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(52, 211, 153, 0.3);
+  border: 1px solid rgba(96, 165, 250, 0.35);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   padding: 0.42rem 1.1rem;
@@ -1874,10 +1874,10 @@ nav.sticky-top {
 }
 
 .recruiter-hero-btn-primary {
-  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #0d9488 100%) !important;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%) !important;
   color: #ffffff !important;
   border: 1px solid rgba(255, 255, 255, 0.28) !important;
-  box-shadow: 0 8px 24px -4px rgba(16, 185, 129, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 8px 24px -4px rgba(37, 99, 235, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
   border-radius: 9999px !important;
   padding: 0.62rem 1.35rem !important;
   font-weight: 700 !important;
@@ -1892,15 +1892,15 @@ nav.sticky-top {
 
 .recruiter-hero-btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px -4px rgba(16, 185, 129, 0.7) !important;
+  box-shadow: 0 12px 30px -4px rgba(37, 99, 235, 0.7) !important;
   color: #ffffff !important;
 }
 
 .recruiter-hero-btn-hub {
-  background: linear-gradient(135deg, #0d9488 0%, #0891b2 50%, #0284c7 100%) !important;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
   color: #ffffff !important;
   border: 1px solid rgba(255, 255, 255, 0.28) !important;
-  box-shadow: 0 8px 24px -4px rgba(13, 148, 136, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 8px 24px -4px rgba(245, 158, 11, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
   border-radius: 9999px !important;
   padding: 0.62rem 1.35rem !important;
   font-weight: 700 !important;
@@ -1915,7 +1915,7 @@ nav.sticky-top {
 
 .recruiter-hero-btn-hub:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px -4px rgba(13, 148, 136, 0.7), 0 0 20px rgba(6, 182, 212, 0.4) !important;
+  box-shadow: 0 12px 30px -4px rgba(245, 158, 11, 0.7), 0 0 20px rgba(245, 158, 11, 0.4) !important;
   color: #ffffff !important;
 }
 
@@ -1940,10 +1940,20 @@ nav.sticky-top {
 
 .recruiter-hero-btn-glass:hover {
   background: rgba(255, 255, 255, 0.16) !important;
-  border-color: rgba(52, 211, 153, 0.55) !important;
+  border-color: rgba(96, 165, 250, 0.6) !important;
   color: #ffffff !important;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.28) !important;
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.32) !important;
+}
+
+.pulse-dot-cobalt {
+  width: 8px;
+  height: 8px;
+  background: #38bdf8;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 10px #38bdf8;
+  animation: pulseGlow 2s infinite;
 }
 
 .pulse-dot-emerald {
