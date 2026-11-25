@@ -22,13 +22,13 @@
       position: sticky;
       top: 0;
       z-index: 1030;
-      padding: 1rem 1.5rem !important;
+      padding: 1.25rem 2rem !important;
     }
     .nav-brand-icon {
-      width: 50px;
-      height: 50px;
-      min-width: 50px;
-      min-height: 50px;
+      width: 52px;
+      height: 52px;
+      min-width: 52px;
+      min-height: 52px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -45,30 +45,32 @@
     }
     .python-brand-svg {
       display: block;
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
     }
     .stage-ladder-pill {
       background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.16);
       border-radius: 9999px;
-      padding: 6px 14px;
-      font-size: 0.78rem;
+      padding: 8px 18px;
+      font-size: 0.82rem;
       font-weight: 600;
       color: #e2e8f0;
-      transition: all 0.2s ease;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
+      white-space: nowrap;
     }
     .stage-ladder-pill:hover,
     .stage-ladder-pill.active {
-      background: #3b82f6;
-      border-color: #60a5fa;
+      background: #2563eb;
+      border-color: #3b82f6;
       color: #ffffff;
       transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
     }
     .stage-ladder-pill.completed {
       background: rgba(16, 185, 129, 0.2);
@@ -293,18 +295,18 @@
     <div class="flex-grow-1" style="min-width: 0; min-height: 100vh; overflow-y: auto;">
 
   <!-- TOP LEARNING NAVBAR -->
-  <nav class="learning-navbar py-3 px-3 px-md-4">
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+  <nav class="learning-navbar">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-4 row-gap-3.5">
       <!-- Left: Back & Course Title -->
-      <div class="d-flex align-items-center gap-3 flex-wrap">
-        <a href="candidate-dashboard.html" class="btn btn-outline-light btn-sm rounded-pill px-3 py-1.5 fw-semibold d-flex align-items-center gap-1.5" title="Return to Candidate Dashboard">
+      <div class="d-flex align-items-center gap-3.5 flex-wrap">
+        <a href="candidate-dashboard.html" class="btn btn-outline-light btn-sm rounded-pill px-3.5 py-2 fw-semibold d-flex align-items-center gap-2 shadow-sm hover-lift" title="Return to Candidate Dashboard">
           <i class="bi bi-arrow-left"></i>
           <span>Dashboard</span>
         </a>
 
-        <div class="d-flex align-items-center gap-2.5">
+        <div class="d-flex align-items-center gap-3">
           <div class="nav-brand-icon" title="Python Full-Stack Track">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="34" height="34" class="python-brand-svg" aria-label="Python Logo">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="36" height="36" class="python-brand-svg" aria-label="Python Logo">
               <path fill="url(#python-grad-a)" d="M63.7 4.1c-27.1 0-25.5 11.7-25.5 11.7l.03 12.1h26v3.5H28.6s-16.4 1.8-16.4 25.3c0 23.4 14.3 22.7 14.3 22.7h8.5v-12s-.5-14.4 14.1-14.4h24.2s13.5.2 13.5-13.3V17.7s1.6-13.6-23.1-13.6zm-13.8 7.5c2.3 0 4.2 1.9 4.2 4.2s-1.9 4.2-4.2 4.2-4.2-1.9-4.2-4.2 1.9-4.2 4.2-4.2z"/>
               <path fill="url(#python-grad-b)" d="M64.3 123.9c27.1 0 25.5-11.7 25.5-11.7l-.03-12.1h-26v-3.5h35.6s16.4-1.8 16.4-25.3c0-23.4-14.3-22.7-14.3-22.7h-8.5v12s.5 14.4-14.1 14.4H49.2s-13.5-.2-13.5 13.3v22.8s-1.6 13.6 23.1 13.6zm13.8-7.5c-2.3 0-4.2-1.9-4.2-4.2s1.9-4.2 4.2-4.2 4.2 1.9 4.2 4.2-1.9 4.2-4.2 4.2z"/>
               <circle cx="49.9" cy="15.8" r="2.8" fill="#ffffff"/>
@@ -322,12 +324,12 @@
             </svg>
           </div>
           <div>
-            <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-              <span class="badge bg-warning text-dark px-2.5 py-1 rounded-pill small fw-bold" id="page-track-badge">Python Full-Stack Track</span>
-              <span class="badge rounded-pill px-2.5 py-1 small fw-semibold" id="page-stage-badge" style="background: rgba(255,255,255,0.18); color: #ffffff; border: 1px solid rgba(255,255,255,0.25);">Stage 1: Fundamentals</span>
-              <span class="badge bg-success text-white rounded-pill px-2 py-1 small" id="page-status-badge">Placement Ready</span>
+            <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+              <span class="badge bg-warning text-dark px-3 py-1 rounded-pill small fw-bold" id="page-track-badge">Python Full-Stack Track</span>
+              <span class="badge rounded-pill px-3 py-1 small fw-semibold" id="page-stage-badge" style="background: rgba(255,255,255,0.18); color: #ffffff; border: 1px solid rgba(255,255,255,0.25);">Stage 1: Fundamentals</span>
+              <span class="badge bg-success text-white rounded-pill px-2.5 py-1 small fw-semibold" id="page-status-badge">Placement Ready</span>
             </div>
-            <h5 class="fw-bold text-white mb-0" id="page-course-title">Python Programming: Beginner to Placement Ready</h5>
+            <h5 class="fw-bold text-white mb-0" id="page-course-title" style="letter-spacing: -0.015em; font-size: 1.25rem; line-height: 1.35;">Python Programming: Beginner to Placement Ready</h5>
           </div>
         </div>
       </div>
@@ -335,23 +337,23 @@
       <!-- Right: Course Track Selector & Progress -->
       <div class="d-flex align-items-center gap-3 flex-wrap">
         <!-- Progress Bar -->
-        <div class="d-none d-md-flex align-items-center gap-2 bg-white bg-opacity-10 px-3 py-1.5 rounded-pill border border-white border-opacity-15">
-          <span class="small text-white-50">Progress:</span>
-          <div class="progress" style="width: 110px; height: 8px; background: rgba(255,255,255,0.2);">
+        <div class="d-none d-md-flex align-items-center gap-2.5 bg-white bg-opacity-10 px-3.5 py-2 rounded-pill border border-white border-opacity-15 shadow-sm">
+          <span class="small text-white-50 fw-semibold">Progress:</span>
+          <div class="progress" style="width: 120px; height: 8px; background: rgba(255,255,255,0.2);">
             <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" id="top-progress-bar" role="progressbar" style="width: 0%;"></div>
           </div>
-          <span class="badge bg-success text-white rounded-pill small fw-bold" id="top-progress-text">0 / 49</span>
+          <span class="badge bg-success text-white rounded-pill small fw-bold px-2.5 py-1" id="top-progress-text">0 / 49</span>
         </div>
 
         <!-- Textbook Link -->
-        <a href="study-materials.html?subject=python" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1.5 fw-semibold d-flex align-items-center gap-1.5">
+        <a href="study-materials.html?subject=python" class="btn btn-sm btn-outline-light rounded-pill px-3.5 py-2 fw-semibold d-flex align-items-center gap-2 shadow-sm hover-lift">
           <i class="bi bi-journal-text"></i>
           <span class="d-none d-sm-inline">Textbook</span>
         </a>
 
         <!-- Switch Course Dropdown -->
         <div class="dropdown">
-          <button class="btn btn-sm btn-light fw-bold px-3 py-1.5 rounded-pill shadow-sm dropdown-toggle d-flex align-items-center gap-1.5" type="button" id="switchCourseBtn" data-bs-toggle="dropdown" aria-expanded="false">
+          <button class="btn btn-sm btn-light fw-bold px-3.5 py-2 rounded-pill shadow-sm dropdown-toggle d-flex align-items-center gap-2 hover-lift" type="button" id="switchCourseBtn" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="bi bi-arrow-left-right"></i>
             <span>Switch Track</span>
           </button>
@@ -368,25 +370,27 @@
   </nav>
 
   <!-- 4-STAGE PEDAGOGICAL LADDER -->
-  <section class="bg-dark text-white py-3 px-3 px-md-4 border-bottom border-secondary border-opacity-25" style="background: #0f172a !important;">
-    <div class="container-fluid">
-      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+  <section class="bg-dark text-white border-bottom border-secondary border-opacity-25" style="background: #0f172a !important; padding: 1.15rem 2rem !important;">
+    <div class="container-fluid px-0">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3.5 row-gap-3">
         <div class="d-flex align-items-center gap-2">
-          <span class="text-white-50 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Pedagogical Progression:</span>
+          <span class="badge rounded-pill px-3 py-1.5 text-uppercase fw-bold" style="letter-spacing: 0.7px; font-size: 0.74rem; background: rgba(59, 130, 246, 0.16); border: 1px solid rgba(96, 165, 250, 0.3); color: #93c5fd;">
+            🎯 Pedagogical Progression
+          </span>
         </div>
-        <div class="d-flex align-items-center gap-2 flex-wrap" id="stage-ladder-container">
+        <div class="d-flex align-items-center gap-2.5 flex-wrap" id="stage-ladder-container">
           <button type="button" class="stage-ladder-pill active" id="ladder-stage-1" onclick="filterByStage(1)">
             <span>1️⃣ Stage 1: Fundamentals (15)</span>
           </button>
-          <span class="text-white-50 small">➔</span>
+          <span class="text-white-50 opacity-40 px-1" style="font-size: 0.85rem;">➔</span>
           <button type="button" class="stage-ladder-pill" id="ladder-stage-2" onclick="filterByStage(2)">
             <span>2️⃣ Stage 2: Core Engineering (10)</span>
           </button>
-          <span class="text-white-50 small">➔</span>
+          <span class="text-white-50 opacity-40 px-1" style="font-size: 0.85rem;">➔</span>
           <button type="button" class="stage-ladder-pill" id="ladder-stage-3" onclick="filterByStage(3)">
             <span>3️⃣ Stage 3: Advanced Concepts (14)</span>
           </button>
-          <span class="text-white-50 small">➔</span>
+          <span class="text-white-50 opacity-40 px-1" style="font-size: 0.85rem;">➔</span>
           <button type="button" class="stage-ladder-pill" id="ladder-stage-4" onclick="filterByStage(4)">
             <span>4️⃣ Stage 4: Real-World Projects (10)</span>
           </button>

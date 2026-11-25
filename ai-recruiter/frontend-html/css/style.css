@@ -2822,19 +2822,19 @@ body.mobile-sidebar-active {
    COURSE LEARNING STUDIOS (Learning Navbar & Brand Icon)
    =================================================== */
 .learning-navbar {
-  padding: 1rem 1.5rem !important;
+  padding: 1.25rem 2rem !important;
   position: sticky;
   top: 0;
   z-index: 1030;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
-  min-height: 72px;
+  min-height: 84px;
 }
 
 .nav-brand-icon {
-  width: 50px;
-  height: 50px;
-  min-width: 50px;
-  min-height: 50px;
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  min-height: 52px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2853,13 +2853,44 @@ body.mobile-sidebar-active {
 
 .python-brand-svg {
   display: block;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+}
+
+.stage-ladder-pill {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 9999px;
+  padding: 8px 18px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.stage-ladder-pill:hover,
+.stage-ladder-pill.active {
+  background: #2563eb;
+  border-color: #3b82f6;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+.stage-ladder-pill.completed {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+  color: #a7f3d0;
 }
 
 @media (max-width: 768px) {
   .learning-navbar {
-    padding: 0.85rem 1rem !important;
+    padding: 1rem 1.25rem !important;
   }
 }
