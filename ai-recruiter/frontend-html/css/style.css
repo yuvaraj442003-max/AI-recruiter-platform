@@ -1359,8 +1359,8 @@ nav.sticky-top {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #c084fc;
-  box-shadow: 0 0 12px #c084fc;
+  background: #38bdf8;
+  box-shadow: 0 0 12px #38bdf8;
   animation: pulseIndigo 2s infinite ease-in-out;
 }
 
@@ -1487,17 +1487,17 @@ nav.sticky-top {
 }
 
 /* ===================================================
-   CANDIDATE PORTAL HERO BANNER (Modern SaaS Hero)
+   CANDIDATE PORTAL HERO BANNER (Arctic Obsidian & Celestial Indigo-Cyan)
    =================================================== */
 .candidate-portal-hero {
   position: relative;
-  background: radial-gradient(circle at 12% 20%, rgba(139, 92, 246, 0.48) 0%, transparent 46%),
-              radial-gradient(circle at 88% 72%, rgba(56, 189, 248, 0.38) 0%, transparent 48%),
-              radial-gradient(circle at 50% 125%, rgba(236, 72, 153, 0.28) 0%, transparent 52%),
-              linear-gradient(135deg, #090514 0%, #100b28 45%, #180d38 100%) !important;
-  border: 1px solid rgba(167, 139, 250, 0.35) !important;
+  background: radial-gradient(circle at 14% 22%, rgba(79, 70, 229, 0.42) 0%, transparent 48%),
+              radial-gradient(circle at 86% 75%, rgba(14, 165, 233, 0.38) 0%, transparent 48%),
+              radial-gradient(circle at 50% 120%, rgba(16, 185, 129, 0.20) 0%, transparent 52%),
+              linear-gradient(135deg, #040711 0%, #080f22 45%, #0c1836 100%) !important;
+  border: 1px solid rgba(56, 189, 248, 0.30) !important;
   border-radius: 28px !important;
-  box-shadow: 0 25px 60px -12px rgba(7, 3, 18, 0.8), 0 0 45px rgba(139, 92, 246, 0.24) !important;
+  box-shadow: 0 25px 60px -12px rgba(2, 6, 23, 0.8), 0 0 35px rgba(14, 165, 233, 0.16) !important;
   overflow: hidden;
   color: #ffffff;
   margin-bottom: 2rem;
@@ -1508,8 +1508,8 @@ nav.sticky-top {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
   background-size: 32px 32px;
   mask-image: radial-gradient(ellipse 78% 68% at 50% 40%, #000 58%, transparent 100%);
   -webkit-mask-image: radial-gradient(ellipse 78% 68% at 50% 40%, #000 58%, transparent 100%);
@@ -1522,9 +1522,9 @@ nav.sticky-top {
   position: absolute;
   top: -60px;
   right: -40px;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.42) 0%, rgba(56, 189, 248, 0.2) 50%, transparent 70%);
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.32) 0%, rgba(99, 102, 241, 0.18) 50%, transparent 70%);
   filter: blur(48px);
   pointer-events: none;
   z-index: 1;
@@ -1534,13 +1534,13 @@ nav.sticky-top {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(192, 132, 252, 0.38);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(56, 189, 248, 0.32);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   padding: 0.42rem 1.1rem;
   border-radius: 9999px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   font-size: 0.82rem;
   font-weight: 600;
   color: #f1f5f9;
@@ -1572,10 +1572,10 @@ nav.sticky-top {
 }
 
 .candidate-hero-btn-primary {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #4f46e5 100%) !important;
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 50%, #3730a3 100%) !important;
   color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  box-shadow: 0 8px 24px -4px rgba(124, 58, 237, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.32) !important;
+  border: 1px solid rgba(165, 180, 252, 0.35) !important;
+  box-shadow: 0 8px 24px -4px rgba(79, 70, 229, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.28) !important;
   border-radius: 9999px !important;
   padding: 0.68rem 1.45rem !important;
   font-weight: 700 !important;
@@ -1590,15 +1590,15 @@ nav.sticky-top {
 
 .candidate-hero-btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px -4px rgba(124, 58, 237, 0.85), 0 0 20px rgba(168, 85, 247, 0.4) !important;
+  box-shadow: 0 12px 32px -4px rgba(79, 70, 229, 0.8), 0 0 24px rgba(99, 102, 241, 0.45) !important;
   color: #ffffff !important;
 }
 
 .candidate-hero-btn-hub {
-  background: linear-gradient(135deg, #f97316 0%, #f59e0b 50%, #eab308 100%) !important;
+  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 50%, #06b6d4 100%) !important;
   color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  box-shadow: 0 8px 24px -4px rgba(249, 115, 22, 0.58), inset 0 1px 0 rgba(255, 255, 255, 0.32) !important;
+  border: 1px solid rgba(186, 230, 253, 0.40) !important;
+  box-shadow: 0 8px 24px -4px rgba(14, 165, 233, 0.50), inset 0 1px 0 rgba(255, 255, 255, 0.30) !important;
   border-radius: 9999px !important;
   padding: 0.68rem 1.45rem !important;
   font-weight: 700 !important;
@@ -1613,7 +1613,7 @@ nav.sticky-top {
 
 .candidate-hero-btn-hub:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px -4px rgba(249, 115, 22, 0.8), 0 0 24px rgba(245, 158, 11, 0.5) !important;
+  box-shadow: 0 12px 32px -4px rgba(14, 165, 233, 0.75), 0 0 24px rgba(56, 189, 248, 0.5) !important;
   color: #ffffff !important;
 }
 
@@ -1637,11 +1637,11 @@ nav.sticky-top {
 }
 
 .candidate-hero-btn-glass:hover {
-  background: rgba(255, 255, 255, 0.16) !important;
-  border-color: rgba(192, 132, 252, 0.65) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(56, 189, 248, 0.6) !important;
   color: #ffffff !important;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.35) !important;
+  box-shadow: 0 8px 25px rgba(14, 165, 233, 0.3) !important;
 }
 
 .candidate-hero-quickstats {
@@ -1686,7 +1686,7 @@ nav.sticky-top {
 }
 
 .candidate-quickstat-item .check-violet {
-  color: #c084fc !important;
+  color: #a5b4fc !important;
 }
 
 /* ===================================================
