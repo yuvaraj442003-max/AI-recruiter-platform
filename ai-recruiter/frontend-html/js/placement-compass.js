@@ -5033,6 +5033,9 @@ function renderDrives(drives) {
             <a href="${d.google_calendar_url}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger btn-sm rounded-pill fw-bold">
               📅 Add to Google Calendar
             </a>
+            <a href="/api/v1/placement-compass/drives/${d.id}/ics" download="${d.id}.ics" class="btn btn-outline-secondary btn-sm rounded-pill fw-semibold">
+              📥 Download .ICS Calendar Invite
+            </a>
           </div>
         </div>
       </div>
