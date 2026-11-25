@@ -2817,3 +2817,39 @@ body.mobile-sidebar-active {
     padding: 0.6rem 0.5rem !important;
   }
 }
+
+/* ===================================================
+   COURSE LEARNING STUDIOS (Learning Navbar & Brand Icon)
+   =================================================== */
+.learning-navbar {
+  padding: 1rem 1.5rem !important;
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  min-height: 72px;
+}
+
+.nav-brand-icon {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  font-size: 1.65rem;
+  line-height: 1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+@media (max-width: 768px) {
+  .learning-navbar {
+    padding: 0.85rem 1rem !important;
+  }
+}
