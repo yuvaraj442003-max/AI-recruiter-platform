@@ -457,18 +457,18 @@ nav.sticky-top {
 }
 
 .candidate-sidebar .nav-link:hover:not(.active) {
-  background-color: var(--ar-primary-light) !important;
-  color: var(--ar-primary) !important;
+  background-color: rgba(124, 58, 237, 0.08) !important;
+  color: #7c3aed !important;
   transform: translateX(3px) !important;
   border-radius: 9999px !important;
 }
 
 .candidate-sidebar .nav-link.active {
-  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
+  background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%) !important;
   color: #ffffff !important;
   font-weight: 600 !important;
   border-radius: 9999px !important;
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35) !important;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35) !important;
 }
 
 .recruiter-sidebar {
@@ -953,9 +953,9 @@ nav.sticky-top {
 
 /* Candidate Specific Styling Accents */
 .theme-candidate {
-  --ar-primary: #4f46e5;
-  --ar-primary-hover: #4338ca;
-  --ar-gradient-brand: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #3b82f6 100%);
+  --ar-primary: #7c3aed;
+  --ar-primary-hover: #6d28d9;
+  --ar-gradient-brand: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6366f1 100%);
 }
 
 /* Recruiter Specific Styling Accents */
@@ -966,18 +966,18 @@ nav.sticky-top {
 }
 
 .btn-candidate {
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
   color: #ffffff;
   border: none;
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
   transition: all 0.22s ease;
 }
 
 .btn-candidate:hover {
-  background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+  background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
   color: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(79, 70, 229, 0.4);
+  box-shadow: 0 8px 22px rgba(124, 58, 237, 0.45);
 }
 
 .btn-recruiter {
@@ -1359,8 +1359,8 @@ nav.sticky-top {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #818cf8;
-  box-shadow: 0 0 10px #818cf8;
+  background: #c084fc;
+  box-shadow: 0 0 12px #c084fc;
   animation: pulseIndigo 2s infinite ease-in-out;
 }
 
@@ -1491,13 +1491,13 @@ nav.sticky-top {
    =================================================== */
 .candidate-portal-hero {
   position: relative;
-  background: radial-gradient(circle at 14% 24%, rgba(99, 102, 241, 0.42) 0%, transparent 45%),
-              radial-gradient(circle at 86% 75%, rgba(56, 189, 248, 0.35) 0%, transparent 45%),
-              radial-gradient(circle at 50% 120%, rgba(139, 92, 246, 0.32) 0%, transparent 50%),
-              linear-gradient(135deg, #070a14 0%, #0c1224 50%, #12183a 100%) !important;
-  border: 1px solid rgba(129, 140, 248, 0.28) !important;
+  background: radial-gradient(circle at 12% 20%, rgba(139, 92, 246, 0.48) 0%, transparent 46%),
+              radial-gradient(circle at 88% 72%, rgba(56, 189, 248, 0.38) 0%, transparent 48%),
+              radial-gradient(circle at 50% 125%, rgba(236, 72, 153, 0.28) 0%, transparent 52%),
+              linear-gradient(135deg, #090514 0%, #100b28 45%, #180d38 100%) !important;
+  border: 1px solid rgba(167, 139, 250, 0.35) !important;
   border-radius: 28px !important;
-  box-shadow: 0 25px 60px -12px rgba(6, 10, 24, 0.65), 0 0 35px rgba(99, 102, 241, 0.18) !important;
+  box-shadow: 0 25px 60px -12px rgba(7, 3, 18, 0.8), 0 0 45px rgba(139, 92, 246, 0.24) !important;
   overflow: hidden;
   color: #ffffff;
   margin-bottom: 2rem;
@@ -1510,9 +1510,9 @@ nav.sticky-top {
   background-image:
     linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-  background-size: 36px 36px;
-  mask-image: radial-gradient(ellipse 75% 65% at 50% 40%, #000 60%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 40%, #000 60%, transparent 100%);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 78% 68% at 50% 40%, #000 58%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 78% 68% at 50% 40%, #000 58%, transparent 100%);
   pointer-events: none;
   z-index: 1;
 }
@@ -1522,10 +1522,10 @@ nav.sticky-top {
   position: absolute;
   top: -60px;
   right: -40px;
-  width: 280px;
-  height: 280px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, rgba(14, 165, 233, 0.15) 50%, transparent 70%);
-  filter: blur(40px);
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.42) 0%, rgba(56, 189, 248, 0.2) 50%, transparent 70%);
+  filter: blur(48px);
   pointer-events: none;
   z-index: 1;
 }
@@ -1535,15 +1535,15 @@ nav.sticky-top {
   align-items: center;
   gap: 0.55rem;
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(192, 132, 252, 0.38);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   padding: 0.42rem 1.1rem;
   border-radius: 9999px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   font-size: 0.82rem;
   font-weight: 600;
-  color: #e2e8f0;
+  color: #f1f5f9;
 }
 
 .candidate-hero-title {
@@ -1572,10 +1572,10 @@ nav.sticky-top {
 }
 
 .candidate-hero-btn-primary {
-  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #3b82f6 100%) !important;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #4f46e5 100%) !important;
   color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.22) !important;
-  box-shadow: 0 8px 24px -4px rgba(79, 70, 229, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 8px 24px -4px rgba(124, 58, 237, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.32) !important;
   border-radius: 9999px !important;
   padding: 0.68rem 1.45rem !important;
   font-weight: 700 !important;
@@ -1585,19 +1585,20 @@ nav.sticky-top {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  white-space: nowrap;
 }
 
 .candidate-hero-btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px -4px rgba(79, 70, 229, 0.65) !important;
+  box-shadow: 0 12px 32px -4px rgba(124, 58, 237, 0.85), 0 0 20px rgba(168, 85, 247, 0.4) !important;
   color: #ffffff !important;
 }
 
 .candidate-hero-btn-hub {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 50%, #eab308 100%) !important;
   color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  box-shadow: 0 8px 24px -4px rgba(245, 158, 11, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 8px 24px -4px rgba(249, 115, 22, 0.58), inset 0 1px 0 rgba(255, 255, 255, 0.32) !important;
   border-radius: 9999px !important;
   padding: 0.68rem 1.45rem !important;
   font-weight: 700 !important;
@@ -1607,21 +1608,22 @@ nav.sticky-top {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  white-space: nowrap;
 }
 
 .candidate-hero-btn-hub:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px -4px rgba(245, 158, 11, 0.6) !important;
+  box-shadow: 0 12px 32px -4px rgba(249, 115, 22, 0.8), 0 0 24px rgba(245, 158, 11, 0.5) !important;
   color: #ffffff !important;
 }
 
 .candidate-hero-btn-glass {
   background: rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
   color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
   border-radius: 9999px !important;
   padding: 0.68rem 1.35rem !important;
   font-weight: 600 !important;
@@ -1631,14 +1633,15 @@ nav.sticky-top {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  white-space: nowrap;
 }
 
 .candidate-hero-btn-glass:hover {
   background: rgba(255, 255, 255, 0.16) !important;
-  border-color: rgba(129, 140, 248, 0.5) !important;
+  border-color: rgba(192, 132, 252, 0.65) !important;
   color: #ffffff !important;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3) !important;
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.35) !important;
 }
 
 .candidate-hero-quickstats {
@@ -1647,22 +1650,23 @@ nav.sticky-top {
   gap: 0.75rem;
   margin-top: 1.75rem;
   padding-top: 1.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .candidate-quickstat-item {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  padding: 0.35rem 0.95rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 0.38rem 1rem;
   border-radius: 9999px;
-  font-size: 0.8rem;
-  color: #cbd5e1;
+  font-size: 0.82rem;
+  color: #e2e8f0;
   font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .candidate-quickstat-item .check-emerald {
@@ -1682,7 +1686,7 @@ nav.sticky-top {
 }
 
 .candidate-quickstat-item .check-violet {
-  color: #a78bfa !important;
+  color: #c084fc !important;
 }
 
 /* ===================================================
