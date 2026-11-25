@@ -136,6 +136,8 @@
                   <div class="d-flex align-items-center gap-2 text-muted small flex-wrap">
                     <span id="cand-location-display">📍 Location</span>
                     <span>•</span>
+                    <span id="cand-experience-display" class="badge bg-light text-dark border">💼 0 Yrs Exp</span>
+                    <span>•</span>
                     <span id="cand-college-display">🏛️ College / University</span>
                     <span>•</span>
                     <span id="cand-degree-display">Degree &amp; Branch</span>
@@ -1224,6 +1226,20 @@
           </div>
           <div id="candidate-screening-container">
             <div class="text-muted small text-center py-3">Loading screening status...</div>
+          </div>
+        </div>
+
+        <!-- Scheduled Voice & AI Interviews Card -->
+        <div class="card p-4 mb-4 border-0 shadow-sm" style="border-radius: 12px; background: #ffffff;">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h5 class="fw-bold mb-1">🎙️ Scheduled Voice &amp; AI Interviews</h5>
+              <p class="text-muted-custom small mb-0">Upcoming live voice interviews and AI mock sessions with direct room join links.</p>
+            </div>
+            <button id="btn-refresh-voice-interviews" class="btn btn-sm btn-outline-primary">🔄 Refresh</button>
+          </div>
+          <div id="candidate-voice-interviews-container">
+            <div class="text-muted small text-center py-3">Loading scheduled interviews...</div>
           </div>
         </div>
 

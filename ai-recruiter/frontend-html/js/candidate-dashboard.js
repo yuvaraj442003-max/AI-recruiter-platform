@@ -284,20 +284,20 @@
           if (descEl) descEl.textContent = `Your portfolio is published and viewable by recruiters! Views: ${port.views_count || 0}`;
           if (urlContainer) {
             urlContainer.classList.remove("d-none");
-            urlLink.href = `/portfolio/${port.slug}`;
+            urlLink.href = `portfolio.html?slug=${encodeURIComponent(port.slug)}`;
             urlLink.textContent = `/portfolio/${port.slug}`;
           }
           if (btnCopy) {
             btnCopy.classList.remove("d-none");
             btnCopy.onclick = () => {
-              navigator.clipboard.writeText(`${window.location.origin}/portfolio/${port.slug}`);
+              navigator.clipboard.writeText(`${window.location.origin}/portfolio.html?slug=${encodeURIComponent(port.slug)}`);
               btnCopy.textContent = "✓ Copied!";
               setTimeout(() => { btnCopy.textContent = "📋 Copy Link"; }, 2000);
             };
           }
           if (btnView) {
             btnView.classList.remove("d-none");
-            btnView.href = `/portfolio/${port.slug}`;
+            btnView.href = `portfolio.html?slug=${encodeURIComponent(port.slug)}`;
           }
         } else {
           if (statusBadge) {
@@ -452,7 +452,7 @@
           <div class="card p-3 h-100 border shadow-sm d-flex flex-column" style="border-radius: 10px;">
             <div class="d-flex justify-content-between align-items-start mb-2">
               <h6 class="fw-bold mb-0 text-dark">${job.title}</h6>
-              <span class="badge bg-primary-subtle text-primary">${job.employment_type.replace("_", " ")}</span>
+              <span class="badge bg-primary-subtle text-primary">${(job.employment_type || "full_time").replace("_", " ")}</span>
             </div>
             <div class="text-muted small mb-2">${job.location || "Remote"}</div>
             <p class="small text-secondary mb-3" style="flex-grow: 1;">${job.description.slice(0, 100)}...</p>
@@ -1222,7 +1222,7 @@
       .join("") || '<li class="list-group-item text-muted">No high priority fixes needed.</li>';
 
     const weakSentencesHtml = (data.weak_sentences || []).map((w, idx) => `
-      <div class="card p-3 mb-3 border shadow-sm style="border-radius: 10px;">
+      <div class="card p-3 mb-3 border shadow-sm" style="border-radius: 10px;">
         <div class="text-danger small fw-bold mb-1">❌ Current:</div>
         <div class="p-2 bg-light rounded text-dark small mb-2">${w.original}</div>
         <div class="text-success small fw-bold mb-1">✨ Recommended:</div>
@@ -2164,26 +2164,30 @@
     }
   }
 
-  // Load immediately on script execution
-  loadCandidateLearningJourney();
-  loadWeeklyArena();
-  loadCandidateApplications();
-  loadExplorerJobs();
-  loadCandidateCodingAssessments();
-  loadCandidateVoiceInterviews();
-  loadCandidateScreeningStatus();
-
-  document.addEventListener("ar:auth-ready", () => {
+  // Unified dashboard initializer ensuring all modules load reliably
+  function initDashboard() {
     load();
+    loadCandidateProfileData();
     loadCandidateLearningJourney();
     loadWeeklyArena();
     loadCandidateApplications();
-    loadCandidateProfileData();
     loadExplorerJobs();
     loadCandidateCodingAssessments();
     loadCandidateVoiceInterviews();
     loadCandidateScreeningStatus();
-  });
+  }
+
+  // Load immediately on script execution
+  initDashboard();
+
+  // If auth is already resolved, re-sync to ensure full session-dependent data
+  if (window.__AR_AUTH_READY) {
+    initDashboard();
+  } else {
+    document.addEventListener("ar:auth-ready", () => {
+      initDashboard();
+    });
+  }
 
   // Auto-sync status updates every 10 seconds so recruiter selection/shortlisting displays immediately
   setInterval(() => {
